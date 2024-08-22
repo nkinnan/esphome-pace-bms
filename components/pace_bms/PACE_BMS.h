@@ -28,7 +28,7 @@ public:
 
 	// takes pointers to the "real" logging functions
 	PaceBms(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logVerbose);
-	
+
 private:
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
@@ -63,6 +63,10 @@ private:
 		CID2_WriteDischargeMosfetSwitchCommand = 0x9B,
 		CID2_WriteRebootCommand = 0x9C,
 
+		// "Memory Information" tab of PBmsTools 2.4
+		CID2_ReadDateTime = 0xB1,
+		CID2_WriteDateTime = 0xB2,
+
 		// "Parameter Setting" tab of PBmsTools 2.4
 		CID2_ReadCellOverVoltageConfiguration = 0xD1,
 		CID2_WriteCellOverVoltageConfiguration = 0xD0,
@@ -91,19 +95,10 @@ private:
 		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
 		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
 
-		// these are sent (in both the read and write sequences) by the "Parameter Setting" tab of PBmsTools but don't correspond to anything I can find in the UX
-		CID2_Mystery1 = 0xD1,
-		CID2_Mystery2 = 0xD5,
-
-		// "System Configuration" tab of PBmsTools 2.4, these are the commands sent in a loop to fill out the display
+		// "System Configuration" tab of PBmsTools 2.4
 		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
 		CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
 		CID2_ReadRemainingCapacity = 0xA6,
-
-		// Miscellaneous
-		CID2_ReadDateTime = 0xB1,
-		CID2_WriteDateTime = 0xB2,
-
 	};
 
 	std::string FormatReturnCode(const uint8_t returnCode);
@@ -287,7 +282,7 @@ public:
 
 	void CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber);
-	
+
 	// ============================================================================
 	// 
 	// Main "Realtime Monitoring" tab of PBmsTools 2.4
@@ -519,12 +514,11 @@ public:
 
 
 
-// ============================================================================
-// 
-// "Parameter Setting" tab of PBmsTools 2.4 with DIP set to address 00 
-// PBmsTools 2.4 is broken and can't address packs other than 00 for configuration
-// 
-// ============================================================================
+	// ============================================================================
+	// 
+	// "Parameter Setting" tab of PBmsTools 2.4
+	// 
+	// ============================================================================
 
 	enum ReadConfigurationType {
 		RC_CellOverVoltage = CID2_ReadCellOverVoltageConfiguration,
@@ -598,7 +592,7 @@ public:
 		uint16_t ProtectionReleaseMillivolts;
 		uint16_t ProtectionDelayMilliseconds;
 	};
-	
+
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t> response, PackOverVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const PackOverVoltageConfiguration& config, std::vector<uint8_t>& request);
 
@@ -881,7 +875,7 @@ public:
 		int8_t DischargeProtection;
 		int8_t DischargeProtectionRelease;
 	};
-	
+
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 

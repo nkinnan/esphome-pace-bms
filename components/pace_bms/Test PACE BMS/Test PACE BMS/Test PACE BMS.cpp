@@ -94,10 +94,10 @@ void BasicTests()
 	exlen = (int)strlen((char*)PaceBms::exampleReadAnalogInformationResponseV25);
 	PaceBms::AnalogInformation analogInfo;
 	res = paceBms->ProcessReadAnalogInformationResponse(
-		1, 
+		1,
 		std::vector<uint8_t>(
 			PaceBms::exampleReadAnalogInformationResponseV25,
-			PaceBms::exampleReadAnalogInformationResponseV25 + exlen), 
+			PaceBms::exampleReadAnalogInformationResponseV25 + exlen),
 		analogInfo);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -209,15 +209,15 @@ void BasicTests()
 	std::string protectionText;
 	std::string faultText;
 	res = paceBms->ProcessReadStatusInformationResponse(
-		1, 
+		1,
 		std::vector<uint8_t>(
 			PaceBms::exampleReadStatusInformationResponseV25,
 			PaceBms::exampleReadStatusInformationResponseV25 + exlen),
-		warningText, 
-		balancingText, 
-		systemText, 
-		configurationText, 
-		protectionText, 
+		warningText,
+		balancingText,
+		systemText,
+		configurationText,
+		protectionText,
 		faultText);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1313,9 +1313,9 @@ void BasicTests()
 		std::cout << "FAIL: ProcessReadConfigurationResponse (" + configTypeString + ") returned false" << std::endl;
 	}
 	else if (cellOverVoltageConfig.AlarmMillivolts != 3600 ||
-			 cellOverVoltageConfig.ProtectionMillivolts != 3700 ||
-			 cellOverVoltageConfig.ProtectionReleaseMillivolts != 3380 ||
-			 cellOverVoltageConfig.ProtectionDelayMilliseconds != 1000)
+		cellOverVoltageConfig.ProtectionMillivolts != 3700 ||
+		cellOverVoltageConfig.ProtectionReleaseMillivolts != 3380 ||
+		cellOverVoltageConfig.ProtectionDelayMilliseconds != 1000)
 	{
 		std::cout << "FAIL: ProcessReadConfigurationResponse (" + configTypeString + ") did not accurately decode the known good example" << std::endl;
 	}
@@ -2978,244 +2978,244 @@ void BasicTests()
 
 bool WriteSerial(HANDLE hComPort, unsigned char* buffer, int bufferLen)
 {
-    DWORD dwBytesWritten;
-    bool success = WriteFile(hComPort, buffer, bufferLen, &dwBytesWritten, NULL);
+	DWORD dwBytesWritten;
+	bool success = WriteFile(hComPort, buffer, bufferLen, &dwBytesWritten, NULL);
 
-    if (dwBytesWritten != bufferLen)
-        return false;
+	if (dwBytesWritten != bufferLen)
+		return false;
 
-    return true;
+	return true;
 }
 
 int ReadSerialUntilTerminator(HANDLE hComPort, unsigned char* buffer, int bufferLen, char terminator)
 {
-    int offset = 0;
-    while (buffer[offset-1] != terminator)
-    {
-        DWORD dwBytesRead;
-        bool success = ReadFile(hComPort, buffer + offset, bufferLen - offset, &dwBytesRead, NULL);
-        if (!success)
-            return -1;
-        if (dwBytesRead == 0)
-            return -1;
+	int offset = 0;
+	while (buffer[offset - 1] != terminator)
+	{
+		DWORD dwBytesRead;
+		bool success = ReadFile(hComPort, buffer + offset, bufferLen - offset, &dwBytesRead, NULL);
+		if (!success)
+			return -1;
+		if (dwBytesRead == 0)
+			return -1;
 
-        offset += dwBytesRead;
-    }
+		offset += dwBytesRead;
+	}
 
-    return offset;
+	return offset;
 }
 
 // use with a USB to RS485 adapter
 // quick and dirty, no error checks because it's throwaway
 void ComPortTests(int portNum, int rs485_address)
 {
-    HANDLE serialHandle;
-    std::string comName = std::string("\\\\.\\COM") + std::to_string(portNum);
-    std::wstring comNameW = std::wstring(comName.begin(), comName.end());
-    serialHandle = CreateFile(comNameW.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+	HANDLE serialHandle;
+	std::string comName = std::string("\\\\.\\COM") + std::to_string(portNum);
+	std::wstring comNameW = std::wstring(comName.begin(), comName.end());
+	serialHandle = CreateFile(comNameW.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
 
-    DCB serialParams = { 0 };
-    serialParams.DCBlength = sizeof(serialParams);
-    serialParams.BaudRate = CBR_9600;
-    serialParams.fBinary = TRUE;
-    serialParams.Parity = FALSE;
-    serialParams.ByteSize = 8;
-    serialParams.StopBits = ONESTOPBIT;
-    serialParams.fRtsControl = RTS_CONTROL_TOGGLE;
-    SetCommState(serialHandle, &serialParams);
+	DCB serialParams = { 0 };
+	serialParams.DCBlength = sizeof(serialParams);
+	serialParams.BaudRate = CBR_9600;
+	serialParams.fBinary = TRUE;
+	serialParams.Parity = FALSE;
+	serialParams.ByteSize = 8;
+	serialParams.StopBits = ONESTOPBIT;
+	serialParams.fRtsControl = RTS_CONTROL_TOGGLE;
+	SetCommState(serialHandle, &serialParams);
 
-    // Set timeouts
-    COMMTIMEOUTS timeout = { 0 };
-    timeout.ReadIntervalTimeout = 5;
-    timeout.ReadTotalTimeoutConstant = 5;
-    timeout.ReadTotalTimeoutMultiplier = 5;
-    timeout.WriteTotalTimeoutConstant = 5;
-    timeout.WriteTotalTimeoutMultiplier = 1;
-    SetCommTimeouts(serialHandle, &timeout);
+	// Set timeouts
+	COMMTIMEOUTS timeout = { 0 };
+	timeout.ReadIntervalTimeout = 5;
+	timeout.ReadTotalTimeoutConstant = 5;
+	timeout.ReadTotalTimeoutMultiplier = 5;
+	timeout.WriteTotalTimeoutConstant = 5;
+	timeout.WriteTotalTimeoutMultiplier = 1;
+	SetCommTimeouts(serialHandle, &timeout);
 
-    SetCommMask(serialHandle, EV_RXCHAR);
-
-
-    PaceBms* paceBms = new PaceBms(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &VerboseLogFunc);
-
-    /*
-    ZeroMemory(buffer, bufferLen);
-    signed short srv = paceBms->CreateAnalogInformationRequest(rs485_address, buffer, bufferLen);
-    buffer[srv] = 0;
-    if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    {
-        std::cout << "Unable to write to serial" << std::endl;
-        return;
-    }
-    
-    ZeroMemory(buffer, bufferLen);
-    int bytesRead = 0;
-    bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    if(bytesRead <= 0)
-    {
-        std::cout << "Unable to read from serial" << std::endl;
-        return;
-    }
-
-    buffer[bytesRead] = 0;
-    PaceBms::TheAnalogInformation analogInfo;
-    bool brv = paceBms->ProcessAnalogInformationResponse(rs485_address, buffer, bytesRead, &analogInfo);
-    if (brv == false)
-    {
-        std::cout << "ProcessAnalogInformationResponse returned false" << std::endl;
-    }
-
-    std::cout << "Create/ProcessAnalogInformation over COM port OK" << std::endl;
+	SetCommMask(serialHandle, EV_RXCHAR);
 
 
-    ZeroMemory(buffer, bufferLen);
-    srv = paceBms->CreateStatusInformationRequest(rs485_address, buffer, bufferLen);
-    buffer[srv] = 0;
-    if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    {
-        std::cout << "Unable to write to serial" << std::endl;
-        return;
-    }
+	PaceBms* paceBms = new PaceBms(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &VerboseLogFunc);
 
-    ZeroMemory(buffer, bufferLen);
-    bytesRead = 0;
-    bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    if (bytesRead <= 0)
-    {
-        std::cout << "Unable to read from serial" << std::endl;
-        return;
-    }
+	/*
+	ZeroMemory(buffer, bufferLen);
+	signed short srv = paceBms->CreateAnalogInformationRequest(rs485_address, buffer, bufferLen);
+	buffer[srv] = 0;
+	if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	{
+		std::cout << "Unable to write to serial" << std::endl;
+		return;
+	}
 
-    std::string warningText;
-    std::string balancingText;
-    std::string systemText;
-    std::string configurationText;
-    std::string protectionText;
-    std::string faultText;
-    brv = paceBms->ProcessStatusInformationResponse(rs485_address, buffer, bytesRead, warningText, balancingText, systemText, configurationText, protectionText, faultText);
-    if (brv == false)
-    {
-        std::cout << "ProcessWarningInformationResponse returned false" << std::endl;
-    }
+	ZeroMemory(buffer, bufferLen);
+	int bytesRead = 0;
+	bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	if(bytesRead <= 0)
+	{
+		std::cout << "Unable to read from serial" << std::endl;
+		return;
+	}
 
-    std::cout << "live warning status text: " << warningText << std::endl;
-    std::cout << "live balancing status text: " << balancingText << std::endl;
-    std::cout << "live system status text: " << systemText << std::endl;
-    std::cout << "live configuration status text: " << configurationText << std::endl;
-    std::cout << "live protection status text: " << protectionText << std::endl;
-    std::cout << "live fault status text: " << faultText << std::endl;
-    std::cout << "Create/ProcessWarningInformation over COM port OK" << std::endl;
+	buffer[bytesRead] = 0;
+	PaceBms::TheAnalogInformation analogInfo;
+	bool brv = paceBms->ProcessAnalogInformationResponse(rs485_address, buffer, bytesRead, &analogInfo);
+	if (brv == false)
+	{
+		std::cout << "ProcessAnalogInformationResponse returned false" << std::endl;
+	}
+
+	std::cout << "Create/ProcessAnalogInformation over COM port OK" << std::endl;
 
 
-    ZeroMemory(buffer, bufferLen);
-    srv = paceBms->CreateHardwareVersionRequest(rs485_address, buffer, bufferLen);
-    buffer[srv] = 0;
-    if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    {
-        std::cout << "Unable to write to serial" << std::endl;
-        return;
-    }
+	ZeroMemory(buffer, bufferLen);
+	srv = paceBms->CreateStatusInformationRequest(rs485_address, buffer, bufferLen);
+	buffer[srv] = 0;
+	if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	{
+		std::cout << "Unable to write to serial" << std::endl;
+		return;
+	}
 
-    ZeroMemory(buffer, bufferLen);
-    bytesRead = 0;
-    bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    if (bytesRead <= 0)
-    {
-        std::cout << "Unable to read from serial" << std::endl;
-        return;
-    }
+	ZeroMemory(buffer, bufferLen);
+	bytesRead = 0;
+	bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	if (bytesRead <= 0)
+	{
+		std::cout << "Unable to read from serial" << std::endl;
+		return;
+	}
 
-    std::string hardwareVersion;
-    brv = paceBms->ProcessHardwareVersionResponse(rs485_address, buffer, bytesRead, hardwareVersion);
-    if (brv == false)
-    {
-        std::cout << "ProcessHardwareVersionResponse returned false" << std::endl;
-    }
+	std::string warningText;
+	std::string balancingText;
+	std::string systemText;
+	std::string configurationText;
+	std::string protectionText;
+	std::string faultText;
+	brv = paceBms->ProcessStatusInformationResponse(rs485_address, buffer, bytesRead, warningText, balancingText, systemText, configurationText, protectionText, faultText);
+	if (brv == false)
+	{
+		std::cout << "ProcessWarningInformationResponse returned false" << std::endl;
+	}
 
-    std::cout << "live hardware version: " << hardwareVersion << std::endl;
-    std::cout << "Create/ProcessHardwareVersion over COM port OK" << std::endl;
-
-
-    ZeroMemory(buffer, bufferLen);
-    srv = paceBms->CreateSerialNumberRequest(rs485_address, buffer, bufferLen);
-    buffer[srv] = 0;
-    if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    {
-        std::cout << "Unable to write to serial" << std::endl;
-        return;
-    }
-
-    ZeroMemory(buffer, bufferLen);
-    bytesRead = 0;
-    bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    if (bytesRead <= 0)
-    {
-        std::cout << "Unable to read from serial" << std::endl;
-        return;
-    }
-
-    std::string productInformation;
-    brv = paceBms->ProcessSerialNumberResponse(rs485_address, buffer, bytesRead, productInformation);
-    if (brv == false)
-    {
-        std::cout << "ProcessSerialNumberResponse returned false" << std::endl;
-    }
-
-    std::cout << "live serial number: " << productInformation << std::endl;
-    std::cout << "Create/ProcessSerialNumber over COM port OK" << std::endl;
-    */
+	std::cout << "live warning status text: " << warningText << std::endl;
+	std::cout << "live balancing status text: " << balancingText << std::endl;
+	std::cout << "live system status text: " << systemText << std::endl;
+	std::cout << "live configuration status text: " << configurationText << std::endl;
+	std::cout << "live protection status text: " << protectionText << std::endl;
+	std::cout << "live fault status text: " << faultText << std::endl;
+	std::cout << "Create/ProcessWarningInformation over COM port OK" << std::endl;
 
 
+	ZeroMemory(buffer, bufferLen);
+	srv = paceBms->CreateHardwareVersionRequest(rs485_address, buffer, bufferLen);
+	buffer[srv] = 0;
+	if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	{
+		std::cout << "Unable to write to serial" << std::endl;
+		return;
+	}
+
+	ZeroMemory(buffer, bufferLen);
+	bytesRead = 0;
+	bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	if (bytesRead <= 0)
+	{
+		std::cout << "Unable to read from serial" << std::endl;
+		return;
+	}
+
+	std::string hardwareVersion;
+	brv = paceBms->ProcessHardwareVersionResponse(rs485_address, buffer, bytesRead, hardwareVersion);
+	if (brv == false)
+	{
+		std::cout << "ProcessHardwareVersionResponse returned false" << std::endl;
+	}
+
+	std::cout << "live hardware version: " << hardwareVersion << std::endl;
+	std::cout << "Create/ProcessHardwareVersion over COM port OK" << std::endl;
 
 
+	ZeroMemory(buffer, bufferLen);
+	srv = paceBms->CreateSerialNumberRequest(rs485_address, buffer, bufferLen);
+	buffer[srv] = 0;
+	if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	{
+		std::cout << "Unable to write to serial" << std::endl;
+		return;
+	}
 
-    //ZeroMemory(buffer, bufferLen);
-    //srv = paceBms->Create_unknown1_Request(rs485_address, buffer, bufferLen);
-    //buffer[srv] = 0;
-    //if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    //{
-    //    std::cout << "Unable to write to serial" << std::endl;
-    //    return;
-    //}
+	ZeroMemory(buffer, bufferLen);
+	bytesRead = 0;
+	bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	if (bytesRead <= 0)
+	{
+		std::cout << "Unable to read from serial" << std::endl;
+		return;
+	}
 
-    //ZeroMemory(buffer, bufferLen);
-    //bytesRead = 0;
-    //bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    //if (bytesRead <= 0)
-    //{
-    //    std::cout << "Unable to read from serial" << std::endl;
-    //    return;
-    //}
+	std::string productInformation;
+	brv = paceBms->ProcessSerialNumberResponse(rs485_address, buffer, bytesRead, productInformation);
+	if (brv == false)
+	{
+		std::cout << "ProcessSerialNumberResponse returned false" << std::endl;
+	}
 
-
-    //ZeroMemory(buffer, bufferLen);
-    //srv = paceBms->Create_unknown2_Request(rs485_address, buffer, bufferLen);
-    //buffer[srv] = 0;
-    //if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
-    //{
-    //    std::cout << "Unable to write to serial" << std::endl;
-    //    return;
-    //}
-
-    //ZeroMemory(buffer, bufferLen);
-    //bytesRead = 0;
-    //bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
-    //if (bytesRead <= 0)
-    //{
-    //    std::cout << "Unable to read from serial" << std::endl;
-    //    return;
-    //}
+	std::cout << "live serial number: " << productInformation << std::endl;
+	std::cout << "Create/ProcessSerialNumber over COM port OK" << std::endl;
+	*/
 
 
 
 
 
-    CloseHandle(serialHandle);
+	//ZeroMemory(buffer, bufferLen);
+	//srv = paceBms->Create_unknown1_Request(rs485_address, buffer, bufferLen);
+	//buffer[srv] = 0;
+	//if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	//{
+	//    std::cout << "Unable to write to serial" << std::endl;
+	//    return;
+	//}
+
+	//ZeroMemory(buffer, bufferLen);
+	//bytesRead = 0;
+	//bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	//if (bytesRead <= 0)
+	//{
+	//    std::cout << "Unable to read from serial" << std::endl;
+	//    return;
+	//}
+
+
+	//ZeroMemory(buffer, bufferLen);
+	//srv = paceBms->Create_unknown2_Request(rs485_address, buffer, bufferLen);
+	//buffer[srv] = 0;
+	//if (!WriteSerial(serialHandle, buffer, (int)strlen((char*)buffer)))
+	//{
+	//    std::cout << "Unable to write to serial" << std::endl;
+	//    return;
+	//}
+
+	//ZeroMemory(buffer, bufferLen);
+	//bytesRead = 0;
+	//bytesRead = ReadSerialUntilTerminator(serialHandle, buffer, bufferLen, '\r');
+	//if (bytesRead <= 0)
+	//{
+	//    std::cout << "Unable to read from serial" << std::endl;
+	//    return;
+	//}
+
+
+
+
+
+	CloseHandle(serialHandle);
 }
 
 int main()
 {
-    BasicTests();
-    std::cout << std::endl << std::endl << " LIVE serial tests:" << std::endl << std::endl;
-    //ComPortTests(8, 1);
+	BasicTests();
+	std::cout << std::endl << std::endl << " LIVE serial tests:" << std::endl << std::endl;
+	//ComPortTests(8, 1);
 }
