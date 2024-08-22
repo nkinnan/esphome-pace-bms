@@ -36,7 +36,7 @@ void PaceBmsComponent::setup() {
 
 void PaceBmsComponent::loop() {
   const uint32_t now = millis();
-  ESP_LOGV("**********loop: %i", now);
+  ESP_LOGV(TAG, "**********loop: %i", now);
   if (now - this->last_transmission_ >= 500) {
     // last transmission too long ago. Reset RX index.
     if (this->raw_data_index_ > 0) {
