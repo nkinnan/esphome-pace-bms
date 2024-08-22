@@ -17,13 +17,13 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", sensor.Sensor, cg.PollingComponent)
+PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.PollingComponent)
 
 CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.declare_id(PaceBmsSensor),
+        cv.GenerateID(CONF_PACE_BMS_SENSOR_ID): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
