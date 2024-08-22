@@ -76,11 +76,13 @@ void PaceBms::loop() {
 
     if (this->raw_data_index_ == 0 && this->raw_data_[this->raw_data_index_] != '~') {
       ESP_LOGE(TAG, "Data frame does not start with '~'");
+      this->raw_data_index_ = 0;
       continue;
     }
 
     if (this->raw_data_[this->raw_data_index_] == '\r') {
       this->parse_data_frame_(this->raw_data_, this->raw_data_index_ + 1);
+      this->raw_data_index_ = 0;
       continue;
     }
 
@@ -115,10 +117,10 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
 }
 
 void PaceBms::dump_config() {
-  ESP_LOGCONFIG(TAG,   "pace_bms:");
-    LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
-  ESP_LOGCONFIG(TAG,   "  Address: %i", this->address_);
-  //LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
+  ESP_LOGCONFIG(TAG, "pace_bms:");
+  LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
+  ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
+  //LOG_SENSOR(        "  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
 
