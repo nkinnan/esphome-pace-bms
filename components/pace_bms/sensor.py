@@ -29,12 +29,12 @@ from esphome.const import (
 
 DEPENDENCIES = ["uart"]
 
-cse7766_ns = cg.esphome_ns.namespace("cse7766")
-CSE7766Component = cse7766_ns.class_("CSE7766Component", cg.Component, uart.UARTDevice)
+pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
+PaceBmsComponent = pace_bms_ns.class_("PaceBmsComponent", cg.Component, uart.UARTDevice)
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.declare_id(CSE7766Component),
+        cv.GenerateID(): cv.declare_id(PaceBmsComponent),
         cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
             accuracy_decimals=1,
@@ -79,7 +79,7 @@ CONFIG_SCHEMA = cv.Schema(
     }
 ).extend(uart.UART_DEVICE_SCHEMA)
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
-    "cse7766", baud_rate=4800, require_rx=True
+    "pace_bms", baud_rate=9600, require_rx=True, require_tx=True
 )
 
 
