@@ -32,54 +32,56 @@ DEPENDENCIES = ["uart"]
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
 PaceBmsComponent = pace_bms_ns.class_("PaceBmsComponent", cg.PollingComponent, uart.UARTDevice)
 
-CONFIG_SCHEMA = cv.Schema(
-    {
-        cv.GenerateID(): cv.declare_id(PaceBmsComponent),
-        cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
-            unit_of_measurement=UNIT_VOLT,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_VOLTAGE,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_CURRENT): sensor.sensor_schema(
-            unit_of_measurement=UNIT_AMPERE,
-            accuracy_decimals=2,
-            device_class=DEVICE_CLASS_CURRENT,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_POWER): sensor.sensor_schema(
-            unit_of_measurement=UNIT_WATT,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_POWER,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_ENERGY): sensor.sensor_schema(
-            unit_of_measurement=UNIT_WATT_HOURS,
-            accuracy_decimals=3,
-            device_class=DEVICE_CLASS_ENERGY,
-            state_class=STATE_CLASS_TOTAL_INCREASING,
-        ),
-        cv.Optional(CONF_APPARENT_POWER): sensor.sensor_schema(
-            unit_of_measurement=UNIT_VOLT_AMPS,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_APPARENT_POWER,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_REACTIVE_POWER): sensor.sensor_schema(
-            unit_of_measurement=UNIT_VOLT_AMPS_REACTIVE,
-            accuracy_decimals=1,
-            device_class=DEVICE_CLASS_REACTIVE_POWER,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-        cv.Optional(CONF_POWER_FACTOR): sensor.sensor_schema(
-            accuracy_decimals=2,
-            device_class=DEVICE_CLASS_POWER_FACTOR,
-            state_class=STATE_CLASS_MEASUREMENT,
-        ),
-    }
+CONFIG_SCHEMA = (
+    cv.Schema(
+        {
+            cv.GenerateID(): cv.declare_id(PaceBmsComponent),
+            cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
+                unit_of_measurement=UNIT_VOLT,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_VOLTAGE,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_CURRENT): sensor.sensor_schema(
+                unit_of_measurement=UNIT_AMPERE,
+                accuracy_decimals=2,
+                device_class=DEVICE_CLASS_CURRENT,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_POWER): sensor.sensor_schema(
+                unit_of_measurement=UNIT_WATT,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_POWER,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_ENERGY): sensor.sensor_schema(
+                unit_of_measurement=UNIT_WATT_HOURS,
+                accuracy_decimals=3,
+                device_class=DEVICE_CLASS_ENERGY,
+                state_class=STATE_CLASS_TOTAL_INCREASING,
+            ),
+            cv.Optional(CONF_APPARENT_POWER): sensor.sensor_schema(
+                unit_of_measurement=UNIT_VOLT_AMPS,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_APPARENT_POWER,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_REACTIVE_POWER): sensor.sensor_schema(
+                unit_of_measurement=UNIT_VOLT_AMPS_REACTIVE,
+                accuracy_decimals=1,
+                device_class=DEVICE_CLASS_REACTIVE_POWER,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+            cv.Optional(CONF_POWER_FACTOR): sensor.sensor_schema(
+                accuracy_decimals=2,
+                device_class=DEVICE_CLASS_POWER_FACTOR,
+                state_class=STATE_CLASS_MEASUREMENT,
+            ),
+        }
+    )
+    .extend(cv.polling_component_schema("60s"))
+    .extend(uart.UART_DEVICE_SCHEMA)
 )
-.extend(cv.polling_component_schema("60s"))
-.extend(uart.UART_DEVICE_SCHEMA)
 
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     "pace_bms", baud_rate=9600, require_rx=True, require_tx=True, 
