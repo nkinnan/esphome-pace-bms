@@ -10,19 +10,19 @@ namespace pace_bms {
 static const char *const TAG = "pace_bms";
 
 void error_log_func(std::string message) {
-    ESP_LOGE(TAG, "pace_bms_v25: %s", message);
+    ESP_LOGE(TAG, "pace_bms_v25: %s", message.c_str());
 }
 
 void warning_log_func(std::string message) {
-    ESP_LOGW(TAG, "pace_bms_v25: %s", message);
+    ESP_LOGW(TAG, "pace_bms_v25: %s", message.c_str());
 }
 
 void info_log_func(std::string message) {
-    ESP_LOGI(TAG, "pace_bms_v25: %s", message);
+    ESP_LOGI(TAG, "pace_bms_v25: %s", message.c_str());
 }
 
 void verbose_log_func(std::string message) {
-    ESP_LOGV(TAG, "pace_bms_v25: %s", message);
+    ESP_LOGV(TAG, "pace_bms_v25: %s", message.c_str());
 }
 
 void PaceBms::setup() {
