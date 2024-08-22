@@ -8,7 +8,7 @@ from esphome.const import (
 )
 from esphome import pins
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = ["uart", "sensor"]
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
 PaceBms = pace_bms_ns.class_("PaceBmsComponent", cg.PollingComponent, uart.UARTDevice)
