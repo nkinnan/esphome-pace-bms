@@ -25,8 +25,8 @@ void verbose_log_func(std::string message) {
     ESP_LOGV(TAG, "%s", message);
 }
 
-void setup() {
-    PaceBmsComponent::this->pace_bms_v25 = new PaceBms(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+void PaceBmsComponent::setup() {
+    this->pace_bms_v25 = new PaceBms(error_log_func, warning_log_func, info_log_func, verbose_log_func);
 }
 
 void PaceBmsComponent::loop() {
