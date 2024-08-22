@@ -8,10 +8,13 @@
 namespace esphome {
 namespace pace_bms {
 
+// this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependency
+// in the future, other protocol versions may be supported
 class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
   void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
   void set_address(int address) { this->address_ = address; }
+  void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 
   void setup() override;
   void update() override;
@@ -22,6 +25,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
   int address_{ 0 };
+  int protocol_version_{ 0 };
 
   void parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
