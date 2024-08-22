@@ -36,7 +36,7 @@ from . import PaceBms
 CONFIG_SCHEMA = (
     cv.Schema(
         {
-            cv.GenerateID(): cv.declare_id(PaceBms),
+            cv.GenerateID(): cv.use_id(PaceBms),
             cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_VOLT,
                 accuracy_decimals=1,
