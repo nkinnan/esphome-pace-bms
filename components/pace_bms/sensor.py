@@ -84,7 +84,6 @@ CONFIG_SCHEMA = (
 
 
 async def to_code(config):
-    cg.add_global(pace_bms_ns.using)
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
