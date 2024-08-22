@@ -27,16 +27,28 @@ void verbose_log_func(std::string message) {
 
 void PaceBmsComponent::setup() {
     this->pace_bms_v25 = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+}
+
+void ModbusController::update() {
+    //if (!command_queue_.empty()) {
+    //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
+    //}
+    //else {
     ESP_LOGV(TAG, "***********Requesting analog information");
     std::vector<uint8_t> request;
     this->pace_bms_v25->CreateReadAnalogInformationRequest(1, request);
     this->write_array(request.data(), request.size());
     this->flush();
+    //}
+
+    //for (auto& r : this->register_ranges_) {
+    //    ESP_LOGVV(TAG, "Updating range 0x%X", r.start_address);
+    //    update_range_(r);
+    //}
 }
 
 void PaceBmsComponent::loop() {
   const uint32_t now = millis();
-  ESP_LOGV(TAG, "**********loop: %i", now);
   if (now - this->last_transmission_ >= 500) {
     // last transmission too long ago. Reset RX index.
     if (this->raw_data_index_ > 0) {

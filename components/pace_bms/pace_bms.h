@@ -8,7 +8,7 @@
 namespace esphome {
 namespace pace_bms {
 
-class PaceBmsComponent : public Component, public uart::UARTDevice {
+class PaceBmsComponent : public PollingComponent, public uart::UARTDevice {
  public:
   void set_voltage_sensor(sensor::Sensor *voltage_sensor) { voltage_sensor_ = voltage_sensor; }
   void set_current_sensor(sensor::Sensor *current_sensor) { current_sensor_ = current_sensor; }
@@ -23,6 +23,7 @@ class PaceBmsComponent : public Component, public uart::UARTDevice {
   void set_power_factor_sensor(sensor::Sensor *power_factor_sensor) { power_factor_sensor_ = power_factor_sensor; }
 
   void setup() override;
+  void update() override;
   void loop() override;
   float get_setup_priority() const override;
   void dump_config() override;
