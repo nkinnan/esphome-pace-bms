@@ -5,34 +5,44 @@
 #include <sstream>
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms { 
 
-static const char *const TAG = "pace_bms";
+static const char* const TAG = "pace_bms";
+static const char* const TAG_V25 = "pace_bms_v25";
 
 void error_log_func(std::string message) {
-    ESP_LOGE(TAG, "pace_bms_v25: %s", message.c_str());
+    ESP_LOGE(TAG_V25, "%s", message.c_str());
 }
 
 void warning_log_func(std::string message) {
-    ESP_LOGW(TAG, "pace_bms_v25: %s", message.c_str());
+    ESP_LOGW(TAG_V25, "%s", message.c_str());
 }
 
 void info_log_func(std::string message) {
-    ESP_LOGI(TAG, "pace_bms_v25: %s", message.c_str());
+    ESP_LOGI(TAG_V25, "%s", message.c_str());
 }
 
 void verbose_log_func(std::string message) {
-    ESP_LOGV(TAG, "pace_bms_v25: %s", message.c_str());
+    ESP_LOGV(TAG_V25, "%s", message.c_str());
 }
 
 void PaceBms::setup() {
-    this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
-    if (this->flow_control_pin_ != nullptr) {
-        this->flow_control_pin_->setup();
+    if (this->protocol_version_ != 0x25) {
+      this->status_set_warning();
+      ESP_LOGE(TAG, "Protocol version %02X is not supported", this->protocol_version_);
+    }
+    else {
+      this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+      if (this->flow_control_pin_ != nullptr) {
+          this->flow_control_pin_->setup();
+      }
     }
 }
 
 void PaceBms::update() {
+    if (this->pace_bms_v25_ == nullptr)
+        return;
+
     //if (!command_queue_.empty()) {
     //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
     //}
@@ -56,6 +66,9 @@ void PaceBms::update() {
 }
 
 void PaceBms::loop() {
+  if (this->pace_bms_v25_ == nullptr)
+    return;
+
   const uint32_t now = millis();
   if (now - this->last_transmission_ >= 500) {
     // last transmission too long ago. Reset RX index.
@@ -122,6 +135,7 @@ void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
   LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
   ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
+  ESP_LOGCONFIG(TAG, "  Protocol Version: %02X", this->protocol_version_);
   //LOG_SENSOR(        "  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
