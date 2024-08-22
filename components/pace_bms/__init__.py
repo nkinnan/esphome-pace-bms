@@ -1,23 +1,31 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.cpp_helpers import gpio_pin_expression
-from esphome.components import sensor, uart
+from esphome.components import uart
 from esphome.const import (
     CONF_FLOW_CONTROL_PIN,
     CONF_ID,
+    CONF_ADDRESS,
 )
 from esphome import pins
+
+CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["uart"]
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
-PaceBms = pace_bms_ns.class_("PaceBmsComponent", cg.PollingComponent, uart.UARTDevice)
+PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
+
+CONF_PACE_BMS_ID = "pace_bms_id"
+
+DEFAULT_ADDRESS = 0
 
 CONFIG_SCHEMA = (
     cv.Schema(
         {
             cv.GenerateID(): cv.declare_id(PaceBms),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
+            cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
         }
     )
     .extend(cv.polling_component_schema("5s"))
@@ -37,3 +45,6 @@ async def to_code(config):
     if CONF_FLOW_CONTROL_PIN in config:
         pin = await gpio_pin_expression(config[CONF_FLOW_CONTROL_PIN])
         cg.add(var.set_flow_control_pin(pin))
+
+    if CONF_ADDRESS in config:
+        cg.add(var.set_address(config[CONF_ADDRESS]))

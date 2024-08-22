@@ -1,4 +1,4 @@
-#include "pace_bms.h"
+/*nclude "pace_bms.h"
 #include "esphome/core/log.h"
 #include <cinttypes>
 #include <iomanip>
@@ -39,7 +39,7 @@ void PaceBmsComponent::update() {
     //else {
     ESP_LOGV(TAG, "***********Requesting analog information");
     std::vector<uint8_t> request;
-    this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request);
+    this->pace_bms_v25_->CreateReadAnalogInformationRequest(1, request);
 
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(true);
@@ -108,18 +108,19 @@ void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_len
 
   ESP_LOGV(TAG, "Processing analog information response");
   PaceBmsV25::AnalogInformation analog_information;
-  this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
+  this->pace_bms_v25_->ProcessReadAnalogInformationResponse(1, response, analog_information);
 
-  //if (this->voltage_sensor_ != nullptr)
-  //    this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
+  if (this->voltage_sensor_ != nullptr)
+      this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 }
 
 void PaceBmsComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
-  //LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
+  LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
 
 }  // namespace pace_bms
 }  // namespace esphome
+*/
