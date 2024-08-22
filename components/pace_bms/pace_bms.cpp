@@ -27,6 +27,9 @@ void verbose_log_func(std::string message) {
 
 void PaceBmsComponent::setup() {
     this->pace_bms_v25 = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+    if (this->flow_control_pin_ != nullptr) {
+        this->flow_control_pin_->setup();
+    }
 }
 
 void PaceBmsComponent::update() {
@@ -37,8 +40,13 @@ void PaceBmsComponent::update() {
     ESP_LOGV(TAG, "***********Requesting analog information");
     std::vector<uint8_t> request;
     this->pace_bms_v25->CreateReadAnalogInformationRequest(1, request);
+
+    if (this->flow_control_pin_ != nullptr)
+        this->flow_control_pin_->digital_write(true);
     this->write_array(request.data(), request.size());
     this->flush();
+    if (this->flow_control_pin_ != nullptr)
+        this->flow_control_pin_->digital_write(false);
     //}
 
     //for (auto& r : this->register_ranges_) {
@@ -107,6 +115,7 @@ void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_len
 
 void PaceBmsComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
+  LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
   LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
   LOG_SENSOR("  ", "Current", this->current_sensor_);
   LOG_SENSOR("  ", "Power", this->power_sensor_);
