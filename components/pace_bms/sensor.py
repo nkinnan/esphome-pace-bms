@@ -30,7 +30,7 @@ from esphome.const import (
 DEPENDENCIES = ["uart"]
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
-PaceBmsComponent = pace_bms_ns.class_("PaceBmsComponent", cg.Component, uart.UARTDevice)
+PaceBmsComponent = pace_bms_ns.class_("PaceBmsComponent", cg.PollingComponent, uart.UARTDevice)
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -77,9 +77,12 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
-).extend(uart.UART_DEVICE_SCHEMA)
+)
+.extend(cv.polling_component_schema("60s"))
+.extend(uart.UART_DEVICE_SCHEMA)
+
 FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
-    "pace_bms", baud_rate=9600, require_rx=True, require_tx=True
+    "pace_bms", baud_rate=9600, require_rx=True, require_tx=True, 
 )
 
 
