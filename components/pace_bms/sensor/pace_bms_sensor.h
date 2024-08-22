@@ -12,10 +12,14 @@ enum SensorType {
   SUN_SENSOR_AZIMUTH,
 };
 
-class PaceBmsSensor : public sensor::Sensor, public PollingComponent {
+class PaceBmsSensor : 
+    //public sensor::Sensor, 
+    public PollingComponent {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
-  void set_type(SensorType type) { type_ = type; }
+  //void set_type(SensorType type) { type_ = type; }
+  void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; }
+
   void dump_config() override;
   void update() override {
     double val;
@@ -31,10 +35,12 @@ class PaceBmsSensor : public sensor::Sensor, public PollingComponent {
     //}
     //this->publish_state(val);
   }
+  float get_setup_priority() const override;
 
  protected:
   pace_bms::PaceBms *parent_;
-  SensorType type_;
+  //SensorType type_;
+  sensor::Sensor* voltage_sensor_{ nullptr };
 };
 
 }  // namespace sun
