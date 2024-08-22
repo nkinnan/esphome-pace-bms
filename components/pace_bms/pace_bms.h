@@ -8,7 +8,7 @@
 namespace esphome {
 namespace pace_bms {
 
-class PaceBmsComponent : public PollingComponent, public uart::UARTDevice {
+class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
   void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
   void set_address(int address) { this->address_ = address; }

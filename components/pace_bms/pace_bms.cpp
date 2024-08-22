@@ -25,14 +25,14 @@ void verbose_log_func(std::string message) {
     ESP_LOGV(TAG, "%s", message);
 }
 
-void PaceBmsComponent::setup() {
+void PaceBms::setup() {
     this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
     if (this->flow_control_pin_ != nullptr) {
         this->flow_control_pin_->setup();
     }
 }
 
-void PaceBmsComponent::update() {
+void PaceBms::update() {
     //if (!command_queue_.empty()) {
     //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
     //}
@@ -55,7 +55,7 @@ void PaceBmsComponent::update() {
     //}
 }
 
-void PaceBmsComponent::loop() {
+void PaceBms::loop() {
   const uint32_t now = millis();
   if (now - this->last_transmission_ >= 500) {
     // last transmission too long ago. Reset RX index.
@@ -94,9 +94,9 @@ void PaceBmsComponent::loop() {
   }
 }
 
-float PaceBmsComponent::get_setup_priority() const { return setup_priority::DATA; }
+float PaceBms::get_setup_priority() const { return setup_priority::DATA; }
 
-void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
+void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
   {
     std::string str(frame_bytes, frame_bytes + frame_length);
@@ -114,7 +114,7 @@ void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_len
   //    this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 }
 
-void PaceBmsComponent::dump_config() {
+void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
   LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
   //LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
