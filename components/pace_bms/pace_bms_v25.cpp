@@ -248,7 +248,7 @@ void PaceBms::CreateRequest(const uint8_t busId, const CID2 cid2, const std::vec
 	WriteHexEncodedUShort(request, &byteOffset, ckLen);
 
 	// copy payload
-	std::memcpy(request.data() + byteOffset, payload.data(), payload.size());
+	std::copy(payload.data(), payload.data() + payload.size(), request.data() + byteOffset);
 	byteOffset += (uint16_t)payload.size();
 
 	// full request checksum
