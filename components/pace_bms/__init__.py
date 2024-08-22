@@ -27,6 +27,7 @@ from esphome.const import (
     UNIT_WATT,
     UNIT_WATT_HOURS,
 )
+from esphome import pins
 
 DEPENDENCIES = ["uart"]
 
