@@ -5,7 +5,7 @@
 #include "esphome/components/sensor/sensor.h"
 
 namespace esphome {
-namespace sun {
+namespace pace_bms {
 
 enum SensorType {
   SUN_SENSOR_ELEVATION,
