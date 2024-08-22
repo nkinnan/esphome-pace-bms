@@ -27,7 +27,7 @@ from esphome.const import (
     UNIT_WATT_HOURS,
 )
 
-DEPENDENCIES = ["uart"]
+DEPENDENCIES = []
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
 PaceBmsComponent = pace_bms_ns.class_("PaceBmsComponent", cg.Component)
@@ -105,3 +105,22 @@ async def to_code(config):
     if power_factor_config := config.get(CONF_POWER_FACTOR):
         sens = await sensor.new_sensor(power_factor_config)
         cg.add(var.set_power_factor_sensor(sens))
+
+
+    hub = await cg.get_variable(config[CONF_SEPLOS_BMS_ID])
+
+    for i, key in enumerate(CELLS):
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(hub.set_cell_voltage_sensor(i, sens))
+    for i, key in enumerate(TEMPERATURES):
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(hub.set_temperature_sensor(i, sens))
+    for key in SENSORS:
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(getattr(hub, f"set_{key}_sensor")(sens))
