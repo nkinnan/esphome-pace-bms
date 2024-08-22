@@ -109,42 +109,42 @@ void BasicTests()
 	}
 	else if (
 		analogInfo.cellCount != 16 ||
-		analogInfo.cellVoltages[0] != 3.27099991f ||
-		analogInfo.cellVoltages[1] != 3.27200007f ||
-		analogInfo.cellVoltages[2] != 3.27099991f ||
-		analogInfo.cellVoltages[3] != 3.27099991f ||
-		analogInfo.cellVoltages[4] != 3.27099991f ||
-		analogInfo.cellVoltages[5] != 3.26900005f ||
-		analogInfo.cellVoltages[6] != 3.26999998f ||
-		analogInfo.cellVoltages[7] != 3.27099991f ||
-		analogInfo.cellVoltages[8] != 3.27099991f ||
-		analogInfo.cellVoltages[9] != 3.26999998f ||
-		analogInfo.cellVoltages[10] != 3.27099991f ||
-		analogInfo.cellVoltages[11] != 3.26999998f ||
-		analogInfo.cellVoltages[12] != 3.26999998f ||
-		analogInfo.cellVoltages[13] != 3.27099991f ||
-		analogInfo.cellVoltages[14] != 3.26999998f ||
-		analogInfo.cellVoltages[15] != 3.27099991f ||
+		analogInfo.cellVoltagesMillivolts[0] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[1] != 3272 ||
+		analogInfo.cellVoltagesMillivolts[2] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[3] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[4] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[5] != 3269 ||
+		analogInfo.cellVoltagesMillivolts[6] != 3270 ||
+		analogInfo.cellVoltagesMillivolts[7] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[8] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[9] != 3270 ||
+		analogInfo.cellVoltagesMillivolts[10] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[11] != 3270 ||
+		analogInfo.cellVoltagesMillivolts[12] != 3270 ||
+		analogInfo.cellVoltagesMillivolts[13] != 3271 ||
+		analogInfo.cellVoltagesMillivolts[14] != 3270 ||
+		analogInfo.cellVoltagesMillivolts[15] != 3271 ||
 		analogInfo.tempCount != 6 ||
-		analogInfo.temperatures[0] != 24.1000004f ||
-		analogInfo.temperatures[1] != 23.8999996f ||
-		analogInfo.temperatures[2] != 23.8999996f ||
-		analogInfo.temperatures[3] != 23.8999996f ||
-		analogInfo.temperatures[4] != 26.5000000f ||
-		analogInfo.temperatures[5] != 27.3999996f ||
-		analogInfo.current != -2.25000000f ||
-		analogInfo.totalVoltage != 52.4290009f ||
-		analogInfo.remainingCapacity != 48.1899986f ||
-		analogInfo.fullCapacity != 103.459999f ||
+		analogInfo.temperaturesTenthsCelcius[0] != 241 ||
+		analogInfo.temperaturesTenthsCelcius[1] != 239 ||
+		analogInfo.temperaturesTenthsCelcius[2] != 239 ||
+		analogInfo.temperaturesTenthsCelcius[3] != 239 ||
+		analogInfo.temperaturesTenthsCelcius[4] != 265 ||
+		analogInfo.temperaturesTenthsCelcius[5] != 274 ||
+		analogInfo.currentMilliamps != -2250 ||
+		analogInfo.totalVoltageMillivolts != 52429 ||
+		analogInfo.remainingCapacityMilliampHours != 48190 ||
+		analogInfo.fullCapacityMilliampHours != 103460 ||
 		analogInfo.cycleCount != 140 ||
-		analogInfo.designCapacity != 100.000000f ||
+		analogInfo.designCapacityMilliampHours != 100000 ||
 		analogInfo.SoC != 46.5783882f ||
 		analogInfo.SoH != 100.0f ||
-		analogInfo.currentPower != -117.965256f ||
-		analogInfo.minCellVoltage != 3.26900005f ||
-		analogInfo.maxCellVoltage != 3.27200007f ||
-		analogInfo.avgCellVoltage != 3.27062511f ||
-		analogInfo.maxCellDifferential != 0.00300002098f
+		analogInfo.powerWatts != -117.965248f ||
+		analogInfo.minCellVoltageMillivolts != 3269 ||
+		analogInfo.maxCellVoltageMillivolts != 3272 ||
+		analogInfo.avgCellVoltageMillivolts != 3270 ||
+		analogInfo.maxCellDifferentialMillivolts != 3
 		)
 	{
 		std::cout << "FAIL: ProcessReadAnalogInformationResponse did not accurately decode the known good example" << std::endl;
@@ -2944,9 +2944,9 @@ void BasicTests()
 	verbose.str("");
 
 	exlen = (int)strlen((char*)PaceBms::exampleReadRemainingCapacityResponseV25);
-	float remaining;
-	float actual;
-	float design;
+	uint32_t remaining;
+	uint32_t actual;
+	uint32_t design;
 	res = paceBms->ProcessReadRemainingCapacityResponse(
 		0,
 		std::vector<uint8_t>(
@@ -2963,7 +2963,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: ProcessReadRemainingCapacityResponse returned false" << std::endl;
 	}
-	else if (remaining != 62.0400009f || actual != 103.459999f || design != 100.0f)
+	else if (remaining != 62040 || actual != 103460 || design != 100000)
 	{
 		std::cout << "FAIL: ProcessReadRemainingCapacityResponse did not accurately decode the known good example" << std::endl;
 	}

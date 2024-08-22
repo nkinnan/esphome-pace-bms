@@ -183,22 +183,22 @@ public:
 	struct AnalogInformation
 	{
 		uint8_t cellCount;
-		float cellVoltages[MAX_CELL_COUNT];
+		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
 		uint8_t tempCount;
-		float temperatures[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
-		float current; // in amps
-		float totalVoltage;
-		float remainingCapacity; // in amp-hours
-		float fullCapacity; // in amp-hours
+		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
+		int32_t currentMilliamps; 
+		uint16_t totalVoltageMillivolts;
+		uint32_t remainingCapacityMilliampHours;
+		uint32_t fullCapacityMilliampHours;
 		uint16_t cycleCount;
-		float designCapacity; // in amp-hours
+		uint32_t designCapacityMilliampHours;
 		float SoC; // in percent
 		float SoH; // in percent
-		float currentPower;
-		float minCellVoltage;
-		float maxCellVoltage;
-		float avgCellVoltage;
-		float maxCellDifferential;
+		float powerWatts;
+		uint16_t minCellVoltageMillivolts;
+		uint16_t maxCellVoltageMillivolts;
+		uint16_t avgCellVoltageMillivolts;
+		uint16_t maxCellDifferentialMillivolts;
 	};
 
 	void CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
@@ -718,7 +718,7 @@ public:
 
 	struct DishargeFastOverCurrentConfiguration
 	{
-		uint16_t ProtectionAmperage;
+		uint8_t ProtectionAmperage;
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
@@ -935,7 +935,7 @@ public:
 	static const uint8_t exampleReadRemainingCapacityResponseV25[];
 
 	void CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, float& remainingCapacity, float& actualCapacity, float& designCapacity);
+	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
 
 
 	// There are many other settings in "System Configuration" that can be written and/or calibrated here, 

@@ -459,7 +459,7 @@ bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const st
 		if (i > MAX_CELL_COUNT - 1)
 			continue;
 
-		analogInformation.cellVoltages[i] = cellVoltage / 1000.0f;
+		analogInformation.cellVoltagesMillivolts[i] = cellVoltage;
 	}
 
 	analogInformation.tempCount = ReadHexEncodedByte(response, &byteOffset);
@@ -475,14 +475,14 @@ bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const st
 		if (i > MAX_TEMP_COUNT - 1)
 			continue;
 
-		analogInformation.temperatures[i] = (temperature - 2730) / 10.0f;
+		analogInformation.temperaturesTenthsCelcius[i] = (temperature - 2730);
 	}
 
-	analogInformation.current = ReadHexEncodedSShort(response, &byteOffset) / 100.0f;
+	analogInformation.currentMilliamps = ReadHexEncodedSShort(response, &byteOffset) * 10;
 
-	analogInformation.totalVoltage = ReadHexEncodedUShort(response, &byteOffset) / 1000.0f;
+	analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, &byteOffset);
 
-	analogInformation.remainingCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
+	analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
 
 	uint8_t P3 = ReadHexEncodedByte(response, &byteOffset);
 	if (P3 != 3)
@@ -492,11 +492,11 @@ bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const st
 		//return false;
 	}
 
-	analogInformation.fullCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
+	analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
 
 	analogInformation.cycleCount = ReadHexEncodedUShort(response, &byteOffset);
 
-	analogInformation.designCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
+	analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
 
 	if (byteOffset != payloadLen + 13)
 	{
@@ -506,27 +506,27 @@ bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const st
 	}
 
 	// calculate some "extras"
-	analogInformation.SoC = (analogInformation.remainingCapacity / analogInformation.fullCapacity) * 100.0f;
-	analogInformation.SoH = (analogInformation.fullCapacity / analogInformation.designCapacity) * 100.0f;
+	analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
+	analogInformation.SoH = (analogInformation.fullCapacityMilliampHours / analogInformation.designCapacityMilliampHours) * 100.0f;
 	if (analogInformation.SoH > 100)
 	{
 		// many packs have a little bit "extra" capacity to make sure they hit their nameplate value
 		analogInformation.SoH = 100;
 	}
-	analogInformation.currentPower = analogInformation.totalVoltage * analogInformation.current;
-	analogInformation.minCellVoltage = 1000;
-	analogInformation.maxCellVoltage = 0;
-	analogInformation.avgCellVoltage = 0;
+	analogInformation.powerWatts = ((float)analogInformation.totalVoltageMillivolts * (float)analogInformation.currentMilliamps) / 1000000.0f;
+	analogInformation.minCellVoltageMillivolts = 65535;
+	analogInformation.maxCellVoltageMillivolts = 0;
+	analogInformation.avgCellVoltageMillivolts = 0;
 	for (int i = 0; i < analogInformation.cellCount; i++)
 	{
-		if (analogInformation.cellVoltages[i] > analogInformation.maxCellVoltage)
-			analogInformation.maxCellVoltage = analogInformation.cellVoltages[i];
-		if (analogInformation.cellVoltages[i] < analogInformation.minCellVoltage)
-			analogInformation.minCellVoltage = analogInformation.cellVoltages[i];
-		analogInformation.avgCellVoltage += analogInformation.cellVoltages[i];
+		if (analogInformation.cellVoltagesMillivolts[i] > analogInformation.maxCellVoltageMillivolts)
+			analogInformation.maxCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
+		if (analogInformation.cellVoltagesMillivolts[i] < analogInformation.minCellVoltageMillivolts)
+			analogInformation.minCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
+		analogInformation.avgCellVoltageMillivolts += analogInformation.cellVoltagesMillivolts[i];
 	}
-	analogInformation.avgCellVoltage /= analogInformation.cellCount;
-	analogInformation.maxCellDifferential = analogInformation.maxCellVoltage - analogInformation.minCellVoltage;
+	analogInformation.avgCellVoltageMillivolts /= analogInformation.cellCount;
+	analogInformation.maxCellDifferentialMillivolts = analogInformation.maxCellVoltageMillivolts - analogInformation.minCellVoltageMillivolts;
 
 	return true;
 }
@@ -2929,7 +2929,7 @@ void PaceBms::CreateReadRemainingCapacityRequest(const uint8_t busId, std::vecto
 {
 	CreateRequest(busId, CID2_ReadRemainingCapacity, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, float& remainingCapacity, float& actualCapacity, float& designCapacity)
+bool PaceBms::ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2941,9 +2941,9 @@ bool PaceBms::ProcessReadRemainingCapacityResponse(const uint8_t busId, const st
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	remainingCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
-	actualCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
-	designCapacity = ReadHexEncodedUShort(response, &byteOffset) / 100.0f;
+	remainingCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	actualCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	designCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
 
 	return true;
 }
