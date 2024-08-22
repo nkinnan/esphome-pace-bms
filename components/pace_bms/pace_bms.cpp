@@ -54,7 +54,7 @@ void PaceBmsComponent::loop() {
     }
 
     if (this->raw_data_[this->raw_data_index_] == '\r') {
-      parse_data_frame_(this->raw_data_, this->raw_data_index_ + 1);
+      this->parse_data_frame_(this->raw_data_, this->raw_data_index_ + 1);
       continue;
     }
 

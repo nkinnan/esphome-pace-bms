@@ -30,9 +30,7 @@ class PaceBmsComponent : public Component, public uart::UARTDevice {
  protected:
   PaceBms* pace_bms_v25;
 
-  bool check_byte_();
-  void parse_data_();
-  uint32_t get_24_bit_uint_(uint8_t start_index);
+  void parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
   static const uint8_t max_data_len_ = 150;
   uint8_t raw_data_[max_data_len_];
