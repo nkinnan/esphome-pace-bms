@@ -19,17 +19,17 @@ class SunSensor : public sensor::Sensor, public PollingComponent {
   void dump_config() override;
   void update() override {
     double val;
-    switch (this->type_) {
-      case SUN_SENSOR_ELEVATION:
-        val = this->parent_->elevation();
-        break;
-      case SUN_SENSOR_AZIMUTH:
-        val = this->parent_->azimuth();
-        break;
-      default:
-        return;
-    }
-    this->publish_state(val);
+    //switch (this->type_) {
+    //  case SUN_SENSOR_ELEVATION:
+    //    val = this->parent_->elevation();
+    //    break;
+    //  case SUN_SENSOR_AZIMUTH:
+    //    val = this->parent_->azimuth();
+    //    break;
+    //  default:
+    //    return;
+    //}
+    //this->publish_state(val);
   }
 
  protected:
