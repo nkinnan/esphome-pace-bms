@@ -18,6 +18,9 @@ DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", sensor.Sensor, cg.PollingComponent)
 
+CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
+
+
 #SensorType = pace_bms_ns.enum("SensorType")
 #TYPES = {
 #    "elevation": SensorType.SUN_SENSOR_ELEVATION,
@@ -56,7 +59,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 async def to_code(config):
     #var = await sensor.new_sensor(config)
-    var = cg.new_Pvariable(config[CONF_PACE_BMS_ID])
+    var = cg.new_Pvariable(config[CONF_PACE_BMS_SENSOR_ID])
     await cg.register_component(var, config)
 
     #cg.add(var.set_type(config[CONF_TYPE]))
