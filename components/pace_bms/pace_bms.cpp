@@ -37,7 +37,7 @@ void PaceBms::update() {
     //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
     //}
     //else {
-    ESP_LOGV(TAG, "***********Requesting analog information");
+    ESP_LOGV(TAG, "***********Requesting analog information flow control %s, address %i", this->flow_control_pin_->dump_summary(), this->address_);
     std::vector<uint8_t> request;
     this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request);
 
