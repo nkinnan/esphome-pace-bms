@@ -1,7 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.cpp_helpers import gpio_pin_expression
-from esphome.components import sensor, uart
+from esphome.components import sensor
 from esphome.const import (
     CONF_FLOW_CONTROL_PIN,
     CONF_APPARENT_POWER,
@@ -28,7 +27,6 @@ from esphome.const import (
     UNIT_WATT,
     UNIT_WATT_HOURS,
 )
-from esphome import pins
 
 from . import PaceBms
 
@@ -36,6 +34,7 @@ from . import PaceBms
 CONFIG_SCHEMA = (
     cv.Schema(
         {
+            cv.GenerateID(): cv.use_id(PaceBms),
             cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
                 unit_of_measurement=UNIT_VOLT,
                 accuracy_decimals=1,
@@ -83,8 +82,6 @@ CONFIG_SCHEMA = (
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await cg.register_component(var, config)
 
 
 
