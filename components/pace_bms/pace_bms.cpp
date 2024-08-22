@@ -26,7 +26,7 @@ void verbose_log_func(std::string message) {
 }
 
 void PaceBmsComponent::setup() {
-    this->pace_bms_v25 = new PaceBms(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+    this->pace_bms_v25 = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
 }
 
 void PaceBmsComponent::loop() {
@@ -80,7 +80,7 @@ void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_len
 
   std::vector<uint8_t> frame(frame_bytes, frame_bytes + frame_length);
 
-  PaceBms::AnalogInformation analog_information;
+  PaceBmsV25::AnalogInformation analog_information;
   this->pace_bms_v25->ProcessReadAnalogInformationResponse(1, frame, analog_information);
 
    

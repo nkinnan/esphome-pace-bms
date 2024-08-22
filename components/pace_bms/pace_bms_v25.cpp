@@ -5,7 +5,7 @@
 
 
 // takes pointers to the "real" logging functions
-PaceBms::PaceBms(PaceBms::LogFuncPtr logError, PaceBms::LogFuncPtr logWarning, PaceBms::LogFuncPtr logInfo, PaceBms::LogFuncPtr logVerbose)
+PaceBmsV25::PaceBmsV25(PaceBmsV25::LogFuncPtr logError, PaceBmsV25::LogFuncPtr logWarning, PaceBmsV25::LogFuncPtr logInfo, PaceBmsV25::LogFuncPtr logVerbose)
 {
 	LogErrorPtr = logError;
 	LogWarningPtr = logWarning;
@@ -14,33 +14,33 @@ PaceBms::PaceBms(PaceBms::LogFuncPtr logError, PaceBms::LogFuncPtr logWarning, P
 }
 
 // dependency injection
-PaceBms::LogFuncPtr LogErrorPtr;
-PaceBms::LogFuncPtr LogWarningPtr;
-PaceBms::LogFuncPtr LogInfoPtr;
-PaceBms::LogFuncPtr LogVerbosePtr;
+PaceBmsV25::LogFuncPtr LogErrorPtr;
+PaceBmsV25::LogFuncPtr LogWarningPtr;
+PaceBmsV25::LogFuncPtr LogInfoPtr;
+PaceBmsV25::LogFuncPtr LogVerbosePtr;
 
-void PaceBms::LogError(std::string message)
+void PaceBmsV25::LogError(std::string message)
 {
 	if (LogErrorPtr != 0)
 	{
 		LogErrorPtr(message);
 	}
 }
-void PaceBms::LogWarning(std::string message)
+void PaceBmsV25::LogWarning(std::string message)
 {
 	if (LogWarningPtr != 0)
 	{
 		LogWarningPtr(message);
 	}
 }
-void PaceBms::LogInfo(std::string message)
+void PaceBmsV25::LogInfo(std::string message)
 {
 	if (LogInfoPtr != 0)
 	{
 		LogInfoPtr(message);
 	}
 }
-void PaceBms::LogVerbose(std::string message)
+void PaceBmsV25::LogVerbose(std::string message)
 {
 	if (LogVerbosePtr != 0)
 	{
@@ -48,7 +48,7 @@ void PaceBms::LogVerbose(std::string message)
 	}
 }
 
-std::string PaceBms::FormatReturnCode(const uint8_t returnCode)
+std::string PaceBmsV25::FormatReturnCode(const uint8_t returnCode)
 {
 	switch (returnCode)
 	{
@@ -85,7 +85,7 @@ std::string PaceBms::FormatReturnCode(const uint8_t returnCode)
 }
 
 // Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
-uint16_t PaceBms::CreateChecksummedLength(const uint16_t cklen)
+uint16_t PaceBmsV25::CreateChecksummedLength(const uint16_t cklen)
 {
 	// max value of length is 12 bit, top 4 bits will be checksum of actual length value
 	uint16_t len = (cklen & 0x0FFF);
@@ -100,7 +100,7 @@ uint16_t PaceBms::CreateChecksummedLength(const uint16_t cklen)
 }
 
 // Checks if the checksum nibble in a "checksummed length" is valid
-bool PaceBms::ValidateChecksummedLength(const uint16_t cklen)
+bool PaceBmsV25::ValidateChecksummedLength(const uint16_t cklen)
 {
 	// actual length from bottom 3 nibbles
 	uint16_t len = (cklen & 0x0FFF);
@@ -118,13 +118,13 @@ bool PaceBms::ValidateChecksummedLength(const uint16_t cklen)
 }
 
 // Length is just the lower 12 bits of the checksummed length 
-uint16_t PaceBms::LengthFromChecksummedLength(const uint16_t cklen)
+uint16_t PaceBmsV25::LengthFromChecksummedLength(const uint16_t cklen)
 {
 	return cklen & 0x0FFF;
 }
 
 // Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
-uint16_t PaceBms::CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data)
+uint16_t PaceBmsV25::CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data)
 {
 	uint32_t cksum = 0;
 
@@ -144,7 +144,7 @@ uint16_t PaceBms::CalculateRequestOrResponseChecksum(const std::vector<uint8_t>&
 
 // helper for WriteHexEncoded----
 // Works with ASCII encoding, not portable, but that's what the protocol uses
-uint8_t PaceBms::NibbleToHex(const uint8_t nibbleByte)
+uint8_t PaceBmsV25::NibbleToHex(const uint8_t nibbleByte)
 {
 	uint8_t nibble = nibbleByte & 0x0F;
 
@@ -157,7 +157,7 @@ uint8_t PaceBms::NibbleToHex(const uint8_t nibbleByte)
 // todo: error check input range and log error and/or handle upstream to abort decode
 // helper for ReadHexEncoded----
 // Works with ASCII encoding, not portable, but that's what the protocol uses
-uint8_t PaceBms::HexToNibble(const uint8_t hex)
+uint8_t PaceBmsV25::HexToNibble(const uint8_t hex)
 {
 	if (hex < 65)
 		return hex - '0';  // Return a value from 0 to 9
@@ -166,7 +166,7 @@ uint8_t PaceBms::HexToNibble(const uint8_t hex)
 }
 
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-uint8_t PaceBms::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+uint8_t PaceBmsV25::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t* dataOffset)
 {
 	uint8_t byte =
 		((HexToNibble(data[(*dataOffset)++]) << 4) & 0xF0) |
@@ -175,7 +175,7 @@ uint8_t PaceBms::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t* 
 }
 
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-uint16_t PaceBms::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+uint16_t PaceBmsV25::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
 {
 	uint16_t ushort =
 		((HexToNibble(data[(*dataOffset)++]) << 12) & 0xF000) +
@@ -186,7 +186,7 @@ uint16_t PaceBms::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_
 }
 
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-int16_t PaceBms::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
 {
 	int16_t sshort =
 		((HexToNibble(data[(*dataOffset)++]) << 12) & 0xF000) +
@@ -197,14 +197,14 @@ int16_t PaceBms::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t
 }
 
 // encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-void PaceBms::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t* dataOffset, uint8_t byte)
+void PaceBmsV25::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t* dataOffset, uint8_t byte)
 {
 	data[(*dataOffset)++] = NibbleToHex((byte >> 4) & 0x0F);
 	data[(*dataOffset)++] = NibbleToHex(byte & 0x0F);
 }
 
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBms::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t* dataOffset, uint16_t ushort)
+void PaceBmsV25::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t* dataOffset, uint16_t ushort)
 {
 	data[(*dataOffset)++] = NibbleToHex(ushort >> 12);
 	data[(*dataOffset)++] = NibbleToHex((ushort >> 8) & 0x0F);
@@ -213,7 +213,7 @@ void PaceBms::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t* dataOf
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBms::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t* dataOffset, int16_t sshort)
+void PaceBmsV25::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t* dataOffset, int16_t sshort)
 {
 	data[(*dataOffset)++] = NibbleToHex(sshort >> 12);
 	data[(*dataOffset)++] = NibbleToHex((sshort >> 8) & 0x0F);
@@ -222,7 +222,7 @@ void PaceBms::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t* dataOf
 }
 
 // create a standard request to the given busId for the given CID2, filling in the payload (if given)
-void PaceBms::CreateRequest(const uint8_t busId, const CID2 cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateRequest(const uint8_t busId, const CID2 cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request)
 {
 	uint16_t byteOffset = 0;
 
@@ -267,7 +267,7 @@ void PaceBms::CreateRequest(const uint8_t busId, const CID2 cid2, const std::vec
 
 // validate all fields in the response except the payload data: SOI marker, header values, checksum, EOI marker
 // returns the detected payload length (payload always starts at offset 13), or -1 for error
-int16_t PaceBms::ValidateResponseAndGetPayloadLength(const uint8_t busId, const std::vector<uint8_t> response)
+int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, const std::vector<uint8_t> response)
 {
 	uint16_t byteOffset = 0;
 
@@ -406,10 +406,10 @@ int16_t PaceBms::ValidateResponseAndGetPayloadLength(const uint8_t busId, const 
 // resp:  ~25014600F07A0001100CC70CC80CC70CC70CC70CC50CC60CC70CC70CC60CC70CC60CC60CC70CC60CC7060B9B0B990B990B990BB30BBCFF1FCCCD12D303286A008C2710E1E4.
 //                     00001122222222222222222222222222222222222222222222222222222222222222223344444444444444444444444455556666777788999900001111
 
-const unsigned char PaceBms::exampleReadAnalogInformationRequestV25[] = "~25014642E00201FD30\r";
-const unsigned char PaceBms::exampleReadAnalogInformationResponseV25[] = "~25014600F07A0001100CC70CC80CC70CC70CC70CC50CC60CC70CC70CC60CC70CC60CC60CC70CC60CC7060B9B0B990B990B990BB30BBCFF1FCCCD12D303286A008C2710E1E4\r";
+const unsigned char PaceBmsV25::exampleReadAnalogInformationRequestV25[] = "~25014642E00201FD30\r";
+const unsigned char PaceBmsV25::exampleReadAnalogInformationResponseV25[] = "~25014600F07A0001100CC70CC80CC70CC70CC70CC50CC60CC70CC70CC60CC70CC60CC60CC70CC60CC7060B9B0B990B990B990BB30BBCFF1FCCCD12D303286A008C2710E1E4\r";
 
-void PaceBms::CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	// the payload is the requested busId (could be FF for "get all" when speaking to a set of daisy-chained units but this code doesn't support that)
 	const uint16_t payloadLen = 2;
@@ -419,7 +419,7 @@ void PaceBms::CreateReadAnalogInformationRequest(const uint8_t busId, std::vecto
 
 	CreateRequest(busId, CID2_ReadAnalogInformation, payload, request);
 }
-bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -553,10 +553,10 @@ bool PaceBms::ProcessReadAnalogInformationResponse(const uint8_t busId, const st
 // resp:  ~25014600004C000110000000000000000000000000000000000600000000000000000000000E000000000000EF3A.
 //                     0000112222222222222222222222222222222233444444444444556677889900112233445566
 
-const unsigned char PaceBms::exampleReadStatusInformationRequestV25[] = "~25014644E00201FD2E\r";
-const unsigned char PaceBms::exampleReadStatusInformationResponseV25[] = "~25014600004C000110000000000000000000000000000000000600000000000000000000000E000000000000EF3A\r";
+const unsigned char PaceBmsV25::exampleReadStatusInformationRequestV25[] = "~25014644E00201FD2E\r";
+const unsigned char PaceBmsV25::exampleReadStatusInformationResponseV25[] = "~25014600004C000110000000000000000000000000000000000600000000000000000000000E000000000000EF3A\r";
 
-void PaceBms::CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	// the payload is the requested busId (could be FF for "get all" when speaking to a set of daisy-chained units but this code doesn't support that)
 	const uint16_t payloadLen = 2;
@@ -568,7 +568,7 @@ void PaceBms::CreateReadStatusInformationRequest(const uint8_t busId, std::vecto
 }
 
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeWarningValue(const uint8_t val)
+const std::string PaceBmsV25::DecodeWarningValue(const uint8_t val)
 {
 	if (val == 0)
 	{
@@ -595,7 +595,7 @@ const std::string PaceBms::DecodeWarningValue(const uint8_t val)
 	return std::string("unknown fault");
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeProtectionStatus1Value(const uint8_t val)
+const std::string PaceBmsV25::DecodeProtectionStatus1Value(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -635,7 +635,7 @@ const std::string PaceBms::DecodeProtectionStatus1Value(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeProtectionStatus2Value(const uint8_t val)
+const std::string PaceBmsV25::DecodeProtectionStatus2Value(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -676,7 +676,7 @@ const std::string PaceBms::DecodeProtectionStatus2Value(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeStatusValue(const uint8_t val)
+const std::string PaceBmsV25::DecodeStatusValue(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -716,7 +716,7 @@ const std::string PaceBms::DecodeStatusValue(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeConfigurationStatusValue(const uint8_t val)
+const std::string PaceBmsV25::DecodeConfigurationStatusValue(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -756,7 +756,7 @@ const std::string PaceBms::DecodeConfigurationStatusValue(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeFaultStatusValue(const uint8_t val)
+const std::string PaceBmsV25::DecodeFaultStatusValue(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -796,7 +796,7 @@ const std::string PaceBms::DecodeFaultStatusValue(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeWarningStatus1Value(const uint8_t val)
+const std::string PaceBmsV25::DecodeWarningStatus1Value(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -836,7 +836,7 @@ const std::string PaceBms::DecodeWarningStatus1Value(const uint8_t val)
 	return oss.str();
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBms::DecodeWarningStatus2Value(const uint8_t val)
+const std::string PaceBmsV25::DecodeWarningStatus2Value(const uint8_t val)
 {
 	std::ostringstream oss;
 
@@ -876,7 +876,7 @@ const std::string PaceBms::DecodeWarningStatus2Value(const uint8_t val)
 	return oss.str();
 }
 
-bool PaceBms::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& warningText, std::string& balancingText, std::string& systemText, std::string& configurationText, std::string& protectionText, std::string& faultText)
+bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& warningText, std::string& balancingText, std::string& systemText, std::string& configurationText, std::string& protectionText, std::string& faultText)
 {
 	// todo: consider using ostringstream
 	warningText.clear();
@@ -1081,14 +1081,14 @@ bool PaceBms::ProcessReadStatusInformationResponse(const uint8_t busId, const st
 // resp:  ~25014600602850313653313030412D313831322D312E30302000F58E.
 //                     1111111111111111111111111111111111111111
 
-const unsigned char PaceBms::exampleReadHardwareVersionRequestV25[] = "~250146C10000FD9A\r";
-const unsigned char PaceBms::exampleReadHardwareVersionResponseV25[] = "~25014600602850313653313030412D313831322D312E30302000F58E\r";
+const unsigned char PaceBmsV25::exampleReadHardwareVersionRequestV25[] = "~250146C10000FD9A\r";
+const unsigned char PaceBmsV25::exampleReadHardwareVersionResponseV25[] = "~25014600602850313653313030412D313831322D312E30302000F58E\r";
 
-void PaceBms::CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	return CreateRequest(busId, CID2_ReadHardwareVersion, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadHardwareVersionResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& hardwareVersion)
+bool PaceBmsV25::ProcessReadHardwareVersionResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& hardwareVersion)
 {
 	hardwareVersion.clear();
 
@@ -1130,14 +1130,14 @@ bool PaceBms::ProcessReadHardwareVersionResponse(const uint8_t busId, const std:
 // resp:  ~25014600B05031383132313031333830333039442020202020202020202020202020202020202020202020202020EE0F.
 //                     11111111111111111111111111111111111111111111111111111111111111111111111111111111
 
-const unsigned char PaceBms::exampleReadSerialNumberRequestV25[] = "~250146C20000FD99\r";
-const unsigned char PaceBms::exampleReadSerialNumberResponseV25[] = "~25014600B05031383132313031333830333039442020202020202020202020202020202020202020202020202020EE0F\r";
+const unsigned char PaceBmsV25::exampleReadSerialNumberRequestV25[] = "~250146C20000FD99\r";
+const unsigned char PaceBmsV25::exampleReadSerialNumberResponseV25[] = "~25014600B05031383132313031333830333039442020202020202020202020202020202020202020202020202020EE0F\r";
 
-void PaceBms::CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	return CreateRequest(busId, CID2_ReadSerialNumber, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber)
+bool PaceBmsV25::ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1189,10 +1189,10 @@ bool PaceBms::ProcessReadSerialNumberResponse(const uint8_t busId, const std::ve
 // resp:  ~25004600C0040C00FCC5.
 //                     11??
 
-const unsigned char PaceBms::exampleWriteDisableBuzzerSwitchCommandRequestV25[] = "~25004699E0020DFD12\r";
-const unsigned char PaceBms::exampleWriteDisableBuzzerSwitchCommandResponseV25[] = "~25004600C0040D01FCC3\r";
-const unsigned char PaceBms::exampleWriteEnableBuzzerSwitchCommandRequestV25[] = "~25004699E0020CFD13\r";
-const unsigned char PaceBms::exampleWriteEnableBuzzerSwitchCommandResponseV25[] = "~25004600C0040C00FCC5\r";
+const unsigned char PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandRequestV25[] = "~25004699E0020DFD12\r";
+const unsigned char PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandResponseV25[] = "~25004600C0040D01FCC3\r";
+const unsigned char PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandRequestV25[] = "~25004699E0020CFD13\r";
+const unsigned char PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandResponseV25[] = "~25004600C0040C00FCC5\r";
 
 // ==== LED Alarm Switch
 // 1: The "on/off" switch command, see: enum SwitchCommand
@@ -1205,10 +1205,10 @@ const unsigned char PaceBms::exampleWriteEnableBuzzerSwitchCommandResponseV25[] 
 // resp:  ~25004600C0040722FCCD.
 //                     11??
 
-const unsigned char PaceBms::exampleWriteDisableLedWarningSwitchCommandRequestV25[] = "~25004699E00206FD20\r";
-const unsigned char PaceBms::exampleWriteDisableLedWarningSwitchCommandResponseV25[] = "~25004600C0040602FCD0\r";
-const unsigned char PaceBms::exampleWriteEnableLedWarningSwitchCommandRequestV25[] = "~25004699E00207FD1F\r";
-const unsigned char PaceBms::exampleWriteEnableLedWarningSwitchCommandResponseV25[] = "~25004600C0040722FCCD\r";
+const unsigned char PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandRequestV25[] = "~25004699E00206FD20\r";
+const unsigned char PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandResponseV25[] = "~25004600C0040602FCD0\r";
+const unsigned char PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandRequestV25[] = "~25004699E00207FD1F\r";
+const unsigned char PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandResponseV25[] = "~25004600C0040722FCCD\r";
 
 // ==== Charge Current Limiter Switch
 // 1: The "on/off" switch command, see: enum SwitchCommand
@@ -1221,10 +1221,10 @@ const unsigned char PaceBms::exampleWriteEnableLedWarningSwitchCommandResponseV2
 // resp:  ~25004600C0040B32FCC1.
 //                     11??
 
-const unsigned char PaceBms::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020AFD15\r";
-const unsigned char PaceBms::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040A22FCC3\r";
-const unsigned char PaceBms::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020BFD14\r";
-const unsigned char PaceBms::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040B32FCC1\r";
+const unsigned char PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020AFD15\r";
+const unsigned char PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040A22FCC3\r";
+const unsigned char PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020BFD14\r";
+const unsigned char PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040B32FCC1\r";
 
 // note: this is actually in the "System Configuration" section of PBmsTools 2.4 but logically belongs here and uses the same CID2 as the other switch commands
 // ==== Charge Current Limiter Current Limit Gear Switch
@@ -1238,12 +1238,12 @@ const unsigned char PaceBms::exampleWriteEnableChargeCurrentLimiterSwitchCommand
 // resp:  ~25004600C0040830FCCD.
 //                     11??
 
-const unsigned char PaceBms::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25[] = "~25004699E00209FD1D\r";
-const unsigned char PaceBms::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25[] = "~25004600C0040938FCC4\r";
-const unsigned char PaceBms::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25[] = "~25004699E00208FD1E\r";
-const unsigned char PaceBms::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25[] = "~25004600C0040830FCCD\r";
+const unsigned char PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25[] = "~25004699E00209FD1D\r";
+const unsigned char PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25[] = "~25004600C0040938FCC4\r";
+const unsigned char PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25[] = "~25004699E00208FD1E\r";
+const unsigned char PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25[] = "~25004600C0040830FCCD\r";
 
-void PaceBms::CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request)
 {
 	// the payload is the control command code
 	const uint16_t payloadLen = 2;
@@ -1253,7 +1253,7 @@ void PaceBms::CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchC
 
 	return CreateRequest(busId, CID2_WriteSwitchCommand, payload, request);
 }
-bool PaceBms::ProcessWriteSwitchCommandResponse(const uint8_t busId, const SwitchCommand command, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, const SwitchCommand command, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1351,10 +1351,10 @@ bool PaceBms::ProcessWriteSwitchCommandResponse(const uint8_t busId, const Switc
 // resp:  ~25004600E00224FD32.
 //                     ??
 
-const unsigned char PaceBms::exampleWriteMosfetChargeOpenSwitchCommandRequestV25[] = "~2500469AE00200FD1E\r";
-const unsigned char PaceBms::exampleWriteMosfetChargeOpenSwitchCommandResponseV25[] = "~25004600E00226FD30\r";
-const unsigned char PaceBms::exampleWriteMosfetChargeCloseSwitchCommandRequestV25[] = "~2500469AE00201FD1D\r";
-const unsigned char PaceBms::exampleWriteMosfetChargeCloseSwitchCommandResponseV25[] = "~25004600E00224FD32\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandRequestV25[] = "~2500469AE00200FD1E\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25[] = "~25004600E00226FD30\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandRequestV25[] = "~2500469AE00201FD1D\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25[] = "~25004600E00224FD32\r";
 
 // ==== Discharge MOSFET Switch
 // 1: The "on/off" state, see: enum MosfetState
@@ -1367,12 +1367,12 @@ const unsigned char PaceBms::exampleWriteMosfetChargeCloseSwitchCommandResponseV
 // resp:  ~25004609E00204FD2B.
 //                     ??
 
-const unsigned char PaceBms::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25[] = "~2500469BE00200FD1D\r";
-const unsigned char PaceBms::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25[] = "~25004600E00204FD34\r";
-const unsigned char PaceBms::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25[] = "~2500469BE00201FD1C\r";
-const unsigned char PaceBms::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25[] = "~25004609E00204FD2B\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25[] = "~2500469BE00200FD1D\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25[] = "~25004600E00204FD34\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25[] = "~2500469BE00201FD1C\r";
+const unsigned char PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25[] = "~25004609E00204FD2B\r";
 
-void PaceBms::CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request)
 {
 	// the payload is the mosfet state to set
 	const uint16_t payloadLen = 2;
@@ -1382,7 +1382,7 @@ void PaceBms::CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const M
 
 	CreateRequest(busId, (CID2)type, payload, request);
 }
-bool PaceBms::ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, const MosfetType type, const MosfetState command, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, const MosfetType type, const MosfetState command, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1443,10 +1443,10 @@ bool PaceBms::ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, const
 //                     xx
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleWriteRebootCommandRequestV25[] = "~2500469CE00201FD1B\r";
-const unsigned char PaceBms::exampleWriteRebootCommandResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleWriteRebootCommandRequestV25[] = "~2500469CE00201FD1B\r";
+const unsigned char PaceBmsV25::exampleWriteRebootCommandResponseV25[] = "~250046000000FDAF\r";
 
-void PaceBms::CreateWriteRebootCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateWriteRebootCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	// the payload is the mosfet state to set
 	const uint16_t payloadLen = 2;
@@ -1456,7 +1456,7 @@ void PaceBms::CreateWriteRebootCommandRequest(const uint8_t busId, std::vector<u
 
 	CreateRequest(busId, CID2_WriteRebootCommand, payload, request);
 }
-bool PaceBms::ProcessWriteRebootCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteRebootCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1537,16 +1537,16 @@ bool PaceBms::ProcessWriteRebootCommandResponse(const uint8_t busId, const std::
 // write: ~250046B2400C1808140E0F25FAFC.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadSystemTimeRequestV25[] = "~250046B10000FD9C\r";
-const unsigned char PaceBms::exampleReadSystemTimeResponseV25[] = "~25004600400C180815051D1FFB10\r";
-const unsigned char PaceBms::exampleWriteSystemTimeRequestV25[] = "~250046B2400C1808140E0F25FAFC\r";
-const unsigned char PaceBms::exampleWriteSystemTimeResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadSystemTimeRequestV25[] = "~250046B10000FD9C\r";
+const unsigned char PaceBmsV25::exampleReadSystemTimeResponseV25[] = "~25004600400C180815051D1FFB10\r";
+const unsigned char PaceBmsV25::exampleWriteSystemTimeRequestV25[] = "~250046B2400C1808140E0F25FAFC\r";
+const unsigned char PaceBmsV25::exampleWriteSystemTimeResponseV25[] = "~250046000000FDAF\r";
 
-void PaceBms::CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, CID2_ReadDateTime, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime)
+bool PaceBmsV25::ProcessReadSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1567,7 +1567,7 @@ bool PaceBms::ProcessReadSystemTimeResponse(const uint8_t busId, const std::vect
 
 	return true;
 }
-bool PaceBms::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request)
 {
 	const uint16_t payloadLen = 12;
 	std::vector<uint8_t> payload(payloadLen);
@@ -1583,7 +1583,7 @@ bool PaceBms::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime d
 
 	return true;
 }
-bool PaceBms::ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1611,11 +1611,11 @@ bool PaceBms::ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vec
 // 
 // ============================================================================
 
-void PaceBms::CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, (CID2)configType, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessWriteConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1648,12 +1648,12 @@ bool PaceBms::ProcessWriteConfigurationResponse(const uint8_t busId, const std::
 // todo: everywhere ?? = busid in comments
 // todo: everywhere readResponse and writeRequest in parameters list
 
-const unsigned char PaceBms::exampleReadCellOverVoltageConfigurationRequestV25[] = "~250046D10000FD9A\r";
-const unsigned char PaceBms::exampleReadCellOverVoltageConfigurationResponseV25[] = "~25004600F010010E100E740D340AFA35\r";
-const unsigned char PaceBms::exampleWriteCellOverVoltageConfigurationRequestV25[] = "~250046D0F010010E100E740D340AFA21\r";
-const unsigned char PaceBms::exampleWriteCellOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadCellOverVoltageConfigurationRequestV25[] = "~250046D10000FD9A\r";
+const unsigned char PaceBmsV25::exampleReadCellOverVoltageConfigurationResponseV25[] = "~25004600F010010E100E740D340AFA35\r";
+const unsigned char PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25[] = "~250046D0F010010E100E740D340AFA21\r";
+const unsigned char PaceBmsV25::exampleWriteCellOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellOverVoltageConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellOverVoltageConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1681,7 +1681,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellOverVoltageConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const CellOverVoltageConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 2400 || config.AlarmMillivolts > 4500)
@@ -1759,12 +1759,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellOve
 // write: ~250046D4F01001E10AE740D2F00AF9FB.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadPackOverVoltageConfigurationRequestV25[] = "~250046D50000FD96\r";
-const unsigned char PaceBms::exampleReadPackOverVoltageConfigurationResponseV25[] = "~25004600F01001E100E740D2F00AFA24\r";
-const unsigned char PaceBms::exampleWritePackOverVoltageConfigurationRequestV25[] = "~250046D4F01001E10AE740D2F00AF9FB\r";
-const unsigned char PaceBms::exampleWritePackOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadPackOverVoltageConfigurationRequestV25[] = "~250046D50000FD96\r";
+const unsigned char PaceBmsV25::exampleReadPackOverVoltageConfigurationResponseV25[] = "~25004600F01001E100E740D2F00AFA24\r";
+const unsigned char PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25[] = "~250046D4F01001E10AE740D2F00AF9FB\r";
+const unsigned char PaceBmsV25::exampleWritePackOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t> response, PackOverVoltageConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t> response, PackOverVoltageConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1791,7 +1791,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const PackOverVoltageConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const PackOverVoltageConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 20000 || config.AlarmMillivolts > 65000)
@@ -1869,12 +1869,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const PackOve
 // write: ~250046D2F010010AF009C40B540AFA0E.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadCellUnderVoltageConfigurationRequestV25[] = "~250046D30000FD98\r";
-const unsigned char PaceBms::exampleReadCellUnderVoltageConfigurationResponseV25[] = "~25004600F010010AF009C40B540AFA24\r";
-const unsigned char PaceBms::exampleWriteCellUnderVoltageConfigurationRequestV25[] = "~250046D2F010010AF009C40B540AFA0E\r";
-const unsigned char PaceBms::exampleWriteCellUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadCellUnderVoltageConfigurationRequestV25[] = "~250046D30000FD98\r";
+const unsigned char PaceBmsV25::exampleReadCellUnderVoltageConfigurationResponseV25[] = "~25004600F010010AF009C40B540AFA24\r";
+const unsigned char PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25[] = "~250046D2F010010AF009C40B540AFA0E\r";
+const unsigned char PaceBmsV25::exampleWriteCellUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellUnderVoltageConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellUnderVoltageConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1901,7 +1901,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellUnderVoltageConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const CellUnderVoltageConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 2000 || config.AlarmMillivolts > 3500)
@@ -1979,12 +1979,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellUnd
 // write: ~250046D6F01001AF009C40B5400AFA0A.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadPackUnderVoltageConfigurationRequestV25[] = "~250046D70000FD94\r";
-const unsigned char PaceBms::exampleReadPackUnderVoltageConfigurationResponseV25[] = "~25004600F01001AF009C40B5400AFA24\r";
-const unsigned char PaceBms::exampleWritePackUnderVoltageConfigurationRequestV25[] = "~250046D6F01001AF009C40B5400AFA0A\r";
-const unsigned char PaceBms::exampleWritePackUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadPackUnderVoltageConfigurationRequestV25[] = "~250046D70000FD94\r";
+const unsigned char PaceBmsV25::exampleReadPackUnderVoltageConfigurationResponseV25[] = "~25004600F01001AF009C40B5400AFA24\r";
+const unsigned char PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25[] = "~250046D6F01001AF009C40B5400AFA0A\r";
+const unsigned char PaceBmsV25::exampleWritePackUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, PackUnderVoltageConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, PackUnderVoltageConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2011,7 +2011,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const PackUnderVoltageConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const PackUnderVoltageConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 15000 || config.AlarmMillivolts > 50000)
@@ -2088,12 +2088,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const PackUnd
 // write: ~250046D8400C010068006E0AFB01.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadChargeOverCurrentConfigurationRequestV25[] = "~250046D90000FD92\r";
-const unsigned char PaceBms::exampleReadChargeOverCurrentConfigurationResponseV25[] = "~25004600400C010068006E0AFB1D\r";
-const unsigned char PaceBms::exampleWriteChargeOverCurrentConfigurationRequestV25[] = "~250046D8400C010068006E0AFB01\r";
-const unsigned char PaceBms::exampleWriteChargeOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadChargeOverCurrentConfigurationRequestV25[] = "~250046D90000FD92\r";
+const unsigned char PaceBmsV25::exampleReadChargeOverCurrentConfigurationResponseV25[] = "~25004600400C010068006E0AFB1D\r";
+const unsigned char PaceBmsV25::exampleWriteChargeOverCurrentConfigurationRequestV25[] = "~250046D8400C010068006E0AFB01\r";
+const unsigned char PaceBmsV25::exampleWriteChargeOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeOverCurrentConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeOverCurrentConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2119,7 +2119,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 150)
@@ -2174,12 +2174,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeO
 // write: ~250046DA400C010069006E0AFAF7.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DB0000FD89\r";
-const unsigned char PaceBms::exampleReadDishargeSlowOverCurrentConfigurationResponseV25[] = "~25004600400C01FF97FF920AFAD3\r";
-const unsigned char PaceBms::exampleWriteDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
-const unsigned char PaceBms::exampleWriteDishargeSlowOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DB0000FD89\r";
+const unsigned char PaceBmsV25::exampleReadDishargeSlowOverCurrentConfigurationResponseV25[] = "~25004600400C01FF97FF920AFAD3\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeSlowOverCurrentConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeSlowOverCurrentConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2205,7 +2205,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeSlowOverCurrentConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeSlowOverCurrentConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmAmperage < 1.0f || config.AlarmAmperage > 150.0f)
@@ -2257,12 +2257,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const Disharg
 // write: ~250046E2A006009604FC4E.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E30000FD97\r";
-const unsigned char PaceBms::exampleReadDishargeFastOverCurrentConfigurationResponseV25[] = "~25004600400C009604009604FB32\r";
-const unsigned char PaceBms::exampleWriteDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
-const unsigned char PaceBms::exampleWriteDishargeFastOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E30000FD97\r";
+const unsigned char PaceBmsV25::exampleReadDishargeFastOverCurrentConfigurationResponseV25[] = "~25004600400C009604009604FB32\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeFastOverCurrentConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeFastOverCurrentConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2289,7 +2289,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeFastOverCurrentConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeFastOverCurrentConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ProtectionAmperage < 5.0f || config.ProtectionAmperage > 300.0f)
@@ -2338,12 +2338,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const Disharg
 // write: ~250046E4E0020CFD0C.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadShortCircuitProtectionConfigurationRequestV25[] = "~250046E50000FD95\r";
-const unsigned char PaceBms::exampleReadShortCircuitProtectionConfigurationResponseV25[] = "~25004600E0020CFD25\r";
-const unsigned char PaceBms::exampleWriteShortCircuitProtectionConfigurationRequestV25[] = "~250046E4E0020CFD0C\r";
-const unsigned char PaceBms::exampleWriteShortCircuitProtectionConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadShortCircuitProtectionConfigurationRequestV25[] = "~250046E50000FD95\r";
+const unsigned char PaceBmsV25::exampleReadShortCircuitProtectionConfigurationResponseV25[] = "~25004600E0020CFD25\r";
+const unsigned char PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationRequestV25[] = "~250046E4E0020CFD0C\r";
+const unsigned char PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ShortCircuitProtectionConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ShortCircuitProtectionConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2359,7 +2359,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ShortCircuitProtectionConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const ShortCircuitProtectionConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ProtectionDelayMicroseconds < 100 || config.ProtectionDelayMicroseconds > 500)
@@ -2394,12 +2394,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ShortCi
 // write: ~250046B580080D48001EFBD2.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadCellBalancingConfigurationRequestV25[] = "~250046B60000FD97\r";
-const unsigned char PaceBms::exampleReadCellBalancingConfigurationResponseV25[] = "~2500460080080D48001EFBE9\r";
-const unsigned char PaceBms::exampleWriteCellBalancingConfigurationRequestV25[] = "~250046B580080D48001EFBD2\r";
-const unsigned char PaceBms::exampleWriteCellBalancingConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadCellBalancingConfigurationRequestV25[] = "~250046B60000FD97\r";
+const unsigned char PaceBmsV25::exampleReadCellBalancingConfigurationResponseV25[] = "~2500460080080D48001EFBE9\r";
+const unsigned char PaceBmsV25::exampleWriteCellBalancingConfigurationRequestV25[] = "~250046B580080D48001EFBD2\r";
+const unsigned char PaceBmsV25::exampleWriteCellBalancingConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellBalancingConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, CellBalancingConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2416,7 +2416,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellBalancingConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const CellBalancingConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ThresholdMillivolts < 3300 || config.ThresholdMillivolts > 4500)
@@ -2458,12 +2458,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const CellBal
 // write: ~250046A880080C1C0005FBDA.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadSleepConfigurationRequestV25[] = "~250046A00000FD9E\r";
-const unsigned char PaceBms::exampleReadSleepConfigurationResponseV25[] = "~2500460080080C1C0005FBF3\r";
-const unsigned char PaceBms::exampleWriteSleepConfigurationRequestV25[] = "~250046A880080C1C0005FBDA\r";
-const unsigned char PaceBms::exampleWriteSleepConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadSleepConfigurationRequestV25[] = "~250046A00000FD9E\r";
+const unsigned char PaceBmsV25::exampleReadSleepConfigurationResponseV25[] = "~2500460080080C1C0005FBF3\r";
+const unsigned char PaceBmsV25::exampleWriteSleepConfigurationRequestV25[] = "~250046A880080C1C0005FBDA\r";
+const unsigned char PaceBmsV25::exampleWriteSleepConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, SleepConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, SleepConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2488,7 +2488,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const SleepConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const SleepConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.CellMillivolts < 2000 || config.CellMillivolts > 4000)
@@ -2532,12 +2532,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const SleepCo
 // write: ~250046AE600ADAC007D005FB3A.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadFullChargeLowChargeConfigurationRequestV25[] = "~250046AF0000FD88\r";
-const unsigned char PaceBms::exampleReadFullChargeLowChargeConfigurationResponseV25[] = "~25004600600ADAC007D005FB60\r";
-const unsigned char PaceBms::exampleWriteFullChargeLowChargeConfigurationRequestV25[] = "~250046AE600ADAC007D005FB3A\r";
-const unsigned char PaceBms::exampleWriteFullChargeLowChargeConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadFullChargeLowChargeConfigurationRequestV25[] = "~250046AF0000FD88\r";
+const unsigned char PaceBmsV25::exampleReadFullChargeLowChargeConfigurationResponseV25[] = "~25004600600ADAC007D005FB60\r";
+const unsigned char PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationRequestV25[] = "~250046AE600ADAC007D005FB3A\r";
+const unsigned char PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, FullChargeLowChargeConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, FullChargeLowChargeConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2555,7 +2555,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const FullChargeLowChargeConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const FullChargeLowChargeConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.FullChargeMillivolts < 20000 || config.FullChargeMillivolts > 65000)
@@ -2614,12 +2614,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const FullCha
 // write: ~250046DC501A010CA80CD00C9E0CDA0D020CD0F797.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DD0000FD87\r";
-const unsigned char PaceBms::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~25004600501A010CA80CD00C9E0CDA0D020CD0F7BE\r";
-const unsigned char PaceBms::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DC501A010CA80CD00C9E0CDA0D020CD0F797\r";
-const unsigned char PaceBms::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DD0000FD87\r";
+const unsigned char PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~25004600501A010CA80CD00C9E0CDA0D020CD0F7BE\r";
+const unsigned char PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DC501A010CA80CD00C9E0CDA0D020CD0F797\r";
+const unsigned char PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeOverTemperatureConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeOverTemperatureConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2648,7 +2648,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeOverTemperatureConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeOverTemperatureConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ChargeAlarm < 20 || config.ChargeAlarm > 100)
@@ -2718,12 +2718,12 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeA
 // write: ~250046DE501A010AAA0A780AAA0A1409E20A14F7BC.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DF0000FD85\r";
-const unsigned char PaceBms::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~25004600501A010AAA0A780AAA0A1409E20A14F7E5\r";
-const unsigned char PaceBms::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DE501A010AAA0A780AAA0A1409E20A14F7BC\r";
-const unsigned char PaceBms::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DF0000FD85\r";
+const unsigned char PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~25004600501A010AAA0A780AAA0A1409E20A14F7E5\r";
+const unsigned char PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DE501A010AAA0A780AAA0A1409E20A14F7BC\r";
+const unsigned char PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2752,7 +2752,7 @@ bool PaceBms::ProcessReadConfigurationResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeUnderTemperatureConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeUnderTemperatureConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ChargeAlarm < -35 || config.ChargeAlarm > 30)
@@ -2842,16 +2842,16 @@ bool PaceBms::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeA
 // write: ~250046EEC0040064FCA4.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBms::exampleReadChargeCurrentLimiterStartCurrentRequestV25[] = "~250046ED0000FD86\r";
-const unsigned char PaceBms::exampleReadChargeCurrentLimiterStartCurrentResponseV25[] = "~25004600C0040064FCCE\r";
-const unsigned char PaceBms::exampleWriteChargeCurrentLimiterStartCurrentRequestV25[] = "~250046EEC0040064FCA4\r";
-const unsigned char PaceBms::exampleWriteChargeCurrentLimiterStartCurrentResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25[] = "~250046ED0000FD86\r";
+const unsigned char PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25[] = "~25004600C0040064FCCE\r";
+const unsigned char PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25[] = "~250046EEC0040064FCA4\r";
+const unsigned char PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25[] = "~250046000000FDAF\r";
 
-void PaceBms::CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, CID2_ReadChargeCurrentLimiterStartCurrent, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint8_t& current)
+bool PaceBmsV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint8_t& current)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2875,7 +2875,7 @@ bool PaceBms::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t 
 
 	return true;
 }
-bool PaceBms::CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, const uint8_t current, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, const uint8_t current, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (current < 5 || current > 150)
@@ -2895,7 +2895,7 @@ bool PaceBms::CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_t b
 
 	return true;
 }
-bool PaceBms::ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2922,14 +2922,14 @@ bool PaceBms::ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t
 // resp:  ~25004600400C183C286A2710FB0E.
 //                     111122223333
 
-const unsigned char PaceBms::exampleReadRemainingCapacityRequestV25[] = "~250046A60000FD98\r";
-const unsigned char PaceBms::exampleReadRemainingCapacityResponseV25[] = "~25004600400C183C286A2710FB0E\r";
+const unsigned char PaceBmsV25::exampleReadRemainingCapacityRequestV25[] = "~250046A60000FD98\r";
+const unsigned char PaceBmsV25::exampleReadRemainingCapacityResponseV25[] = "~25004600400C183C286A2710FB0E\r";
 
-void PaceBms::CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, CID2_ReadRemainingCapacity, std::vector<uint8_t>(), request);
 }
-bool PaceBms::ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours)
+bool PaceBmsV25::ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)

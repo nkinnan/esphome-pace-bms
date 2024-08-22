@@ -20,14 +20,14 @@ offset LENID+13, 2 bytes,  HexASCII, "FD2E": CHKSUM       - checksum
 offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '\r'
 */
 
-class PaceBms
+class PaceBmsV25
 {
 public:
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
 	// takes pointers to the "real" logging functions
-	PaceBms(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logVerbose);
+	PaceBmsV25(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logVerbose);
 
 private:
 	// dependency injection

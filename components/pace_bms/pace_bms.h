@@ -28,7 +28,7 @@ class PaceBmsComponent : public Component, public uart::UARTDevice {
   void dump_config() override;
 
  protected:
-  PaceBms* pace_bms_v25;
+  PaceBmsV25* pace_bms_v25;
 
   void parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
