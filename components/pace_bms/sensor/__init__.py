@@ -24,7 +24,7 @@ CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
-        #cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
             accuracy_decimals=1,
