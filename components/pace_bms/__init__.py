@@ -28,9 +28,7 @@ FINAL_VALIDATE_SCHEMA = uart.final_validate_device_schema(
     "pace_bms", baud_rate=9600, require_rx=True, require_tx=True, 
 )
 
-
 async def to_code(config):
-    cg.add_global(pace_bms_ns.using)
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
