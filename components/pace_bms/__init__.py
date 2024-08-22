@@ -11,7 +11,7 @@ from esphome import pins
 DEPENDENCIES = ["uart"]
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
-PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
+PaceBms = pace_bms_ns.class_("PaceBmsComponent", cg.PollingComponent, uart.UARTDevice)
 
 CONFIG_SCHEMA = (
     cv.Schema(
