@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
-#include "sensor/sensor.h"
+#include "esphome/components/sensor/sensor.h"
 //#include "esphome/components/binary_sensor/binary_sensor.h"
 //#include "esphome/components/text_sensor/text_sensor.h"
 
@@ -33,7 +33,7 @@ class PaceBmsComponent : public PollingComponent, public uart::UARTDevice {
   void dump_config() override;
 
  protected:
-  PaceBmsV25* pace_bms_v25;
+  PaceBmsV25* pace_bms_v25_;
   GPIOPin* flow_control_pin_{ nullptr };
 
   void parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length);
@@ -42,15 +42,8 @@ class PaceBmsComponent : public PollingComponent, public uart::UARTDevice {
   uint8_t raw_data_[max_data_len_];
   uint8_t raw_data_index_{0};
   uint32_t last_transmission_{0};
+
   sensor::Sensor *voltage_sensor_{nullptr};
-  sensor::Sensor *current_sensor_{nullptr};
-  sensor::Sensor *power_sensor_{nullptr};
-  sensor::Sensor *energy_sensor_{nullptr};
-  sensor::Sensor *apparent_power_sensor_{nullptr};
-  sensor::Sensor *reactive_power_sensor_{nullptr};
-  sensor::Sensor *power_factor_sensor_{nullptr};
-  uint32_t cf_pulses_total_{0};
-  uint16_t cf_pulses_last_{0};
 };
  
 }  // namespace cse7766
