@@ -4,7 +4,7 @@
 #include "esphome/components/uart/uart.h"
 #include "esphome/components/sensor/sensor.h"
 //#include "esphome/components/binary_sensor/binary_sensor.h"
-#include "esphome/components/text_sensor/text_sensor.h"
+//#include "esphome/components/text_sensor/text_sensor.h"
 
 #include "pace_bms_v25.h"
 
