@@ -107,20 +107,3 @@ async def to_code(config):
         cg.add(var.set_power_factor_sensor(sens))
 
 
-    hub = await cg.get_variable(config[CONF_SEPLOS_BMS_ID])
-
-    for i, key in enumerate(CELLS):
-        if key in config:
-            conf = config[key]
-            sens = await sensor.new_sensor(conf)
-            cg.add(hub.set_cell_voltage_sensor(i, sens))
-    for i, key in enumerate(TEMPERATURES):
-        if key in config:
-            conf = config[key]
-            sens = await sensor.new_sensor(conf)
-            cg.add(hub.set_temperature_sensor(i, sens))
-    for key in SENSORS:
-        if key in config:
-            conf = config[key]
-            sens = await sensor.new_sensor(conf)
-            cg.add(getattr(hub, f"set_{key}_sensor")(sens))
