@@ -116,12 +116,8 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
 
 void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG,   "pace_bms:");
-  if (this->flow_control_pin_ != nullptr) {
     LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
-  } else {
-    ESP_LOGCONFIG(TAG, "  Flow Control Pin: N/A");
-  }
-  ESP_LOGCONFIG(TAG,   "  Address: ", this->address_);
+  ESP_LOGCONFIG(TAG,   "  Address: %i", this->address_);
   //LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
