@@ -135,7 +135,7 @@ void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
   LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
   ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-  ESP_LOGCONFIG(TAG, "  Protocol Version: %02X", this->protocol_version_);
+  ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
   //LOG_SENSOR(        "  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
