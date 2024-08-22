@@ -27,6 +27,10 @@ void verbose_log_func(std::string message) {
 
 void PaceBmsComponent::setup() {
     this->pace_bms_v25 = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+    ESP_LOGV(TAG, "Requesting analog information");
+    std::vector<uint8_t> request;
+    this->pace_bms_v25->CreateReadAnalogInformationRequest(1, request);
+    this->write_array(request.data(), request.size());
 }
 
 void PaceBmsComponent::loop() {
@@ -78,12 +82,13 @@ void PaceBmsComponent::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_len
   }
 #endif
 
-  std::vector<uint8_t> frame(frame_bytes, frame_bytes + frame_length);
+  std::vector<uint8_t> response(frame_bytes, frame_bytes + frame_length);
 
+  ESP_LOGV(TAG, "Processing analog information response");
   PaceBmsV25::AnalogInformation analog_information;
-  this->pace_bms_v25->ProcessReadAnalogInformationResponse(1, frame, analog_information);
+  this->pace_bms_v25->ProcessReadAnalogInformationResponse(1, response, analog_information);
 
-   
+  this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 }
 
 void PaceBmsComponent::dump_config() {
