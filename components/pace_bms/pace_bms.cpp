@@ -51,6 +51,13 @@ void PaceBms::update() {
     std::vector<uint8_t> request;
     this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request);
 
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
+    {
+        std::string str(request.data(), request.data() + request.size());
+        ESP_LOGVV(TAG, "Sending frame: %s", str);
+    }
+#endif
+
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(true);
     this->write_array(request.data(), request.size());
@@ -100,6 +107,7 @@ void PaceBms::loop() {
     }
 
     this->raw_data_index_++;
+
     if (this->raw_data_index_ >= this->max_data_len_) {
       std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_);
       ESP_LOGE(TAG, "Data frame exceeds maximum length, partial frame: %s", str);
@@ -115,7 +123,7 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
   {
     std::string str(frame_bytes, frame_bytes + frame_length);
-    ESP_LOGVV(TAG, "Raw data: %s", str);
+    ESP_LOGVV(TAG, "Frame received: %s", str);
   }
 #endif
 
