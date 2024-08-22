@@ -7,11 +7,6 @@ from esphome.const import (
     UNIT_VOLT,
     DEVICE_CLASS_VOLTAGE,
     STATE_CLASS_MEASUREMENT,
-
-
-    #UNIT_DEGREES,
-    #ICON_WEATHER_SUNSET,
-    #CONF_TYPE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
@@ -23,7 +18,7 @@ CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_PACE_BMS_SENSOR_ID): cv.declare_id(PaceBmsSensor),
+        cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
@@ -36,11 +31,8 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    #var = await sensor.new_sensor(config)
     var = cg.new_Pvariable(config[CONF_PACE_BMS_SENSOR_ID])
     await cg.register_component(var, config)
-
-    #cg.add(var.set_type(config[CONF_TYPE]))
 
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))

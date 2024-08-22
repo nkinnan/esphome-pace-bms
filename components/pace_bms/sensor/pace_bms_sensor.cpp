@@ -10,18 +10,6 @@ void setup() {
 }
 
 void update() {
-    //double val;
-    //switch (this->type_) {
-    //  case SUN_SENSOR_ELEVATION:
-    //    val = this->parent_->elevation();
-    //    break;
-    //  case SUN_SENSOR_AZIMUTH:
-    //    val = this->parent_->azimuth();
-    //    break;
-    //  default:
-    //    return;
-    //}
-    //this->publish_state(val);
 }
 
 float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }

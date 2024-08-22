@@ -7,17 +7,9 @@
 namespace esphome {
 namespace pace_bms {
 
-//enum SensorType {
-//  SUN_SENSOR_ELEVATION,
-//  SUN_SENSOR_AZIMUTH,
-//};
-
-class PaceBmsSensor : 
-    //public sensor::Sensor, 
-    public PollingComponent {
+class PaceBmsSensor : public PollingComponent {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
-  //void set_type(SensorType type) { type_ = type; }
   void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; }
 
   void setup() override;
@@ -27,9 +19,8 @@ class PaceBmsSensor :
 
  protected:
   pace_bms::PaceBms *parent_;
-  //SensorType type_;
   sensor::Sensor* voltage_sensor_{ nullptr };
 };
 
-}  // namespace sun
+}  // namespace pace_bms
 }  // namespace esphome
