@@ -28,13 +28,13 @@ class PaceBmsComponent : public Component, public uart::UARTDevice {
   void dump_config() override;
 
  protected:
-  PaceBams* pace_bms_v25;
+  PaceBms* pace_bms_v25;
 
   bool check_byte_();
   void parse_data_();
   uint32_t get_24_bit_uint_(uint8_t start_index);
 
-  const uint8_t max_data_len_ = 150
+  const uint8_t max_data_len_ = 150;
   uint8_t raw_data_[max_data_len_];
   uint8_t raw_data_index_{0};
   uint32_t last_transmission_{0};
