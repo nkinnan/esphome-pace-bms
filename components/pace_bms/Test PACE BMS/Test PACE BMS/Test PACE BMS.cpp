@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <sstream>
-#include "..\..\PACE_BMS.h"
+#include "..\..\pace_bms_v25.h"
 
 
 std::ostringstream error;
