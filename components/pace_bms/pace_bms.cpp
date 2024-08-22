@@ -37,7 +37,7 @@ void PaceBms::update() {
     //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
     //}
     //else {
-    ESP_LOGV(TAG, "***********Requesting analog information");
+    ESP_LOGV(TAG, "Requesting analog information");
     std::vector<uint8_t> request;
     this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request);
 
@@ -111,6 +111,8 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
   ESP_LOGV(TAG, "Processing analog information response");
   PaceBmsV25::AnalogInformation analog_information;
   this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
+
+  ESP_LOGV(TAG, "Total pack voltage: %0.3f", analog_information.totalVoltageMillivolts / 1000.0f);
 
   //if (this->voltage_sensor_ != nullptr)
   //    this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
