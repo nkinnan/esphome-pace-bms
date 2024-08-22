@@ -7,10 +7,10 @@
 namespace esphome {
 namespace pace_bms {
 
-enum SensorType {
-  SUN_SENSOR_ELEVATION,
-  SUN_SENSOR_AZIMUTH,
-};
+//enum SensorType {
+//  SUN_SENSOR_ELEVATION,
+//  SUN_SENSOR_AZIMUTH,
+//};
 
 class PaceBmsSensor : 
     //public sensor::Sensor, 
@@ -20,22 +20,10 @@ class PaceBmsSensor :
   //void set_type(SensorType type) { type_ = type; }
   void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; }
 
-  void dump_config() override;
-  void update() override {
-    double val;
-    //switch (this->type_) {
-    //  case SUN_SENSOR_ELEVATION:
-    //    val = this->parent_->elevation();
-    //    break;
-    //  case SUN_SENSOR_AZIMUTH:
-    //    val = this->parent_->azimuth();
-    //    break;
-    //  default:
-    //    return;
-    //}
-    //this->publish_state(val);
-  }
+  void setup() override;
+  void update() override;
   float get_setup_priority() const override;
+  void dump_config() override;
 
  protected:
   pace_bms::PaceBms *parent_;

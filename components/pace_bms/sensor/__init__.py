@@ -8,9 +8,9 @@ from esphome.const import (
     STATE_CLASS_MEASUREMENT,
 
 
-    UNIT_DEGREES,
-    ICON_WEATHER_SUNSET,
-    CONF_TYPE,
+    #UNIT_DEGREES,
+    #ICON_WEATHER_SUNSET,
+    #CONF_TYPE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
@@ -56,7 +56,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 async def to_code(config):
     #var = await sensor.new_sensor(config)
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = cg.new_Pvariable(config[CONF_PACE_BMS_ID])
     await cg.register_component(var, config)
 
     #cg.add(var.set_type(config[CONF_TYPE]))
