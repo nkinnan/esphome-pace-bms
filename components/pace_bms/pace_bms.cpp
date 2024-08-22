@@ -29,7 +29,7 @@ void PaceBmsComponent::setup() {
     this->pace_bms_v25 = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
 }
 
-void ModbusController::update() {
+void PaceBmsComponent::update() {
     //if (!command_queue_.empty()) {
     //    ESP_LOGV(TAG, "%zu modbus commands already in queue", command_queue_.size());
     //}
