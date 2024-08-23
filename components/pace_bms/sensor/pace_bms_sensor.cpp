@@ -29,8 +29,8 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 
 
 
-	if (this->voltage_sensor_ != nullptr) {
-		this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
+	if (this->total_voltage_sensor_ != nullptr) {
+		this->total_voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 	}
 }
 

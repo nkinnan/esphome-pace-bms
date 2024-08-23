@@ -15,6 +15,40 @@ PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
 
 CONF_CELL_COUNT = "cell_count"
+CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
+CONF_CELL_VOLTAGE_02 = "cell_voltage_02"
+CONF_CELL_VOLTAGE_03 = "cell_voltage_03"
+CONF_CELL_VOLTAGE_04 = "cell_voltage_04"
+CONF_CELL_VOLTAGE_05 = "cell_voltage_05"
+CONF_CELL_VOLTAGE_06 = "cell_voltage_06"
+CONF_CELL_VOLTAGE_07 = "cell_voltage_07"
+CONF_CELL_VOLTAGE_08 = "cell_voltage_08"
+CONF_CELL_VOLTAGE_09 = "cell_voltage_09"
+CONF_CELL_VOLTAGE_10 = "cell_voltage_10"
+CONF_CELL_VOLTAGE_11 = "cell_voltage_11"
+CONF_CELL_VOLTAGE_12 = "cell_voltage_12"
+CONF_CELL_VOLTAGE_13 = "cell_voltage_13"
+CONF_CELL_VOLTAGE_14 = "cell_voltage_14"
+CONF_CELL_VOLTAGE_15 = "cell_voltage_15"
+CONF_CELL_VOLTAGE_16 = "cell_voltage_16"
+CELLS = [
+    CONF_CELL_VOLTAGE_01,
+    CONF_CELL_VOLTAGE_02,
+    CONF_CELL_VOLTAGE_03,
+    CONF_CELL_VOLTAGE_04,
+    CONF_CELL_VOLTAGE_05,
+    CONF_CELL_VOLTAGE_06,
+    CONF_CELL_VOLTAGE_07,
+    CONF_CELL_VOLTAGE_08,
+    CONF_CELL_VOLTAGE_09,
+    CONF_CELL_VOLTAGE_10,
+    CONF_CELL_VOLTAGE_11,
+    CONF_CELL_VOLTAGE_12,
+    CONF_CELL_VOLTAGE_13,
+    CONF_CELL_VOLTAGE_14,
+    CONF_CELL_VOLTAGE_15,
+    CONF_CELL_VOLTAGE_16,
+]
 #		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
 #		uint8_t tempCount;
 #		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
@@ -68,10 +102,15 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
-    if cell_count := config.get(CONF_CELL_COUNT):
-        sens = await sensor.new_sensor(cell_count)
+    if cell_count_config := config.get(CONF_CELL_COUNT):
+        sens = await sensor.new_sensor(cell_count_config)
         cg.add(var.set_cell_count_sensor(sens))
 
+    for i, conf in enumerate(CELLS):
+        if conf in config:
+            conf = config.get(key)
+            sens = await sensor.new_sensor(conf)
+            cg.add(var.set_cell_voltage_sensor(i, sens))
 
 
 
