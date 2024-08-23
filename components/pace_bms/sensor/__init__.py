@@ -314,9 +314,9 @@ async def to_code(config):
         sens = await sensor.new_sensor(voltage_config)
         cg.add(var.set_total_voltage_sensor(sens))
 
-    if remaing_capacity := config.get(CONF_REMAINING_CAPACITY):
-        sens = await sensor.new_sensor(remaing_capacity)
-        cg.add(var.set_remaing_capacity_sensor(sens))
+    if remaining_capacity := config.get(CONF_REMAINING_CAPACITY):
+        sens = await sensor.new_sensor(remaining_capacity)
+        cg.add(var.set_remaining_capacity_sensor(sens))
 
     if full_capacity := config.get(CONF_FULL_CAPACITY):
         sens = await sensor.new_sensor(full_capacity)
