@@ -40,7 +40,7 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	if (this->temperature_count_sensor_ != nullptr) {
 		this->temperature_count_sensor_->publish_state(analog_information.temperatureCount);
 	}
-	for (int i = 0; i < 16; i++) {
+	for (int i = 0; i < 6; i++) {
 	  if (this->temperature_sensor_[i] != nullptr) {
 	    this->temperature_sensor_[i]->publish_state(analog_information.temperaturesTenthsCelcius[i] / 10.0f);
 	  }
