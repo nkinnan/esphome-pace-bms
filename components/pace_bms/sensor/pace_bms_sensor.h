@@ -13,7 +13,7 @@ class PaceBmsSensor : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
   void set_cell_count_sensor(sensor::Sensor* cell_count_sensor) { cell_count_sensor_ = cell_count_sensor; request_analog_info_callback_ = true; }
-  void set_cell_count_sensor(int index, sensor::Sensor* voltage_sensor) { cell_count_sensor_[index] = voltage_sensor; request_analog_info_callback_ = true; }
+  void set_cell_voltage_sensor(int index, sensor::Sensor* cell_voltage_sensor) { cell_voltage_sensor_[index] = cell_voltage_sensor; request_analog_info_callback_ = true; }
   
 
   void set_total_voltage_sensor(sensor::Sensor* total_voltage_sensor) { total_voltage_sensor_ = total_voltage_sensor; request_analog_info_callback_ = true; }
