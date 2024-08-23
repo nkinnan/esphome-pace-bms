@@ -76,7 +76,7 @@ CONF_REMAINING_CAPACITY = "remaining_capacity"
 CONF_FULL_CAPACITY = "full_capacity"
 CONF_DESIGN_CAPACITY = "design_capacity"
 CONF_CYCLE_COUNT = "cycle_count"
-#		uint16_t cycleCount;
+
 #		float SoC; // in percent
 #		float SoH; // in percent
 #		float powerWatts;
@@ -96,9 +96,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
-            #unit_of_measurement=UNIT_VOLT,
+            #unit_of_measurement=,
             accuracy_decimals=0,
-            #device_class=DEVICE_CLASS_VOLTAGE,
+            #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_CELL_VOLTAGE_01): sensor.sensor_schema(
@@ -198,9 +198,9 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TEMPERATURE_COUNT): sensor.sensor_schema(
-            #unit_of_measurement=UNIT_VOLT,
+            #unit_of_measurement=,
             accuracy_decimals=0,
-            #device_class=DEVICE_CLASS_VOLTAGE,
+            #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TEMPERATURE_01): sensor.sensor_schema(
@@ -270,9 +270,9 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_CYCLE_COUNT): sensor.sensor_schema(
-            #unit_of_measurement=UNIT_VOLT,
+            #unit_of_measurement=,
             accuracy_decimals=0,
-            #device_class=DEVICE_CLASS_VOLTAGE,
+            #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
