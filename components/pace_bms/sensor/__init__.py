@@ -11,7 +11,7 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component, sensor.Sensor)
+PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
 CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 
