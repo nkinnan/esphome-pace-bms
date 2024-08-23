@@ -6,7 +6,7 @@ from esphome.const import (
     UNIT_VOLT,
     UNIT_CELSIUS,
     UNIT_AMPERE,
-    UNIT_AMP_HOURS,
+    #UNIT_AMP_HOURS,   <--------- added to const.py but need to check in
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
@@ -86,6 +86,8 @@ CONF_CYCLE_COUNT = "cycle_count"
 #		uint16_t maxCellDifferentialMillivolts;
 
 
+
+UNIT_AMP_HOURS = "Ah"
 
 
 
