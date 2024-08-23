@@ -72,7 +72,7 @@ TEMPERATURES = [
 ]
 CONF_CURRENT = "current"
 CONF_TOTAL_VOLTAGE = "total_voltage"
-CONF_REMAINING_CAPACITY = "remaing_capacity"
+CONF_REMAINING_CAPACITY = "remaining_capacity"
 CONF_FULL_CAPACITY = "full_capacity"
 CONF_DESIGN_CAPACITY = "design_capacity"
 CONF_CYCLE_COUNT = "cycle_count"
