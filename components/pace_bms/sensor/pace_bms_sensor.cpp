@@ -19,7 +19,13 @@ float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
 void PaceBmsSensor::dump_config() { 
 	//LOG_SENSOR("", "Sun Sensor", this); 
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
-	LOG_SENSOR("  ", "Voltage", this->voltage_sensor_);
+	LOG_SENSOR("  ", "Cell Count", this->cell_count_sensor_);
+	for (int i = 1; i <= 16); i++) {
+	  char name[16];
+	  sprintf(name, "Cell Voltage %02i", i);
+	  LOG_SENSOR("  ", name, this->cell_voltage_sensor_[i]);
+	}
+	LOG_SENSOR("  ", "Voltage", this->total_voltage_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation analog_information) {
