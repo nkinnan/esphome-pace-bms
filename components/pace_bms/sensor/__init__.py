@@ -7,8 +7,8 @@ from esphome.const import (
     UNIT_CELSIUS,
     UNIT_AMPS,
     DEVICE_CLASS_VOLTAGE,
-    DEVICE_CLASS_AMPERAGE,
     DEVICE_CLASS_TEMPERATURE,
+    DEVICE_CLASS_CURRENT,
     STATE_CLASS_MEASUREMENT,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
@@ -237,7 +237,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CURRENT): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMPS,
             accuracy_decimals=2,
-            device_class=DEVICE_CLASS_AMPERAGE,
+            device_class=DEVICE_CLASS_CURRENT,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_TOTAL_VOLTAGE): sensor.sensor_schema(
@@ -277,7 +277,9 @@ async def to_code(config):
             sens = await sensor.new_sensor(conf)
             cg.add(var.set_temperature_sensor(i, sens))
 
-
+    if current_config := config.get(CONF_CURRENT):
+        sens = await sensor.new_sensor(current_config)
+        cg.add(var.set_current_sensor(sens))
 
     if voltage_config := config.get(CONF_TOTAL_VOLTAGE):
         sens = await sensor.new_sensor(voltage_config)

@@ -45,10 +45,11 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	    this->temperature_sensor_[i]->publish_state(analog_information.temperaturesTenthsCelcius[i] / 10.0f);
 	  }
 	}
-
-
+	if (this->current_sensor_ != nullptr) {
+	  this->current_sensor_->publish_state(analog_information.currentMilliamps / 1000.0f);
+	}
 	if (this->total_voltage_sensor_ != nullptr) {
-		this->total_voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
+	  this->total_voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 	}
 }
 
