@@ -9,6 +9,7 @@ from esphome.const import (
     UNIT_AMPERE,
     #UNIT_AMP_HOURS,   <--------- added to const.py but need to check in
     UNIT_WATT,
+    UNIT_PERCENT,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
@@ -283,13 +284,13 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_STATE_OF_CHARGE): sensor.sensor_schema(
-            #unit_of_measurement=,
+            unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=2,
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_STATE_OF_HEALTH): sensor.sensor_schema(
-            #unit_of_measurement=,
+            unit_of_measurement=UNIT_PERCENT,
             accuracy_decimals=2,
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
