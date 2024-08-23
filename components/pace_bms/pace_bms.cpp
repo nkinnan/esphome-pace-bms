@@ -63,7 +63,7 @@ void PaceBms::update() {
             item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_status_information_response, this, std::placeholders::_1);
             command_queue_.push(item);
         }
-        ESP_LOGV(TAG, "Update commands queued: ", command_queue_.size());
+        ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
     }
 
     // last request from the queue could still be in-flight - if so, next command will automatically be dequeued when the in-flight command is processed
