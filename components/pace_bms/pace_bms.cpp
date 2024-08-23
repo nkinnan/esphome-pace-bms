@@ -46,7 +46,7 @@ void PaceBms::update() {
         return;
 
     if (!command_queue_.empty()) {
-        ESP_LOGW(TAG, "Commands still in queue on update(), skipping this cycle: Command queue could not be processed fast enough, reduce update_interval setting in YAML.", command_queue_.size());
+        ESP_LOGW(TAG, "Commands still in queue on update(), skipping this cycle: Could not speak with the BMS fast enough, reduce update_interval setting in YAML.", command_queue_.size());
     }
     else {
         if (this->analog_information_callbacks_.size() > 0) {

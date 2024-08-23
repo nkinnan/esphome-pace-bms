@@ -90,11 +90,6 @@ CONF_MAX_CELL_VOLTAGE = "max_cell_voltage"
 CONF_AVG_CELL_VOLTAGE = "avg_cell_voltage"
 CONF_MAX_CELL_DIFFERENTIAL = "max_cell_differential"
 
-#		uint16_t minCellVoltageMillivolts;
-#		uint16_t maxCellVoltageMillivolts;
-#		uint16_t avgCellVoltageMillivolts;
-#		uint16_t maxCellDifferentialMillivolts;
-
 
 
 UNIT_AMP_HOURS = "Ah" # todo: use existing

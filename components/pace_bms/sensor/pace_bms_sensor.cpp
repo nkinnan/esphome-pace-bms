@@ -17,7 +17,6 @@ void PaceBmsSensor::setup() {
 float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsSensor::dump_config() { 
-	//LOG_SENSOR("", "Sun Sensor", this); 
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
 	LOG_SENSOR("  ", "Cell Count", this->cell_count_sensor_);
 	for (int i = 0; i < 16; i++)
