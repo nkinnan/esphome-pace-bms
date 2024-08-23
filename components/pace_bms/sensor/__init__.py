@@ -2,7 +2,6 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (
-    CONF_ID,
     CONF_VOLTAGE,
     UNIT_VOLT,
     DEVICE_CLASS_VOLTAGE,
@@ -12,7 +11,7 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.PollingComponent)
+PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
 CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 
