@@ -9,9 +9,6 @@ static const char* const TAG = "pace_bms.sensor";
 void PaceBmsSensor::setup() {
 }
 
-void update() {
-}
-
 float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsSensor::dump_config() { 

@@ -5,6 +5,8 @@
 
 #include "pace_bms_v25.h"
 
+#include "esphome/components/pace_bms/sensor/pace_bms_sensor.h"
+
 namespace esphome {
 namespace pace_bms {
 
@@ -21,6 +23,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void loop() override;
   float get_setup_priority() const override;
   void dump_config() override;
+
+  void register_sensor_component(PaceBmsSensor sensor);
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };

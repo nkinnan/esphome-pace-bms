@@ -14,8 +14,6 @@ DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
-#CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
-
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
@@ -27,7 +25,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
-)#.extend(cv.polling_component_schema("60s"))
+)
 
 
 async def to_code(config):
