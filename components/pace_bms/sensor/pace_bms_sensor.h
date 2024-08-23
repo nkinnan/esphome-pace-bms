@@ -34,7 +34,7 @@ class PaceBmsSensor : public Component {
   float get_setup_priority() const override;
   void dump_config() override;
 
-  void analog_information_callback(PaceBmsV25::AnalogInformation analog_information);
+  void analog_information_callback(PaceBmsV25::AnalogInformation& analog_information);
 
  protected:
   pace_bms::PaceBms *parent_;

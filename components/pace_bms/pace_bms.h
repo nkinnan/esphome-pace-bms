@@ -33,7 +33,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   int address_{ 0 };
   int protocol_version_{ 0 };
 
-  void parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length);
+  void process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
   PaceBmsV25* pace_bms_v25_;
   static const uint8_t max_data_len_ = 150;
@@ -41,8 +41,31 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   uint8_t raw_data_index_{0};
   uint32_t last_transmission_{0};
 
-  std::vector<std::function<void(PaceBmsV25::AnalogInformation)>> analog_information_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::StatusInformation)>> status_information_callbacks_;
+  bool request_outstanding_ = false;
+  void send_next_request_frame_();
+
+  void handle_analog_information_response(std::vector<uint8_t>& response);
+  void handle_status_information_response(std::vector<uint8_t>& response);
+
+  // each item points to:
+  //     a description such as "Analog Information" for logging
+  //     a function that will generate the request frame (to avoid holding the memory prior to it being required)
+  //     a function that will process the response frame and dispatch the results to any child sensors registered via the callback vectors
+  struct command_item
+  {
+	  std::string description_;
+	  std::function<void(std::vector<uint8_t>&)> create_request_frame_;
+	  std::function<void(std::vector<uint8_t>&)> process_response_frame_;
+  };
+  // when the bus is clear:
+  //     the next command_item will be popped
+  //     the request frame generated and dispatched via command_item.create_request_frame_
+  //     the expected response handler (command_item.process_response_frame_) will be assigned to next_response_handler_ to be called asyncronously once a response frame arrives
+  std::vector<command_item*> command_queue_;
+  std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
+
+  std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
 };
  
 }  // namespace pace_bms
