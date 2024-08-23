@@ -1,0 +1,156 @@
+substitutions:
+  name: "esp01-jk48v100"
+  friendly_name: "ESP-01 - JK48V100 Battery"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+esp8266:
+  board: esp01_1m
+
+logger:
+  # disable logging via UART since we're using UART to talk to the BMS
+  baud_rate: 0
+  level: VERBOSE
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+wifi:
+  # Set up a wifi access point
+  ap: {}
+
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+dashboard_import:
+  package_import_url: github://esphome/example-configs/esphome-web/esp8266.yaml@main
+  import_full_config: true
+
+web_server:
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome-pace-bms
+      ref: "initial_commit"
+    components: [ pace_bms ]
+    refresh: 1s
+
+
+uart:
+    id: uart_1
+    baud_rate: 9600
+    tx_pin: GPIO1
+    rx_pin: GPIO3
+
+
+pace_bms:
+  id: pace_bms_at_address_1
+  address: 1
+  protocol_version: 0x25
+  uart_id: uart_1
+  flow_control_pin: GPIO2
+  update_interval: 5s
+
+
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    cell_count:
+      name: "Cell Count"
+
+    cell_voltage_01:
+      name: "Cell Voltage 01"
+    cell_voltage_02:
+      name: "Cell Voltage 02"
+    cell_voltage_03:
+      name: "Cell Voltage 03"
+    cell_voltage_04:
+      name: "Cell Voltage 04"
+    cell_voltage_05:
+      name: "Cell Voltage 05"
+    cell_voltage_06:
+      name: "Cell Voltage 06"
+    cell_voltage_07:
+      name: "Cell Voltage 07"
+    cell_voltage_08:
+      name: "Cell Voltage 08"
+    cell_voltage_09:
+      name: "Cell Voltage 09"
+    cell_voltage_10:
+      name: "Cell Voltage 10"
+    cell_voltage_11:
+      name: "Cell Voltage 11"
+    cell_voltage_12:
+      name: "Cell Voltage 12"
+    cell_voltage_13:
+      name: "Cell Voltage 13"
+    cell_voltage_14:
+      name: "Cell Voltage 14"
+    cell_voltage_15:
+      name: "Cell Voltage 15"
+    cell_voltage_16:
+      name: "Cell Voltage 16"
+
+    temperature_count:
+      name: "Temperature Count"
+
+    temperature_01:
+      name: "Cell Temperature 1"
+    temperature_02:
+      name: "Cell Temperature 2"
+    temperature_03:
+      name: "Cell Temperature 3"
+    temperature_04:
+      name: "Cell Temperature 4"
+    temperature_05:
+      name: "MOSFET Temperature"
+    temperature_06:
+      name: "Environment Temperature"
+
+    current:
+      name: "Current"
+
+    total_voltage:
+      name: "Total Voltage"
+
+    remaining_capacity:
+      name: "Remaining Capacity"
+    full_capacity:
+      name: "Full Capacity"
+    design_capacity:
+      name: "Design Capacity"
+
+    cycle_count:
+      name: "Cycle Count"
+
+    state_of_charge:
+      name: "State of Charge"
+    state_of_health:
+      name: "State of Health"
+
+    power:
+      name: "Power"
+
+    min_cell_voltage:
+      name: "Min Cell Voltage"
+    max_cell_voltage:
+      name: "Max Cell Voltage"
+    avg_cell_voltage:
+      name: "Avg Cell Voltage"
+    max_cell_differential:
+      name: "Max Cell Differential"
+
