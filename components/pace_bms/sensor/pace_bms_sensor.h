@@ -13,7 +13,7 @@ class PaceBmsSensor : public Component {
   void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; }
 
   void setup() override;
-  void update() override;
+//  void update() override;
   float get_setup_priority() const override;
   void dump_config() override;
 
