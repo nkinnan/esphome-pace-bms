@@ -15,23 +15,22 @@ PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
 
 CONF_CELL_COUNT = "cell_count"
-		uint8_t cellCount;
-		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
-		uint8_t tempCount;
-		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
-		int32_t currentMilliamps; 
+#		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
+#		uint8_t tempCount;
+#		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
+#		int32_t currentMilliamps; 
 CONF_TOTAL_VOLTAGE = "total_voltage"
-		uint32_t remainingCapacityMilliampHours;
-		uint32_t fullCapacityMilliampHours;
-		uint16_t cycleCount;
-		uint32_t designCapacityMilliampHours;
-		float SoC; // in percent
-		float SoH; // in percent
-		float powerWatts;
-		uint16_t minCellVoltageMillivolts;
-		uint16_t maxCellVoltageMillivolts;
-		uint16_t avgCellVoltageMillivolts;
-		uint16_t maxCellDifferentialMillivolts;
+#		uint32_t remainingCapacityMilliampHours;
+#		uint32_t fullCapacityMilliampHours;
+#		uint16_t cycleCount;
+#		uint32_t designCapacityMilliampHours;
+#		float SoC; // in percent
+#		float SoH; // in percent
+#		float powerWatts;
+#		uint16_t minCellVoltageMillivolts;
+#		uint16_t maxCellVoltageMillivolts;
+#		uint16_t avgCellVoltageMillivolts;
+#		uint16_t maxCellDifferentialMillivolts;
 
 
 
