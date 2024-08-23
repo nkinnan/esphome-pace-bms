@@ -14,6 +14,7 @@ DEPENDENCIES = ["pace_bms"]
 PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
 
 CONF_TOTAL_VOLTAGE = "total_voltage"
+NAME_TOTAL_VOLTAGE = "Total Voltage"
 
 
 CONFIG_SCHEMA = cv.Schema(
@@ -25,6 +26,7 @@ CONFIG_SCHEMA = cv.Schema(
             accuracy_decimals=3,
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
+            name=NAME_TOTAL_VOLTAGE,
         ),
     }
 )
