@@ -33,7 +33,7 @@ CONF_CELL_VOLTAGE_13 = "cell_voltage_13"
 CONF_CELL_VOLTAGE_14 = "cell_voltage_14"
 CONF_CELL_VOLTAGE_15 = "cell_voltage_15"
 CONF_CELL_VOLTAGE_16 = "cell_voltage_16"
-CELLS = [
+CELL_VOLTAGES = [
     CONF_CELL_VOLTAGE_01,
     CONF_CELL_VOLTAGE_02,
     CONF_CELL_VOLTAGE_03,
@@ -257,7 +257,7 @@ async def to_code(config):
         sens = await sensor.new_sensor(cell_count_config)
         cg.add(var.set_cell_count_sensor(sens))
 
-    for i, conf in enumerate(CELLS):
+    for i, conf in enumerate(CELL_VOLTAGES):
         if conf in config:
             conf = config.get(key)
             sens = await sensor.new_sensor(conf)
