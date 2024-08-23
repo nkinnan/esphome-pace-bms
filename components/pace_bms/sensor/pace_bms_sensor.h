@@ -16,9 +16,7 @@ class PaceBmsSensor : public Component {
   void set_cell_voltage_sensor(int index, sensor::Sensor* cell_voltage_sensor) { cell_voltage_sensor_[index] = cell_voltage_sensor; request_analog_info_callback_ = true; }
   void set_temperature_count_sensor(sensor::Sensor* temperature_count_sensor) { temperature_count_sensor_ = temperature_count_sensor; request_analog_info_callback_ = true; }
   void set_temperature_sensor(int index, sensor::Sensor* temperature_sensor) { temperature_sensor_[index] = temperature_sensor; request_analog_info_callback_ = true; }
-  void set_current_sensor(int index, sensor::Sensor* temperature_sensor) { set_current_sensor_ = set_current_sensor; request_analog_info_callback_ = true; }
-
-
+  void set_current_sensor(sensor::Sensor* current_sensor) { current_sensor_ = current_sensor; request_analog_info_callback_ = true; }
   void set_total_voltage_sensor(sensor::Sensor* total_voltage_sensor) { total_voltage_sensor_ = total_voltage_sensor; request_analog_info_callback_ = true; }
 
   void setup() override;
