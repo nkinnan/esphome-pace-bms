@@ -1,11 +1,12 @@
 #pragma once
 
+#include <vector>
+
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
 #include "pace_bms_v25.h"
-
-#include "esphome/components/pace_bms/sensor/pace_bms_sensor.h"
+#include <functional>
 
 namespace esphome {
 namespace pace_bms {
@@ -24,7 +25,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   float get_setup_priority() const override;
   void dump_config() override;
 
-  void register_sensor_component(PaceBmsSensor sensor);
+  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation)> callback) { analog_information_callbacks_.push_back(callback); }
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
@@ -38,6 +39,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   uint8_t raw_data_[max_data_len_];
   uint8_t raw_data_index_{0};
   uint32_t last_transmission_{0};
+
+  std::vector<std::function<void(PaceBmsV25::AnalogInformation)>> analog_information_callbacks_;
 };
  
 }  // namespace pace_bms

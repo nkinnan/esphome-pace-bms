@@ -61,7 +61,10 @@ void PaceBms::update() {
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(true);
     this->write_array(request.data(), request.size());
-    this->flush();
+    // if flow control is required (rs485 does read+write on the same differential lines) then I don't see any other option than to block on flush()
+    // if using rs232, a flow control pin should not be assigned in order to avoid this block
+    if (this->flow_control_pin_ != nullptr)
+        this->flush();
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(false);
     //}
@@ -80,8 +83,9 @@ void PaceBms::loop() {
   if (now - this->last_transmission_ >= 500) {
     // last transmission too long ago. Reset RX index.
     if (this->raw_data_index_ > 0) {
+        std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
+        ESP_LOGV(TAG, "Receive frame timeout, partial frame: %s", str.c_str());
         this->raw_data_[this->raw_data_index_] = 0;
-        ESP_LOGV(TAG, "Data frame timeout, partial frame: %s", this->raw_data_);
     }
     this->raw_data_index_ = 0;
   }
@@ -95,7 +99,7 @@ void PaceBms::loop() {
     this->read_byte(&this->raw_data_[this->raw_data_index_]);
 
     if (this->raw_data_index_ == 0 && this->raw_data_[this->raw_data_index_] != '~') {
-      ESP_LOGE(TAG, "Data frame does not start with '~'");
+      ESP_LOGV(TAG, "Receive frame does not begin with '~': 0x%02X", this->raw_data_[this->raw_data_index_]);
       this->raw_data_index_ = 0;
       continue;
     }
@@ -106,14 +110,14 @@ void PaceBms::loop() {
       continue;
     }
 
-    this->raw_data_index_++;
-
     if (this->raw_data_index_ >= this->max_data_len_) {
-      std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_);
-      ESP_LOGE(TAG, "Data frame exceeds maximum length, partial frame: %s", str);
+      std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
+      ESP_LOGV(TAG, "Receive frame exceeds maximum supported length, partial frame: %s", str.c_str());
       this->raw_data_index_ = 0;
       continue;
     }
+
+    this->raw_data_index_++;
   }
 }
 
@@ -134,6 +138,11 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
   this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
 
   ESP_LOGV(TAG, "Total pack voltage: %0.3f", analog_information.totalVoltageMillivolts / 1000.0f);
+
+  // dispatch to any child sensor components that registered for a callback with us
+  for (int i = 0; i < this->analog_information_callbacks_.size(); i++) {
+    analog_information_callbacks_[i](analog_information);
+  }
 
   //if (this->voltage_sensor_ != nullptr)
   //    this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
