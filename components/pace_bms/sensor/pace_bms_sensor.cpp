@@ -10,7 +10,7 @@ static const char* const TAG = "pace_bms.sensor";
 
 void PaceBmsSensor::setup() {
   if (request_analog_info_callback_ == true) {
-    this->parent_->register_analog_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::analog_information_callback, this));
+    this->parent_->register_analog_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::analog_information_callback, &this, _1));
   }
 }
 
