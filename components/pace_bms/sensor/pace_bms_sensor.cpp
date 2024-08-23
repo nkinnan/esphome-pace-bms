@@ -74,6 +74,8 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	if (this->state_of_charge_sensor_ != nullptr) {
 	  this->state_of_charge_sensor_->publish_state(analog_information.SoC);
 	}
+	else
+	  ESP_LOGE(TAG, "state of charge sensor is nullptr!");
 	if (this->state_of_health_sensor_ != nullptr) {
 	  this->state_of_health_sensor_->publish_state(analog_information.SoH);
 	}
