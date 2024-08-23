@@ -15,6 +15,7 @@ from esphome.const import (
     DEVICE_CLASS_ENERGY,
     DEVICE_CLASS_POWER,
     STATE_CLASS_MEASUREMENT,
+    DEVICE_CLASS_ENERGY_STORAGE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
