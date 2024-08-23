@@ -27,7 +27,7 @@ class PaceBmsSensor : public Component {
  protected:
   pace_bms::PaceBms *parent_;
   sensor::Sensor* cell_count_sensor_{ nullptr };
-  sensor::Sensor cell_voltage_sensor_[16] { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
+  sensor::Sensor* cell_voltage_sensor_[16] { nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr };
 
 
 
