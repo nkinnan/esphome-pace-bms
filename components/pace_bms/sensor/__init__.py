@@ -5,7 +5,9 @@ from esphome.const import (
     CONF_ID,
     UNIT_VOLT,
     UNIT_CELSIUS,
+    UNIT_AMPS,
     DEVICE_CLASS_VOLTAGE,
+    DEVICE_CLASS_AMPERAGE,
     DEVICE_CLASS_TEMPERATURE,
     STATE_CLASS_MEASUREMENT,
 )
@@ -66,7 +68,7 @@ TEMPERATURES = [
     CONF_TEMPERATURE_05,
     CONF_TEMPERATURE_06,
 ]
-#		int32_t currentMilliamps; 
+CONF_CURRENT = "current"
 CONF_TOTAL_VOLTAGE = "total_voltage"
 #		uint32_t remainingCapacityMilliampHours;
 #		uint32_t fullCapacityMilliampHours;
@@ -232,10 +234,12 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_TEMPERATURE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
-
-
-
+        cv.Optional(CONF_CURRENT): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMPS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_AMPERAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_TOTAL_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
             accuracy_decimals=3,
