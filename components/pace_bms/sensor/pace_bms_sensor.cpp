@@ -20,7 +20,7 @@ void PaceBmsSensor::dump_config() {
 	//LOG_SENSOR("", "Sun Sensor", this); 
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
 	LOG_SENSOR("  ", "Cell Count", this->cell_count_sensor_);
-	for (int i = 1; i <= 16; i++)
+	for (int i = 0; i < 16; i++)
 	  LOG_SENSOR("  ", "Cell Voltage X of 16", this->cell_voltage_sensor_[i]);
 	LOG_SENSOR("  ", "Voltage", this->total_voltage_sensor_);
 }
@@ -29,7 +29,7 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	if (this->cell_count_sensor_ != nullptr) {
 		this->cell_count_sensor_->publish_state(analog_information.cellCount);
 	}
-	for (int i = 1; i <= 16; i++) {
+	for (int i = 0; i < 16; i++) {
 	  if (this->cell_voltage_sensor_[i] != nullptr) {
 	    this->cell_voltage_sensor_[i]->publish_state(analog_information.cellVoltagesMillivolts[i] / 1000.0f);
 	  }
