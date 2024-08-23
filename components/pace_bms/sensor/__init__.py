@@ -85,9 +85,11 @@ CONF_STATE_OF_CHARGE = "state_of_charge"
 CONF_STATE_OF_HEALTH = "state_of_health"
 #CONF_POWER = "power"
 
-#		float SoC; // in percent
-#		float SoH; // in percent
-#		float powerWatts;
+CONF_MIN_CELL_VOLTAGE = "min_cell_voltage"
+CONF_MAX_CELL_VOLTAGE = "max_cell_voltage"
+CONF_AVG_CELL_VOLTAGE = "avg_cell_voltage"
+CONF_MAX_CELL_DIFFERENTIAL = "max_cell_differential"
+
 #		uint16_t minCellVoltageMillivolts;
 #		uint16_t maxCellVoltageMillivolts;
 #		uint16_t avgCellVoltageMillivolts;
@@ -301,6 +303,30 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_POWER,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_MIN_CELL_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAX_CELL_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_AVG_CELL_VOLTAGE): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_MAX_CELL_DIFFERENTIAL): sensor.sensor_schema(
+            unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=3,
+            device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
@@ -367,4 +393,20 @@ async def to_code(config):
     if power := config.get(CONF_POWER):
         sens = await sensor.new_sensor(power)
         cg.add(var.set_power_sensor(sens))
+
+    if min_cell_voltage := config.get(CONF_MIN_CELL_VOLTAGE):
+        sens = await sensor.new_sensor(min_cell_voltage)
+        cg.add(var.set_min_cell_voltage_sensor(sens))
+
+    if max_cell_voltage := config.get(CONF_MAX_CELL_VOLTAGE):
+        sens = await sensor.new_sensor(max_cell_voltage)
+        cg.add(var.set_max_cell_voltage_sensor(sens))
+
+    if avg_cell_voltage := config.get(CONF_AVG_CELL_VOLTAGE):
+        sens = await sensor.new_sensor(avg_cell_voltage)
+        cg.add(var.set_avg_cell_voltage_sensor(sens))
+
+    if max_cell_differential := config.get(CONF_MAX_CELL_DIFFERENTIAL):
+        sens = await sensor.new_sensor(max_cell_differential)
+        cg.add(var.set_max_cell_differential_sensor(sens))
 

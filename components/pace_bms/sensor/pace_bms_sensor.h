@@ -25,6 +25,10 @@ class PaceBmsSensor : public Component {
   void set_state_of_charge_sensor(sensor::Sensor* state_of_charge_sensor) { state_of_charge_sensor_ = state_of_charge_sensor; request_analog_info_callback_ = true; }
   void set_state_of_health_sensor(sensor::Sensor* state_of_health_sensor) { state_of_health_sensor_ = state_of_health_sensor; request_analog_info_callback_ = true; }
   void set_power_sensor(sensor::Sensor* power_sensor) { power_sensor_ = power_sensor; request_analog_info_callback_ = true; }
+  void set_min_cell_voltage_sensor(sensor::Sensor* min_cell_voltage_sensor) { min_cell_voltage_sensor_ = min_cell_voltage_sensor; request_analog_info_callback_ = true; }
+  void set_max_cell_voltage_sensor(sensor::Sensor* max_cell_voltage_sensor) { max_cell_voltage_sensor_ = max_cell_voltage_sensor; request_analog_info_callback_ = true; }
+  void set_avg_cell_voltage_sensor(sensor::Sensor* avg_cell_voltage_sensor) { avg_cell_voltage_sensor_ = avg_cell_voltage_sensor; request_analog_info_callback_ = true; }
+  void set_max_cell_differential_sensor(sensor::Sensor* max_cell_differential_sensor) { max_cell_differential_sensor_ = max_cell_differential_sensor; request_analog_info_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -47,6 +51,10 @@ class PaceBmsSensor : public Component {
   sensor::Sensor* state_of_charge_sensor_{ nullptr };
   sensor::Sensor* state_of_health_sensor_{ nullptr };
   sensor::Sensor* power_sensor_{ nullptr };
+  sensor::Sensor* min_cell_voltage_sensor_{ nullptr };
+  sensor::Sensor* max_cell_voltage_sensor_{ nullptr };
+  sensor::Sensor* avg_cell_voltage_sensor_{ nullptr };
+  sensor::Sensor* max_cell_differential_sensor_{ nullptr };
 
   bool request_analog_info_callback_ = false;
 };

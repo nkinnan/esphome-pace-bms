@@ -26,7 +26,7 @@ void PaceBmsSensor::dump_config() {
 	for (int i = 0; i < 6; i++)
 	  LOG_SENSOR("  ", "Temperature X of 6", this->temperature_sensor_[i]);
 	LOG_SENSOR("  ", "Current", this->current_sensor_);
-	LOG_SENSOR("  ", "Voltage", this->total_voltage_sensor_);
+	LOG_SENSOR("  ", "Total Voltage", this->total_voltage_sensor_);
 	LOG_SENSOR("  ", "Remaining Capacity", this->remaining_capacity_sensor_);
 	LOG_SENSOR("  ", "Full Capacity", this->full_capacity_sensor_);
 	LOG_SENSOR("  ", "Design Capacity", this->design_capacity_sensor_);
@@ -34,6 +34,10 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "State of Charge", this->state_of_charge_sensor_);
 	LOG_SENSOR("  ", "State of Health", this->state_of_health_sensor_);
 	LOG_SENSOR("  ", "Power", this->power_sensor_);
+	LOG_SENSOR("  ", "Min Cell Voltage", this->min_cell_voltage_sensor_);
+	LOG_SENSOR("  ", "Max Cell Voltage", this->max_cell_voltage_sensor_);
+	LOG_SENSOR("  ", "Avg Cell Voltage", this->avg_cell_voltage_sensor_);
+	LOG_SENSOR("  ", "Max Cell Differential", this->max_cell_differential_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation analog_information) {
@@ -74,13 +78,23 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	if (this->state_of_charge_sensor_ != nullptr) {
 	  this->state_of_charge_sensor_->publish_state(analog_information.SoC);
 	}
-	else
-	  ESP_LOGE(TAG, "state of charge sensor is nullptr!");
 	if (this->state_of_health_sensor_ != nullptr) {
 	  this->state_of_health_sensor_->publish_state(analog_information.SoH);
 	}
 	if (this->power_sensor_ != nullptr) {
 	  this->power_sensor_->publish_state(analog_information.powerWatts);
+	}
+	if (this->min_cell_voltage_sensor_ != nullptr) {
+	  this->min_cell_voltage_sensor_->publish_state(analog_information.minCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->max_cell_voltage_sensor_ != nullptr) {
+	  this->max_cell_voltage_sensor_->publish_state(analog_information.maxCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->avg_cell_voltage_sensor_ != nullptr) {
+	  this->avg_cell_voltage_sensor_->publish_state(analog_information.avgCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->max_cell_differential_sensor_ != nullptr) {
+	  this->max_cell_differential_sensor_->publish_state(analog_information.maxCellDifferentialMillivolts / 1000.0f);
 	}
 }
 
