@@ -8,7 +8,7 @@ from esphome.const import (
     UNIT_CELSIUS,
     UNIT_AMPERE,
     #UNIT_AMP_HOURS,   <--------- added to const.py but need to check in
-    UNIT_WATTS,
+    UNIT_WATT,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
@@ -293,7 +293,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_POWER): sensor.sensor_schema(
-            unit_of_measurement=UNIT_WATTS,
+            unit_of_measurement=UNIT_WATT,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_POWER,
             state_class=STATE_CLASS_MEASUREMENT,
