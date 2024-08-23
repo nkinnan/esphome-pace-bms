@@ -51,6 +51,18 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	if (this->total_voltage_sensor_ != nullptr) {
 	  this->total_voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 	}
+	if (this->remaining_capacity_sensor_ != nullptr) {
+	  this->remaining_capacity_sensor_->publish_state(analog_information.remainingCapacityMilliampHours / 1000.0f);
+	}
+	if (this->full_capacity_sensor_ != nullptr) {
+	  this->full_capacity_sensor_->publish_state(analog_information.fullCapacityMilliampHours / 1000.0f);
+	}
+	if (this->design_capacity_sensor_ != nullptr) {
+	  this->design_capacity_sensor_->publish_state(analog_information.designCapacityMilliampHours / 1000.0f);
+	}
+	if (this->cycle_count_sensor_ != nullptr) {
+	  this->cycle_count_sensor_->publish_state(analog_information.cycleCount);
+	}
 }
 
 

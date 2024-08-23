@@ -6,9 +6,11 @@ from esphome.const import (
     UNIT_VOLT,
     UNIT_CELSIUS,
     UNIT_AMPERE,
+    UNIT_AMP_HOURS,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
+    DEVICE_CLASS_ENERGY,
     STATE_CLASS_MEASUREMENT,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
@@ -70,10 +72,11 @@ TEMPERATURES = [
 ]
 CONF_CURRENT = "current"
 CONF_TOTAL_VOLTAGE = "total_voltage"
-#		uint32_t remainingCapacityMilliampHours;
-#		uint32_t fullCapacityMilliampHours;
+CONF_REMAINING_CAPACITY = "remaing_capacity"
+CONF_FULL_CAPACITY = "full_capacity"
+CONF_DESIGN_CAPACITY = "design_capacity"
+CONF_CYCLE_COUNT = "cycle_count"
 #		uint16_t cycleCount;
-#		uint32_t designCapacityMilliampHours;
 #		float SoC; // in percent
 #		float SoH; // in percent
 #		float powerWatts;
@@ -246,6 +249,30 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_REMAINING_CAPACITY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMP_HOURS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_FULL_CAPACITY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMP_HOURS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_DESIGN_CAPACITY): sensor.sensor_schema(
+            unit_of_measurement=UNIT_AMP_HOURS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_ENERGY,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_CYCLE_COUNT): sensor.sensor_schema(
+            #unit_of_measurement=UNIT_VOLT,
+            accuracy_decimals=0,
+            #device_class=DEVICE_CLASS_VOLTAGE,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
@@ -284,4 +311,20 @@ async def to_code(config):
     if voltage_config := config.get(CONF_TOTAL_VOLTAGE):
         sens = await sensor.new_sensor(voltage_config)
         cg.add(var.set_total_voltage_sensor(sens))
+
+    if remaing_capacity := config.get(CONF_REMAINING_CAPACITY):
+        sens = await sensor.new_sensor(remaing_capacity)
+        cg.add(var.set_remaing_capacity_sensor(sens))
+
+    if full_capacity := config.get(CONF_FULL_CAPACITY):
+        sens = await sensor.new_sensor(full_capacity)
+        cg.add(var.set_full_capacity_sensor(sens))
+
+    if design_capacity := config.get(CONF_DESIGN_CAPACITY):
+        sens = await sensor.new_sensor(design_capacity)
+        cg.add(var.set_design_capacity_sensor(sens))
+
+    if cycle_count := config.get(CONF_CYCLE_COUNT):
+        sens = await sensor.new_sensor(cycle_count)
+        cg.add(var.set_cycle_count_sensor(sens))
 
