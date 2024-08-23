@@ -63,8 +63,10 @@ void PaceBms::update() {
             item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_status_information_response, this, std::placeholders::_1);
             command_queue_.push(item);
         }
+        ESP_LOGV(TAG, "Update commands queued: ", command_queue_.size());
     }
 
+    // last request from the queue could still be in-flight - if so, next command will automatically be dequeued when the in-flight command is processed
     if (request_outstanding_ == false && this->command_queue_.size() > 0)
       this->send_next_request_frame_();
 }
@@ -124,7 +126,7 @@ void PaceBms::loop() {
   }
 }
 
-// preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), but this will still handle the case where they register late
+// preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), but this will still handle the case where they register late, a single update cycle will simply be skipped in that case
 float PaceBms::get_setup_priority() const { return setup_priority::LATE; }
 
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
