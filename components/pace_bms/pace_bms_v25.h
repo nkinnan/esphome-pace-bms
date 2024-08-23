@@ -186,7 +186,7 @@ public:
 	{
 		uint8_t cellCount;
 		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
-		uint8_t tempCount;
+		uint8_t temperatureCount;
 		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
 		int32_t currentMilliamps; 
 		uint16_t totalVoltageMillivolts;

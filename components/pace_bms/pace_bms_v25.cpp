@@ -462,13 +462,13 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		analogInformation.cellVoltagesMillivolts[i] = cellVoltage;
 	}
 
-	analogInformation.tempCount = ReadHexEncodedByte(response, &byteOffset);
-	if (analogInformation.tempCount > MAX_TEMP_COUNT)
+	analogInformation.temperatureCount = ReadHexEncodedByte(response, &byteOffset);
+	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
 		const char* message = "Response contains more temperature readings than are supported, results will be truncated";
 		LogWarning(message);
 	}
-	for (int i = 0; i < analogInformation.tempCount; i++)
+	for (int i = 0; i < analogInformation.temperatureCount; i++)
 	{
 		uint16_t temperature = ReadHexEncodedUShort(response, &byteOffset);
 
