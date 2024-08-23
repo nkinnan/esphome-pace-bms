@@ -7,6 +7,7 @@
 
 #include "pace_bms_v25.h"
 #include <functional>
+#include <queue>
 
 namespace esphome {
 namespace pace_bms {
@@ -61,7 +62,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   //     the next command_item will be popped
   //     the request frame generated and dispatched via command_item.create_request_frame_
   //     the expected response handler (command_item.process_response_frame_) will be assigned to next_response_handler_ to be called asyncronously once a response frame arrives
-  std::vector<command_item*> command_queue_;
+  std::queue<command_item*> command_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
 
   std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;

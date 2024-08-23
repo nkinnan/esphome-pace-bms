@@ -54,14 +54,14 @@ void PaceBms::update() {
             item->description_ = "analog information";
             item->create_request_frame_ = std::bind(&PaceBmsV25::CreateReadAnalogInformationRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
             item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_analog_information_response, this, std::placeholders::_1);
-            command_queue_.push_back(item);
+            command_queue_.push(item);
         }
         if (this->status_information_callbacks_.size() > 0) {
             command_item* item = new command_item;
             item->description_ = "status information";
             item->create_request_frame_ = std::bind(&PaceBmsV25::CreateReadStatusInformationRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
             item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_status_information_response, this, std::placeholders::_1);
-            command_queue_.push_back(item);
+            command_queue_.push(item);
         }
     }
 
@@ -134,7 +134,7 @@ void PaceBms::send_next_request_frame_() {
       ESP_LOGV(TAG, "command queue empty on send_next_request_frame");
       return;
     }
-    PaceBms::command_item* command = command_queue_.pop_front();
+    PaceBms::command_item* command = command_queue_.pop();
     std::vector<uint8_t> request;
     command.create_request_frame_(request);
 
