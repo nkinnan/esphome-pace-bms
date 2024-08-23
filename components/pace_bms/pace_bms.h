@@ -26,8 +26,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   float get_setup_priority() const override;
   void dump_config() override;
 
-  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation)> callback) { analog_information_callbacks_.push_back(callback); }
-  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation)> callback) { status_information_callbacks_.push_back(callback); }
+  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(callback); }
+  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(callback); }
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };

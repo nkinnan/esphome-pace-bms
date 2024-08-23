@@ -134,9 +134,10 @@ void PaceBms::send_next_request_frame_() {
       ESP_LOGV(TAG, "command queue empty on send_next_request_frame");
       return;
     }
-    PaceBms::command_item* command = command_queue_.pop();
+    PaceBms::command_item* command = command_queue_.front();
+    command_queue_.pop();
     std::vector<uint8_t> request;
-    command.create_request_frame_(request);
+    command->create_request_frame_(request);
 
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
     {
@@ -160,7 +161,7 @@ void PaceBms::send_next_request_frame_() {
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(false);
 
-    free command_item;
+    free(command);
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
