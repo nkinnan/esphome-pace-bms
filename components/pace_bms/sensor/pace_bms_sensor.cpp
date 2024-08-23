@@ -6,7 +6,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.sensor";
 
-void setup() {
+void PaceBmsSensor::setup() {
 }
 
 //void update() {
