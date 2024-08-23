@@ -2,7 +2,6 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (
-    CONF_ID,
     CONF_VOLTAGE,
     UNIT_VOLT,
     DEVICE_CLASS_VOLTAGE,
@@ -12,13 +11,13 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
+PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component, sensor.Sensor)
 
-#CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
+CONF_PACE_BMS_SENSOR_ID = "pace_bms_sensor_id"
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(CONF_ID): cv.declare_id(PaceBmsSensor),
+        cv.GenerateID(CONF_PACE_BMS_SENSOR_ID): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_VOLTAGE): sensor.sensor_schema(
             unit_of_measurement=UNIT_VOLT,
@@ -31,7 +30,7 @@ CONFIG_SCHEMA = cv.Schema(
 
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
+    var = cg.new_Pvariable(config[CONF_PACE_BMS_SENSOR_ID])
     await cg.register_component(var, config)
 
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
