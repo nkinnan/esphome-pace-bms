@@ -231,6 +231,16 @@ public:
 	static const uint8_t exampleReadStatusInformationRequestV25[];
 	static const uint8_t exampleReadStatusInformationResponseV25[];
 
+	struct StatusInformation
+	{
+		std::string warningText;
+		std::string balancingText;
+		std::string systemText;
+		std::string configurationText;
+		std::string protectionText;
+		std::string faultText;
+	};
+
 	void CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
 
 private:
@@ -259,7 +269,7 @@ private:
 	const std::string DecodeWarningStatus2Value(const uint8_t val);
 
 public:
-	bool ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& warningText, std::string& balancingText, std::string& systemText, std::string& configurationText, std::string& protectionText, std::string& faultText);
+	bool ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation);
 
 	// ==== Read Hardware Version
 	// 1 Hardware Version string (may be ' ' padded at the end), the length header value will tell you how long it is, should be 20 'actual character' bytes (40 ASCII hex chars)

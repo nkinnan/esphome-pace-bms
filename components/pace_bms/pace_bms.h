@@ -11,7 +11,7 @@
 namespace esphome {
 namespace pace_bms {
 
-// this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependency
+// this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependencies into it
 // in the future, other protocol versions may be supported
 class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
@@ -26,6 +26,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void dump_config() override;
 
   void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation)> callback) { analog_information_callbacks_.push_back(callback); }
+  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation)> callback) { status_information_callbacks_.push_back(callback); }
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
@@ -41,6 +42,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   uint32_t last_transmission_{0};
 
   std::vector<std::function<void(PaceBmsV25::AnalogInformation)>> analog_information_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::StatusInformation)>> status_information_callbacks_;
 };
  
 }  // namespace pace_bms

@@ -28,7 +28,7 @@ void verbose_log_func(std::string message) {
 
 void PaceBms::setup() {
     if (this->protocol_version_ != 0x25) {
-      this->status_set_warning();
+      this->status_set_error();
       ESP_LOGE(TAG, "Protocol version %02X is not supported", this->protocol_version_);
     }
     else {
@@ -110,7 +110,7 @@ void PaceBms::loop() {
       continue;
     }
 
-    if (this->raw_data_index_ >= this->max_data_len_) {
+    if (this->raw_data_index_ + 1 >= this->max_data_len_) {
       std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
       ESP_LOGV(TAG, "Receive frame exceeds maximum supported length, partial frame: %s", str.c_str());
       this->raw_data_index_ = 0;
@@ -143,9 +143,6 @@ void PaceBms::parse_data_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
   for (int i = 0; i < this->analog_information_callbacks_.size(); i++) {
     analog_information_callbacks_[i](analog_information);
   }
-
-  //if (this->voltage_sensor_ != nullptr)
-  //    this->voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
 }
 
 void PaceBms::dump_config() {
@@ -153,7 +150,6 @@ void PaceBms::dump_config() {
   LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
   ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
   ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
-  //LOG_SENSOR(        "  ", "Voltage", this->voltage_sensor_);
   this->check_uart_settings(9600);
 }
 

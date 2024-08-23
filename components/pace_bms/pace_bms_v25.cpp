@@ -876,15 +876,15 @@ const std::string PaceBmsV25::DecodeWarningStatus2Value(const uint8_t val)
 	return oss.str();
 }
 
-bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& warningText, std::string& balancingText, std::string& systemText, std::string& configurationText, std::string& protectionText, std::string& faultText)
+bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
 {
 	// todo: consider using ostringstream
-	warningText.clear();
-	balancingText.clear();
-	systemText.clear();
-	configurationText.clear();
-	protectionText.clear();
-	faultText.clear();
+	statusInformation.warningText.clear();
+	statusInformation.balancingText.clear();
+	statusInformation.systemText.clear();
+	statusInformation.configurationText.clear();
+	statusInformation.protectionText.clear();
+	statusInformation.faultText.clear();
 
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -930,7 +930,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		warningText.append(std::string("Cell ") + std::to_string(i) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, &byteOffset);
@@ -950,62 +950,62 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		warningText.append(std::string("Temperature ") + std::to_string(i) + " " + DecodeWarningValue(tw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i) + " " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
 	if (chargeCurrentWarn != 0)
 	{
 		// below/above limit
-		warningText.append(std::string("Charge current ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Charge current ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
 	}
 
 	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, &byteOffset);
 	if (totalVoltageWarn != 0)
 	{
 		// below/above limit
-		warningText.append(std::string("Total voltage ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Total voltage ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
 	}
 
 	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
 	if (dischargeCurrentWarn != 0)
 	{
 		// below/above limit
-		warningText.append(std::string("Discharge current ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Discharge current ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
 	}
 
 	// ========================== Protection Status ==========================
 	uint8_t protectState1 = ReadHexEncodedByte(response, &byteOffset);
 	if (protectState1 != 0)
 	{
-		protectionText.append(DecodeProtectionStatus1Value(protectState1));
+		statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
 	}
 
 	uint8_t protectState2 = ReadHexEncodedByte(response, &byteOffset);
 	if (protectState2 != 0)
 	{
-		protectionText.append(DecodeProtectionStatus2Value(protectState2));
+		statusInformation.protectionText.append(DecodeProtectionStatus2Value(protectState2));
 	}
 
 	// ========================== System Status ==========================
 	uint8_t status = ReadHexEncodedByte(response, &byteOffset);
 	if (status != 0)
 	{
-		systemText.append(DecodeStatusValue(status));
+		statusInformation.systemText.append(DecodeStatusValue(status));
 	}
 
 	// ========================== Configuration Status ==========================
 	uint8_t controlState = ReadHexEncodedByte(response, &byteOffset);
 	if (controlState != 0)
 	{
-		configurationText.append(DecodeConfigurationStatusValue(controlState));
+		statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState));
 	}
 
 	// ========================== Fault Status ==========================
 	uint8_t faultState = ReadHexEncodedByte(response, &byteOffset);
 	if (faultState != 0)
 	{
-		faultText.append(DecodeFaultStatusValue(faultState));
+		statusInformation.faultText.append(DecodeFaultStatusValue(faultState));
 	}
 
 	// ========================== Balancing Status ==========================
@@ -1014,7 +1014,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	{
 		if ((balanceState & (1 << i)) != 0)
 		{
-			balancingText.append(std::string("Cell ") + std::to_string(i) + " is balancing; ");
+			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i) + " is balancing; ");
 		}
 	}
 
@@ -1024,13 +1024,13 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	uint8_t warnState1 = ReadHexEncodedByte(response, &byteOffset);
 	if (warnState1 != 0)
 	{
-		warningText.append(DecodeWarningStatus1Value(warnState1));
+		statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
 	}
 
 	uint8_t warnState2 = ReadHexEncodedByte(response, &byteOffset);
 	if (warnState2 != 0)
 	{
-		warningText.append(DecodeWarningStatus2Value(warnState2));
+		statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));
 	}
 
 	if (byteOffset != payloadLen + 13)
@@ -1041,35 +1041,35 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// pop off any trailing "; " separator
-	if (warningText.length() > 2)
+	if (statusInformation.warningText.length() > 2)
 	{
-		warningText.pop_back();
-		warningText.pop_back();
+		statusInformation.warningText.pop_back();
+		statusInformation.warningText.pop_back();
 	}
-	if (balancingText.length() > 2)
+	if (statusInformation.balancingText.length() > 2)
 	{
-		balancingText.pop_back();
-		balancingText.pop_back();
+		statusInformation.balancingText.pop_back();
+		statusInformation.balancingText.pop_back();
 	}
-	if (systemText.length() > 2)
+	if (statusInformation.systemText.length() > 2)
 	{
-		systemText.pop_back();
-		systemText.pop_back();
+		statusInformation.systemText.pop_back();
+		statusInformation.systemText.pop_back();
 	}
-	if (configurationText.length() > 2)
+	if (statusInformation.configurationText.length() > 2)
 	{
-		configurationText.pop_back();
-		configurationText.pop_back();
+		statusInformation.configurationText.pop_back();
+		statusInformation.configurationText.pop_back();
 	}
-	if (protectionText.length() > 2)
+	if (statusInformation.protectionText.length() > 2)
 	{
-		protectionText.pop_back();
-		protectionText.pop_back();
+		statusInformation.protectionText.pop_back();
+		statusInformation.protectionText.pop_back();
 	}
-	if (faultText.length() > 2)
+	if (statusInformation.faultText.length() > 2)
 	{
-		faultText.pop_back();
-		faultText.pop_back();
+		statusInformation.faultText.pop_back();
+		statusInformation.faultText.pop_back();
 	}
 
 	return true;
