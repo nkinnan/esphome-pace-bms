@@ -5,7 +5,7 @@ from esphome.const import (
     CONF_ID,
     UNIT_VOLT,
     UNIT_CELSIUS,
-    UNIT_AMPS,
+    UNIT_AMPERE,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
@@ -235,7 +235,7 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_CURRENT): sensor.sensor_schema(
-            unit_of_measurement=UNIT_AMPS,
+            unit_of_measurement=UNIT_AMPERE,
             accuracy_decimals=2,
             device_class=DEVICE_CLASS_CURRENT,
             state_class=STATE_CLASS_MEASUREMENT,
