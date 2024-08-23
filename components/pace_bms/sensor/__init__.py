@@ -13,6 +13,7 @@ from esphome.const import (
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
     DEVICE_CLASS_ENERGY,
+    DEVICE_CLASS_POWER,
     STATE_CLASS_MEASUREMENT,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
@@ -259,19 +260,19 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_REMAINING_CAPACITY): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMP_HOURS,
             accuracy_decimals=2,
-            device_class=DEVICE_CLASS_ENERGY,
+            device_class=DEVICE_CLASS_ENERGY_STORAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_FULL_CAPACITY): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMP_HOURS,
             accuracy_decimals=2,
-            device_class=DEVICE_CLASS_ENERGY,
+            device_class=DEVICE_CLASS_ENERGY_STORAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_DESIGN_CAPACITY): sensor.sensor_schema(
             unit_of_measurement=UNIT_AMP_HOURS,
             accuracy_decimals=2,
-            device_class=DEVICE_CLASS_ENERGY,
+            device_class=DEVICE_CLASS_ENERGY_STORAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
         cv.Optional(CONF_CYCLE_COUNT): sensor.sensor_schema(
