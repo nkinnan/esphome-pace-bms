@@ -9,6 +9,7 @@ namespace pace_bms {
 
 class PaceBmsSensor : public Component {
  public:
+  PaceBmsSensor() { }
   void set_parent(PaceBms *parent) { parent_ = parent; }
   void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; }
 
