@@ -12,7 +12,10 @@ namespace pace_bms {
 class PaceBmsSensor : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
-  void set_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; request_analog_info_callback_ = true; }
+  void set_cell_count_sensor(sensor::Sensor* voltage_sensor) { cell_count_sensor_ = voltage_sensor; request_analog_info_callback_ = true; }
+
+
+  void set_total_voltage_sensor(sensor::Sensor* voltage_sensor) { voltage_sensor_ = voltage_sensor; request_analog_info_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -22,6 +25,10 @@ class PaceBmsSensor : public Component {
 
  protected:
   pace_bms::PaceBms *parent_;
+  sensor::Sensor* cell_count_sensor_{ nullptr };
+
+
+
   sensor::Sensor* voltage_sensor_{ nullptr };
 
   bool request_analog_info_callback_ = false;
