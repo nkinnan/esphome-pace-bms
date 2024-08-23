@@ -257,8 +257,8 @@ async def to_code(config):
         sens = await sensor.new_sensor(cell_count_config)
         cg.add(var.set_cell_count_sensor(sens))
 
-    for i, conf in enumerate(CELL_VOLTAGES):
-        if conf in config:
+    for i, key in enumerate(CELL_VOLTAGES):
+        if key in config:
             conf = config[key]
             sens = await sensor.new_sensor(conf)
             cg.add(var.set_cell_voltage_sensor(i, sens))
@@ -267,8 +267,8 @@ async def to_code(config):
         sens = await sensor.new_sensor(temperature_count_config)
         cg.add(var.set_temperature_count_sensor(sens))
 
-    for i, conf in enumerate(TEMPERATURES):
-        if conf in config:
+    for i, key in enumerate(TEMPERATURES):
+        if key in config:
             conf = config[key]
             sens = await sensor.new_sensor(conf)
             cg.add(var.set_temperature_sensor(i, sens))
