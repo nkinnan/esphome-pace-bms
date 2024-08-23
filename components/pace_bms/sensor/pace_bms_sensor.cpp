@@ -25,7 +25,12 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Temperature Count", this->temperature_count_sensor_);
 	for (int i = 0; i < 6; i++)
 	  LOG_SENSOR("  ", "Temperature X of 6", this->temperature_sensor_[i]);
+	LOG_SENSOR("  ", "Current", this->current_sensor_);
 	LOG_SENSOR("  ", "Voltage", this->total_voltage_sensor_);
+	LOG_SENSOR("  ", "Remaining Capacity", this->remaining_capacity_sensor_);
+	LOG_SENSOR("  ", "Full Capacity", this->full_capacity_sensor_);
+	LOG_SENSOR("  ", "Design Capacity", this->design_capacity_sensor_);
+	LOG_SENSOR("  ", "Cycle Count", this->cycle_count_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation analog_information) {
