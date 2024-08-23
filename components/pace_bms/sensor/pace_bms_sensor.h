@@ -22,6 +22,9 @@ class PaceBmsSensor : public Component {
   void set_full_capacity_sensor(sensor::Sensor* full_capacity_sensor) { full_capacity_sensor_ = full_capacity_sensor; request_analog_info_callback_ = true; }
   void set_design_capacity_sensor(sensor::Sensor* design_capacity_sensor) { design_capacity_sensor_ = design_capacity_sensor; request_analog_info_callback_ = true; }
   void set_cycle_count_sensor(sensor::Sensor* cycle_count_sensor) { cycle_count_sensor_ = cycle_count_sensor; request_analog_info_callback_ = true; }
+  void set_state_of_charge_sensor(sensor::Sensor* state_of_charge_sensor) { state_of_charge_sensor_ = state_of_charge_sensor; request_analog_info_callback_ = true; }
+  void set_state_of_health_sensor(sensor::Sensor* state_of_health_sensor) { state_of_health_sensor_ = state_of_health_sensor; request_analog_info_callback_ = true; }
+  void set_power_sensor(sensor::Sensor* power_sensor) { power_sensor_ = power_sensor; request_analog_info_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -41,6 +44,9 @@ class PaceBmsSensor : public Component {
   sensor::Sensor* full_capacity_sensor_{ nullptr };
   sensor::Sensor* design_capacity_sensor_{ nullptr };
   sensor::Sensor* cycle_count_sensor_{ nullptr };
+  sensor::Sensor* state_of_charge_sensor_{ nullptr };
+  sensor::Sensor* state_of_health_sensor_{ nullptr };
+  sensor::Sensor* power_sensor_{ nullptr };
 
   bool request_analog_info_callback_ = false;
 };

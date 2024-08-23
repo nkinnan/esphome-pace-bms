@@ -3,10 +3,12 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (
     CONF_ID,
+    CONF_POWER,
     UNIT_VOLT,
     UNIT_CELSIUS,
     UNIT_AMPERE,
     #UNIT_AMP_HOURS,   <--------- added to const.py but need to check in
+    UNIT_WATTS,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
     DEVICE_CLASS_CURRENT,
@@ -76,6 +78,9 @@ CONF_REMAINING_CAPACITY = "remaining_capacity"
 CONF_FULL_CAPACITY = "full_capacity"
 CONF_DESIGN_CAPACITY = "design_capacity"
 CONF_CYCLE_COUNT = "cycle_count"
+CONF_STATE_OF_CHARGE = "state_of_charge"
+CONF_STATE_OF_HEALTH = "state_of_health"
+#CONF_POWER = "power"
 
 #		float SoC; // in percent
 #		float SoH; // in percent
@@ -87,7 +92,7 @@ CONF_CYCLE_COUNT = "cycle_count"
 
 
 
-UNIT_AMP_HOURS = "Ah"
+UNIT_AMP_HOURS = "Ah" # todo: use existing
 
 
 
@@ -275,6 +280,24 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+        cv.Optional(CONF_STATE_OF_CHARGE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=2,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATE_OF_HEALTH): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=2,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_POWER): sensor.sensor_schema(
+            unit_of_measurement=UNIT_WATTS,
+            accuracy_decimals=2,
+            device_class=DEVICE_CLASS_POWER,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
@@ -329,4 +352,16 @@ async def to_code(config):
     if cycle_count := config.get(CONF_CYCLE_COUNT):
         sens = await sensor.new_sensor(cycle_count)
         cg.add(var.set_cycle_count_sensor(sens))
+
+    if state_of_charge := config.get(CONF_STATE_OF_CHARGE):
+        sens = await sensor.new_sensor(state_of_charge)
+        cg.add(var.set_state_of_charge_sensor(sens))
+
+    if state_of_health := config.get(CONF_STATE_OF_HEALTH):
+        sens = await sensor.new_sensor(state_of_health)
+        cg.add(var.set_state_of_health_sensor(sens))
+
+    if power := config.get(CONF_POWER):
+        sens = await sensor.new_sensor(power)
+        cg.add(var.set_power_sensor(sens))
 

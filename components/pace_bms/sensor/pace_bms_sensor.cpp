@@ -31,6 +31,9 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Full Capacity", this->full_capacity_sensor_);
 	LOG_SENSOR("  ", "Design Capacity", this->design_capacity_sensor_);
 	LOG_SENSOR("  ", "Cycle Count", this->cycle_count_sensor_);
+	LOG_SENSOR("  ", "State of Charge", this->state_of_charge_sensor_);
+	LOG_SENSOR("  ", "State of Health", this->state_of_health_sensor_);
+	LOG_SENSOR("  ", "Power", this->power_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation analog_information) {
@@ -67,6 +70,15 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation an
 	}
 	if (this->cycle_count_sensor_ != nullptr) {
 	  this->cycle_count_sensor_->publish_state(analog_information.cycleCount);
+	}
+	if (this->state_of_charge_sensor_ != nullptr) {
+	  this->state_of_charge_sensor_->publish_state(analog_information.SoC);
+	}
+	if (this->state_of_health_sensor_ != nullptr) {
+	  this->state_of_health_sensor_->publish_state(analog_information.SoH);
+	}
+	if (this->power_sensor_ != nullptr) {
+	  this->power_sensor_->publish_state(analog_information.powerWatts);
 	}
 }
 
