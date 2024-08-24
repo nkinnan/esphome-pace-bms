@@ -6,16 +6,14 @@ from esphome.const import (
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
-DEPENDENCIES = ["pace_bms"]
+DEPENDENCIES = ["pace_bms", "pace_bms_switch_implementation"]
 
 PaceBmsSwitch = pace_bms_ns.class_("PaceBmsSwitch", cg.Component)
 
 # "this" for pace_bms_switch_implementation to get parent from
 CONF_PACE_BMS_SWITCH_ID = "pace_bms_switch_id"
 
-
 CONF_BUZZER       = "buzzer"
-
 
 
 CONFIG_SCHEMA = cv.Schema(
@@ -27,7 +25,6 @@ CONFIG_SCHEMA = cv.Schema(
 
     }
 )
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
