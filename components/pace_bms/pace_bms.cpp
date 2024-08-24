@@ -87,7 +87,7 @@ void PaceBms::loop() {
     }
     request_outstanding_ = false;
     this->raw_data_index_ = 0;
-    if(this->command_queue_.size() > 0)
+    if (request_outstanding_ == false && this->command_queue_.size() > 0)
       this->send_next_request_frame_();
   }
 
