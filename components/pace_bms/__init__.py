@@ -16,6 +16,7 @@ DEPENDENCIES = ["uart"]
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
 PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
 
+# "this" for pace_bms_sensor/text_sensor/switch/etc. to get parent from
 CONF_PACE_BMS_ID = "pace_bms_id"
 
 CONF_PROTOCOL_VERSION = "protocol_version"
