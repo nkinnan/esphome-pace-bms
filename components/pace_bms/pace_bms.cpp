@@ -76,14 +76,17 @@ void PaceBms::loop() {
 
   const uint32_t now = millis();
   if (now - this->last_transmission_ >= 500) { // todo: settable read timeout
-    // last transmission too long ago. Reset RX index. 
-    if (this->raw_data_index_ > 0) {
+    if (request_outstanding_ == true) {
+      if (this->raw_data_index_ > 0) {
         std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
         ESP_LOGV(TAG, "Response frame timeout, partial frame: %s", str.c_str());
+      }
+      else {
+        ESP_LOGV(TAG, "Response frame timeout, no data received");
+      }
     }
-    else {
-        ESP_LOGV(TAG, "Response frame timeout (or first request)");
-    }
+
+    // last transmission too long ago. Reset RX index. 
     request_outstanding_ = false;
     this->raw_data_index_ = 0;
     if(this->command_queue_.size() > 0)
