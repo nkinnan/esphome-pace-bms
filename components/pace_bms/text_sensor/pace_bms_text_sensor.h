@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/pace_bms/pace_bms.h"
-#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/text_sensor/text_sensor.h"
 
 #include "../pace_bms_v25.h"
 
@@ -27,12 +27,12 @@ class PaceBmsTextSensor : public Component {
 
  protected:
   pace_bms::PaceBms *parent_;
-  sensor::Sensor* warning_status_sensor_{ nullptr };
-  sensor::Sensor* balancing_status_sensor_{ nullptr };
-  sensor::Sensor* system_status_sensor_{ nullptr };
-  sensor::Sensor* configuration_status_sensor_{ nullptr };
-  sensor::Sensor* protection_status_sensor_{ nullptr };
-  sensor::Sensor* fault_status_sensor_{ nullptr };
+  text_sensor::TextSensor* warning_status_sensor_{ nullptr };
+  text_sensor::TextSensor* balancing_status_sensor_{ nullptr };
+  text_sensor::TextSensor* system_status_sensor_{ nullptr };
+  text_sensor::TextSensor* configuration_status_sensor_{ nullptr };
+  text_sensor::TextSensor* protection_status_sensor_{ nullptr };
+  text_sensor::TextSensor* fault_status_sensor_{ nullptr };
 
   bool request_status_info_callback_ = false;
 };
