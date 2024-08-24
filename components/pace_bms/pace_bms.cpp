@@ -65,10 +65,6 @@ void PaceBms::update() {
         }
         ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
     }
-
-    // last request from the queue could still be in-flight - if so, next command will automatically be dequeued when the in-flight command is processed
-    if (request_outstanding_ == false && this->command_queue_.size() > 0)
-      this->send_next_request_frame_();
 }
 
 // incrementally process incoming bytes off the bus
@@ -85,9 +81,12 @@ void PaceBms::loop() {
         std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
         ESP_LOGV(TAG, "Response frame timeout, partial frame: %s", str.c_str());
     }
+    else {
+        ESP_LOGV(TAG, "Response frame timeout (or first request)");
+    }
     request_outstanding_ = false;
     this->raw_data_index_ = 0;
-    if (request_outstanding_ == false && this->command_queue_.size() > 0)
+    if(this->command_queue_.size() > 0)
       this->send_next_request_frame_();
   }
 
