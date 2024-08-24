@@ -20,6 +20,9 @@ CONF_CONFIGURATION_STATUS = "configuration_status"
 CONF_PROTECTION_STATUS    = "protection_status"
 CONF_FAULT_STATUS         = "fault_status"
 
+CONF_HARDWARE_VERSION     = "hardware_version"
+CONF_SERIAL_NUMBER        = "serial_number"
+
 
 
 CONFIG_SCHEMA = cv.Schema(
@@ -66,4 +69,12 @@ async def to_code(config):
     if fault_status_config := config.get(CONF_FAULT_STATUS):
         sens = await text_sensor.new_text_sensor(fault_status_config)
         cg.add(var.set_fault_status_sensor(sens))
+
+    if hardware_version_config := config.get(CONF_HARDWARE_VERSION):
+        sens = await text_sensor.new_text_sensor(hardware_version_config)
+        cg.add(var.set_hardware_version_sensor(sens))
+
+    if serial_number_config := config.get(CONF_SERIAL_NUMBER):
+        sens = await text_sensor.new_text_sensor(serial_number_config)
+        cg.add(var.set_serial_number_sensor(sens))
 

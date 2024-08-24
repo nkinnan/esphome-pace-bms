@@ -12,6 +12,12 @@ void PaceBmsTextSensor::setup() {
   if (request_status_info_callback_ == true) {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsTextSensor::status_information_callback, this, std::placeholders::_1));
   }
+  if (request_hardware_version_callback_ == true) {
+    this->parent_->register_hardware_version_callback(std::bind(&esphome::pace_bms::PaceBmsTextSensor::hardware_version_callback, this, std::placeholders::_1));
+  }
+  if (request_serial_number_callback_ == true) {
+    this->parent_->register_serial_number_callback(std::bind(&esphome::pace_bms::PaceBmsTextSensor::serial_number_callback, this, std::placeholders::_1));
+  }
 }
 
 float PaceBmsTextSensor::get_setup_priority() const { return setup_priority::DATA; }
@@ -24,6 +30,8 @@ void PaceBmsTextSensor::dump_config() {
 	LOG_TEXT_SENSOR("  ", "Configuration Status", this->configuration_status_sensor_);
 	LOG_TEXT_SENSOR("  ", "Protection Status", this->protection_status_sensor_);
 	LOG_TEXT_SENSOR("  ", "Fault Status", this->fault_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "Hardware Version", this->hardware_version_sensor_);
+	LOG_TEXT_SENSOR("  ", "Serial Number", this->serial_number_sensor_);
 }
 
 void PaceBmsTextSensor::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
@@ -47,6 +55,16 @@ void PaceBmsTextSensor::status_information_callback(PaceBmsV25::StatusInformatio
   }
 }
 
+void PaceBmsTextSensor::hardware_version_callback(std::string& hardware_version) {
+	if (this->hardware_version_sensor_ != nullptr) {
+		this->hardware_version_sensor_->publish_state(hardware_version);
+	}
+}
+void PaceBmsTextSensor::serial_number_callback(std::string& serial_number) {
+	if (this->serial_number_sensor_ != nullptr) {
+		this->serial_number_sensor_->publish_state(serial_number);
+	}
+}
 
 }  // namespace pace_bms
 }  // namespace esphome

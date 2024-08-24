@@ -930,7 +930,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i+1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, &byteOffset);
@@ -951,7 +951,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i) + " " + DecodeWarningValue(tw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i+1) + " " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
@@ -1024,7 +1024,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	{
 		if ((balanceState & (1 << i)) != 0)
 		{
-			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i) + " is balancing; ");
+			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i+1) + " is balancing; ");
 		}
 	}
 
