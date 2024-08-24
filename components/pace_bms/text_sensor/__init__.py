@@ -1,6 +1,6 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import sensor
+from esphome.components import text_sensor
 from esphome.const import (
     CONF_ID,
     DEVICE_CLASS_EMPTY,
@@ -26,42 +26,12 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsTextSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
-        cv.Optional(CONF_WARNING_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
-        cv.Optional(CONF_BALANCING_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
-        cv.Optional(CONF_SYSTEM_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
-        cv.Optional(CONF_CONFIGURATION_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
-        cv.Optional(CONF_PROTECTION_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
-        cv.Optional(CONF_FAULT_STATUS): sensor.sensor_schema(
-            #unit_of_measurement=,
-            #accuracy_decimals=,
-            device_class=DEVICE_CLASS_EMPTY,
-            state_class=STATE_CLASS_NONE,
-        ),
+        cv.Optional(CONF_WARNING_STATUS): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_BALANCING_STATUS): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_SYSTEM_STATUS): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_CONFIGURATION_STATUS): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_PROTECTION_STATUS): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_FAULT_STATUS): text_sensor.text_sensor_schema(),
     }
 )
 
@@ -74,26 +44,26 @@ async def to_code(config):
     cg.add(var.set_parent(paren))
 
     if warning_status_config := config.get(CONF_WARNING_STATUS):
-        sens = await sensor.new_sensor(warning_status_config)
+        sens = await text_sensor.new_sensor(warning_status_config)
         cg.add(var.set_warning_status_sensor(sens))
 
     if balancing_status_config := config.get(CONF_BALANCING_STATUS):
-        sens = await sensor.new_sensor(balancing_status_config)
+        sens = await text_sensor.new_sensor(balancing_status_config)
         cg.add(var.set_balancing_status_sensor(sens))
 
     if system_status_config := config.get(CONF_SYSTEM_STATUS):
-        sens = await sensor.new_sensor(system_status_config)
+        sens = await text_sensor.new_sensor(system_status_config)
         cg.add(var.set_system_status_sensor(sens))
 
     if configuration_status_config := config.get(CONF_CONFIGURATION_STATUS):
-        sens = await sensor.new_sensor(configuration_status_config)
+        sens = await text_sensor.new_sensor(configuration_status_config)
         cg.add(var.set_configuration_status_sensor(sens))
 
     if protection_status_config := config.get(CONF_PROTECTION_STATUS):
-        sens = await sensor.new_sensor(protection_status_config)
+        sens = await text_sensor.new_sensor(protection_status_config)
         cg.add(var.set_protection_status_sensor(sens))
 
     if fault_status_config := config.get(CONF_FAULT_STATUS):
-        sens = await sensor.new_sensor(fault_status_config)
+        sens = await text_sensor.new_sensor(fault_status_config)
         cg.add(var.set_fault_status_sensor(sens))
 
