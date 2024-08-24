@@ -88,6 +88,8 @@ void PaceBms::loop() {
     this->raw_data_index_ = 0;
     if(this->command_queue_.size() > 0)
       this->send_next_request_frame_();
+
+    this->last_transmission_ = now;
   }
 
   if (this->available() == 0) {
