@@ -7,8 +7,7 @@ from esphome.const import (
 from .. import pace_bms_ns
 #from ..switch import CONF_PACE_BMS_SWITCH_ID, PaceBmsSwitch
 
-
-DEPENDENCIES = ["pace_bms_switch"]
+#DEPENDENCIES = ["pace_bms_switch"]
 
 PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Switch)
 
