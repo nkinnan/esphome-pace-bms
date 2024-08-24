@@ -9,7 +9,7 @@ from .. import pace_bms_ns
 
 #DEPENDENCIES = ["pace_bms_switch"]
 
-PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Switch)
+PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Component, switch.Switch)
 
 
 CONFIG_SCHEMA = cv.Schema(
