@@ -19,11 +19,11 @@ float PaceBmsTextSensor::get_setup_priority() const { return setup_priority::DAT
 void PaceBmsTextSensor::dump_config() { 
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
 	LOG_TEXT_SENSOR("  ", "Warning Status", this->warning_status_sensor_);
-	LOG_SENSOR("  ", "Balancing Status", this->balancing_status_sensor_);
-	LOG_SENSOR("  ", "System Status", this->system_status_sensor_);
-	LOG_SENSOR("  ", "Configuration Status", this->configuration_status_sensor_);
-	LOG_SENSOR("  ", "Protection Status", this->protection_status_sensor_);
-	LOG_SENSOR("  ", "Fault Status", this->fault_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "Balancing Status", this->balancing_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "System Status", this->system_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "Configuration Status", this->configuration_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "Protection Status", this->protection_status_sensor_);
+	LOG_TEXT_SENSOR("  ", "Fault Status", this->fault_status_sensor_);
 }
 
 void PaceBmsTextSensor::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
