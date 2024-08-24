@@ -9,7 +9,7 @@ namespace pace_bms {
 static const char* const TAG = "pace_bms.sensor";
 
 void PaceBmsTextSensor::setup() {
-  if (request_analog_info_callback_ == true) {
+  if (request_status_info_callback_ == true) {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsTextSensor::status_information_callback, this, std::placeholders::_1));
   }
 }
@@ -28,22 +28,22 @@ void PaceBmsTextSensor::dump_config() {
 
 void PaceBmsTextSensor::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->warning_status_sensor_ != nullptr) {
-    this->warning_status_sensor_->publish_state(status_information.warningText.c_str());
+    this->warning_status_sensor_->publish_state(status_information.warningText);
   }
   if (this->balancing_status_sensor_ != nullptr) {
-    this->balancing_status_sensor_->publish_state(status_information.balancingText.c_str());
+    this->balancing_status_sensor_->publish_state(status_information.balancingText);
   }
   if (this->system_status_sensor_ != nullptr) {
-    this->system_status_sensor_->publish_state(status_information.systemText.c_str());
+    this->system_status_sensor_->publish_state(status_information.systemText);
   }
   if (this->configuration_status_sensor_ != nullptr) {
-    this->configuration_status_sensor_->publish_state(status_information.configurationText.c_str());
+    this->configuration_status_sensor_->publish_state(status_information.configurationText);
   }
   if (this->protection_status_sensor_ != nullptr) {
-    this->protection_status_sensor_->publish_state(status_information.protectionText.c_str());
+    this->protection_status_sensor_->publish_state(status_information.protectionText);
   }
   if (this->fault_status_sensor_ != nullptr) {
-    this->fault_status_sensor_->publish_state(status_information.faultText.c_str());
+    this->fault_status_sensor_->publish_state(status_information.faultText);
   }
 }
 
