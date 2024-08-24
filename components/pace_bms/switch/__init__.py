@@ -5,6 +5,7 @@ from esphome.const import (
     CONF_ID,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from ../switch_implementation import PaceBmsSwitchImplementation
 
 DEPENDENCIES = ["pace_bms", "pace_bms_switch_implementation"]
 
