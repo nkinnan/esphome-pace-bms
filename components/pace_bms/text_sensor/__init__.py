@@ -3,6 +3,8 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (
     CONF_ID,
+    DEVICE_CLASS_EMPTY,
+    STATE_CLASS_NONE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
