@@ -234,11 +234,24 @@ public:
 	struct StatusInformation
 	{
 		std::string warningText;
+		uint8_t     warning_value_cell[MAX_CELL_COUNT]; // DecodeWarningValue
+		uint8_t     warning_value_temp[MAX_TEMP_COUNT]; // DecodeWarningValue
+		uint8_t     warning_value_charge_current; // DecodeWarningValue
+		uint8_t     warning_value_total_voltage; // DecodeWarningValue
+		uint8_t     warning_value_discharge_current; // DecodeWarningValue
+		uint8_t     warning_value1; // DecodeWarningStatus1Value
+		uint8_t     warning_value2; // DecodeWarningStatus2Value
 		std::string balancingText;
+		uint16_t    balancing_value; // one bit per cell, lowest bit = cell 1
 		std::string systemText;
+		uint8_t     system_value; // DecodeStatusValue
 		std::string configurationText;
+		uint8_t     configuration_value; // DecodeConfigurationStatusValue
 		std::string protectionText;
+		uint8_t     protection_value1; // DecodeProtectionStatus1Value
+		uint8_t     protection_value2; // DecodeProtectionStatus2Value
 		std::string faultText;
+		uint8_t     fault_value; // DecodeFaultStatusValue
 	};
 
 	void CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);

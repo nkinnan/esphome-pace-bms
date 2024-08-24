@@ -921,6 +921,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	for (int i = 0; i < cellCount; i++)
 	{
 		uint8_t cw = ReadHexEncodedByte(response, &byteOffset);
+		statusInformation.warning_value_cell[i] = cw;
 
 		if (i > MAX_CELL_COUNT - 1)
 			continue;
@@ -941,6 +942,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	for (int i = 0; i < tempCount; i++)
 	{
 		uint8_t tw = ReadHexEncodedByte(response, &byteOffset);
+		statusInformation.warning_value_temp[i] = tw;
 
 		if (i > MAX_TEMP_COUNT - 1)
 			continue;
@@ -953,6 +955,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.warning_value_charge_current = chargeCurrentWarn;
 	if (chargeCurrentWarn != 0)
 	{
 		// below/above limit
@@ -960,6 +963,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.warning_value_total_voltage = totalVoltageWarn;
 	if (totalVoltageWarn != 0)
 	{
 		// below/above limit
@@ -967,6 +971,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.warning_value_discharge_current = dischargeCurrentWarn;
 	if (dischargeCurrentWarn != 0)
 	{
 		// below/above limit
@@ -975,26 +980,30 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	// ========================== Protection Status ==========================
 	uint8_t protectState1 = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.protection_value1 = protectState1;
 	if (protectState1 != 0)
 	{
 		statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
 	}
 
 	uint8_t protectState2 = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.protection_value2 = protectState2;
 	if (protectState2 != 0)
 	{
 		statusInformation.protectionText.append(DecodeProtectionStatus2Value(protectState2));
 	}
 
 	// ========================== System Status ==========================
-	uint8_t status = ReadHexEncodedByte(response, &byteOffset);
-	if (status != 0)
+	uint8_t systemState = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.system_value = systemState;
+	if (systemState != 0)
 	{
-		statusInformation.systemText.append(DecodeStatusValue(status));
+		statusInformation.systemText.append(DecodeStatusValue(systemState));
 	}
 
 	// ========================== Configuration Status ==========================
 	uint8_t controlState = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.configuration_value = controlState;
 	if (controlState != 0)
 	{
 		statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState));
@@ -1002,6 +1011,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	// ========================== Fault Status ==========================
 	uint8_t faultState = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.fault_value = faultState;
 	if (faultState != 0)
 	{
 		statusInformation.faultText.append(DecodeFaultStatusValue(faultState));
@@ -1009,6 +1019,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	// ========================== Balancing Status ==========================
 	uint16_t balanceState = ReadHexEncodedUShort(response, &byteOffset);
+	statusInformation.balancing_value = balanceState;
 	for (int i = 0; i < 16; i++)
 	{
 		if ((balanceState & (1 << i)) != 0)
@@ -1021,12 +1032,14 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	// Note: It seems like these two may be a "summary" of the previous "Warning / Alarm" section as it duplicates some of the same warnings,
 	//       but I'll leave it for completeness or in case the bit shows up in one place but not the other in practice.
 	uint8_t warnState1 = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.warning_value1 = warnState1;
 	if (warnState1 != 0)
 	{
 		statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
 	}
 
 	uint8_t warnState2 = ReadHexEncodedByte(response, &byteOffset);
+	statusInformation.warning_value2 = warnState1;
 	if (warnState2 != 0)
 	{
 		statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));

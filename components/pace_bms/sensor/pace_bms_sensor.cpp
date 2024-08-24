@@ -12,6 +12,9 @@ void PaceBmsSensor::setup() {
   if (request_analog_info_callback_ == true) {
     this->parent_->register_analog_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::analog_information_callback, this, std::placeholders::_1));
   }
+  if (request_status_info_callback_ == true) {
+    this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::status_information_callback, this, std::placeholders::_1));
+  }
 }
 
 float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
@@ -37,6 +40,21 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Max Cell Voltage", this->max_cell_voltage_sensor_);
 	LOG_SENSOR("  ", "Avg Cell Voltage", this->avg_cell_voltage_sensor_);
 	LOG_SENSOR("  ", "Max Cell Differential", this->max_cell_differential_sensor_);
+	for (int i = 0; i < 16; i++)
+		LOG_SENSOR("  ", "Warning Status Value Cell X of 16", this->warning_status_value_cells_sensor_[i]);
+	for (int i = 0; i < 6; i++)
+		LOG_SENSOR("  ", "Warning Status Value Temperature X of 6", this->temperature_sensor_[i]);
+	LOG_SENSOR("  ", "Warning Status Value Charge Current", this->warning_status_value_charge_current_sensor_);
+	LOG_SENSOR("  ", "Warning Status Value Total Voltage", this->warning_status_value_total_voltage_sensor_);
+	LOG_SENSOR("  ", "Warning Status Value Discharge Current", this->warning_status_value_discharge_current_sensor_);
+	LOG_SENSOR("  ", "Warning Status Value 1", this->warning_status_value_1_sensor_);
+	LOG_SENSOR("  ", "Warning Status Value 2", this->warning_status_value_2_sensor_);
+	LOG_SENSOR("  ", "Balancing Status Value", this->balancing_status_value_sensor_);
+	LOG_SENSOR("  ", "System Status Value", this->system_status_value_sensor_);
+	LOG_SENSOR("  ", "Configuration Status Value", this->configuration_status_value_sensor_);
+	LOG_SENSOR("  ", "Protection Status Value 1", this->protection_status_value_1_sensor_);
+	LOG_SENSOR("  ", "Protection Status Value 2", this->protection_status_value_2_sensor_);
+	LOG_SENSOR("  ", "Fault Status Value", this->fault_status_value_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation& analog_information) {
@@ -97,6 +115,51 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation& a
 	}
 }
 
+void PaceBmsSensor::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
+	for (int i = 0; i < 16; i++) {
+		if (this->warning_status_value_cells_sensor_[i] != nullptr) {
+			this->warning_status_value_cells_sensor_[i]->publish_state(status_information.warning_value_cell[i]);
+		}
+	}
+	for (int i = 0; i < 6; i++) {
+		if (this->warning_status_value_temps_sensor_[i] != nullptr) {
+			this->warning_status_value_temps_sensor_[i]->publish_state(status_information.warning_value_temp[i]);
+		}
+	}
+	if (this->warning_status_value_charge_current_sensor_ != nullptr) {
+		this->warning_status_value_charge_current_sensor_->publish_state(status_information.warning_value_charge_current);
+	}
+	if (this->warning_status_value_total_voltage_sensor_ != nullptr) {
+		this->warning_status_value_total_voltage_sensor_->publish_state(status_information.warning_value_total_voltage);
+	}
+	if (this->warning_status_value_discharge_current_sensor_ != nullptr) {
+		this->warning_status_value_discharge_current_sensor_->publish_state(status_information.warning_value_discharge_current);
+	}
+	if (this->warning_status_value_1_sensor_ != nullptr) {
+		this->warning_status_value_1_sensor_->publish_state(status_information.warning_value1);
+	}
+	if (this->warning_status_value_2_sensor_ != nullptr) {
+		this->warning_status_value_2_sensor_->publish_state(status_information.warning_value2);
+	}
+	if (this->balancing_status_value_sensor_ != nullptr) {
+		this->balancing_status_value_sensor_->publish_state(status_information.balancing_value);
+	}
+	if (this->system_status_value_sensor_ != nullptr) {
+		this->system_status_value_sensor_->publish_state(status_information.system_value);
+	}
+	if (this->configuration_status_value_sensor_ != nullptr) {
+		this->configuration_status_value_sensor_->publish_state(status_information.configuration_value);
+	}
+	if (this->protection_status_value_1_sensor_ != nullptr) {
+		this->protection_status_value_1_sensor_->publish_state(status_information.protection_value1);
+	}
+	if (this->protection_status_value_2_sensor_ != nullptr) {
+		this->protection_status_value_2_sensor_->publish_state(status_information.protection_value2);
+	}
+	if (this->fault_status_value_sensor_ != nullptr) {
+		this->fault_status_value_sensor_->publish_state(status_information.fault_value);
+	}
+}
 
 }  // namespace pace_bms
 }  // namespace esphome

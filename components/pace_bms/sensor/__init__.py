@@ -84,11 +84,73 @@ CONF_CYCLE_COUNT = "cycle_count"
 CONF_STATE_OF_CHARGE = "state_of_charge"
 CONF_STATE_OF_HEALTH = "state_of_health"
 #CONF_POWER = "power"
-
 CONF_MIN_CELL_VOLTAGE = "min_cell_voltage"
 CONF_MAX_CELL_VOLTAGE = "max_cell_voltage"
 CONF_AVG_CELL_VOLTAGE = "avg_cell_voltage"
 CONF_MAX_CELL_DIFFERENTIAL = "max_cell_differential"
+
+
+CONF_WARNING_STATUS_VALUE_CELL_01           = "warning_status_value_cell_01"
+CONF_WARNING_STATUS_VALUE_CELL_02           = "warning_status_value_cell_02"
+CONF_WARNING_STATUS_VALUE_CELL_03           = "warning_status_value_cell_03"
+CONF_WARNING_STATUS_VALUE_CELL_04           = "warning_status_value_cell_04"
+CONF_WARNING_STATUS_VALUE_CELL_05           = "warning_status_value_cell_05"
+CONF_WARNING_STATUS_VALUE_CELL_06           = "warning_status_value_cell_06"
+CONF_WARNING_STATUS_VALUE_CELL_07           = "warning_status_value_cell_07"
+CONF_WARNING_STATUS_VALUE_CELL_08           = "warning_status_value_cell_08"
+CONF_WARNING_STATUS_VALUE_CELL_09           = "warning_status_value_cell_09"
+CONF_WARNING_STATUS_VALUE_CELL_10           = "warning_status_value_cell_10"
+CONF_WARNING_STATUS_VALUE_CELL_11           = "warning_status_value_cell_11"
+CONF_WARNING_STATUS_VALUE_CELL_12           = "warning_status_value_cell_12"
+CONF_WARNING_STATUS_VALUE_CELL_13           = "warning_status_value_cell_13"
+CONF_WARNING_STATUS_VALUE_CELL_14           = "warning_status_value_cell_14"
+CONF_WARNING_STATUS_VALUE_CELL_15           = "warning_status_value_cell_15"
+CONF_WARNING_STATUS_VALUE_CELL_16           = "warning_status_value_cell_16"
+CONF_WARNING_STATUS_VALUE_CELLS = [
+    CONF_WARNING_STATUS_VALUE_CELL_01,
+    CONF_WARNING_STATUS_VALUE_CELL_02,
+    CONF_WARNING_STATUS_VALUE_CELL_03,
+    CONF_WARNING_STATUS_VALUE_CELL_04,
+    CONF_WARNING_STATUS_VALUE_CELL_05,
+    CONF_WARNING_STATUS_VALUE_CELL_06,
+    CONF_WARNING_STATUS_VALUE_CELL_07,
+    CONF_WARNING_STATUS_VALUE_CELL_08,
+    CONF_WARNING_STATUS_VALUE_CELL_09,
+    CONF_WARNING_STATUS_VALUE_CELL_10,
+    CONF_WARNING_STATUS_VALUE_CELL_11,
+    CONF_WARNING_STATUS_VALUE_CELL_12,
+    CONF_WARNING_STATUS_VALUE_CELL_13,
+    CONF_WARNING_STATUS_VALUE_CELL_14,
+    CONF_WARNING_STATUS_VALUE_CELL_15,
+    CONF_WARNING_STATUS_VALUE_CELL_16,
+]
+CONF_WARNING_STATUS_VALUE_TEMP_01           = "warning_status_value_temperature_01"
+CONF_WARNING_STATUS_VALUE_TEMP_02           = "warning_status_value_temperature_02"
+CONF_WARNING_STATUS_VALUE_TEMP_03           = "warning_status_value_temperature_03"
+CONF_WARNING_STATUS_VALUE_TEMP_04           = "warning_status_value_temperature_04"
+CONF_WARNING_STATUS_VALUE_TEMP_05           = "warning_status_value_temperature_05"
+CONF_WARNING_STATUS_VALUE_TEMP_06           = "warning_status_value_temperature_06"
+CONF_WARNING_STATUS_VALUE_TEMPS = [
+    CONF_WARNING_STATUS_VALUE_TEMP_01,
+    CONF_WARNING_STATUS_VALUE_TEMP_02,
+    CONF_WARNING_STATUS_VALUE_TEMP_03,
+    CONF_WARNING_STATUS_VALUE_TEMP_04,
+    CONF_WARNING_STATUS_VALUE_TEMP_05,
+    CONF_WARNING_STATUS_VALUE_TEMP_06,
+]
+CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT    = "warning_status_value_charge_current"
+CONF_WARNING_STATUS_VALUE_TOTAL_VOLTAGE     = "warning_status_value_total_voltage"
+CONF_WARNING_STATUS_VALUE_DISCHARGE_CURRENT = "warning_status_value_discharge_current"
+CONF_WARNING_STATUS_VALUE_1                 = "warning_status_value_1"
+CONF_WARNING_STATUS_VALUE_2                 = "warning_status_value_2"
+
+CONF_BALANCING_STATUS_VALUE     = "balancing_status_value"
+CONF_SYSTEM_STATUS_VALUE        = "system_status_value"
+CONF_CONFIGURATION_STATUS_VALUE = "configuration_status_value"
+CONF_PROTECTION_STATUS_VALUE_1  = "protection_status_value_1"
+CONF_PROTECTION_STATUS_VALUE_2  = "protection_status_value_2"
+CONF_FAULT_STATUS_VALUE         = "fault_status_value"
+
 
 
 
@@ -322,6 +384,213 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+
+        
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_01): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_02): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_03): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_04): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_05): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_06): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_07): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_08): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_09): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_10): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_11): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_12): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_13): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_14): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_15): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_16): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_01): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_02): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_03): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_04): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_05): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_06): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+
+        cv.Optional(CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_TOTAL_VOLTAGE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_DISCHARGE_CURRENT): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_1): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING_STATUS_VALUE_2): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+
+        cv.Optional(CONF_BALANCING_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_SYSTEM_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_CONFIGURATION_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PROTECTION_STATUS_VALUE_1): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PROTECTION_STATUS_VALUE_2): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_FAULT_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
     }
 )
 
@@ -404,4 +673,60 @@ async def to_code(config):
     if max_cell_differential := config.get(CONF_MAX_CELL_DIFFERENTIAL):
         sens = await sensor.new_sensor(max_cell_differential)
         cg.add(var.set_max_cell_differential_sensor(sens))
+
+    for i, key in enumerate(CONF_WARNING_STATUS_VALUE_CELLS):
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(var.set_warning_status_value_cells_sensor(i, sens))
+
+    for i, key in enumerate(CONF_WARNING_STATUS_VALUE_TEMPS):
+        if key in config:
+            conf = config[key]
+            sens = await sensor.new_sensor(conf)
+            cg.add(var.set_warning_status_value_temps_sensor(i, sens))
+
+    if warning_status_value_charge_current := config.get(CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT):
+        sens = await sensor.new_sensor(warning_status_value_charge_current)
+        cg.add(var.set_warning_status_value_charge_current_sensor(sens))
+
+    if warning_status_value_total_voltage := config.get(CONF_WARNING_STATUS_VALUE_TOTAL_VOLTAGE):
+        sens = await sensor.new_sensor(warning_status_value_total_voltage)
+        cg.add(var.set_warning_status_value_total_voltage_sensor(sens))
+
+    if warning_status_value_discharge_current := config.get(CONF_WARNING_STATUS_VALUE_DISCHARGE_CURRENT):
+        sens = await sensor.new_sensor(warning_status_value_discharge_current)
+        cg.add(var.set_warning_status_value_discharge_current_sensor(sens))
+
+    if warning_status_value_1 := config.get(CONF_WARNING_STATUS_VALUE_1):
+        sens = await sensor.new_sensor(warning_status_value_1)
+        cg.add(var.set_warning_status_value_1_sensor(sens))
+
+    if warning_status_value_2 := config.get(CONF_WARNING_STATUS_VALUE_2):
+        sens = await sensor.new_sensor(warning_status_value_2)
+        cg.add(var.set_warning_status_value_2_sensor(sens))
+
+    if balancing_status_value := config.get(CONF_BALANCING_STATUS_VALUE):
+        sens = await sensor.new_sensor(balancing_status_value)
+        cg.add(var.set_balancing_status_value_sensor(sens))
+
+    if system_status_value := config.get(CONF_SYSTEM_STATUS_VALUE):
+        sens = await sensor.new_sensor(system_status_value)
+        cg.add(var.set_system_status_value_sensor(sens))
+
+    if configuration_status_value := config.get(CONF_CONFIGURATION_STATUS_VALUE):
+        sens = await sensor.new_sensor(configuration_status_value)
+        cg.add(var.set_configuration_status_value_sensor(sens))
+
+    if protection_status_value_1 := config.get(CONF_PROTECTION_STATUS_VALUE_1):
+        sens = await sensor.new_sensor(protection_status_value_1)
+        cg.add(var.set_protection_status_value_1_sensor(sens))
+
+    if protection_status_value_2 := config.get(CONF_PROTECTION_STATUS_VALUE_2):
+        sens = await sensor.new_sensor(protection_status_value_2)
+        cg.add(var.set_protection_status_value_2_sensor(sens))
+
+    if fault_status_value := config.get(CONF_FAULT_STATUS_VALUE):
+        sens = await sensor.new_sensor(fault_status_value)
+        cg.add(var.set_fault_status_value_sensor(sens))
 
