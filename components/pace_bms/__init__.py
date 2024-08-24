@@ -59,7 +59,7 @@ async def to_code(config):
         cg.add(var.set_address(config[CONF_ADDRESS]))
     if CONF_PROTOCOL_VERSION in config:
         cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
-    if CONF_COMMAND_THROTTLE in config:
+    if CONF_REQUEST_THROTTLE in config:
         cg.add(var.set_request_throttle(config[CONF_REQUEST_THROTTLE]))
     if CONF_RESPONSE_TIMEOUT in config:
         cg.add(var.set_response_timeout(config[CONF_RESPONSE_TIMEOUT]))
