@@ -44,26 +44,26 @@ async def to_code(config):
     cg.add(var.set_parent(paren))
 
     if warning_status_config := config.get(CONF_WARNING_STATUS):
-        sens = await text_sensor.new_sensor(warning_status_config)
+        sens = await text_sensor.new_text_sensor(warning_status_config)
         cg.add(var.set_warning_status_sensor(sens))
 
     if balancing_status_config := config.get(CONF_BALANCING_STATUS):
-        sens = await text_sensor.new_sensor(balancing_status_config)
+        sens = await text_sensor.new_text_sensor(balancing_status_config)
         cg.add(var.set_balancing_status_sensor(sens))
 
     if system_status_config := config.get(CONF_SYSTEM_STATUS):
-        sens = await text_sensor.new_sensor(system_status_config)
+        sens = await text_sensor.new_text_sensor(system_status_config)
         cg.add(var.set_system_status_sensor(sens))
 
     if configuration_status_config := config.get(CONF_CONFIGURATION_STATUS):
-        sens = await text_sensor.new_sensor(configuration_status_config)
+        sens = await text_sensor.new_text_sensor(configuration_status_config)
         cg.add(var.set_configuration_status_sensor(sens))
 
     if protection_status_config := config.get(CONF_PROTECTION_STATUS):
-        sens = await text_sensor.new_sensor(protection_status_config)
+        sens = await text_sensor.new_text_sensor(protection_status_config)
         cg.add(var.set_protection_status_sensor(sens))
 
     if fault_status_config := config.get(CONF_FAULT_STATUS):
-        sens = await text_sensor.new_sensor(fault_status_config)
+        sens = await text_sensor.new_text_sensor(fault_status_config)
         cg.add(var.set_fault_status_sensor(sens))
 
