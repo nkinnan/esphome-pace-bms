@@ -721,35 +721,35 @@ const std::string PaceBmsV25::DecodeConfigurationStatusValue(const uint8_t val)
 
 	if ((val & (1 << 7)) != 0)
 	{
-		oss.append("Undefined ControlState bit7 On; ");
+		oss.append("Undefined ControlState bit7 Set; ");
 	}
 	if ((val & (1 << 6)) != 0)
 	{
-		oss.append("Undefined ControlState bit6 On; ");
+		oss.append("Undefined ControlState bit6 Set; ");
 	}
 	if ((val & (1 << 5)) != 0)
 	{
-		oss.append("Warning LED On; ");
+		oss.append("Warning LED Enabled; ");
 	}
 	if ((val & (1 << 4)) != 0)
 	{
-		oss.append("Charge Current Limiter On; ");
+		oss.append("Charge Current Limiter Enabled; ");
 	}
 	if ((val & (1 << 3)) != 0)
 	{
-		oss.append("Current limit low-gear On; ");
+		oss.append("Current limit low-gear Set; ");
 	}
 	if ((val & (1 << 2)) != 0)
 	{
-		oss.append("Undefined ControlState bit2 On; ");
+		oss.append("Undefined ControlState bit2 Set; ");
 	}
 	if ((val & (1 << 1)) != 0)
 	{
-		oss.append("Undefined ControlState bit1 On; ");
+		oss.append("Undefined ControlState bit1 Set; ");
 	}
 	if ((val & (1 << 0)) != 0)
 	{
-		oss.append("Warning Buzzer On; ");
+		oss.append("Warning Buzzer Enabled; ");
 	}
 
 	return oss;
