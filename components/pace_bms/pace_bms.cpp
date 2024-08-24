@@ -38,7 +38,7 @@ void PaceBms::setup() {
     this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
   }
 
-  if (this->flow_control_pin_ != nullptr) {
+  if (this->flow_control_pin_ != nullptr) 
     this->flow_control_pin_->setup();
 }
 
