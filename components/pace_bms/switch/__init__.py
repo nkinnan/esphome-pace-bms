@@ -7,7 +7,7 @@ from esphome.const import (
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 from ..switch_implementation import PaceBmsSwitchImplementation
 
-DEPENDENCIES = ["pace_bms", "pace_bms_switch_implementation"]
+DEPENDENCIES = ["pace_bms", "PaceBmsSwitchImplementation"]
 
 PaceBmsSwitch = pace_bms_ns.class_("PaceBmsSwitch", cg.Component)
 
@@ -35,6 +35,6 @@ async def to_code(config):
     cg.add(var.set_parent(paren))
 
     if buzzer_config := config.get(CONF_BUZZER):
-        sens = await pace_bms_switch_implementation.new_switch(buzzer_config)
+        sens = await PaceBmsSwitchImplementation.new_switch(buzzer_config)
         cg.add(var.set_buzzer_switch(sens))
 

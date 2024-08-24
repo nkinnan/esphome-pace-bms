@@ -11,7 +11,6 @@ from .. import pace_bms_ns
 
 PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Component, switch.Switch)
 
-
 CONFIG_SCHEMA = cv.All(
     switch.switch_schema(default_restore_mode="DISABLED")
     .extend(
@@ -21,7 +20,6 @@ CONFIG_SCHEMA = cv.All(
         }
     )
 )
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
