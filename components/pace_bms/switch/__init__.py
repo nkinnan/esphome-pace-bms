@@ -36,7 +36,7 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
-#    if buzzer_config := config.get(CONF_BUZZER):
-#        sens = await switch.new_switch(buzzer_config)
-#        cg.add(var.set_buzzer_switch(sens))
+    if buzzer_config := config.get(CONF_BUZZER):
+        sens = await switch.new_switch(buzzer_config)
+        cg.add(var.set_buzzer_switch(sens))
 

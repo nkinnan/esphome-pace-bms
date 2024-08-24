@@ -1,4 +1,4 @@
-#include "pace_bms_text_sensor.h"
+#include "pace_bms_switch.h"
 #include "esphome/core/log.h"
 
 #include <functional>
