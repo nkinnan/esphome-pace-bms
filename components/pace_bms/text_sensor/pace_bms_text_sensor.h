@@ -26,7 +26,7 @@ class PaceBmsTextSensor : public Component {
   float get_setup_priority() const override;
   void dump_config() override;
 
-  void status_information_callback(PaceBmsV25::StatusInformation& analog_information);
+  void status_information_callback(PaceBmsV25::StatusInformation& status_information);
   void hardware_version_callback(std::string& hardware_version);
   void serial_number_callback(std::string &serial_number);
 

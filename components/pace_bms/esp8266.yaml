@@ -57,12 +57,14 @@ uart:
 
 
 pace_bms:
+  uart_id: uart_1
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
-  uart_id: uart_1
   flow_control_pin: GPIO2
   update_interval: 5s
+  request_throttle: 50ms
+  response_timeout: 200ms
 
 
 sensor:
@@ -87,7 +89,7 @@ sensor:
     cell_voltage_07:
       name: "Cell Voltage 07"
     cell_voltage_08:
-      name: "Cell Voltage 08"
+      name: "Cell Voltage 08" 
     cell_voltage_09:
       name: "Cell Voltage 09"
     cell_voltage_10:
@@ -121,11 +123,12 @@ sensor:
     temperature_06:
       name: "Environment Temperature"
 
-    current:
-      name: "Current"
-
     total_voltage:
       name: "Total Voltage"
+    current:
+      name: "Current"
+    power:
+      name: "Power"
 
     remaining_capacity:
       name: "Remaining Capacity"
@@ -136,14 +139,10 @@ sensor:
 
     cycle_count:
       name: "Cycle Count"
-
     state_of_charge:
       name: "State of Charge"
     state_of_health:
       name: "State of Health"
-
-    power:
-      name: "Power"
 
     min_cell_voltage:
       name: "Min Cell Voltage"
@@ -154,3 +153,99 @@ sensor:
     max_cell_differential:
       name: "Max Cell Differential"
 
+    # specific status values that you probably don't need, but the values / bit flags are documented anyway
+    # just use the 6 text sensor equivalents which are already decoded and suitable for display
+    # unless you want to trigger something based on a specific value or flag, or do custom formatting
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+    warning_status_value_1:
+      name: "Warning Status Value 1"
+    warning_status_value_2:
+      name: "Warning Status Value 2"
+
+    balancing_status_value:
+      name: "Balancing Status Value"
+    system_status_value:
+      name: "System Status Value"
+    configuration_status_value:
+      name: "Configuration Status Value"
+    protection_status_value_1:
+      name: "Protection Status Value 1"
+    protection_status_value_2:
+      name: "Protection Status Value 2"
+    fault_status_value:
+      name: "Fault Status Value"
+
+
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    hardware_version:
+      name: "Hardware Version"
+    serial_number:
+      name: "Serial Number"
+
+    # pre-decoded human readable text that describes all of the specific status values and is suitable for display
+    warning_status:
+      name: "Warning Status"
+    balancing_status:
+      name: "Balancing Status"
+    system_status:
+      name: "System Status"
+    configuration_status:
+      name: "Configuration Status"
+    protection_status:
+      name: "Protection Status"
+    fault_status:
+      name: "Fault Status"

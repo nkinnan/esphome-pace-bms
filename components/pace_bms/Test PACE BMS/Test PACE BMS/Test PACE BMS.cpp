@@ -125,7 +125,7 @@ void BasicTests()
 		analogInfo.cellVoltagesMillivolts[13] != 3271 ||
 		analogInfo.cellVoltagesMillivolts[14] != 3270 ||
 		analogInfo.cellVoltagesMillivolts[15] != 3271 ||
-		analogInfo.tempCount != 6 ||
+		analogInfo.temperatureCount != 6 ||
 		analogInfo.temperaturesTenthsCelcius[0] != 241 ||
 		analogInfo.temperaturesTenthsCelcius[1] != 239 ||
 		analogInfo.temperaturesTenthsCelcius[2] != 239 ||
@@ -202,23 +202,13 @@ void BasicTests()
 	verbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadStatusInformationResponseV25);
-	std::string warningText;
-	std::string balancingText;
-	std::string systemText;
-	std::string configurationText;
-	std::string protectionText;
-	std::string faultText;
+	PaceBmsV25::StatusInformation statusInformation;
 	res = paceBms->ProcessReadStatusInformationResponse(
 		1,
 		std::vector<uint8_t>(
 			PaceBmsV25::exampleReadStatusInformationResponseV25,
 			PaceBmsV25::exampleReadStatusInformationResponseV25 + exlen),
-		warningText,
-		balancingText,
-		systemText,
-		configurationText,
-		protectionText,
-		faultText);
+		statusInformation);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessReadStatusInformationResponse logged something above verbose" << std::endl;
@@ -227,7 +217,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: ProcessReadStatusInformationResponse returned false" << std::endl;
 	}
-	else if (warningText.length() != 0 || balancingText.length() != 0 || systemText.compare("Discharging; Discharge MOSFET On; Charge MOSFET On") != 0 || configurationText.length() != 0 || protectionText.length() != 0 || faultText.length() != 0)
+	else if (statusInformation.warningText.length() != 0 || statusInformation.balancingText.length() != 0 || statusInformation.systemText.compare("Discharging; Discharge MOSFET On; Charge MOSFET On") != 0 || statusInformation.configurationText.length() != 0 || statusInformation.protectionText.length() != 0 || statusInformation.faultText.length() != 0)
 	{
 		std::cout << "FAIL: ProcessReadStatusInformationResponse did not accurately decode the known good example" << std::endl;
 	}

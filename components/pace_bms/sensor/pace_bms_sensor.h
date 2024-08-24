@@ -52,7 +52,7 @@ class PaceBmsSensor : public Component {
   void dump_config() override;
 
   void analog_information_callback(PaceBmsV25::AnalogInformation& analog_information);
-  void status_information_callback(PaceBmsV25::StatusInformation& analog_information);
+  void status_information_callback(PaceBmsV25::StatusInformation& status_information);
 
  protected:
   pace_bms::PaceBms *parent_;
