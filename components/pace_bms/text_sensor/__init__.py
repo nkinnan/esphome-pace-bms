@@ -35,6 +35,9 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CONFIGURATION_STATUS): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_PROTECTION_STATUS): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_FAULT_STATUS): text_sensor.text_sensor_schema(),
+
+        cv.Optional(CONF_HARDWARE_VERSION): text_sensor.text_sensor_schema(),
+        cv.Optional(CONF_SERIAL_NUMBER): text_sensor.text_sensor_schema(),
     }
 )
 
