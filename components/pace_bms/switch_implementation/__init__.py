@@ -13,6 +13,10 @@ DEPENDENCIES = ["pace_bms_switch"]
 PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Switch)
 
 
+
+
+
+
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSwitchImplementation),
