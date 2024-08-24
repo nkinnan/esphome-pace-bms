@@ -64,6 +64,9 @@ void PaceBms::update() {
             command_queue_.push(item);
         }
         ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
+
+        if(this->request_outstanding_ == false && this->command_queue_.size() > 0)
+          this->send_next_request_frame_(); // skip the timeout logic
     }
 }
 
@@ -168,6 +171,10 @@ void PaceBms::send_next_request_frame_() {
         this->flow_control_pin_->digital_write(false);
 
     free(command);
+
+    // reset transmission timeout
+    const uint32_t now = millis();
+    this->last_transmission_ = now;
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
