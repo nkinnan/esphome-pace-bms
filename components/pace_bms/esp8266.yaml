@@ -249,3 +249,11 @@ text_sensor:
       name: "Protection Status"
     fault_status:
       name: "Fault Status"
+
+
+switch:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    buzzer:
+      name: "Buzzer"
