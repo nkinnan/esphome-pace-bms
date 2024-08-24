@@ -101,7 +101,7 @@ void PaceBms::loop() {
 
     if (this->raw_data_index_ == 0 && this->raw_data_[this->raw_data_index_] != '~') {
       // don't reset request_outstanding_, instead wait for timeout to ensure no garbage is still streaming in when we dispatch the next request
-      ESP_LOGV(TAG, "Response frame does not begin with '~': 0x%02X", this->raw_data_[this->raw_data_index_]);
+      ESP_LOGV(TAG, "Response frame does not begin with '~': 0x%02X = '%c'", this->raw_data_[this->raw_data_index_], this->raw_data_[this->raw_data_index_]);
       this->raw_data_index_ = 0;
       continue;
     }
