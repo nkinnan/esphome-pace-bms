@@ -497,8 +497,8 @@ public:
 	// note: use caution as there are lot of different brands using the PACE BMS and some may have custom firmware with different commands!
 	enum SwitchCommand : uint8_t
 	{
-		SC_DisableBuzzer = 0x0D,
-		SC_EnableBuzzer = 0x0C,
+		SC_DisableBuzzer = 0x0C,
+		SC_EnableBuzzer = 0x0D,
 
 		// for LED, the documentation and the "on the wire" data from PBmsTools conflict, this is on the wire, documentation is the reverse of this
 		SC_DisableLedWarning = 0x06,
