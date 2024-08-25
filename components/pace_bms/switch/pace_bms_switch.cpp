@@ -43,7 +43,11 @@ float PaceBmsSwitch::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsSwitch::dump_config() { 
 	ESP_LOGCONFIG(TAG, "pace_bms_switch:");
-	LOG_SWITCH("  ", "Buzzer", this->buzzer_switch_);
+	LOG_SWITCH("  ", "Buzzer Alarm", this->buzzer_alarm_switch_);
+	LOG_SWITCH("  ", "LED Alarm", this->led_alarm_switch_);
+	LOG_SWITCH("  ", "Charge Current Limiter", this->charge_current_limiter_switch_);
+	LOG_SWITCH("  ", "Charge MOSFET", this->charge_mosfet_switch_);
+	LOG_SWITCH("  ", "Discharge MOSFET", this->discharge_mosfet_switch_);
 }
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
