@@ -17,7 +17,8 @@ void PaceBmsSwitch::setup() {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
 	  // set internal (requested) state but do not save/publish yet until the device confirms
 	  ESP_LOGE(TAG, "Setting internal switch state without publish: %s", state ? "true" : "false");
-	  this->buzzer_switch_->record_state_without_publish(state);
+	  //this->buzzer_switch_->record_state_without_publish(state);
+	  this->buzzer_switch_->publish_state(state);
 	});
   }
 }
