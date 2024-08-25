@@ -25,7 +25,8 @@ void PaceBmsSwitch::dump_config() {
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
-    //this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
+	  ESP_LOGV(TAG, "Setting buzzer switch state %s", (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0 ? "true" : "false");
+    this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
   }
 }
 
