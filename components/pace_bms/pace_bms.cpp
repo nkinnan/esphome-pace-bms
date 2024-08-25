@@ -233,7 +233,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 
 
 void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing analog information response");
+  ESP_LOGV(TAG, "Processing read analog information response");
 
   PaceBmsV25::AnalogInformation analog_information;
   this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
@@ -245,7 +245,7 @@ void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response)
 }
 
 void PaceBms::handle_status_information_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing status information response");
+  ESP_LOGV(TAG, "Processing read status information response");
 
   PaceBmsV25::StatusInformation status_information;
   this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
@@ -257,7 +257,7 @@ void PaceBms::handle_status_information_response(std::vector<uint8_t>& response)
 }
 
 void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing hardware version response");
+  ESP_LOGV(TAG, "Processing read hardware version response");
 
   std::string hardware_version;
   this->pace_bms_v25_->ProcessReadHardwareVersionResponse(this->address_, response, hardware_version);
@@ -269,7 +269,7 @@ void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
 }
 
 void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing serial number response");
+  ESP_LOGV(TAG, "Processing read serial number response");
 
   std::string serial_number;
   this->pace_bms_v25_->ProcessReadSerialNumberResponse(this->address_, response, serial_number);
@@ -280,17 +280,27 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   }
 }
 
+void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand switch_command, std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing write switch command response");
+
+    bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, switch_command, response);
+
+    if(result == false)
+      ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
+}
+
 void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
   switch(switch_type) {
     case ST_BuzzerAlarm:
       command_item* item = new command_item;
       item->description_ = "set buzzer alarm state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer), std::placeholders::_1);
-      // nothing to "do" with the response so don't pass it through a handle_ function, the protocol implementation will log anything strange about the response by itself
-      item->process_response_frame_ = std::bind(&PaceBmsV25::ProcessWriteSwitchCommandResponse, this->pace_bms_v25_, this->address_, (state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer), std::placeholders::_1);
+      item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer), std::placeholders::_1);
       command_queue_.push(item);
       break;
   }
+
+  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 }
 
 
