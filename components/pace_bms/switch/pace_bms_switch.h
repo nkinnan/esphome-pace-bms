@@ -2,7 +2,8 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/pace_bms/pace_bms.h"
-#include "esphome/components/switch/switch.h"
+//#include "esphome/components/switch/switch.h"
+#include "esphome/components/pace_bms/switch_implementation/pace_bms_switch_implementation.h"
 
 #include "../pace_bms_v25.h"
 
@@ -31,7 +32,7 @@ class PaceBmsSwitch : public Component {
  protected:
   pace_bms::PaceBms *parent_;
 
-  switch::Switch* buzzer_switch_{ nullptr };
+  pace_bms::PaceBmsSwitchImplementation* buzzer_switch_{ nullptr };
 
   bool request_status_information_callback_ = false;
 };
