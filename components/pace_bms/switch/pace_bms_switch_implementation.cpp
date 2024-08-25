@@ -11,7 +11,7 @@ void PaceBmsSwitchImplementation::add_on_write_state_callback(std::function<void
 }
 
 void PaceBmsSwitchImplementation::write_state(bool state) {
-	this->write_state_callback_.call(this->state);
+	this->write_state_callback_.call(state);
 }
 
 void PaceBmsSwitchImplementation::record_state_without_publish(bool state) {
