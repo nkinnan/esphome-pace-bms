@@ -14,9 +14,9 @@ class PaceBmsSwitchImplementation : public switch_::Switch {
  public:
  // void set_parent(PaceBmsSwitch *parent) { parent_ = parent; }
 
-	 void setup() override;
-	 float get_setup_priority() const override;
-	 void dump_config() override;
+  void setup() override;
+  float get_setup_priority() const override;
+  void dump_config() override;
 
  protected:
   //pace_bms::PaceBmsSwitch *parent_;
