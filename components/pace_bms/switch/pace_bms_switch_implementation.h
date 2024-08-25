@@ -10,7 +10,7 @@ namespace pace_bms {
 	//class PaceBmsSwitch;
 
 // the only purpose of this class is to fill in the pure virtual and call the parent container component on state change
-class PaceBmsSwitchImplementation : public switch_::Switch {
+class PaceBmsSwitchImplementation : public Component, public switch_::Switch {
  public:
  // void set_parent(PaceBmsSwitch *parent) { parent_ = parent; }
 
