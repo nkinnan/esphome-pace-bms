@@ -10,6 +10,7 @@ from ..switch_implementation import PaceBmsSwitchImplementation
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSwitch = pace_bms_ns.class_("PaceBmsSwitch", cg.Component)
+PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Component, switch.Switch)
 
 # "this" for pace_bms_switch_implementation to get parent from
 CONF_PACE_BMS_SWITCH_ID = "pace_bms_switch_id"
@@ -22,7 +23,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
-        cv.Optional(CONF_BUZZER): switch.switch_schema(class_=PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_BUZZER): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
 
     }
 )
