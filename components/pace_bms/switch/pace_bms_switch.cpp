@@ -14,7 +14,7 @@ void PaceBmsSwitch::setup() {
   }
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_state_callback([this](bool state) {
-	  ESP_LOGV(TAG, "Buzzer switch requests state change to '%s' due to user action", state ? "true" : "false");
+	  ESP_LOGV(TAG, "on_state_callback: Buzzer switch requests hardware state change to '%s' due to user action", state ? "true" : "false");
 	});
   }
 }
