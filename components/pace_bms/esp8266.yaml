@@ -15,8 +15,7 @@ esp8266:
   board: esp01_1m
 
 logger:
-  # disable logging via UART since we're using UART to talk to the BMS
-  baud_rate: 0
+  hardware_uart: UART1 # using UART0 for BMS communications
   level: VERBOSE
 
 # Enable Home Assistant API
@@ -50,14 +49,14 @@ external_components:
 
 
 uart:
-    id: uart_1
+    id: uart_0
     baud_rate: 9600
     tx_pin: GPIO1
     rx_pin: GPIO3
 
 
 pace_bms:
-  uart_id: uart_1
+  uart_id: uart_0
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
@@ -255,5 +254,13 @@ switch:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
-    buzzer:
-      name: "Buzzer"
+    buzzer_alarm:
+      name: "Buzzer Alarm"
+    led_alarm:
+      name: "Led Alarm"
+    charge_current_limiter:
+      name: "Charge Current Limiter"
+    charge_mosfet:
+      name: "Charge Mosfet"
+    discharge_mosfet:
+      name: "Discharge Mosfet"
