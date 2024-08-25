@@ -34,7 +34,8 @@ void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& s
   if (this->buzzer_switch_ != nullptr) {
 	  ESP_LOGE(TAG, "Publishing state due to update from the hardware: %s", (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0 ? "true" : "false");
 	// unlike record_state_without_publish, upon confirmation from the device that the state was actually set, do a full save/publish
-    this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
+    //this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
+	this->buzzer_switch_->publish_state(true);
   }
 }
 
