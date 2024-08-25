@@ -15,7 +15,9 @@ void PaceBmsSwitch::setup() {
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_write_state_callback([this](bool state) {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
-	  this->publish_state(state);
+	  // I'd prefer to set the state via the status information callback from the parent, but if we don't publish, the switch's internal state is not updated
+	  // and this results in multiple flips (before publish state is actually called) just all returning "true" even if the user selects "false"
+	  this->buzzer_switch_->publish_state(state);
 	});
   }
 }
