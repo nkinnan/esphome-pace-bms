@@ -2,17 +2,12 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/pace_bms/pace_bms.h"
-//#include "esphome/components/switch/switch.h"
 #include "pace_bms_switch_implementation.h"
 
 #include "../pace_bms_v25.h"
 
 namespace esphome {
 namespace pace_bms {
-
-// forward declaration, we only need the pointer
-// PaceBmsSwitchImplementation calls our switch_state_changed() method but we only call it's base switch::Switch methods
-class PaceBmsSwitchImplementation;
 
 class PaceBmsSwitch : public Component {
  public:
