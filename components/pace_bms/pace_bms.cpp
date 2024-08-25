@@ -283,7 +283,7 @@ void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
   switch(switch_type) {
     case ST_BuzzerAlarm:
       command_item* item = new command_item;
-      item->description_ = "set buzzer alarm state " + to_string(state);
+      item->description_ = "set buzzer alarm state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (state ? SC_EnableBuzzer : SC_DisableBuzzer), std::placeholders::_1);
       // nothing to "do" with the response so don't pass it through a handle_ function, the protocol implementation will log anything strange about the response by itself
       item->process_response_frame_ = std::bind(&PaceBmsV25::ProcessWriteSwitchCommandResponse, this->pace_bms_v25_, this->address_, (state ? SC_EnableBuzzer : SC_DisableBuzzer), std::placeholders::_1);
