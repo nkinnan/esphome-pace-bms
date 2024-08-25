@@ -8,12 +8,12 @@ void PaceBmsSwitchImplementation::write_state(bool state) {
 	//this->parent_->child_switch_state_changed(this, state);
 }
 
-void PaceBmsSensor::setup() {
+void PaceBmsSwitchImplementation::setup() {
 }
 
-float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
+float PaceBmsSwitchImplementation::get_setup_priority() const { return setup_priority::DATA; }
 
-void PaceBmsSensor::dump_config() {
+void PaceBmsSwitchImplementation::dump_config() {
 }
 
 }  // namespace pace_bms
