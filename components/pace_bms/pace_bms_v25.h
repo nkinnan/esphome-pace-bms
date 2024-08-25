@@ -555,8 +555,8 @@ public:
 
 	enum MosfetState : uint8_t
 	{
-		MS_Open = 0x00,
-		MS_Close = 0x01
+		MS_Open = 0x01,
+		MS_Close = 0x00
 	};
 
 	void CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request);
