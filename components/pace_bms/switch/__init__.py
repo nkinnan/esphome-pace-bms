@@ -24,8 +24,11 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
-        cv.Optional(CONF_BUZZER): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
-        cv.Optional(CONF_LED): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_BUZZER_ALARM): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_LED_ALARM): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_CHARGE_CURRENT_LIMITER): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_CHARGE_MOSFET): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
+        cv.Optional(CONF_DISCHARGE_MOSFET): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
 
     }
 )
