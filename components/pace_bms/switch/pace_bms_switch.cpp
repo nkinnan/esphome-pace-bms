@@ -9,8 +9,6 @@ namespace pace_bms {
 static const char* const TAG = "pace_bms.sensor";
 
 void PaceBmsSwitch::setup() {
-	this->buzzer_switch_->
-
   if (this->request_status_info_callback_ == true) {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSwitch::status_information_callback, this, std::placeholders::_1));
   }
