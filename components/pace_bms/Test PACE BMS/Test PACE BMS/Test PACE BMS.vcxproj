@@ -136,7 +136,7 @@
     <ClCompile Include="..\..\switch\pace_bms_switch.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\switch_implementation\pace_bms_switch_implementation.cpp">
+    <ClCompile Include="..\..\switch\pace_bms_switch_implementation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\..\text_sensor\pace_bms_text_sensor.cpp">
@@ -156,7 +156,7 @@
     <ClInclude Include="..\..\switch\pace_bms_switch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\switch_implementation\pace_bms_switch_implementation.h">
+    <ClInclude Include="..\..\switch\pace_bms_switch_implementation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
     <ClInclude Include="..\..\text_sensor\pace_bms_text_sensor.h">
@@ -168,9 +168,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="..\..\switch\__init__.py">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\switch_implementation\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
     <None Include="..\..\text_sensor\__init__.py">
