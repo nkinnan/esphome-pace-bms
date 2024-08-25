@@ -13,7 +13,7 @@ void PaceBmsSwitch::setup() {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSwitch::status_information_callback, this, std::placeholders::_1));
   }
   if (this->buzzer_switch_ != nullptr) {
-	this->buzzer_switch_.add_on_state_callback([this](bool state) {
+	this->buzzer_switch_->add_on_state_callback([this](bool state) {
 	  ESP_LOGV(TAG, "Buzzer switch requests state change to '%s' due to user action", state ? "true" : "false");
 	});
   }
