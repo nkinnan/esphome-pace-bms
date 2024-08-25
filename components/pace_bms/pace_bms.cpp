@@ -279,6 +279,13 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   }
 }
 
+void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
+  switch(switch_type) {
+    case ST_BuzzerAlarm:
+      break;
+  }
+}
+
 
 void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");

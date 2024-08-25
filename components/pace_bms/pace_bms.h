@@ -44,7 +44,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 	  // todo: make this a button?
 	  ST_Reboot,
   };
-  void set_switch_state(
+  void set_switch_state(SwitchType switch_type, bool state);
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
