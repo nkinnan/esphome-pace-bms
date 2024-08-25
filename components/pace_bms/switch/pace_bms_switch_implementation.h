@@ -11,8 +11,11 @@ class PaceBmsSwitchImplementation : public Component, public switch_::Switch {
  public:
   float get_setup_priority() const override;
 
+  void add_on_write_state_callback(std::function<void(bool)>&& callback);
+
  protected:
   void write_state(bool state) override;
+  CallbackManager<void(bool)> write_state_callback_{};
 };
 
 }  // namespace pace_bms
