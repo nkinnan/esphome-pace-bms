@@ -9,7 +9,7 @@ namespace esphome {
 namespace pace_bms {
 
 // the only purpose of this class is to fill in the pure virtual and call the parent container component on state change
-class PaceBmsSwitchImplementation : public switch::Switch {
+class PaceBmsSwitchImplementation : public switch_::Switch {
  public:
   void set_parent(PaceBmsSwitch *parent) { parent_ = parent; }
 
