@@ -29,6 +29,8 @@ class PaceBmsSwitch : public Component {
 
   pace_bms::PaceBmsSwitchImplementation* buzzer_switch_{ nullptr };
 
+  void buzzer_switch_request_state_change(bool state);
+
   bool request_status_information_callback_ = false;
 };
 
