@@ -34,8 +34,5 @@ void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& s
   }
 }
 
-void PaceBmsSwitch::child_switch_state_changed(PaceBmsSwitchImplementation* child_switch, bool state) {
-}
-
 }  // namespace pace_bms
 }  // namespace esphome
