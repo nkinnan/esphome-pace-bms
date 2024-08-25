@@ -20,7 +20,6 @@ class PaceBmsSwitch : public Component {
   float get_setup_priority() const override;
   void dump_config() override;
 
-
  protected:
   pace_bms::PaceBms *parent_;
   bool request_status_information_callback_ = false;

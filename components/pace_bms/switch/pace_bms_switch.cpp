@@ -14,7 +14,7 @@ void PaceBmsSwitch::setup() {
   }
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_state_callback([this](bool state) {
-	  ESP_LOGV(TAG, "on_state_callback: Buzzer switch requests hardware state change to '%s' due to user action", state ? "true" : "false");
+	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
 	});
   }
 }
@@ -28,9 +28,7 @@ void PaceBmsSwitch::dump_config() {
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
-	  bool newState = (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0;
-	  ESP_LOGV(TAG, "Publishing buzzer switch state '%s' due to status update from the hardware", newState ? "true" : "false");
-    this->buzzer_switch_->publish_state(newState);
+    this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
   }
 }
 

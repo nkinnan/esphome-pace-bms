@@ -33,6 +33,19 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(callback); }
   void register_serial_number_callback(std::function<void(std::string &) > callback) { serial_number_callbacks_.push_back(callback); }
 
+  enum SwitchType {
+	  ST_BuzzerAlarm,
+	  ST_LedAlarm,
+	  ST_ChargeCurrentLimiter,
+	  ST_ChargeMosfet,
+	  ST_DischargeMosfet,
+	  // todo: make this a select/option?
+	  ST_ChargeCurrentLimiterCurrentLimitHighGear, // false = low, true = high
+	  // todo: make this a button?
+	  ST_Reboot,
+  };
+  void set_switch_state(
+
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
   int address_{ 0 };
