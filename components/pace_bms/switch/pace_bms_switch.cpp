@@ -15,10 +15,8 @@ void PaceBmsSwitch::setup() {
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_write_state_callback([this](bool state) {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
-	  // set internal (requested) state but do not save/publish yet until the device confirms
 	  ESP_LOGE(TAG, "Setting internal switch state without publish: %s", state ? "true" : "false");
-	  this->buzzer_switch_->record_state_without_publish(state);
-	  //this->buzzer_switch_->publish_state(state);
+	  this->buzzer_switch_->publish_state(state);
 	});
   }
 }
@@ -33,9 +31,7 @@ void PaceBmsSwitch::dump_config() {
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
 	  ESP_LOGE(TAG, "Publishing state due to update from the hardware: %s", (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0 ? "true" : "false");
-	// unlike record_state_without_publish, upon confirmation from the device that the state was actually set, do a full save/publish
-    //this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
-	this->buzzer_switch_->publish_state(true);
+    this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
   }
 }
 
