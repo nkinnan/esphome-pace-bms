@@ -69,12 +69,14 @@ void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& s
   if (this->charge_mosfet_switch_ != nullptr) {
 	bool state = (status_information.system_value & PaceBmsV25::SF_ChargeMosfetOnBit);
 	ESP_LOGV(TAG, "'charge_mosfet_switch': Publishing state due to update from the hardware: %s", ONOFF(state));
+	state = false;
     this->charge_mosfet_switch_->publish_state(state);
   }
   if (this->discharge_mosfet_switch_ != nullptr) {
 	bool state = (status_information.system_value & PaceBmsV25::SF_DischargeMosfetOnBit);
 	ESP_LOGV(TAG, "'discharge_mosfet_switch': Publishing state due to update from the hardware: %s", ONOFF(state));
-    this->discharge_mosfet_switch_->publish_state(state);
+	state = false;
+	this->discharge_mosfet_switch_->publish_state(state);
   }
 }
 
