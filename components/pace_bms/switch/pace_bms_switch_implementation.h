@@ -13,7 +13,7 @@ class PaceBmsSwitchImplementation : public Component, public switch_::Switch {
   void add_on_write_state_callback(std::function<void(bool)>&& callback);
 
  protected:
-  // the main purpose of this class is to simply fill in this pure virtual and call the parent container component on user initiated state change request
+  // the only purpose of this class is to simply fill in this pure virtual and call the parent container component on user initiated state change request
   void write_state(bool state) override;
 
   CallbackManager<void(bool)> write_state_callback_{};

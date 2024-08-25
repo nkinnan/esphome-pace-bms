@@ -15,7 +15,7 @@ void PaceBmsSwitch::setup() {
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_write_state_callback([this](bool state) {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
-	  ESP_LOGV(TAG, "'%s': Publishing state in advance on to request to the hardware %s", this->name_.c_str(), ONOFF(state));
+	  ESP_LOGV(TAG, "'%s': Publishing state in advance on to request to the hardware %s", this->buzzer_switch_->name_.c_str(), ONOFF(state));
 	  this->buzzer_switch_->publish_state(state);
 	});
   }
@@ -31,7 +31,7 @@ void PaceBmsSwitch::dump_config() {
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
 	bool state = (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit);
-	ESP_LOGV(TAG, "'%s': Publishing state due to update from the hardware %s", this->name_.c_str(), ONOFF(state));
+	ESP_LOGV(TAG, "'%s': Publishing state due to update from the hardware %s", this->buzzer_switch_->name_.c_str(), ONOFF(state));
     this->buzzer_switch_->publish_state(state);
   }
 }
