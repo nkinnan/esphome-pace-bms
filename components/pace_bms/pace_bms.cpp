@@ -299,37 +299,38 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 }
 
 void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
-  switch(switch_type) {
+  command_item* item;
+  switch (switch_type) {
     case ST_BuzzerAlarm:
-      command_item* item = new command_item;
+      item = new command_item;
       item->description_ = "set buzzer alarm state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer), std::placeholders::_1);
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer), std::placeholders::_1);
       command_queue_.push(item);
       break;
     case ST_LedAlarm:
-      command_item* item = new command_item;
+      item = new command_item;
       item->description_ = "set led alarm state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (state ? PaceBmsV25::SC_EnableLedWarning : PaceBmsV25::SC_DisableLedWarning), std::placeholders::_1);
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (state ? PaceBmsV25::SC_EnableLedWarning : PaceBmsV25::SC_DisableLedWarning), std::placeholders::_1);
       command_queue_.push(item);
       break;
     case ST_ChargeCurrentLimiter:
-      command_item* item = new command_item;
+      item = new command_item;
       item->description_ = "set charge current limiter state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (state ? PaceBmsV25::SC_EnableChargeCurrentLimiter : PaceBmsV25::SC_DisableChargeCurrentLimiter), std::placeholders::_1);
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (state ? PaceBmsV25::SC_EnableChargeCurrentLimiter : PaceBmsV25::SC_DisableChargeCurrentLimiter), std::placeholders::_1);
       command_queue_.push(item);
       break;
     case ST_ChargeMosfet:
-      command_item* item = new command_item;
+      item = new command_item;
       item->description_ = "set charge mosfet state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteMosfetSwitchCommandRequest, this->pace_bms_v25_, this->address_, PaceBmsV25::MT_Charge, (state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open), std::placeholders::_1);
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_mosfet_switch_command_response, this, PaceBmsV25::MT_Charge, (state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open), std::placeholders::_1);
       command_queue_.push(item);
       break;
     case ST_DischargeMosfet:
-      command_item* item = new command_item;
+      item = new command_item;
       item->description_ = "set discharge mosfet state " + std::to_string(state);
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteMosfetSwitchCommandRequest, this->pace_bms_v25_, this->address_, PaceBmsV25::MT_Discharge, (state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open), std::placeholders::_1);
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_mosfet_switch_command_response, this, PaceBmsV25::MT_Discharge, (state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open), std::placeholders::_1);
