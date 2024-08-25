@@ -12,12 +12,12 @@ void PaceBmsSwitch::setup() {
   if (this->request_status_information_callback_ == true) {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSwitch::status_information_callback, this, std::placeholders::_1));
   }
+  if (this->buzzer_switch_ != nullptr) {
+	this->buzzer_switch_.add_on_state_callback([this](bool state) {
+	  ESP_LOGV(TAG, "Buzzer switch requests state change to '%s' due to user action", state ? "true" : "false");
+	});
+  }
 }
-
-void PaceBmsSwitch::buzzer_switch_request_state_change(bool state) {
-	ESP_LOGV(TAG, "Buzzer switch requests state change to %s", state ? "true" : "false");
-}
-
 
 float PaceBmsSwitch::get_setup_priority() const { return setup_priority::DATA; }
 
@@ -28,8 +28,9 @@ void PaceBmsSwitch::dump_config() {
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
-	  ESP_LOGV(TAG, "Setting buzzer switch state %s", (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0 ? "true" : "false");
-    this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
+	  bool newState = (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0;
+	  ESP_LOGV(TAG, "Publishing buzzer switch state '%s' due to status update from the hardware", newState ? "true" : "false");
+    this->buzzer_switch_->publish_state(newState);
   }
 }
 

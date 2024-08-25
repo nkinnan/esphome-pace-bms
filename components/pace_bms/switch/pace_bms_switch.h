@@ -13,25 +13,20 @@ class PaceBmsSwitch : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
-  // switch states are actually in the status information response, so subscribe to that to update switch state
+  // current switch states are actually in the status information response, so subscribe to that in order to update switch state
   void set_buzzer_switch(PaceBmsSwitchImplementation* buzzer_switch) { this->buzzer_switch_ = buzzer_switch; request_status_information_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
   void dump_config() override;
 
-  void status_information_callback(PaceBmsV25::StatusInformation& status_information);
-
-  void child_switch_state_changed(PaceBmsSwitchImplementation* child_switch, bool state);
 
  protected:
   pace_bms::PaceBms *parent_;
+  bool request_status_information_callback_ = false;
+  void status_information_callback(PaceBmsV25::StatusInformation& status_information);
 
   pace_bms::PaceBmsSwitchImplementation* buzzer_switch_{ nullptr };
-
-  void buzzer_switch_request_state_change(bool state);
-
-  bool request_status_information_callback_ = false;
 };
 
 }  // namespace pace_bms

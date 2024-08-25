@@ -8,11 +8,7 @@ static const char* const TAG = "pace_bms.sensor_implementation";
 
 // the only purpose of this class is to fill in the pure virtual and call the parent container component on state change
 void PaceBmsSwitchImplementation::write_state(bool state) {
-	//this->parent_->child_switch_state_changed(this, state);
 	ESP_LOGV(TAG, "New state requested by user: %s", state ? "true" : "false");
-}
-
-void PaceBmsSwitchImplementation::setup() {
 }
 
 float PaceBmsSwitchImplementation::get_setup_priority() const { return setup_priority::DATA; }
