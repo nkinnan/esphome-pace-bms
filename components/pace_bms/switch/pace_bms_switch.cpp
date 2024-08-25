@@ -15,9 +15,8 @@ void PaceBmsSwitch::setup() {
   if (this->buzzer_switch_ != nullptr) {
 	this->buzzer_switch_->add_on_write_state_callback([this](bool state) {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
-	  // I'd prefer to set the state via the status information callback from the parent, but if we don't publish, the switch's internal state is not updated
-	  // and this results in multiple flips (before publish state is actually called) just all returning "true" even if the user selects "false"
-	  this->buzzer_switch_->publish_state(state);
+	  // set internal (requested) state but do not save/publish yet until the device confirms
+	  this->buzzer_switch_->record_state_without_publish(state);
 	});
   }
 }
@@ -31,6 +30,7 @@ void PaceBmsSwitch::dump_config() {
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_switch_ != nullptr) {
+	// unlike record_state_without_publish, upon confirmation from the device that the state was actually set, do a full save/publish
     this->buzzer_switch_->publish_state((status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit) != 0);
   }
 }
