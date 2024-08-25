@@ -16,7 +16,7 @@ void PaceBmsSwitch::setup() {
 	this->buzzer_switch_->add_on_write_state_callback([this](bool state) {
 	  this->parent_->set_switch_state(PaceBms::ST_BuzzerAlarm, state);
 	  // set internal (requested) state but do not save/publish yet until the device confirms
-	  this->buzzer_switch_->record_state_without_publish(state);
+	  this->buzzer_switch_->publish_state(state);
 	});
   }
 }
