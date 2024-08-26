@@ -12,22 +12,22 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 
 void PaceBmsSelectImplementation::control(const std::string& value) {
 
-	std::string copy = value;
+	//std::string copy = value;
 
-	ESP_LOGE(TAG, "control method override ORIGINAL PASSED STRING: %s", value.c_str());
-	ESP_LOGE(TAG, "control method override COPY OF STRING: %s", copy.c_str());
+	//ESP_LOGE(TAG, "control method override ORIGINAL PASSED STRING: %s", value.c_str());
+	//ESP_LOGE(TAG, "control method override COPY OF STRING: %s", copy.c_str());
+
+	//ESP_LOGE(TAG, "control method override dispatching callback with ORIGINAL PASSED STRING: %s", value.c_str());
+	//this->control_callback_.call(value);
+
+	//ESP_LOGE(TAG, "control method override dispatching callback with COPY OF STRING: %s", copy.c_str());
+	//this->control_callback_.call(copy);
 
 	ESP_LOGE(TAG, "control method override dispatching callback with ORIGINAL PASSED STRING: %s", value.c_str());
 	this->control_callback_.call(value);
 
-	ESP_LOGE(TAG, "control method override dispatching callback with COPY OF STRING: %s", copy.c_str());
-	this->control_callback_.call(copy);
-
-	ESP_LOGE(TAG, "control method override dispatching callback with ORIGINAL PASSED STRING: %s", value.c_str());
-	this->control_callback_.call(value);
-
-	ESP_LOGE(TAG, "control method override dispatching callback with COPY OF STRING: %s", copy.c_str());
-	this->control_callback_.call(copy);
+	//ESP_LOGE(TAG, "control method override dispatching callback with COPY OF STRING: %s", copy.c_str());
+	//this->control_callback_.call(copy);
 
 
 	this->publish_state(value);
