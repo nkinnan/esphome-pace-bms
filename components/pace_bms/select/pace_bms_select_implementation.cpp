@@ -11,9 +11,9 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 }
 
 void PaceBmsSelectImplementation::control(const std::string& value) {
-	this->control_callback_.call(state);
+	ESP_LOGE(TAG, "control impl: %s", value.c_str());
 
-	ESP_LOGE(TAG, "control impl: %s", value);
+	this->control_callback_.call(state);
 
 	this->publish_state(value);
 }
