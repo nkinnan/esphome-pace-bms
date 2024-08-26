@@ -13,12 +13,13 @@ void PaceBmsSelect::setup() {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::status_information_callback, this, std::placeholders::_1));
   }
   if (this->charge_current_limiter_gear_select_ != nullptr) {
-	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string state) {
-      ESP_LOGE(TAG, "callback lambda: %s", state.c_str());
-	  if(state == "LowGear")
+	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string value) {
+	  if(value == "LowGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_LowGear);
-	  else if(state == "HighGear")
+	  else if(value == "HighGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_HighGear);
+	  else
+		ESP_LOGE(TAG, "Select value not understood: %s", value.c_str());
 	});
   }
 }
