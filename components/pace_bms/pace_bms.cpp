@@ -119,10 +119,10 @@ void PaceBms::loop() {
       this->available() == 0) {
     if (this->raw_data_index_ > 0) {
       std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
-      ESP_LOGV(TAG, "Response frame timeout for request %s, partial frame: %s", this->last_request_description, str.c_str());
+      ESP_LOGW(TAG, "Response frame timeout for request %s after %i ms, partial frame: %s", this->last_request_description.c_str(), now - this->last_receive_, str.c_str());
     }
     else {
-      ESP_LOGV(TAG, "Response frame timeout for request %s, no (valid) data received", this->last_request_description);
+      ESP_LOGW(TAG, "Response frame timeout for request %s after %i ms, no (valid) data received", this->last_request_description.c_str(), now - this->last_receive_);
     }
     request_outstanding_ = false;
     this->raw_data_index_ = 0;
