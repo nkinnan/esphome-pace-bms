@@ -343,6 +343,10 @@ void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
 
 void PaceBms::set_charge_current_limiter_gear(CurrentLimiterGear gear) {
   command_item* item = new command_item;
+  if (gear == CLG_HighGear)
+      ESP_LOGE("High");
+  if (gear == CLG_LowGear)
+      ESP_LOGE("Low");
   item->description_ = std::string("set charge current limiter gear ") + (gear == CLG_HighGear ? "high" : "low");
   item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
   item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
