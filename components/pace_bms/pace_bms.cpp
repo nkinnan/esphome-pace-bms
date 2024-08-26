@@ -10,7 +10,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms";
 
-static const items_per_update = 50
+static const int items_per_update = 50
 
 void PaceBms::update() {
  if (!command_queue_.empty()) {
