@@ -6,7 +6,7 @@
 namespace esphome {
 namespace pace_bms {
 
-class PaceBmsSwitchImplementation : public Component, public select::Select {
+class PaceBmsSelectImplementation : public Component, public select::Select {
  public:
   float get_setup_priority() const override;
 

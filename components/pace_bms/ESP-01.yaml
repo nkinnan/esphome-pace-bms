@@ -264,3 +264,5 @@ switch:
       name: "Charge Mosfet"
     discharge_mosfet:
       name: "Discharge Mosfet"
+
+select:

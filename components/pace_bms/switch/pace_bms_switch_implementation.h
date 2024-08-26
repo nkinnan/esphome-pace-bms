@@ -1,12 +1,12 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/select/select.h"
+#include "esphome/components/switch/switch.h"
 
 namespace esphome {
 namespace pace_bms {
 
-class PaceBmsSelectImplementation : public Component, public select::Select {
+class PaceBmsSwitchImplementation : public Component, public switch_::Switch {
  public:
   float get_setup_priority() const override;
 
