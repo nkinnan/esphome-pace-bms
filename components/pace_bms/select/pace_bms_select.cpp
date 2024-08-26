@@ -14,7 +14,7 @@ void PaceBmsSelect::setup() {
   }
   if (this->charge_current_limiter_gear_select_ != nullptr) {
 	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string state) {
-		ESP_LOGE(TAG, "option: %s", state);
+		ESP_LOGE(TAG, "option: %s", state.c_str());
 	  if(state == "LowGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_LowGear);
 	  else if(state == "HighGear")
