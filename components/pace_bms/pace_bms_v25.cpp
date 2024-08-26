@@ -1128,7 +1128,7 @@ bool PaceBmsV25::ProcessReadHardwareVersionResponse(const uint8_t busId, const s
 	}
 
 	// remove trailing spaces
-	while (hardwareVersion.length() > 0 && hardwareVersion[hardwareVersion.length() - 1] == ' ' || hardwareVersion[hardwareVersion.length() - 1] == 0)
+	while (hardwareVersion.length() > 0 && (hardwareVersion[hardwareVersion.length() - 1] == ' ' || hardwareVersion[hardwareVersion.length() - 1] == 0))
 	{
 		hardwareVersion.pop_back();
 	}
@@ -1175,7 +1175,7 @@ bool PaceBmsV25::ProcessReadSerialNumberResponse(const uint8_t busId, const std:
 	}
 
 	// remove trailing spaces
-	while (serialNumber.length() > 0 && serialNumber[serialNumber.length() - 1] == ' ' || serialNumber[serialNumber.length() - 1] == 0)
+	while (serialNumber.length() > 0 && (serialNumber[serialNumber.length() - 1] == ' ' || serialNumber[serialNumber.length() - 1] == 0))
 	{
 		serialNumber.pop_back();
 	}
