@@ -11,7 +11,7 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 }
 
 void PaceBmsSelectImplementation::control(const std::string& value) {
-	ESP_LOGE(TAG, "control impl: %s", value.c_str());
+	ESP_LOGE(TAG, "control method override: %s", value.c_str());
 
 	this->control_callback_.call(state);
 
