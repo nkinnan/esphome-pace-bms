@@ -20,7 +20,7 @@ CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS   = [
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
+        cv.GenerateID(): cv.declare_id(PaceBmsSelect),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER_GEAR): select.select_schema(PaceBmsSelectImplementation, default_restore_mode="DISABLED")

@@ -45,7 +45,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   enum CurrentLimiterGear {
 	  CLG_LowGear,
 	  CLG_HighGear,
-  }
+  };
   void set_charge_current_limiter_gear(CurrentLimiterGear gear);
   void send_shutdown();
 
