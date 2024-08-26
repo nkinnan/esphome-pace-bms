@@ -10,7 +10,7 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 	this->control_callback_.add(std::move(callback));
 }
 
-void PaceBmsSelectImplementation::control(std::string& value) {
+void PaceBmsSelectImplementation::control(const std::string& value) {
 	this->control_callback_.call(state);
 }
 
