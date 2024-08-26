@@ -269,3 +269,5 @@ select:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
+    charge_current_limiter_gear:
+      name: "Charge Current Limiter Gear"
