@@ -266,3 +266,6 @@ switch:
       name: "Discharge Mosfet"
 
 select:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
