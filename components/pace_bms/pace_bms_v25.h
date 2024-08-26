@@ -285,7 +285,7 @@ public:
 		SF_DischargingBit                       = (1 << 3),
 		SF_DischargeMosfetOnBit                 = (1 << 2),
 		SF_ChargeMosfetOnBit                    = (1 << 1),
-		SF_ChargeCurrentLimiterOffBit           = (1 << 0),
+		SF_ChargeCurrentLimiterTurnedOffBit     = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
 	};
 
 	// possible flags set in:

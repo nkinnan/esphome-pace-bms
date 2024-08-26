@@ -63,7 +63,7 @@ pace_bms:
   flow_control_pin: GPIO2
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 200ms
+  response_timeout: 1000ms # responses are typically immediate but I do occasionally see a larger delay
 
 
 sensor:

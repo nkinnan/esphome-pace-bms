@@ -709,7 +709,7 @@ const std::string PaceBmsV25::DecodeStatusValue(const uint8_t val)
 	}
 	if ((val & (1 << 0)) != 0)
 	{
-		oss.append("Charge Current Limiter Off; ");
+		oss.append("Charge Current Limiter Disabled; ");
 	}
 
 	return oss;
