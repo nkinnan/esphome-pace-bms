@@ -47,7 +47,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 	  CLG_HighGear,
   };
   void set_charge_current_limiter_gear(CurrentLimiterGear gear);
-  void send_shutdown();
+  //void send_shutdown();
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };

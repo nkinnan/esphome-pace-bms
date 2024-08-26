@@ -351,15 +351,15 @@ void PaceBms::set_charge_current_limiter_gear(CurrentLimiterGear gear) {
   ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 }
 
-void PaceBms::send_shutdown() {
-  command_item* item = new command_item;
-  item->description_ = std::string("set charge current limiter gear ") + (gear == CLG_HighGear ? "high" : "low");
-  item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
-  item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
-  command_queue_.push(item);
-
-  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
-}
+//void PaceBms::send_shutdown() {
+//  command_item* item = new command_item;
+//  item->description_ = std::string("send shutdown");
+//  item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
+//  item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
+//  command_queue_.push(item);
+//
+//  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
+//}
 
 void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
