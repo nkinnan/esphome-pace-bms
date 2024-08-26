@@ -39,4 +39,4 @@ async def to_code(config):
             charge_current_limiter_gear_config,
             options=[CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS],
         )
-        cg.add(var.set_charge_current_limiter_gear_select(sens))
+        cg.add(var.set_charge_current_limiter_gear_select(sel))
