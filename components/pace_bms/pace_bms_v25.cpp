@@ -167,31 +167,31 @@ uint8_t PaceBmsV25::HexToNibble(const uint8_t hex)
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
 uint8_t PaceBmsV25::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
-	uint8_t byte =
-		((HexToNibble(data[dataOffset++]) << 4) & 0xF0) |
-		 (HexToNibble(data[dataOffset++])       & 0x0F);
+	uint8_t byte = 0;
+	byte |= (HexToNibble(data[dataOffset++]) << 4) & 0xF0;
+	byte |= (HexToNibble(data[dataOffset++]) << 0) & 0x0F;
 	return byte;
 }
 
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
 uint16_t PaceBmsV25::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
-	uint16_t ushort =
-		((HexToNibble(data[dataOffset++]) << 12) & 0xF000) +
-		((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00) +
-		((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0) +
-		 (HexToNibble(data[dataOffset++])        & 0x000F);
+	uint16_t ushort = 0;
+	ushort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 0)  & 0x000F);
 	return ushort;
 }
 
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
 int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
-	int16_t sshort =
-		((HexToNibble(data[dataOffset++]) << 12) & 0xF000) +
-		((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00) +
-		((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0) +
-		(HexToNibble(data[dataOffset++])         & 0x000F);
+	int16_t sshort = 0;
+	sshort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 0)  & 0x000F);
 	return sshort;
 }
 
@@ -199,25 +199,25 @@ int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint1
 void PaceBmsV25::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
 {
 	data[dataOffset++] = NibbleToHex((byte >> 4) & 0x0F);
-	data[dataOffset++] = NibbleToHex( byte       & 0x0F);
+	data[dataOffset++] = NibbleToHex((byte >> 0) & 0x0F);
 }
 
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
 void PaceBmsV25::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
-	data[dataOffset++] = NibbleToHex( ushort >> 12);
+	data[dataOffset++] = NibbleToHex((ushort >> 12) & 0x0F);
 	data[dataOffset++] = NibbleToHex((ushort >> 8)  & 0x0F);
 	data[dataOffset++] = NibbleToHex((ushort >> 4)  & 0x0F);
-	data[dataOffset++] = NibbleToHex( ushort        & 0x0F);
+	data[dataOffset++] = NibbleToHex((ushort >> 0)  & 0x0F);
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
 void PaceBmsV25::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
-	data[dataOffset++] = NibbleToHex( sshort >> 12);
+	data[dataOffset++] = NibbleToHex((sshort >> 12) & 0x0F);
 	data[dataOffset++] = NibbleToHex((sshort >> 8)  & 0x0F);
 	data[dataOffset++] = NibbleToHex((sshort >> 4)  & 0x0F);
-	data[dataOffset++] = NibbleToHex( sshort        & 0x0F);
+	data[dataOffset++] = NibbleToHex((sshort >> 0)  & 0x0F);
 }
 
 // create a standard request to the given busId for the given CID2, filling in the payload (if given)
