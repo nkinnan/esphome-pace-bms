@@ -18,8 +18,6 @@ void PaceBmsSelect::setup() {
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_LowGear);
 	  else if(state == "HighGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_HighGear);
-	  else
-		ESP_LOGE("Select option state not understood");
 	});
   }
 }
