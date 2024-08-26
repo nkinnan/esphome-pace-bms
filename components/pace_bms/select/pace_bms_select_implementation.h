@@ -14,9 +14,9 @@ class PaceBmsSelectImplementation : public Component, public select::Select {
 
  protected:
   // the only purpose of this class is to simply fill in this pure virtual and call the parent container component on user initiated state change request
-  void control(bool state) override;
+  void control(std::string& value) override;
 
-  CallbackManager<void(std::string)> control_callback_{};
+  CallbackManager<void(std::string&)> control_callback_{};
 };
 
 }  // namespace pace_bms
