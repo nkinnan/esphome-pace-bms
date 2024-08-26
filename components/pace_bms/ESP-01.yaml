@@ -1,5 +1,5 @@
 substitutions:
-  name: "memory-leak"
+  name: "esp01-jk48v100"
   friendly_name: "Memory Leak"
 
 esphome:
@@ -33,6 +33,10 @@ external_components:
       ref: "memory_leak_minimal_repro"
     components: [ pace_bms ]
     refresh: 1s
+
+pace_bms:
+  id: whatever
+  update_interval: 1s
 
 debug:
   update_interval: 1s

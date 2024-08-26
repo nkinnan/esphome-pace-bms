@@ -20,8 +20,6 @@ class PaceBms : public PollingComponent {
   struct command_item
   {
 	  std::string description_;
-	  std::function<void(std::vector<uint8_t>&)> create_request_frame_;
-	  std::function<void(std::vector<uint8_t>&)> process_response_frame_;
   };
 
   std::queue<command_item*> command_queue_;

@@ -10,12 +10,14 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms";
 
+static const items_per_update = 50
+
 void PaceBms::update() {
  if (!command_queue_.empty()) {
     ESP_LOGW(TAG, "%i commands still in queue on update(), skipping cycle", command_queue_.size());
   }
   else {
-    for(int i = 0; i < 100; i++)
+    for(int i = 0; i < items_per_update; i++)
     {
       command_item* item = new command_item;
       // ==================================================================================================
@@ -24,7 +26,6 @@ void PaceBms::update() {
       item->description_ = std::string("some std::string");
       command_queue_.push(item);
     }
-
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
   }
 }
