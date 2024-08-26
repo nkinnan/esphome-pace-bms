@@ -37,56 +37,15 @@ external_components:
     components: [ pace_bms ]
     refresh: 1s
 
-
 debug:
   update_interval: 1s
-
-
-uart:
-    id: uart_0
-    baud_rate: 9600
-    tx_pin: GPIO1
-    rx_pin: GPIO3
-
-
-pace_bms:
-  id: pace_bms_at_address_1
-  address: 1
-  protocol_version: 0x25
-  uart_id: uart_0
-  flow_control_pin: GPIO0
-  update_interval: 5s
-  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 1000ms # responses are typically immediate but I do occasionally see a larger delay
-
 
 sensor:
   - platform: debug
     free:
       name: "Heap Free"
-    block:
-      name: "Heap Max Block"
-    fragmentation:
-      name: "Heap Fragmentation"
+
   - platform: uptime
     update_interval: 1s
     type: seconds
     name: Uptime Sensor
-
-
-
-
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    total_voltage:
-      name: "Total Voltage"
-
-
-text_sensor:
-
-
-switch:
-
-
-select:
