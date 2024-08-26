@@ -12,6 +12,8 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 
 void PaceBmsSelectImplementation::control(const std::string& value) {
 	this->control_callback_.call(state);
+
+	this->publish_state(value);
 }
 
 float PaceBmsSelectImplementation::get_setup_priority() const { return setup_priority::DATA; }
