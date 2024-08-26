@@ -127,22 +127,22 @@ private:
 	uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t* dataOffset);
+	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t* dataOffset);
+	uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t* dataOffset);
+	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t* dataOffset, uint8_t byte);
+	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
 
 	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t* dataOffset, uint16_t ushort);
+	void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
 
 	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t* dataOffset, int16_t sshort);
+	void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
 
 	// create a standard request to the given busId for the given CID2, filling in the payload (if given)
 	void CreateRequest(const uint8_t busId, const CID2 cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);

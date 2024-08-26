@@ -165,59 +165,59 @@ uint8_t PaceBmsV25::HexToNibble(const uint8_t hex)
 }
 
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-uint8_t PaceBmsV25::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+uint8_t PaceBmsV25::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
 	uint8_t byte =
-		((HexToNibble(data[(*dataOffset)++]) << 4) & 0xF0) |
-		(HexToNibble(data[(*dataOffset)++]) & 0x0F);
+		((HexToNibble(data[dataOffset++]) << 4) & 0xF0) |
+		(HexToNibble(data[dataOffset++]) & 0x0F);
 	return byte;
 }
 
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-uint16_t PaceBmsV25::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+uint16_t PaceBmsV25::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
 	uint16_t ushort =
-		((HexToNibble(data[(*dataOffset)++]) << 12) & 0xF000) +
-		((HexToNibble(data[(*dataOffset)++]) << 8) & 0x0F00) +
-		((HexToNibble(data[(*dataOffset)++]) << 4) & 0x00F0) +
-		(HexToNibble(data[(*dataOffset)++]) & 0x000F);
+		((HexToNibble(data[dataOffset++]) << 12) & 0xF000) +
+		((HexToNibble(data[dataOffset++]) << 8) & 0x0F00) +
+		((HexToNibble(data[dataOffset++]) << 4) & 0x00F0) +
+		(HexToNibble(data[dataOffset++]) & 0x000F);
 	return ushort;
 }
 
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t* dataOffset)
+int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
 	int16_t sshort =
-		((HexToNibble(data[(*dataOffset)++]) << 12) & 0xF000) +
-		((HexToNibble(data[(*dataOffset)++]) << 8) & 0x0F00) +
-		((HexToNibble(data[(*dataOffset)++]) << 4) & 0x00F0) +
-		(HexToNibble(data[(*dataOffset)++]) & 0x000F);
+		((HexToNibble(data[dataOffset++]) << 12) & 0xF000) +
+		((HexToNibble(data[dataOffset++]) << 8) & 0x0F00) +
+		((HexToNibble(data[dataOffset++]) << 4) & 0x00F0) +
+		(HexToNibble(data[dataOffset++]) & 0x000F);
 	return sshort;
 }
 
 // encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-void PaceBmsV25::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t* dataOffset, uint8_t byte)
+void PaceBmsV25::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
 {
-	data[(*dataOffset)++] = NibbleToHex((byte >> 4) & 0x0F);
-	data[(*dataOffset)++] = NibbleToHex(byte & 0x0F);
+	data[dataOffset++] = NibbleToHex((byte >> 4) & 0x0F);
+	data[dataOffset++] = NibbleToHex(byte & 0x0F);
 }
 
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsV25::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t* dataOffset, uint16_t ushort)
+void PaceBmsV25::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
-	data[(*dataOffset)++] = NibbleToHex(ushort >> 12);
-	data[(*dataOffset)++] = NibbleToHex((ushort >> 8) & 0x0F);
-	data[(*dataOffset)++] = NibbleToHex((ushort >> 4) & 0x0F);
-	data[(*dataOffset)++] = NibbleToHex(ushort & 0x0F);
+	data[dataOffset++] = NibbleToHex(ushort >> 12);
+	data[dataOffset++] = NibbleToHex((ushort >> 8) & 0x0F);
+	data[dataOffset++] = NibbleToHex((ushort >> 4) & 0x0F);
+	data[dataOffset++] = NibbleToHex(ushort & 0x0F);
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsV25::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t* dataOffset, int16_t sshort)
+void PaceBmsV25::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
-	data[(*dataOffset)++] = NibbleToHex(sshort >> 12);
-	data[(*dataOffset)++] = NibbleToHex((sshort >> 8) & 0x0F);
-	data[(*dataOffset)++] = NibbleToHex((sshort >> 4) & 0x0F);
-	data[(*dataOffset)++] = NibbleToHex(sshort & 0x0F);
+	data[dataOffset++] = NibbleToHex(sshort >> 12);
+	data[dataOffset++] = NibbleToHex((sshort >> 8) & 0x0F);
+	data[dataOffset++] = NibbleToHex((sshort >> 4) & 0x0F);
+	data[dataOffset++] = NibbleToHex(sshort & 0x0F);
 }
 
 // create a standard request to the given busId for the given CID2, filling in the payload (if given)
@@ -231,20 +231,20 @@ void PaceBmsV25::CreateRequest(const uint8_t busId, const CID2 cid2, const std::
 	request[byteOffset++] = '~';
 
 	// version 25
-	WriteHexEncodedByte(request, &byteOffset, 0x25);
+	WriteHexEncodedByte(request, byteOffset, 0x25);
 
 	// busId
-	WriteHexEncodedByte(request, &byteOffset, busId);
+	WriteHexEncodedByte(request, byteOffset, busId);
 
 	// cid1
-	WriteHexEncodedByte(request, &byteOffset, CID1_LithiumIron);
+	WriteHexEncodedByte(request, byteOffset, CID1_LithiumIron);
 
 	// cid2
-	WriteHexEncodedByte(request, &byteOffset, cid2);
+	WriteHexEncodedByte(request, byteOffset, cid2);
 
 	// checksummed payload length
 	uint16_t ckLen = CreateChecksummedLength((uint16_t)payload.size());
-	WriteHexEncodedUShort(request, &byteOffset, ckLen);
+	WriteHexEncodedUShort(request, byteOffset, ckLen);
 
 	// copy payload
 	std::copy(payload.data(), payload.data() + payload.size(), request.data() + byteOffset);
@@ -252,7 +252,7 @@ void PaceBmsV25::CreateRequest(const uint8_t busId, const CID2 cid2, const std::
 
 	// full request checksum
 	uint16_t cksum = CalculateRequestOrResponseChecksum(request);
-	WriteHexEncodedUShort(request, &byteOffset, cksum);
+	WriteHexEncodedUShort(request, byteOffset, cksum);
 
 	// EOI marker
 	request[byteOffset++] = '\r';
@@ -285,7 +285,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 		return -1;
 	}
 
-	uint8_t ver = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t ver = ReadHexEncodedByte(response, byteOffset);
 	if (ver != 0x25)
 	{
 		const char* message = "Response has wrong version number, only version 2.5 is supported";
@@ -293,7 +293,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 		return -1;
 	}
 
-	uint8_t addr = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t addr = ReadHexEncodedByte(response, byteOffset);
 	if (addr != busId)
 	{
 		const char* message = "Response from wrong bus Id";
@@ -301,7 +301,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 		return -1;
 	}
 
-	uint8_t cid = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t cid = ReadHexEncodedByte(response, byteOffset);
 	if (cid != CID1_LithiumIron)
 	{
 		const char* message = "Response has wrong CID1, expect 0x46 = Lithium Iron";
@@ -309,7 +309,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 		return -1;
 	}
 
-	uint8_t returnCode = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t returnCode = ReadHexEncodedByte(response, byteOffset);
 	if (returnCode != 0)
 	{
 		std::string message = std::string("Error code returned by device: ") + FormatReturnCode(returnCode);
@@ -318,7 +318,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 	}
 
 	// decode payload length + length-checksum
-	uint16_t cklen = ReadHexEncodedUShort(response, &byteOffset);
+	uint16_t cklen = ReadHexEncodedUShort(response, byteOffset);
 	if (!ValidateChecksummedLength(cklen))
 	{
 		// FIRMWARE BUG: I verified this "on the wire", my unit is not setting the length checksum (or setting it incorrectly) on some responses but not others
@@ -354,7 +354,7 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 
 	// now that we have payload length and have verified buffer size, jump past the payload and confirm the checksum of the entire packet
 	byteOffset += payloadLen;
-	uint16_t givenCksum = ReadHexEncodedUShort(response, &byteOffset);
+	uint16_t givenCksum = ReadHexEncodedUShort(response, byteOffset);
 	uint16_t calcCksum = CalculateRequestOrResponseChecksum(response);
 	if (givenCksum != calcCksum)
 	{
@@ -414,7 +414,7 @@ void PaceBmsV25::CreateReadAnalogInformationRequest(const uint8_t busId, std::ve
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, busId);
+	WriteHexEncodedByte(payload, payloadOffset, busId);
 
 	CreateRequest(busId, CID2_ReadAnalogInformation, payload, request);
 }
@@ -431,13 +431,13 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	uint16_t byteOffset = 13;
 
 	// SPEC BUG: doc says the response starts with the busId, but "on the wire" I see an extra byte value of 0x00 preceeding it
-	uint8_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 0)
 	{
 		LogVerbose("Response contains a value other than zero before the BusId");
 	}
 
-	uint8_t busIdResponding = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
 		const char* message = "Response from wrong bus Id in payload";
@@ -445,7 +445,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		return false;
 	}
 
-	analogInformation.cellCount = ReadHexEncodedByte(response, &byteOffset);
+	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
 	if (analogInformation.cellCount > MAX_CELL_COUNT)
 	{
 		const char* message = "Response contains more cell voltage readings than are supported, results will be truncated";
@@ -453,7 +453,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 	for (int i = 0; i < analogInformation.cellCount; i++)
 	{
-		uint16_t cellVoltage = ReadHexEncodedUShort(response, &byteOffset);
+		uint16_t cellVoltage = ReadHexEncodedUShort(response, byteOffset);
 
 		if (i > MAX_CELL_COUNT - 1)
 			continue;
@@ -461,7 +461,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		analogInformation.cellVoltagesMillivolts[i] = cellVoltage;
 	}
 
-	analogInformation.temperatureCount = ReadHexEncodedByte(response, &byteOffset);
+	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
 	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
 		const char* message = "Response contains more temperature readings than are supported, results will be truncated";
@@ -469,7 +469,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 	for (int i = 0; i < analogInformation.temperatureCount; i++)
 	{
-		uint16_t temperature = ReadHexEncodedUShort(response, &byteOffset);
+		uint16_t temperature = ReadHexEncodedUShort(response, byteOffset);
 
 		if (i > MAX_TEMP_COUNT - 1)
 			continue;
@@ -477,13 +477,13 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		analogInformation.temperaturesTenthsCelcius[i] = (temperature - 2730);
 	}
 
-	analogInformation.currentMilliamps = ReadHexEncodedSShort(response, &byteOffset) * 10;
+	analogInformation.currentMilliamps = ReadHexEncodedSShort(response, byteOffset) * 10;
 
-	analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, &byteOffset);
+	analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
 
-	analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
-	uint8_t P3 = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t P3 = ReadHexEncodedByte(response, byteOffset);
 	if (P3 != 3)
 	{
 		const char* message = "Response contains a constant with an unexpected value";
@@ -491,11 +491,11 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		//return false;
 	}
 
-	analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
-	analogInformation.cycleCount = ReadHexEncodedUShort(response, &byteOffset);
+	analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
 
-	analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
 	if (byteOffset != payloadLen + 13)
 	{
@@ -561,7 +561,7 @@ void PaceBmsV25::CreateReadStatusInformationRequest(const uint8_t busId, std::ve
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, busId);
+	WriteHexEncodedByte(payload, payloadOffset, busId);
 
 	return CreateRequest(busId, CID2_ReadStatusInformation, payload, request);
 }
@@ -896,13 +896,13 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	uint16_t byteOffset = 13;
 
 	// SPEC BUG: doc says the response starts with the busId, but "on the wire" I see an extra byte value of 0x00 preceeding it
-	uint8_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 0)
 	{
 		LogVerbose("Response contains a value other than zero before the BusId");
 	}
 
-	uint8_t busIdResponding = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
 		// todo: replace *ALL* of these with a direct log call
@@ -912,7 +912,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Warning / Alarm Status ==========================
-	uint8_t cellCount = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
 	if (cellCount > MAX_CELL_COUNT)
 	{
 		const char* message = "Response contains more cell warnings than are supported, results will be truncated";
@@ -920,7 +920,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 	for (int i = 0; i < cellCount; i++)
 	{
-		uint8_t cw = ReadHexEncodedByte(response, &byteOffset);
+		uint8_t cw = ReadHexEncodedByte(response, byteOffset);
 		statusInformation.warning_value_cell[i] = cw;
 
 		if (i > MAX_CELL_COUNT - 1)
@@ -933,7 +933,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i+1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
 	}
 
-	uint8_t tempCount = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
 	if (tempCount > MAX_TEMP_COUNT)
 	{
 		const char* message = "Response contains more temperature warnings than are supported, results will be truncated";
@@ -941,7 +941,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 	for (int i = 0; i < tempCount; i++)
 	{
-		uint8_t tw = ReadHexEncodedByte(response, &byteOffset);
+		uint8_t tw = ReadHexEncodedByte(response, byteOffset);
 		statusInformation.warning_value_temp[i] = tw;
 
 		if (i > MAX_TEMP_COUNT - 1)
@@ -954,7 +954,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i+1) + " " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
-	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.warning_value_charge_current = chargeCurrentWarn;
 	if (chargeCurrentWarn != 0)
 	{
@@ -962,7 +962,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 		statusInformation.warningText.append(std::string("Charge current ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
 	}
 
-	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.warning_value_total_voltage = totalVoltageWarn;
 	if (totalVoltageWarn != 0)
 	{
@@ -970,7 +970,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 		statusInformation.warningText.append(std::string("Total voltage ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
 	}
 
-	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.warning_value_discharge_current = dischargeCurrentWarn;
 	if (dischargeCurrentWarn != 0)
 	{
@@ -979,14 +979,14 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Protection Status ==========================
-	uint8_t protectState1 = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t protectState1 = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.protection_value1 = protectState1;
 	if (protectState1 != 0)
 	{
 		statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
 	}
 
-	uint8_t protectState2 = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t protectState2 = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.protection_value2 = protectState2;
 	if (protectState2 != 0)
 	{
@@ -994,7 +994,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== System Status ==========================
-	uint8_t systemState = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t systemState = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.system_value = systemState;
 	if (systemState != 0)
 	{
@@ -1002,7 +1002,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Configuration Status ==========================
-	uint8_t controlState = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t controlState = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.configuration_value = controlState;
 	if (controlState != 0)
 	{
@@ -1010,7 +1010,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Fault Status ==========================
-	uint8_t faultState = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t faultState = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.fault_value = faultState;
 	if (faultState != 0)
 	{
@@ -1018,7 +1018,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Balancing Status ==========================
-	uint16_t balanceState = ReadHexEncodedUShort(response, &byteOffset);
+	uint16_t balanceState = ReadHexEncodedUShort(response, byteOffset);
 	statusInformation.balancing_value = balanceState;
 	for (int i = 0; i < 16; i++)
 	{
@@ -1031,14 +1031,14 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	// ========================== MORE Warning / Alarm Status ==========================
 	// Note: It seems like these two may be a "summary" of the previous "Warning / Alarm" section as it duplicates some of the same warnings,
 	//       but I'll leave it for completeness or in case the bit shows up in one place but not the other in practice.
-	uint8_t warnState1 = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t warnState1 = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.warning_value1 = warnState1;
 	if (warnState1 != 0)
 	{
 		statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
 	}
 
-	uint8_t warnState2 = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset);
 	statusInformation.warning_value2 = warnState1;
 	if (warnState2 != 0)
 	{
@@ -1124,7 +1124,7 @@ bool PaceBmsV25::ProcessReadHardwareVersionResponse(const uint8_t busId, const s
 	hardwareVersion.resize(20);
 	for (int i = 0; i < 20; i++)
 	{
-		hardwareVersion[i] = ReadHexEncodedByte(response, &byteOffset);
+		hardwareVersion[i] = ReadHexEncodedByte(response, byteOffset);
 	}
 
 	// remove trailing spaces
@@ -1171,7 +1171,7 @@ bool PaceBmsV25::ProcessReadSerialNumberResponse(const uint8_t busId, const std:
 	serialNumber.resize(payloadLen / 2);
 	for (int i = 0; i < payloadLen / 2; i++)
 	{
-		serialNumber[i] = ReadHexEncodedByte(response, &byteOffset);
+		serialNumber[i] = ReadHexEncodedByte(response, byteOffset);
 	}
 
 	// remove trailing spaces
@@ -1261,7 +1261,7 @@ void PaceBmsV25::CreateWriteSwitchCommandRequest(const uint8_t busId, const Swit
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, command);
+	WriteHexEncodedByte(payload, payloadOffset, command);
 
 	return CreateRequest(busId, CID2_WriteSwitchCommand, payload, request);
 }
@@ -1286,7 +1286,7 @@ bool PaceBmsV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, const Sw
 		return false;
 	}
 
-	uint8_t commandEcho = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t commandEcho = ReadHexEncodedByte(response, byteOffset);
 
 	// this is behavior I have observed but is not documented
 	if (commandEcho != command)
@@ -1296,7 +1296,7 @@ bool PaceBmsV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, const Sw
 	}
 
 	// this is behavior I have observed but is not documented
-	uint8_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
 	switch (command)
 	{
 	case SC_DisableBuzzer:
@@ -1390,7 +1390,7 @@ void PaceBmsV25::CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, cons
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, command);
+	WriteHexEncodedByte(payload, payloadOffset, command);
 
 	CreateRequest(busId, (CID2)type, payload, request);
 }
@@ -1416,7 +1416,7 @@ bool PaceBmsV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, co
 	}
 
 	// this is behavior I have observed but is not documented
-	uint8_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (type == MT_Charge && command == MS_Open)
 	{
 		if (unknown != 0x26)
@@ -1464,7 +1464,7 @@ void PaceBmsV25::CreateWriteRebootCommandRequest(const uint8_t busId, std::vecto
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
 
 	CreateRequest(busId, CID2_WriteRebootCommand, payload, request);
 }
@@ -1570,12 +1570,12 @@ bool PaceBmsV25::ProcessReadSystemTimeResponse(const uint8_t busId, const std::v
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	dateTime.Year = ReadHexEncodedByte(response, &byteOffset) + 2000;
-	dateTime.Month = ReadHexEncodedByte(response, &byteOffset);
-	dateTime.Day = ReadHexEncodedByte(response, &byteOffset);
-	dateTime.Hour = ReadHexEncodedByte(response, &byteOffset);
-	dateTime.Minute = ReadHexEncodedByte(response, &byteOffset);
-	dateTime.Second = ReadHexEncodedByte(response, &byteOffset);
+	dateTime.Year = ReadHexEncodedByte(response, byteOffset) + 2000;
+	dateTime.Month = ReadHexEncodedByte(response, byteOffset);
+	dateTime.Day = ReadHexEncodedByte(response, byteOffset);
+	dateTime.Hour = ReadHexEncodedByte(response, byteOffset);
+	dateTime.Minute = ReadHexEncodedByte(response, byteOffset);
+	dateTime.Second = ReadHexEncodedByte(response, byteOffset);
 
 	return true;
 }
@@ -1584,12 +1584,12 @@ bool PaceBmsV25::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTim
 	const uint16_t payloadLen = 12;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Year - 2000);
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Month);
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Day);
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Hour);
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Minute);
-	WriteHexEncodedByte(payload, &payloadOffset, dateTime.Second);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Year - 2000);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Month);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Day);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Hour);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Minute);
+	WriteHexEncodedByte(payload, payloadOffset, dateTime.Second);
 
 	CreateRequest(busId, CID2_WriteDateTime, payload, request);
 
@@ -1678,7 +1678,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -1686,10 +1686,10 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -1749,11 +1749,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionReleaseMillivolts);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionReleaseMillivolts);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WriteCellOverVoltageConfiguration, payload, request);
 
@@ -1788,7 +1788,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -1796,10 +1796,10 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -1859,11 +1859,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionReleaseMillivolts);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionReleaseMillivolts);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WritePackOverVoltageConfiguration, payload, request);
 
@@ -1898,7 +1898,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -1906,10 +1906,10 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -1969,11 +1969,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionReleaseMillivolts);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionReleaseMillivolts);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WriteCellUnderVoltageConfiguration, payload, request);
 
@@ -2008,7 +2008,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2016,10 +2016,10 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -2079,11 +2079,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionReleaseMillivolts);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionReleaseMillivolts);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WritePackUnderVoltageConfiguration, payload, request);
 
@@ -2117,7 +2117,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2125,9 +2125,9 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmAmperage = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionAmperage = ReadHexEncodedUShort(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmAmperage = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionAmperage = ReadHexEncodedUShort(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -2163,10 +2163,10 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmAmperage);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionAmperage);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmAmperage);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionAmperage);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WriteChargeOverCurrentConfiguration, payload, request);
 
@@ -2203,7 +2203,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2211,9 +2211,9 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.AlarmAmperage = ReadHexEncodedSShort(response, &byteOffset) * -1;
-	config.ProtectionAmperage = ReadHexEncodedSShort(response, &byteOffset) * -1;
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 100;
+	config.AlarmAmperage = ReadHexEncodedSShort(response, byteOffset) * -1;
+	config.ProtectionAmperage = ReadHexEncodedSShort(response, byteOffset) * -1;
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
 
 	return true;
 }
@@ -2249,10 +2249,10 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Dish
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.AlarmAmperage);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ProtectionAmperage);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 100);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, config.AlarmAmperage);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ProtectionAmperage);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 100);
 
 	CreateRequest(busId, CID2_WriteDischargeSlowOverCurrentConfiguration, payload, request);
 
@@ -2286,7 +2286,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 0)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2294,8 +2294,8 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.ProtectionAmperage = ReadHexEncodedByte(response, &byteOffset);
-	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, &byteOffset) * 25;
+	config.ProtectionAmperage = ReadHexEncodedByte(response, byteOffset);
+	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 25;
 
 	// ignore the garbage tail, likely firmware bug since it's not sent on the write
 
@@ -2333,9 +2333,9 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Dish
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x00);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionAmperage);
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMilliseconds / 25);
+	WriteHexEncodedByte(payload, payloadOffset, 0x00);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionAmperage);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMilliseconds / 25);
 
 	CreateRequest(busId, CID2_WriteDischargeFastOverCurrentConfiguration, payload, request);
 
@@ -2367,7 +2367,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	config.ProtectionDelayMicroseconds = ReadHexEncodedByte(response, &byteOffset) * 25;
+	config.ProtectionDelayMicroseconds = ReadHexEncodedByte(response, byteOffset) * 25;
 
 	return true;
 }
@@ -2390,7 +2390,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Shor
 	const uint16_t payloadLen = 2;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, config.ProtectionDelayMicroseconds / 25);
+	WriteHexEncodedByte(payload, payloadOffset, config.ProtectionDelayMicroseconds / 25);
 
 	CreateRequest(busId, CID2_WriteShortCircuitProtectionConfiguration, payload, request);
 
@@ -2423,8 +2423,8 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	config.ThresholdMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.DeltaCellMillivolts = ReadHexEncodedUShort(response, &byteOffset);
+	config.ThresholdMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.DeltaCellMillivolts = ReadHexEncodedUShort(response, byteOffset);
 
 	return true;
 }
@@ -2453,8 +2453,8 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	const uint16_t payloadLen = 8;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedUShort(payload, &payloadOffset, config.ThresholdMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.DeltaCellMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.ThresholdMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.DeltaCellMillivolts);
 
 	CreateRequest(busId, CID2_WriteCellBalancingConfiguration, payload, request);
 
@@ -2487,9 +2487,9 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	config.CellMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	uint8_t unknown2 = ReadHexEncodedByte(response, &byteOffset);
-	config.DelayMinutes = ReadHexEncodedByte(response, &byteOffset);
+	config.CellMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	uint8_t unknown2 = ReadHexEncodedByte(response, byteOffset);
+	config.DelayMinutes = ReadHexEncodedByte(response, byteOffset);
 
 	if (unknown2 != 0)
 	{
@@ -2525,9 +2525,9 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Slee
 	const uint16_t payloadLen = 8;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedUShort(payload, &payloadOffset, config.CellMillivolts);
-	WriteHexEncodedByte(payload, &payloadOffset, 0x00);
-	WriteHexEncodedByte(payload, &payloadOffset, config.DelayMinutes);
+	WriteHexEncodedUShort(payload, payloadOffset, config.CellMillivolts);
+	WriteHexEncodedByte(payload, payloadOffset, 0x00);
+	WriteHexEncodedByte(payload, payloadOffset, config.DelayMinutes);
 
 	CreateRequest(busId, CID2_WriteSleepConfiguration, payload, request);
 
@@ -2561,9 +2561,9 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	config.FullChargeMillivolts = ReadHexEncodedUShort(response, &byteOffset);
-	config.FullChargeMilliamps = ReadHexEncodedUShort(response, &byteOffset);
-	config.LowChargeAlarmPercent = ReadHexEncodedByte(response, &byteOffset);
+	config.FullChargeMillivolts = ReadHexEncodedUShort(response, byteOffset);
+	config.FullChargeMilliamps = ReadHexEncodedUShort(response, byteOffset);
+	config.LowChargeAlarmPercent = ReadHexEncodedByte(response, byteOffset);
 
 	return true;
 }
@@ -2604,9 +2604,9 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Full
 	const uint16_t payloadLen = 10;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedUShort(payload, &payloadOffset, config.FullChargeMillivolts);
-	WriteHexEncodedUShort(payload, &payloadOffset, config.FullChargeMilliamps);
-	WriteHexEncodedByte(payload, &payloadOffset, config.LowChargeAlarmPercent);
+	WriteHexEncodedUShort(payload, payloadOffset, config.FullChargeMillivolts);
+	WriteHexEncodedUShort(payload, payloadOffset, config.FullChargeMilliamps);
+	WriteHexEncodedByte(payload, payloadOffset, config.LowChargeAlarmPercent);
 
 	CreateRequest(busId, CID2_WriteFullChargeLowChargeConfiguration, payload, request);
 
@@ -2643,7 +2643,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2651,12 +2651,12 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.ChargeAlarm = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.ChargeProtection = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.ChargeProtectionRelease = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeAlarm = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeProtection = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
+	config.ChargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.ChargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.ChargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 
 	return true;
 }
@@ -2704,13 +2704,13 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeAlarm * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeProtection * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeProtectionRelease * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeAlarm * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeProtection * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeProtectionRelease * 10) + 2730);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeAlarm * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeProtection * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeProtectionRelease * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeAlarm * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeProtection * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeProtectionRelease * 10) + 2730);
 
 	CreateRequest(busId, CID2_WriteChargeAndDischargeOverTemperatureConfiguration, payload, request);
 
@@ -2747,7 +2747,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t unknown = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
 		const char* message = "Unknown payload byte does not match previously observed value";
@@ -2755,12 +2755,12 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 		return false;
 	}
 
-	config.ChargeAlarm = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.ChargeProtection = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.ChargeProtectionRelease = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeAlarm = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeProtection = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
-	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, &byteOffset) - 2730) / 10;
+	config.ChargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.ChargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.ChargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 
 	return true;
 }
@@ -2808,13 +2808,13 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
 	// unknown value
-	WriteHexEncodedByte(payload, &payloadOffset, 0x01);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeAlarm * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeProtection * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.ChargeProtectionRelease * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeAlarm * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeProtection * 10) + 2730);
-	WriteHexEncodedUShort(payload, &payloadOffset, (config.DischargeProtectionRelease * 10) + 2730);
+	WriteHexEncodedByte(payload, payloadOffset, 0x01);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeAlarm * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeProtection * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.ChargeProtectionRelease * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeAlarm * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeProtection * 10) + 2730);
+	WriteHexEncodedUShort(payload, payloadOffset, (config.DischargeProtectionRelease * 10) + 2730);
 
 	CreateRequest(busId, CID2_WriteChargeAndDischargeUnderTemperatureConfiguration, payload, request);
 
@@ -2875,7 +2875,7 @@ bool PaceBmsV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	uint16_t busIdResponding = ReadHexEncodedByte(response, &byteOffset);
+	uint16_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
 		const char* message = "Response from wrong bus Id in payload";
@@ -2883,7 +2883,7 @@ bool PaceBmsV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8
 		return false;
 	}
 
-	current = ReadHexEncodedByte(response, &byteOffset);
+	current = ReadHexEncodedByte(response, byteOffset);
 
 	return true;
 }
@@ -2900,8 +2900,8 @@ bool PaceBmsV25::CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_
 	const uint16_t payloadLen = 4;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, &payloadOffset, busId);
-	WriteHexEncodedByte(payload, &payloadOffset, current);
+	WriteHexEncodedByte(payload, payloadOffset, busId);
+	WriteHexEncodedByte(payload, payloadOffset, current);
 
 	CreateRequest(busId, CID2_WriteChargeCurrentLimiterStartCurrent, payload, request);
 
@@ -2953,9 +2953,9 @@ bool PaceBmsV25::ProcessReadRemainingCapacityResponse(const uint8_t busId, const
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	remainingCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
-	actualCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
-	designCapacityMilliampHours = ReadHexEncodedUShort(response, &byteOffset) * 10;
+	remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+	actualCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+	designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
 	return true;
 }
