@@ -571,64 +571,64 @@ const std::string PaceBmsV25::DecodeWarningValue(const uint8_t val)
 {
 	if (val == 0)
 	{
-		// (code error)
-		return "";
+		// calling code error
+		return "(no warning)";
 	}
-	if (val == 1)
+	if (val == WV_BelowLowerLimitValue)
 	{
-		return std::string("below lower limit");
+		return std::string("Below Lower Limit");
 	}
-	if (val == 2)
+	if (val == WV_AboveUpperLimitValue)
 	{
-		return std::string("above upper limit");
+		return std::string("Above Upper Limit");
 	}
-	if (val >= 0x80 && val <= 0xEF)
+	if (val >= WV_UserDefinedFaultRangeStartValue && val <= WV_UserDefinedFaultRangeEndValue)
 	{
-		return std::string("user defined fault");
+		return std::string("User Defined Fault");
 	}
-	if (val == 0xF0)
+	if (val == WV_OtherFaultValue)
 	{
-		return std::string("other fault");
+		return std::string("Other Fault");
 	}
 
-	return std::string("unknown fault");
+	return std::string("Unknown Fault Value");
 }
 // helper for: ProcessStatusInformationResponse
 const std::string PaceBmsV25::DecodeProtectionStatus1Value(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & P1F_UndefinedProtect1Bit) != 0)
 	{
-		oss.append("Undefined ProtectState1 bit; ");
+		oss.append("Undefined ProtectStatus1 Bit8; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & P1F_ShortCircuitProtect1Bit) != 0)
 	{
-		oss.append("Short circuit protect; ");
+		oss.append("Short Circuit Protect; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & P1F_DischargeCurrentProtect1Bit) != 0)
 	{
-		oss.append("Discharge current protect; ");
+		oss.append("Discharge Current Protect; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & P1F_ChargeCurrentProtect1Bit) != 0)
 	{
-		oss.append("Charge current protect; ");
+		oss.append("Charge Current Protect; ");
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & P1F_LowTotalVoltageProtect1Bit) != 0)
 	{
-		oss.append("Low total voltage protect; ");
+		oss.append("Low Total Voltage Protect; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & P1F_HighTotalVoltageProtect1Bit) != 0)
 	{
-		oss.append("High total voltage protect; ");
+		oss.append("High Total Voltage Protect; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & P1F_LowCellVoltageProtect1Bit) != 0)
 	{
-		oss.append("Low cell voltage protect; ");
+		oss.append("Low Cell Voltage Protect; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & P1F_HighCellVoltageProtect1Bit) != 0)
 	{
-		oss.append("High cell voltage protect; ");
+		oss.append("High Cell Voltage Protect; ");
 	}
 
 	return oss;
@@ -638,38 +638,38 @@ const std::string PaceBmsV25::DecodeProtectionStatus2Value(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & P2F_FullyProtect2Bit) != 0)
 	{
 		// ********************* based on (poor) documentation and inference, /possibly/ this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
-		oss.append("'Fully' protect bit; ");
+		oss.append("'Fully' protect bit???; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & P2F_LowEnvironmentalTemperatureProtect2Bit) != 0)
 	{
-		oss.append("Low environmental temperature protect; ");
+		oss.append("Low Environmental Temperature Protect; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & P2F_HighEnvironmentalTemperatureProtect2Bit) != 0)
 	{
-		oss.append("High environmental temperature protect; ");
+		oss.append("High Environmental Temperature Protect; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & P2F_HighMosfetTemperatureProtect2Bit) != 0)
 	{
-		oss.append("High MOS temperature protect; ");
+		oss.append("High MOSFET Temperature Protect; ");
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & P2F_LowDischargeTemperatureProtect2Bit) != 0)
 	{
-		oss.append("Low discharge temperature protect; ");
+		oss.append("Low Discharge Temperature Protect; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & P2F_LowChargeTemperatureProtect2Bit) != 0)
 	{
-		oss.append("Low charge temperature protect; ");
+		oss.append("Low Charge Temperature Protect; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & P2F_HighDischargeTemperatureProtect2Bit) != 0)
 	{
-		oss.append("High discharge temperature protect; ");
+		oss.append("High Discharge Temperature Protect; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & P2F_HighChargeTemperatureProtect2Bit) != 0)
 	{
-		oss.append("High charge temperature protect; ");
+		oss.append("High Charge Temperature Protect; ");
 	}
 
 	return oss;
@@ -679,35 +679,35 @@ const std::string PaceBmsV25::DecodeStatusValue(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & SF_HeartIndicatorBit) != 0)
 	{
-		oss.append("('Heart' indicator); "); //***
+		oss.append("('Heart' indicator?); "); //***
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & SF_UndefinedStatusBit7) != 0)
 	{
-		oss.append("(Undefined Status Bit - Possibly this means 'Heater', or 'AC in'); ");
+		oss.append("(Undefined Status Bit7 - Possibly this means 'Heater', or 'AC in'); ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & SF_ChargingBit) != 0)
 	{
 		oss.append("Charging; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & SF_PositiveNegativeTerminalsReversedBit) != 0)
 	{
 		oss.append("Positive/Negative Terminals Reversed; "); //***
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & SF_DischargingBit) != 0)
 	{
 		oss.append("Discharging; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & SF_DischargeMosfetOnBit) != 0)
 	{
 		oss.append("Discharge MOSFET On; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & SF_ChargeMosfetOnBit) != 0)
 	{
 		oss.append("Charge MOSFET On; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & SF_ChargeCurrentLimiterTurnedOffBit) != 0)
 	{
 		oss.append("Charge Current Limiter Disabled; ");
 	}
@@ -719,35 +719,35 @@ const std::string PaceBmsV25::DecodeConfigurationStatusValue(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & CF_UndefinedConfigurationStatusBit8) != 0)
 	{
-		oss.append("Undefined ControlState bit7 Set; ");
+		oss.append("Undefined ConfigurationStatus Bit8 Set; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & CF_UndefinedConfigurationStatusBit7) != 0)
 	{
-		oss.append("Undefined ControlState bit6 Set; ");
+		oss.append("Undefined ConfigurationStatus Bit7 Set; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & CF_LedAlarmEnabledBit) != 0)
 	{
 		oss.append("Warning LED Enabled; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & CF_ChargeCurrentLimiterEnabledBit) != 0)
 	{
-		oss.append("Charge Current Limiter Enabled; ");
+		oss.append("Charge Current Limiter Enabled (" + std::string((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0 ? "Low Gear" : "High Gear") + "); ");
 	}
-	if ((val & (1 << 3)) != 0)
+	//if ((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0)
+	//{
+	//	oss.append("Current limit low-gear Set; ");
+	//}
+	if ((val & CF_DischargeMosfetTurnedOff) != 0)
 	{
-		oss.append("Current limit low-gear Set; ");
+		oss.append("Discharge MOSFET Turned Off; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & CF_ChargeMosfetTurnedOff) != 0)
 	{
-		oss.append("Undefined ControlState bit2 Set; ");
+		oss.append("Charge MOSFET Turned Off; ");
 	}
-	if ((val & (1 << 1)) != 0)
-	{
-		oss.append("Undefined ControlState bit1 Set; ");
-	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & CF_BuzzerAlarmEnabledBit) != 0)
 	{
 		oss.append("Warning Buzzer Enabled; ");
 	}
@@ -759,35 +759,35 @@ const std::string PaceBmsV25::DecodeFaultStatusValue(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & FF_UndefinedFaultStatusBit8) != 0)
 	{
-		oss.append("Undefined FaultState bit7 fault; ");
+		oss.append("Undefined FaultStatus Bit8 Fault; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & FF_UndefinedFaultStatusBit7) != 0)
 	{
-		oss.append("Undefined ControlState bit6 fault; ");
+		oss.append("Undefined FaultStatus Bit7 Fault; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & FF_SampleBit) != 0)
 	{
-		oss.append("Sample fault; ");
+		oss.append("Sample (ADC?) fault; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & FF_CellBit) != 0)
 	{
 		oss.append("Cell fault; ");
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & FF_UndefinedFaultStatusBit4) != 0)
 	{
-		oss.append("Undefined ControlState bit3 fault; ");
+		oss.append("Undefined FaultStatus Bit4 Fault; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & FF_NTCBit) != 0)
 	{
 		oss.append("NTC fault; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & FF_DischargeMosfetBit) != 0)
 	{
 		oss.append("Discharge MOSFET fault; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & FF_ChargeMosfetBit) != 0)
 	{
 		oss.append("Charge MOSFET fault; ");
 	}
@@ -799,37 +799,37 @@ const std::string PaceBmsV25::DecodeWarningStatus1Value(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & W1F_UndefinedWarning1Bit8) != 0)
 	{
-		oss.append("Undefined WarnState1 bit7; ");
+		oss.append("Undefined WarnState1 Bit7 Warning; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & W1F_UndefinedWarning1Bit7) != 0)
 	{
-		oss.append("Undefined WarnState1 bit6; ");
+		oss.append("Undefined WarnState1 Bit6 Warning; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & W1F_DischargeCurrentBit) != 0)
 	{
-		oss.append("Discharge current warning; ");
+		oss.append("Discharge Current Warning; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & W1F_ChargeCurrentBit) != 0)
 	{
-		oss.append("Charge current warning; ");
+		oss.append("Charge Current Warning; ");
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & W1F_LowTotalVoltageBit) != 0)
 	{
-		oss.append("Low total voltage warning; ");
+		oss.append("Low Total Voltage Warning; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & W1F_HighTotalVoltageBit) != 0)
 	{
-		oss.append("High total voltage warning; ");
+		oss.append("High Total Voltage Warning; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & W1F_LowCellVoltageBit) != 0)
 	{
-		oss.append("Low cell voltage warning; ");
+		oss.append("Low Cell Voltage Warning; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & W1F_HighCellVoltageBit) != 0)
 	{
-		oss.append("High cell voltage warning; ");
+		oss.append("High Cell Voltage Warning; ");
 	}
 
 	return oss;
@@ -839,37 +839,37 @@ const std::string PaceBmsV25::DecodeWarningStatus2Value(const uint8_t val)
 {
 	std::string oss;
 
-	if ((val & (1 << 7)) != 0)
+	if ((val & W2F_LowPower) != 0)
 	{
-		oss.append("Low power warning; ");
+		oss.append("Low Power Warning; ");
 	}
-	if ((val & (1 << 6)) != 0)
+	if ((val & W2F_HighMosfetTemperature) != 0)
 	{
-		oss.append("High MOSFET temperature warning; ");
+		oss.append("High MOSFET Temperature Warning; ");
 	}
-	if ((val & (1 << 5)) != 0)
+	if ((val & W2F_LowEnvironmentalTemperature) != 0)
 	{
-		oss.append("Low environmental temperature warning; ");
+		oss.append("Low Environmental Temperature Warning; ");
 	}
-	if ((val & (1 << 4)) != 0)
+	if ((val & W2F_HighEnvironmentalTemperature) != 0)
 	{
-		oss.append("High environmental temperature warning; ");
+		oss.append("High Environmental Temperature Warning; ");
 	}
-	if ((val & (1 << 3)) != 0)
+	if ((val & W2F_LowDischargeTemperature) != 0)
 	{
-		oss.append("Low discharge temperature warning; ");
+		oss.append("Low Discharge Temperature Warning; ");
 	}
-	if ((val & (1 << 2)) != 0)
+	if ((val & W2F_LowChargeTemperature) != 0)
 	{
-		oss.append("Low charge temperature warning; ");
+		oss.append("Low Charge Temperature Warning; ");
 	}
-	if ((val & (1 << 1)) != 0)
+	if ((val & W2F_HighDischargeTemperature) != 0)
 	{
-		oss.append("High discharge temperature warning; ");
+		oss.append("High Discharge Temperature Warning; ");
 	}
-	if ((val & (1 << 0)) != 0)
+	if ((val & W2F_HighChargeTemperature) != 0)
 	{
-		oss.append("High charge temperature warning; ");
+		oss.append("High Charge Temperature Warning; ");
 	}
 
 	return oss;

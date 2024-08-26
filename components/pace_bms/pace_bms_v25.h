@@ -279,7 +279,7 @@ public:
 	enum StatusInformation_SystemFlags
 	{
 		SF_HeartIndicatorBit                    = (1 << 7),
-		SF_UndefinedStatusBit                   = (1 << 6),
+		SF_UndefinedStatusBit7                   = (1 << 6),
 		SF_ChargingBit                          = (1 << 5),
 		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
 		SF_DischargingBit                       = (1 << 3),
