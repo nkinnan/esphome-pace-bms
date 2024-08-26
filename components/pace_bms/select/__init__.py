@@ -37,6 +37,6 @@ async def to_code(config):
     if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
         sel = await select.new_select(
             charge_current_limiter_gear_config,
-            options=[CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS],
+            options=CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS,
         )
         cg.add(var.set_charge_current_limiter_gear_select(sel))
