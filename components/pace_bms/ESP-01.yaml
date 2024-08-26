@@ -1,6 +1,6 @@
 substitutions:
-  name: "esp01-jk48v100"
-  friendly_name: "ESP-01 - JK48V100 Battery"
+  name: "memory-leak"
+  friendly_name: "Memory Leak"
 
 esphome:
   name: ${name}
@@ -29,23 +29,17 @@ wifi:
   # Set up a wifi access point
   ap: {}
 
-# In combination with the `ap` this allows the user
-# to provision wifi credentials to the device via WiFi AP.
-captive_portal:
-
-dashboard_import:
-  package_import_url: github://esphome/example-configs/esphome-web/esp8266.yaml@main
-  import_full_config: true
-
-web_server:
-
 external_components:
   - source:
       type: git
       url: https://github.com/nkinnan/esphome-pace-bms
-      ref: "initial_commit"
+      ref: "memory_leak"
     components: [ pace_bms ]
     refresh: 1s
+
+
+debug:
+  update_interval: 1s
 
 
 uart:
@@ -56,218 +50,43 @@ uart:
 
 
 pace_bms:
-  uart_id: uart_0
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
-  flow_control_pin: GPIO2
+  uart_id: uart_0
+  flow_control_pin: GPIO0
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms # responses are typically immediate but I do occasionally see a larger delay
 
 
 sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+    block:
+      name: "Heap Max Block"
+    fragmentation:
+      name: "Heap Fragmentation"
+  - platform: uptime
+    update_interval: 1s
+    type: seconds
+    name: Uptime Sensor
+
+
+
+
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
-
-    cell_count:
-      name: "Cell Count"
-
-    cell_voltage_01:
-      name: "Cell Voltage 01"
-    cell_voltage_02:
-      name: "Cell Voltage 02"
-    cell_voltage_03:
-      name: "Cell Voltage 03"
-    cell_voltage_04:
-      name: "Cell Voltage 04"
-    cell_voltage_05:
-      name: "Cell Voltage 05"
-    cell_voltage_06:
-      name: "Cell Voltage 06"
-    cell_voltage_07:
-      name: "Cell Voltage 07"
-    cell_voltage_08:
-      name: "Cell Voltage 08" 
-    cell_voltage_09:
-      name: "Cell Voltage 09"
-    cell_voltage_10:
-      name: "Cell Voltage 10"
-    cell_voltage_11:
-      name: "Cell Voltage 11"
-    cell_voltage_12:
-      name: "Cell Voltage 12"
-    cell_voltage_13:
-      name: "Cell Voltage 13"
-    cell_voltage_14:
-      name: "Cell Voltage 14"
-    cell_voltage_15:
-      name: "Cell Voltage 15"
-    cell_voltage_16:
-      name: "Cell Voltage 16"
-
-    temperature_count:
-      name: "Temperature Count"
-
-    temperature_01:
-      name: "Cell Temperature 1"
-    temperature_02:
-      name: "Cell Temperature 2"
-    temperature_03:
-      name: "Cell Temperature 3"
-    temperature_04:
-      name: "Cell Temperature 4"
-    temperature_05:
-      name: "MOSFET Temperature"
-    temperature_06:
-      name: "Environment Temperature"
 
     total_voltage:
       name: "Total Voltage"
-    current:
-      name: "Current"
-    power:
-      name: "Power"
-
-    remaining_capacity:
-      name: "Remaining Capacity"
-    full_capacity:
-      name: "Full Capacity"
-    design_capacity:
-      name: "Design Capacity"
-
-    cycle_count:
-      name: "Cycle Count"
-    state_of_charge:
-      name: "State of Charge"
-    state_of_health:
-      name: "State of Health"
-
-    min_cell_voltage:
-      name: "Min Cell Voltage"
-    max_cell_voltage:
-      name: "Max Cell Voltage"
-    avg_cell_voltage:
-      name: "Avg Cell Voltage"
-    max_cell_differential:
-      name: "Max Cell Differential"
-
-    # specific status values that you probably don't need, but the values / bit flags are documented anyway
-    # just use the 6 text sensor equivalents which are already decoded and suitable for display
-    # unless you want to trigger something based on a specific value or flag, or do custom formatting
-    warning_status_value_cell_01:
-      name: "Warning Status Value Cell 01"
-    warning_status_value_cell_02:
-      name: "Warning Status Value Cell 02"
-    warning_status_value_cell_03:
-      name: "Warning Status Value Cell 03"
-    warning_status_value_cell_04:
-      name: "Warning Status Value Cell 04"
-    warning_status_value_cell_05:
-      name: "Warning Status Value Cell 05"
-    warning_status_value_cell_06:
-      name: "Warning Status Value Cell 06"
-    warning_status_value_cell_07:
-      name: "Warning Status Value Cell 07"
-    warning_status_value_cell_08:
-      name: "Warning Status Value Cell 08"
-    warning_status_value_cell_09:
-      name: "Warning Status Value Cell 09"
-    warning_status_value_cell_10:
-      name: "Warning Status Value Cell 10"
-    warning_status_value_cell_11:
-      name: "Warning Status Value Cell 11"
-    warning_status_value_cell_12:
-      name: "Warning Status Value Cell 12"
-    warning_status_value_cell_13:
-      name: "Warning Status Value Cell 13"
-    warning_status_value_cell_14:
-      name: "Warning Status Value Cell 14"
-    warning_status_value_cell_15:
-      name: "Warning Status Value Cell 15"
-    warning_status_value_cell_16:
-      name: "Warning Status Value Cell 16"
-
-    warning_status_value_temperature_01:
-      name: "Warning Status Value Temperature 01"
-    warning_status_value_temperature_02:
-      name: "Warning Status Value Temperature 02"
-    warning_status_value_temperature_03:
-      name: "Warning Status Value Temperature 03"
-    warning_status_value_temperature_04:
-      name: "Warning Status Value Temperature 04"
-    warning_status_value_temperature_05:
-      name: "Warning Status Value Temperature 05"
-    warning_status_value_temperature_06:
-      name: "Warning Status Value Temperature 06"
-
-    warning_status_value_charge_current:
-      name: "Warning Status Value Charge Current"
-    warning_status_value_total_voltage:
-      name: "Warning Status Value Total Voltage"
-    warning_status_value_discharge_current:
-      name: "Warning Status Value Discharge Current"
-    warning_status_value_1:
-      name: "Warning Status Value 1"
-    warning_status_value_2:
-      name: "Warning Status Value 2"
-
-    balancing_status_value:
-      name: "Balancing Status Value"
-    system_status_value:
-      name: "System Status Value"
-    configuration_status_value:
-      name: "Configuration Status Value"
-    protection_status_value_1:
-      name: "Protection Status Value 1"
-    protection_status_value_2:
-      name: "Protection Status Value 2"
-    fault_status_value:
-      name: "Fault Status Value"
 
 
 text_sensor:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    hardware_version:
-      name: "Hardware Version"
-    serial_number:
-      name: "Serial Number"
-
-    # pre-decoded human readable text that describes all of the specific status values and is suitable for display
-    warning_status:
-      name: "Warning Status"
-    balancing_status:
-      name: "Balancing Status"
-    system_status:
-      name: "System Status"
-    configuration_status:
-      name: "Configuration Status"
-    protection_status:
-      name: "Protection Status"
-    fault_status:
-      name: "Fault Status"
 
 
 switch:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
 
-    buzzer_alarm:
-      name: "Buzzer Alarm"
-    led_alarm:
-      name: "Led Alarm"
-    charge_current_limiter:
-      name: "Charge Current Limiter"
-    charge_mosfet:
-      name: "Charge Mosfet"
-    discharge_mosfet:
-      name: "Discharge Mosfet"
 
 select:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    charge_current_limiter_gear:
-      name: "Charge Current Limiter Gear"
