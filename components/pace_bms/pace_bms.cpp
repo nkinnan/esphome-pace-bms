@@ -37,7 +37,8 @@ void PaceBms::loop() {
       free(command);
       deleted_count++;
     }
-    ESP_LOGV(TAG, "Update commands dequeued and deleted: %i", deleted_count);
+    if(deleted_count > 0)
+      ESP_LOGV(TAG, "Update commands dequeued and deleted: %i", deleted_count);
 }
 
 }  // namespace pace_bms
