@@ -39,12 +39,15 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 	  ST_ChargeCurrentLimiter,
 	  ST_ChargeMosfet,
 	  ST_DischargeMosfet,
-	  // todo: make this a select/option?
-	  ST_ChargeCurrentLimiterCurrentLimitHighGear, // false = low, true = high
-	  // todo: make this a button?
-	  ST_Reboot,
   };
   void set_switch_state(SwitchType switch_type, bool state);
+  // this is a "switch state" but it's not an ON/OFF value so it's treated differently
+  enum CurrentLimiterGear {
+	  CLG_LowGear,
+	  CLG_HighGear,
+  }
+  void set_charge_current_limiter_gear(CurrentLimiterGear gear);
+  void send_shutdown();
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };
@@ -55,7 +58,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 
 
   PaceBmsV25* pace_bms_v25_;
-  static const uint8_t max_data_len_ = 150;
+  static const uint8_t max_data_len_ = 200;
   uint8_t raw_data_[max_data_len_];
   uint8_t raw_data_index_{0};
   uint32_t last_transmit_{ 0 };

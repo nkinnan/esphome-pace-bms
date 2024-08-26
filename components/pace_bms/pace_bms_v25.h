@@ -294,12 +294,12 @@ public:
 	{
 		CF_UndefinedConfigurationStatusBit8  = (1 << 7),
 		CF_UndefinedConfigurationStatusBit7  = (1 << 6),
-		CF_WarningLedEnabledBit              = (1 << 5),
+		CF_LedAlarmEnabledBit                = (1 << 5),
 		CF_ChargeCurrentLimiterEnabledBit    = (1 << 4),
 		CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3),
-		CF_UndefinedConfigurationStatusBit3  = (1 << 2),
-		CF_UndefinedConfigurationStatusBit2  = (1 << 1),
-		CF_WarningBuzzerEnabledBit           = (1 << 0),
+		CF_DischargeMosfetTurnedOff          = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
+		CF_ChargeMosfetTurnedOff             = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
+		CF_BuzzerAlarmEnabledBit             = (1 << 0),
 	};
 
 	// possible flags set in:
@@ -516,6 +516,9 @@ public:
 	bool ProcessWriteSwitchCommandResponse(const uint8_t busId, const SwitchCommand command, const std::vector<uint8_t>& response);
 
 	// ==== Charge MOSFET Switch
+	// note: I have seen the BMS enforce that at least one of Charge MOSFET or Discharge MOSFET must always be on, 
+	//       you cannot turn both off but you can turn them off individually
+	// note: Additionally, I can turn the charge mosfet OFF when the BMS is idle, or already charging, but not while discharging, which is... strange
 	// 1: The "on/off" state, see: enum MosfetState
 	// open:  ~2500469AE00200FD1E.
 	//                     11
@@ -532,6 +535,9 @@ public:
 	static const uint8_t exampleWriteMosfetChargeCloseSwitchCommandResponseV25[];
 
 	// ==== Discharge MOSFET Switch
+	// note: I have seen the BMS enforce that at least one of Charge MOSFET or Discharge MOSFET must always be on, 
+	//       you cannot turn both off but you can turn them off individually
+	// note: Additionally, I can turn the discharge mosfet OFF when the BMS is idle, or already discharging, but not while charging, which is... strange
 	// 1: The "on/off" state, see: enum MosfetState
 	// open:  ~2500469BE00200FD1D.
 	//                     11

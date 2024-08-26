@@ -52,12 +52,12 @@ void PaceBmsSwitch::dump_config() {
 
 void PaceBmsSwitch::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->buzzer_alarm_switch_ != nullptr) {
-	bool state = (status_information.configuration_value & PaceBmsV25::CF_WarningBuzzerEnabledBit);
+	bool state = (status_information.configuration_value & PaceBmsV25::CF_BuzzerAlarmEnabledBit);
 	ESP_LOGV(TAG, "'buzzer_switch': Publishing state due to update from the hardware: %s", ONOFF(state));
     this->buzzer_alarm_switch_->publish_state(state);
   }
   if (this->led_alarm_switch_ != nullptr) {
-	bool state = (status_information.configuration_value & PaceBmsV25::CF_WarningLedEnabledBit);
+	bool state = (status_information.configuration_value & PaceBmsV25::CF_LedAlarmEnabledBit);
 	ESP_LOGV(TAG, "'led_switch': Publishing state due to update from the hardware: %s", ONOFF(state));
     this->led_alarm_switch_->publish_state(state);
   }
