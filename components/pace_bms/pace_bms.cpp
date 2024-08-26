@@ -30,15 +30,14 @@ void PaceBms::update() {
 }
 
 void PaceBms::loop() {
-    if (command_queue_.empty()) {
-      ESP_LOGV(TAG, "command queue empty on loop()");
-      return;
-    }
+    int deleted_count = 0;
     while(!command_queue_.empty()) {
       PaceBms::command_item* command = command_queue_.front();
       command_queue_.pop();
       free(command);
+      deleted_count++;
     }
+    ESP_LOGV(TAG, "Update commands dequeued and deleted: %i", deleted_count);
 }
 
 }  // namespace pace_bms
