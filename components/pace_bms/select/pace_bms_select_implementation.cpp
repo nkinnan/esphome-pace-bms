@@ -13,6 +13,10 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 void PaceBmsSelectImplementation::control(const std::string& value) {
 	ESP_LOGE(TAG, "control method override: %s", value.c_str());
 
+	std::string copy = value;
+
+	this->control_callback_.call(copy);
+
 	if(value == "HighGear")
 	  this->control_callback_.call(std::string("HighGear"));
 	if(value == "LowGear")
