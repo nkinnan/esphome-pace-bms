@@ -14,7 +14,7 @@ class PaceBmsSelect : public Component {
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
   // current switch states are actually in the status information response, so subscribe to that in order to update switch state
-  void set_buzzer_alarm_select(PaceBmsSelectImplementation* buzzer_select) { this->charge_current_limiter_gear_select_ = buzzer_select; request_status_information_callback_ = true; }
+  void set_charge_current_limiter_gear_select(PaceBmsSelectImplementation* charge_current_limiter_gear_select) { this->charge_current_limiter_gear_select_ = charge_current_limiter_gear_select; request_status_information_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
