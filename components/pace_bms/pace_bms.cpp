@@ -36,7 +36,7 @@ void PaceBms::loop() {
     while(!command_queue_.empty()) {
       PaceBms::command_item* command = command_queue_.front();
       command_queue_.pop();
-      free(command);
+      delete command;
       deleted_count++;
     }
     if(deleted_count > 0)
