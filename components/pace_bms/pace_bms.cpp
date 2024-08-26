@@ -24,7 +24,7 @@ void PaceBms::update() {
       // ============== comment out the following line or not, to repro the memory leak        ===================
       // ============== you can also increase items_per_update to make it OOM/reboot faster    ===================
       // =========================================================================================================
-      //item->description_ = std::string("some std::string");
+      item->description_ = std::string("some std::string");
       command_queue_.push(item);
     }
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
