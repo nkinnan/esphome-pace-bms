@@ -31,7 +31,7 @@ void PaceBmsSelect::dump_config() {
 
 void PaceBmsSelect::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->charge_current_limiter_gear_select_ != nullptr) {
-	bool state = (status_information.configuration_value & PaceBmsV25::CF_ChargeCurrentLimiterLowGearSetBit ? "LowGear" : "HighGear");
+	std::string state = (status_information.configuration_value & PaceBmsV25::CF_ChargeCurrentLimiterLowGearSetBit ? "LowGear" : "HighGear");
 	ESP_LOGV(TAG, "'charge_current_limiter_gear': Publishing state due to update from the hardware: %s", state);
     this->charge_current_limiter_gear_select_->publish_state(state);
   }
