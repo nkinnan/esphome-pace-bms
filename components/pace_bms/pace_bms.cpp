@@ -10,7 +10,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms";
 
-static const int items_per_update = 50
+static const int items_per_update = 50;
 
 void PaceBms::update() {
  if (!command_queue_.empty()) {
@@ -22,6 +22,7 @@ void PaceBms::update() {
       command_item* item = new command_item;
       // ==================================================================================================
       // ============== comment out the following line or not, to repro the memory leak ===================
+      // ============== you can also increase items_per_update to make it OOM faster    ===================
       // ==================================================================================================
       item->description_ = std::string("some std::string");
       command_queue_.push(item);
