@@ -10,9 +10,7 @@
 namespace esphome {
 namespace pace_bms {
 
-// this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependencies into it
-// in the future, other protocol versions may be supported
-class PaceBms : public PollingComponent, public uart::UARTDevice {
+class PaceBms : public PollingComponent {
  public:
 
   void update() override;

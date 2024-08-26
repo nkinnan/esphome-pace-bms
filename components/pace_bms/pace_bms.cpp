@@ -19,7 +19,7 @@ void PaceBms::update() {
     {
       command_item* item = new command_item;
       // ==================================================================================================
-      // ============== comment out the following line or not to repro the memory leak ====================
+      // ============== comment out the following line or not, to repro the memory leak ===================
       // ==================================================================================================
       item->description_ = std::string("some std::string");
       command_queue_.push(item);
