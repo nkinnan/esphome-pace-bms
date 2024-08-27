@@ -23,8 +23,16 @@ void info_log_func(std::string message) {
     ESP_LOGI(TAG_V25, "%s", message.c_str());
 }
 
+void debug_log_func(std::string message) {
+    ESP_LOGD(TAG_V25, "%s", message.c_str());
+}
+
 void verbose_log_func(std::string message) {
     ESP_LOGV(TAG_V25, "%s", message.c_str());
+}
+
+void very_verbose_log_func(std::string message) {
+    ESP_LOGVV(TAG_V25, "%s", message.c_str());
 }
 
 void PaceBms::setup() {
@@ -35,7 +43,7 @@ void PaceBms::setup() {
   }
   else {
     // the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies - inject esphome logging function wrappers on construction
-    this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, verbose_log_func);
+    this->pace_bms_v25_ = new PaceBmsV25(error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func very_verbose_log_func);
   }
 
   if (this->flow_control_pin_ != nullptr) 
