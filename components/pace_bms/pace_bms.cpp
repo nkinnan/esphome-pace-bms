@@ -18,7 +18,7 @@ static const char* const TAG = "pace_bms";
 
 uint32_t before = 0;
 uint32_t count = 0;
-uint32_t millis_between_logs = 1000;
+uint32_t millis_between_logs = 1000000;
 
 void PaceBms::loop() {
     uint32_t now = millis();
