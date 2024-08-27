@@ -271,9 +271,9 @@ select:
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
-button:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    shutdown:
-      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+#button:
+#  - platform: pace_bms
+#    pace_bms_id: pace_bms_at_address_1
+#
+#    shutdown:
+#      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
