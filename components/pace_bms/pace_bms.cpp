@@ -1,9 +1,15 @@
 #include "pace_bms.h"
 #include "esphome/core/log.h"
+#include "esphome/core/application.h"
 #include <cinttypes>
 #include <iomanip>
 #include <sstream>
 #include <functional>
+#include <list>
+#include <queue>
+#include <set>
+#include <utility>
+#include <vector>
 
 namespace esphome {
 namespace pace_bms { 
