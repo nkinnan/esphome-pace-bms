@@ -29,7 +29,7 @@ void PaceBms::loop() {
         return;
     }
 
-    if ((now - before) < millis_between_logs)
+    if ((now - before) > millis_between_logs)
         return;
 
     ESP_LOGV(TAG, "Sending iteration %i at %i", count++, now);
