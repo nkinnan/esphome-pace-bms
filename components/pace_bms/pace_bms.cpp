@@ -197,7 +197,7 @@ void PaceBms::send_next_request_frame_() {
 //    this->next_response_handler_ = command->process_response_frame_;
 //    this->last_request_description = command->description_;
 
-    free(command);
+    delete(command);
 
     //ESP_LOGV(TAG, "Sending %s request", command->description_.c_str());
     //if (this->flow_control_pin_ != nullptr)
