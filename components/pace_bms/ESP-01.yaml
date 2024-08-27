@@ -1,6 +1,6 @@
 substitutions:
   name: "esp01-jk48v100"
-  friendly_name: "Memory Leak"
+  friendly_name: "Throughput Test"
 
 esphome:
   name: ${name}
