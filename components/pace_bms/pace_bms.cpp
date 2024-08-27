@@ -33,6 +33,8 @@ void PaceBms::loop() {
         return;
 
     ESP_LOGV(TAG, "Sending iteration %i at %i", count++, now);
+
+    before = now;
 }
 
 }  // namespace pace_bms
