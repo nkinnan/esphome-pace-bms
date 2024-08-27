@@ -58,12 +58,12 @@ uart:
 pace_bms:
   uart_id: uart_0
   id: pace_bms_at_address_1
-  address: 1
-  protocol_version: 0x25
-  flow_control_pin: GPIO2
-  update_interval: 5s
-  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 1000ms # responses are typically immediate but I do occasionally see a larger delay
+  protocol_version: 0x25    # currently the only protocol version supported, others may be added in the future
+  address: 1                # dip switch value
+  flow_control_pin: GPIO2   # required for rs485, should be omitted for rs232
+  update_interval: 5s       # poll frequency
+  request_throttle: 50ms    # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  response_timeout: 1000ms  # responses are typically recieved immediately, but I have occasionally seen a sub-second delay
 
 
 sensor:
@@ -152,9 +152,8 @@ sensor:
     max_cell_differential:
       name: "Max Cell Differential"
 
-    # specific status values that you probably don't need, but the values / bit flags are documented anyway
-    # just use the 6 text sensor equivalents which are already decoded and suitable for display
-    # unless you want to trigger something based on a specific value or flag, or do custom formatting
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which are already decoded and suitable for display
     warning_status_value_cell_01:
       name: "Warning Status Value Cell 01"
     warning_status_value_cell_02:
@@ -271,3 +270,10 @@ select:
 
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
+
+button:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    shutdown:
+      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle

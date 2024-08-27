@@ -4,19 +4,23 @@
 
 
 // takes pointers to the "real" logging functions
-PaceBmsV25::PaceBmsV25(PaceBmsV25::LogFuncPtr logError, PaceBmsV25::LogFuncPtr logWarning, PaceBmsV25::LogFuncPtr logInfo, PaceBmsV25::LogFuncPtr logVerbose)
+PaceBmsV25::PaceBmsV25(PaceBmsV25::LogFuncPtr logError, PaceBmsV25::LogFuncPtr logWarning, PaceBmsV25::LogFuncPtr logInfo, PaceBmsV25::LogFuncPtr logDebug, PaceBmsV25::LogFuncPtr logVerbose, PaceBmsV25::LogFuncPtr logVeryVerbose)
 {
 	LogErrorPtr = logError;
 	LogWarningPtr = logWarning;
 	LogInfoPtr = logInfo;
+	LogVerbosePtr = logDebug;
 	LogVerbosePtr = logVerbose;
+	LogVerbosePtr = logVeryVerbose;
 }
 
 // dependency injection
 PaceBmsV25::LogFuncPtr LogErrorPtr;
 PaceBmsV25::LogFuncPtr LogWarningPtr;
 PaceBmsV25::LogFuncPtr LogInfoPtr;
+PaceBmsV25::LogFuncPtr LogDebugPtr;
 PaceBmsV25::LogFuncPtr LogVerbosePtr;
+PaceBmsV25::LogFuncPtr LogVeryVerbosePtr;
 
 void PaceBmsV25::LogError(std::string message)
 {
@@ -39,11 +43,25 @@ void PaceBmsV25::LogInfo(std::string message)
 		LogInfoPtr(message);
 	}
 }
+void PaceBmsV25::LogDebug(std::string message)
+{
+	if (LogDebugPtr != 0)
+	{
+		LogDebugPtr(message);
+	}
+}
 void PaceBmsV25::LogVerbose(std::string message)
 {
 	if (LogVerbosePtr != 0)
 	{
 		LogVerbosePtr(message);
+	}
+}
+void PaceBmsV25::LogVeryVerbose(std::string message)
+{
+	if (LogVeryVerbosePtr != 0)
+	{
+		LogVeryVerbosePtr(message);
 	}
 }
 
@@ -55,28 +73,28 @@ std::string PaceBmsV25::FormatReturnCode(const uint8_t returnCode)
 		return std::string("OK");
 		break;
 	case 1:
-		return std::string("Undefined1");
+		return std::string("Documented as Undefined 1");
 		break;
 	case 2:
-		return std::string("CKSUM error (full request checksum)");
+		return std::string("CKSUM Error (full request checksum)");
 		break;
 	case 3:
-		return std::string("LCKSUM error (checksum of embedded payload length value)");
+		return std::string("LCKSUM Error (checksum of embedded payload length value)");
 		break;
 	case 4:
-		return std::string("CID2 undefined (unknown command)");
+		return std::string("CID2 Undefined (unknown command)");
 		break;
 	case 5:
-		return std::string("Undefined5");
+		return std::string("Documented as Undefined 5");
 		break;
 	case 6:
-		return std::string("Undefined6");
+		return std::string("Documented as Undefined 6");
 		break;
 	case 9:
-		return std::string("Operation or write error");
+		return std::string("Operation or Write Error");
 		break;
 	default:
-		return std::string("Undocumented Error Code");
+		return std::string("Undocumented Response Error Code");
 		break;
 	}
 

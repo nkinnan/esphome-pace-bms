@@ -29,19 +29,23 @@ public:
 	typedef void (*LogFuncPtr)(std::string message);
 
 	// takes pointers to the "real" logging functions
-	PaceBmsV25(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logVerbose);
+	PaceBmsV25(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 private:
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
 	LogFuncPtr LogWarningPtr;
 	LogFuncPtr LogInfoPtr;
+	LogFuncPtr LogDebugPtr;
 	LogFuncPtr LogVerbosePtr;
+	LogFuncPtr LogVeryVerbosePtr;
 
 	void LogError(std::string message);
 	void LogWarning(std::string message);
 	void LogInfo(std::string message);
+	void LogDebug(std::string message);
 	void LogVerbose(std::string message);
+	void LogVeryVerbose(std::string message);
 
 	enum CID1 : uint8_t
 	{

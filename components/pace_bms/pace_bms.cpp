@@ -160,7 +160,7 @@ void PaceBms::loop() {
     // did we run out of buffer before EOI?
     if (this->raw_data_index_ + 1 >= this->max_data_len_) {
       std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
-      ESP_LOGV(TAG, "Response frame exceeds maximum supported length, last request was %s, incomplete frame: %s", this->last_request_description, str.c_str());
+      ESP_LOGV(TAG, "Response frame exceeds maximum supported length, last request was '%s', incomplete response frame: %s", this->last_request_description.c_str(), str.c_str());
       request_outstanding_ = false;
       this->raw_data_index_ = 0;
       return;
@@ -170,7 +170,8 @@ void PaceBms::loop() {
   }
 }
 
-// preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), but this class still handle the case where they register late, a single update cycle will simply be skipped in that case
+// preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
+//     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
 float PaceBms::get_setup_priority() const { return setup_priority::LATE; }
 
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
