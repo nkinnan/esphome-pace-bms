@@ -20,17 +20,22 @@ uint32_t before = 0;
 uint32_t count = 0;
 uint32_t millis_between_logs = 1000000;
 
-void PaceBms::loop() {
+void PaceBms::loop() 
+{
     uint32_t now = millis();
 
+    // initialize before on first loop
     if (before == 0)
     {
         before = now;
         return;
     }
 
+    // wait until enough time has passed
     if ((now - before) > millis_between_logs)
         return;
+
+    ESP_LOGV(TAG, "now %i before %i diff %i", now, before, now - before);
 
     ESP_LOGV(TAG, "Sending iteration %i at %i", count++, now);
 
