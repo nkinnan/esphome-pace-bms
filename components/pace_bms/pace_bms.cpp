@@ -1,6 +1,9 @@
 #include "pace_bms.h"
 #include "esphome/core/log.h"
 #include <cinttypes>
+#include <iomanip>
+#include <sstream>
+#include <functional>
 
 namespace esphome {
 namespace pace_bms { 
