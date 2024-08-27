@@ -18,7 +18,7 @@ static const char* const TAG = "pace_bms";
 
 uint32_t before = 0;
 uint32_t count = 0;
-const uint32_t millis_between_logs = 1000;
+const uint32_t millis_between_logs = 1000/10;
 
 void PaceBms::loop() 
 {
@@ -31,8 +31,6 @@ void PaceBms::loop()
     // wait until enough time has passed
     if ((now - before) < millis_between_logs)
         return;
-
-    ESP_LOGV(TAG, "now %i before %i diff %i", now, before, now - before);
 
     ESP_LOGV(TAG, "Sending iteration %i at %i", count++, now);
 
