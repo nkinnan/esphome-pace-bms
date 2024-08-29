@@ -10,13 +10,15 @@ esphome:
   project:
     name: esphome.web
     version: dev
+  libraries:
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 
 esp8266:
   board: esp01_1m
 
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
-  level: VERBOSE
+  level: DEBUG
 
 # Enable Home Assistant API
 api:
@@ -29,15 +31,9 @@ wifi:
   # Set up a wifi access point
   ap: {}
 
-# In combination with the `ap` this allows the user
-# to provision wifi credentials to the device via WiFi AP.
-captive_portal:
-
-dashboard_import:
-  package_import_url: github://esphome/example-configs/esphome-web/esp8266.yaml@main
-  import_full_config: true
-
+# To have a "next url" for improv serial
 web_server:
+  local: true
 
 external_components:
   - source:
@@ -60,7 +56,7 @@ pace_bms:
   id: pace_bms_at_address_1
   protocol_version: 0x25    # currently the only protocol version supported, others may be added in the future
   address: 1                # dip switch value
-  flow_control_pin: GPIO2   # required for rs485, should be omitted for rs232
+  flow_control_pin: GPIO0   # required for rs485, should be omitted for rs232
   update_interval: 5s       # poll frequency
   request_throttle: 50ms    # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms  # responses are typically recieved immediately, but I have occasionally seen a sub-second delay

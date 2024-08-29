@@ -127,68 +127,68 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\pace_bms.cpp">
+    <ClCompile Include="..\..\components\pace_bms\pace_bms.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\select\pace_bms_select.cpp">
+    <ClCompile Include="..\..\components\pace_bms\select\pace_bms_select.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\select\pace_bms_select_implementation.cpp">
+    <ClCompile Include="..\..\components\pace_bms\select\pace_bms_select_implementation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\sensor\pace_bms_sensor.cpp">
+    <ClCompile Include="..\..\components\pace_bms\sensor\pace_bms_sensor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\switch\pace_bms_switch.cpp">
+    <ClCompile Include="..\..\components\pace_bms\switch\pace_bms_switch.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\switch\pace_bms_switch_implementation.cpp">
+    <ClCompile Include="..\..\components\pace_bms\switch\pace_bms_switch_implementation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\text_sensor\pace_bms_text_sensor.cpp">
+    <ClCompile Include="..\..\components\pace_bms\text_sensor\pace_bms_text_sensor.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Test PACE BMS.cpp" />
-    <ClCompile Include="..\..\pace_bms_v25.cpp" />
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_v25.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\pace_bms.h">
+    <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\pace_bms_v25.h" />
-    <ClInclude Include="..\..\select\pace_bms_select.h">
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_v25.h" />
+    <ClInclude Include="..\..\components\pace_bms\select\pace_bms_select.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\select\pace_bms_select_implementation.h">
+    <ClInclude Include="..\..\components\pace_bms\select\pace_bms_select_implementation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\sensor\pace_bms_sensor.h">
+    <ClInclude Include="..\..\components\pace_bms\sensor\pace_bms_sensor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\switch\pace_bms_switch.h">
+    <ClInclude Include="..\..\components\pace_bms\switch\pace_bms_switch.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\switch\pace_bms_switch_implementation.h">
+    <ClInclude Include="..\..\components\pace_bms\switch\pace_bms_switch_implementation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\text_sensor\pace_bms_text_sensor.h">
+    <ClInclude Include="..\..\components\pace_bms\text_sensor\pace_bms_text_sensor.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\select\__init__.py">
+    <None Include="..\..\components\pace_bms\select\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\sensor\__init__.py">
+    <None Include="..\..\components\pace_bms\sensor\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\switch\__init__.py">
+    <None Include="..\..\components\pace_bms\switch\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\text_sensor\__init__.py">
+    <None Include="..\..\components\pace_bms\text_sensor\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\__init__.py">
+    <None Include="..\..\components\pace_bms\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
   </ItemGroup>

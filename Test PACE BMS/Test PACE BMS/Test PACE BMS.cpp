@@ -4,13 +4,15 @@
 #include <windows.h>
 #include <iostream>
 #include <sstream>
-#include "..\..\pace_bms_v25.h"
+#include "..\..\components\pace_bms\pace_bms_v25.h"
 
 
 std::ostringstream error;
 std::ostringstream warning;
 std::ostringstream info;
+std::ostringstream debug;
 std::ostringstream verbose;
+std::ostringstream veryVerbose;
 
 void ErrorLogFunc(std::string message)
 {
@@ -30,15 +32,27 @@ void InfoLogFunc(std::string message)
 	info << message << std::endl;
 }
 
+void DebugLogFunc(std::string message)
+{
+	std::cout << "    Debug: " << message << std::endl;
+	debug << message << std::endl;
+}
+
 void VerboseLogFunc(std::string message)
 {
 	std::cout << "    Verbose: " << message << std::endl;
 	verbose << message << std::endl;
 }
 
+void VeryVerboseLogFunc(std::string message)
+{
+	std::cout << "    VeryVerbose: " << message << std::endl;
+	veryVerbose << message << std::endl;
+}
+
 void BasicTests()
 {
-	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &VerboseLogFunc);
+	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 	std::vector<uint8_t> buffer;
 	bool res;
 
@@ -69,7 +83,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	int exlen = (int)strlen((char*)PaceBmsV25::exampleReadAnalogInformationRequestV25);
 	paceBms->CreateReadAnalogInformationRequest(1, buffer);
@@ -89,7 +105,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadAnalogInformationResponseV25);
 	PaceBmsV25::AnalogInformation analogInfo;
@@ -179,7 +197,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadStatusInformationRequestV25);
 	paceBms->CreateReadStatusInformationRequest(1, buffer);
@@ -199,7 +219,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadStatusInformationResponseV25);
 	PaceBmsV25::StatusInformation statusInformation;
@@ -235,7 +257,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadHardwareVersionRequestV25);
 	paceBms->CreateReadHardwareVersionRequest(1, buffer);
@@ -255,7 +279,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadHardwareVersionResponseV25);
 	std::string versionText;
@@ -291,7 +317,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSerialNumberRequestV25);
 	paceBms->CreateReadSerialNumberRequest(1, buffer);
@@ -311,7 +339,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSerialNumberResponseV25);
 	std::string serialText;
@@ -359,7 +389,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	PaceBmsV25::SwitchCommand command = PaceBmsV25::SC_DisableBuzzer;
 	std::string commandAsText = "SC_DisableBuzzer";
@@ -382,7 +414,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -407,7 +441,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_EnableBuzzer;
 	commandAsText = "SC_EnableBuzzer";
@@ -430,7 +466,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -466,7 +504,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_DisableLedWarning;
 	commandAsText = "SC_DisableLedWarning";
@@ -489,7 +529,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -514,7 +556,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_EnableLedWarning;
 	commandAsText = "SC_EnableLedWarning";
@@ -537,7 +581,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -573,7 +619,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_DisableChargeCurrentLimiter;
 	commandAsText = "SC_DisableChargeCurrentLimiter";
@@ -596,7 +644,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -621,7 +671,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_EnableChargeCurrentLimiter;
 	commandAsText = "SC_EnableChargeCurrentLimiter";
@@ -644,7 +696,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -681,7 +735,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear;
 	commandAsText = "SC_SetChargeCurrentLimiterCurrentLimitHighGear";
@@ -704,7 +760,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -729,7 +787,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	command = PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear;
 	commandAsText = "SC_SetChargeCurrentLimiterCurrentLimitLowGear";
@@ -752,7 +812,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
@@ -788,7 +850,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	PaceBmsV25::MosfetType type = PaceBmsV25::MT_Charge;
 	std::string typeAsText = "MT_Charge";
@@ -813,7 +877,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
@@ -839,7 +905,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	type = PaceBmsV25::MT_Charge;
 	typeAsText = "MT_Charge";
@@ -864,7 +932,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
@@ -901,7 +971,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	type = PaceBmsV25::MT_Discharge;
 	typeAsText = "MT_Charge";
@@ -926,7 +998,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
@@ -952,7 +1026,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	type = PaceBmsV25::MT_Discharge;
 	typeAsText = "MT_Charge";
@@ -977,7 +1053,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
@@ -1009,7 +1087,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandRequestV25);
 	paceBms->CreateWriteRebootCommandRequest(0, buffer);
@@ -1029,7 +1109,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandResponseV25);
 	res = paceBms->ProcessWriteRebootCommandResponse(
@@ -1109,7 +1191,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeRequestV25);
 	paceBms->CreateReadSystemTimeRequest(0, buffer);
@@ -1129,7 +1213,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeResponseV25);
 	PaceBmsV25::DateTime dateTime;
@@ -1161,7 +1247,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSystemTimeRequestV25);
 	dateTime.Year = 2024;
@@ -1187,7 +1275,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSystemTimeResponseV25);
 	res = paceBms->ProcessWriteSystemTimeResponse(
@@ -1261,7 +1351,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	PaceBmsV25::ReadConfigurationType configType = PaceBmsV25::RC_CellOverVoltage;
 	std::string configTypeString = "RC_CellOverVoltage";
@@ -1284,7 +1376,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellOverVoltageConfigurationResponseV25);
 	PaceBmsV25::CellOverVoltageConfiguration cellOverVoltageConfig;
@@ -1317,7 +1411,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25);
 	cellOverVoltageConfig.AlarmMillivolts = 3600;
@@ -1347,7 +1443,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellOverVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1383,7 +1481,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_PackOverVoltage;
 	configTypeString = "RC_PackOverVoltage";
@@ -1406,7 +1506,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackOverVoltageConfigurationResponseV25);
 	PaceBmsV25::PackOverVoltageConfiguration packOverVoltageConfig;
@@ -1439,7 +1541,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25);
 	packOverVoltageConfig.AlarmMillivolts = 57610;
@@ -1470,7 +1574,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackOverVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1506,7 +1612,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_CellUnderVoltage;
 	configTypeString = "RC_CellUnderVoltage";
@@ -1529,7 +1637,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellUnderVoltageConfigurationResponseV25);
 	PaceBmsV25::CellUnderVoltageConfiguration cellUnderVoltageConfig;
@@ -1562,7 +1672,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25);
 	cellUnderVoltageConfig.AlarmMillivolts = 2800;
@@ -1592,7 +1704,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellUnderVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1628,7 +1742,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_PackUnderVoltage;
 	configTypeString = "RC_PackUnderVoltage";
@@ -1651,7 +1767,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackUnderVoltageConfigurationResponseV25);
 	PaceBmsV25::PackUnderVoltageConfiguration packUnderVoltageConfig;
@@ -1684,7 +1802,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25);
 	packUnderVoltageConfig.AlarmMillivolts = 44800;
@@ -1714,7 +1834,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackUnderVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1752,7 +1874,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_ChargeOverCurrent;
 	configTypeString = "RC_ChargeOverCurrent";
@@ -1775,7 +1899,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeOverCurrentConfigurationResponseV25);
 	PaceBmsV25::ChargeOverCurrentConfiguration chargeOverCurrentConfig;
@@ -1807,7 +1933,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeOverCurrentConfigurationRequestV25);
 	chargeOverCurrentConfig.AlarmAmperage = 104;
@@ -1830,7 +1958,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeOverCurrentConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1866,7 +1996,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_DischargeSlowOverCurrent;
 	configTypeString = "RC_DischargeSlowOverCurrent";
@@ -1889,7 +2021,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeSlowOverCurrentConfigurationResponseV25);
 	PaceBmsV25::DishargeSlowOverCurrentConfiguration dischargeSlowOverCurrentConfig;
@@ -1921,7 +2055,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationRequestV25);
 	dischargeSlowOverCurrentConfig.AlarmAmperage = 105;
@@ -1944,7 +2080,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -1978,7 +2116,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_DischargeFastOverCurrent;
 	configTypeString = "RC_DischargeFastOverCurrent";
@@ -2001,7 +2141,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeFastOverCurrentConfigurationResponseV25);
 	PaceBmsV25::DishargeFastOverCurrentConfiguration dischargeFastOverCurrentConfig;
@@ -2032,7 +2174,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationRequestV25);
 	dischargeFastOverCurrentConfig.ProtectionAmperage = 150;
@@ -2054,7 +2198,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2086,7 +2232,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_ShortCircuitProtection;
 	configTypeString = "RC_ShortCircuitProtection";
@@ -2109,7 +2257,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadShortCircuitProtectionConfigurationResponseV25);
 	PaceBmsV25::ShortCircuitProtectionConfiguration shortCircuitProtectionConfig;
@@ -2139,7 +2289,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationRequestV25);
 	shortCircuitProtectionConfig.ProtectionDelayMicroseconds = 300;
@@ -2160,7 +2312,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2194,7 +2348,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_CellBalancing;
 	configTypeString = "RC_CellBalancing";
@@ -2217,7 +2373,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellBalancingConfigurationResponseV25);
 	PaceBmsV25::CellBalancingConfiguration cellBalancingConfig;
@@ -2248,7 +2406,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellBalancingConfigurationRequestV25);
 	cellBalancingConfig.ThresholdMillivolts = 3400;
@@ -2270,7 +2430,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellBalancingConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2303,7 +2465,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_Sleep;
 	configTypeString = "RC_Sleep";
@@ -2326,7 +2490,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSleepConfigurationResponseV25);
 	PaceBmsV25::SleepConfiguration sleepConfig;
@@ -2357,7 +2523,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSleepConfigurationRequestV25);
 	sleepConfig.CellMillivolts = 3100;
@@ -2379,7 +2547,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSleepConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2413,7 +2583,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_FullChargeLowCharge;
 	configTypeString = "RC_FullChargeLowCharge";
@@ -2436,7 +2608,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadFullChargeLowChargeConfigurationResponseV25);
 	PaceBmsV25::FullChargeLowChargeConfiguration fullChargeLowChargeConfig;
@@ -2468,7 +2642,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationRequestV25);
 	fullChargeLowChargeConfig.FullChargeMillivolts = 56000;
@@ -2491,7 +2667,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2528,7 +2706,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_ChargeAndDischargeOverTemperature;
 	configTypeString = "RC_ChargeAndDischargeOverTemperature";
@@ -2551,7 +2731,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25);
 	PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration chargeAndDischargeOverTemperatureConfig;
@@ -2586,7 +2768,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25);
 	chargeAndDischargeOverTemperatureConfig.ChargeAlarm = 51;
@@ -2617,7 +2801,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2654,7 +2840,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	configType = PaceBmsV25::RC_ChargeAndDischargeUnderTemperature;
 	configTypeString = "RC_ChargeAndDischargeUnderTemperature";
@@ -2677,7 +2865,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25);
 	PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration chargeAndDischargeUnderTemperatureConfig;
@@ -2712,7 +2902,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25);
 	chargeAndDischargeUnderTemperatureConfig.ChargeAlarm = 0;
@@ -2743,7 +2935,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
@@ -2803,7 +2997,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25);
 	paceBms->CreateReadChargeCurrentLimiterStartCurrentRequest(0, buffer);
@@ -2823,7 +3019,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25);
 	uint8_t current;
@@ -2853,7 +3051,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25);
 	current = 100;
@@ -2874,7 +3074,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25);
 	res = paceBms->ProcessWriteChargeCurrentLimiterStartCurrentResponse(
@@ -2911,7 +3113,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadRemainingCapacityRequestV25);
 	paceBms->CreateReadRemainingCapacityRequest(0, buffer);
@@ -2931,7 +3135,9 @@ void BasicTests()
 	error.str("");
 	warning.str("");
 	info.str("");
+	debug.str("");
 	verbose.str("");
+	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadRemainingCapacityResponseV25);
 	uint32_t remaining;
@@ -3026,7 +3232,7 @@ void ComPortTests(int portNum, int rs485_address)
 	SetCommMask(serialHandle, EV_RXCHAR);
 
 
-	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &VerboseLogFunc);
+	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 
 	/*
 	ZeroMemory(buffer, bufferLen);
