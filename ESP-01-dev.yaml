@@ -169,3 +169,10 @@ select:
 
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
+
+    protocol_can:
+      name: "Protocol (CAN)"
+    protocol_rs485:
+      name: "Protocol (RS485)"
+    protocol_type:
+      name: "Protocol (Type)"

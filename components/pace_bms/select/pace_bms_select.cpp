@@ -12,12 +12,25 @@ void PaceBmsSelect::setup() {
   if (this->request_status_information_callback_ == true) {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::status_information_callback, this, std::placeholders::_1));
   }
+  if (this->request_protocols_callback_ == true) {
+	  this->parent_->register_protocols_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::protocols_callback, this, std::placeholders::_1));
+  }
   if (this->charge_current_limiter_gear_select_ != nullptr) {
 	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string value) {
 	  if(value == "LowGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_LowGear);
 	  else if(value == "HighGear")
 	    this->parent_->set_charge_current_limiter_gear(PaceBms::CLG_HighGear);
+	  else
+		ESP_LOGE(TAG, "Select value not understood: %s", value.c_str());
+	});
+  }
+  if (this->protocol_can_select_ != nullptr) {
+	this->protocol_can_select_->add_on_control_callback([this](std::string value) {
+	  if(value == "LowGear")
+	    this->parent_->set_protocol_can(PaceBms::CLG_LowGear);
+	  else if(value == "HighGear")
+	    this->parent_->set_protocol_can(PaceBms::CLG_HighGear);
 	  else
 		ESP_LOGE(TAG, "Select value not understood: %s", value.c_str());
 	});

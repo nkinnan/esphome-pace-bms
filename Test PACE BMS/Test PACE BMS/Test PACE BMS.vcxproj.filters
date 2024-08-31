@@ -70,6 +70,7 @@
       <Filter>components\pace_bms\select</Filter>
     </None>
     <None Include="..\..\ESP-01.yaml" />
+    <None Include="..\..\ESP-01-dev.yaml" />
     <None Include="..\..\ESP-WROOM-32.yaml" />
   </ItemGroup>
   <ItemGroup>
