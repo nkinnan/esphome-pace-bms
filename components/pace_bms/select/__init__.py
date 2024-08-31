@@ -42,7 +42,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER_GEAR): select.select_schema(PaceBmsSelectImplementation),
 
         cv.Optional(CONF_PROTOCOL_CAN): select.select_schema(PaceBmsSelectImplementation),
-        #cv.Optional(CONF_PROTOCOL_RS485): select.select_schema(PaceBmsSelectImplementation),
+        cv.Optional(CONF_PROTOCOL_RS485): select.select_schema(PaceBmsSelectImplementation),
         #cv.Optional(CONF_PROTOCOL_TYPE): select.select_schema(PaceBmsSelectImplementation),
     }
 )
@@ -68,13 +68,13 @@ async def to_code(config):
         )
         cg.add(var.set_protocol_can_select(sel))
 
-    #if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
-    #    sel = await select.new_select(
-    #        protocol_rs485_config,
-    #        options=CONF_PROTOCOL_RS485_OPTIONS,
-    #    )
-    #    cg.add(var.set_protocol_rs485_select(sel))
-    #
+    if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
+        sel = await select.new_select(
+            protocol_rs485_config,
+            options=CONF_PROTOCOL_RS485_OPTIONS,
+        )
+        cg.add(var.set_protocol_rs485_select(sel))
+    
     #if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
     #    sel = await select.new_select(
     #        protocol_type_config,
