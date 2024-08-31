@@ -40,6 +40,10 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER_GEAR): select.select_schema(PaceBmsSelectImplementation)
+
+        cv.Optional(CONF_PROTOCOL_CAN): select.select_schema(PaceBmsSelectImplementation)
+        cv.Optional(CONF_PROTOCOL_RS485): select.select_schema(PaceBmsSelectImplementation)
+        cv.Optional(CONF_PROTOCOL_TYPE): select.select_schema(PaceBmsSelectImplementation)
     }
 )
 
