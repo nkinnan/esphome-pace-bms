@@ -31,7 +31,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(callback); }
   void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(callback); }
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(callback); }
-  void register_serial_number_callback(std::function<void(std::string &) > callback) { serial_number_callbacks_.push_back(callback); }
+  void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(callback); }
+  void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(callback); }
 
   enum SwitchType {
 	  ST_BuzzerAlarm,
@@ -98,6 +99,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
   std::vector<std::function<void(std::string&)>> hardware_version_callbacks_;
   std::vector<std::function<void(std::string&)>> serial_number_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::Protocols&)>> protocols_callbacks_;
 };
  
 }  // namespace pace_bms

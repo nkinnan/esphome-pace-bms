@@ -31,7 +31,7 @@ class PaceBmsSelect : public Component {
   void status_information_callback(PaceBmsV25::StatusInformation& status_information);
 
   bool request_protocols_callback_ = false;
-  void protocol_callback(PaceBmsV25::Protocols& protocols);
+  void protocols_callback(PaceBmsV25::Protocols& protocols);
 
   pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
 
