@@ -61,10 +61,10 @@ async def to_code(config):
         )
         cg.add(var.set_charge_current_limiter_gear_select(sel))
 
-    if protocol_can_config := config.get(CONF_PROTOCOL_RS485):
+    if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
         sel = await select.new_select(
             protocol_can_config,
-            options=CONF_PROTOCOL_RS485_OPTIONS,
+            options=CONF_PROTOCOL_CAN_OPTIONS,
         )
         cg.add(var.set_protocol_can_select(sel))
 
