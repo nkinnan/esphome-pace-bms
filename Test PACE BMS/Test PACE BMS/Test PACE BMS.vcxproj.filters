@@ -69,6 +69,8 @@
     <None Include="..\..\components\pace_bms\select\__init__.py">
       <Filter>components\pace_bms\select</Filter>
     </None>
+    <None Include="..\..\ESP-01.yaml" />
+    <None Include="..\..\ESP-WROOM-32.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

@@ -51,6 +51,7 @@ uart:
     rx_pin: GPIO3
     rx_buffer_size: 200
 
+
 pace_bms:
   uart_id: uart_0
   id: pace_bms_at_address_1

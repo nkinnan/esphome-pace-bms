@@ -3,6 +3,7 @@
 #include <string>
 #include <vector>
 
+
 /*
 General format of requests/responses:
 -------------------------------------
@@ -105,48 +106,53 @@ private:
 		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
 		CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
 		CID2_ReadRemainingCapacity = 0xA6,
+
+		CID2_WriteOlderVersionOfSetCommunicationProtocol = 0x99,
+
+		CID2_ReadCommunicationsProtocols = 0xEB,
+		CID2_WriteCommunicationsProtocols = 0xEC,
 	};
 
-	std::string FormatReturnCode(const uint8_t returnCode);
+	static std::string FormatReturnCode(const uint8_t returnCode);
 
 	// Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
-	uint16_t CreateChecksummedLength(const uint16_t cklen);
+	static uint16_t CreateChecksummedLength(const uint16_t cklen);
 
 	// Checks if the checksum nibble in a "checksummed length" is valid
-	bool ValidateChecksummedLength(const uint16_t cklen);
+	static bool ValidateChecksummedLength(const uint16_t cklen);
 
 	// Length is just the lower 12 bits of the checksummed length 
-	uint16_t LengthFromChecksummedLength(const uint16_t cklen);
-
+	static uint16_t LengthFromChecksummedLength(const uint16_t cklen);
+public:
 	// Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
-	uint16_t CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data);
-
+	static uint16_t CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data);
+private:
 	// helper for WriteHexEncoded----
 	// Works with ASCII encoding, not portable, but that's what the protocol uses
-	uint8_t NibbleToHex(const uint8_t nibbleByte);
+	static uint8_t NibbleToHex(const uint8_t nibbleByte);
 
 	// todo: error check input range and log error and/or handle upstream to abort decode
 	// helper for ReadHexEncoded----
 	// Works with ASCII encoding, not portable, but that's what the protocol uses
-	uint8_t HexToNibble(const uint8_t hex);
+	static uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	static uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	static uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	static int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
-
+	static void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
+public:
 	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
-
+	static void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
+private:
 	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
+	static void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
 
 	// create a standard request to the given busId for the given CID2, filling in the payload (if given)
 	void CreateRequest(const uint8_t busId, const CID2 cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
@@ -629,7 +635,7 @@ public:
 
 
 	// ==== System Time
-	// 1 Year:   read: 2024 write: 2024 (add 2000)
+	// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
 	// 2 Month:  read: 08   write: 08
 	// 3 Day:    read: 21   write: 20 
 	// 4 Hour:   read: 05   write: 14
@@ -1090,6 +1096,143 @@ public:
 	// There are many other settings in "System Configuration" that can be written and/or calibrated here, 
 	// none of which I am exposing because it would be a Very Bad Idea to mess with them
 
+
+	 
+
+
+
+
+
+
+
+	/*
+	* SOK Protocol Edit (pbms tools)
+	-------------------------------
+	note:  unable to get responses since my BMS ignores this command BUT faking responses via Pace BMS Emulator cases
+			   the software to say "OK" when I send a response identical to that which works on the "new" protocol set
+
+	It's unclear if these commands would only work on rs232 but that's my guess.
+
+	There does not appear to be a "get current inverter protocol" command for this older method
+
+	set paceic (unclear if CAN/485)
+	req: ~25004699E0020EFD11.
+					  xx
+
+	x = protocol to set
+		0E = paceic 0x25
+		0F = Pylon (DeYe) CAN
+		10 = Growatt CAN
+		13 = Pylon 485
+		12 = Growatt 485
+		11 = LuxPower 485
+	*/
+
+
+	enum OldStyleProtocolList
+	{
+		old_paceic = 0x0E,
+		old_CAN_Pylon = 0x0F,
+		old_CAN_Growatt = 0x10,
+		old_Pylon = 0x13,
+		old_Growatt = 0x12,
+		old_LuxPower = 0x11,
+	};
+
+
+
+
+	// ==== Protocol
+	// 1 - CAN protocol, see enum, this example is "AFORE"
+	// 2 - RS485 protocol, see enum, this example is "RONGKE"
+	// 3 - "Type", see enum, not sure what this means exactly, I'd go with "Auto" which is in this example
+	// read:  ~250046EB0000FD88.
+	// resp:  ~25004600A006131400FC6F.
+	//                     112233
+	// write: ~250046ECA006131400FC47.
+	// resp:  ~250046000000FDAF.
+
+	enum NewStyleProtocolList_CAN : uint8_t
+	{
+		can_empty        = 0xFF, // 255d <blank entry> I believe this means "turned off"
+		can_Pace         = 0x00, // 00d PACE
+		can_Pylon        = 0x01, // 01d Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
+		can_Growatt      = 0x02, // 02d Growatt / Sacolar
+		can_Victron      = 0x03, // 03d Victron
+		can_Schneider    = 0x04, // 04d Schneider / SE / SMA
+		can_LuxPower     = 0x05, // 05d LuxPower
+		can_SoroTec      = 0x06, // 06d SoroTec (SRD)
+		can_SMA          = 0x07, // 07d SMA / Studer
+		can_GoodWe       = 0x08, // 08d GoodWe
+		can_Studer       = 0x09, // 09d Studer
+		can_Sofar        = 0x0A, // 10d Sofar
+		can_Must         = 0x0B, // 11d Must / PV
+		can_Solis        = 0x0C, // 12d Solis / Jinlang
+		can_DIDU         = 0x0D, // 13d DIDU
+		can_Senergy      = 0x0E, // 14d Senergy
+		can_TBB          = 0x0F, // 15d TBB
+		can_Pylon_V202   = 0x10, // 16d Pylon_V202
+		can_Growatt_V109 = 0x11, // 17d Growatt_V109
+		can_Must_V202    = 0x12, // 18d Must_V202
+		can_Afore        = 0x13, // 19d Afore
+		can_INVT         = 0x14, // 20d INVT / YWT
+		can_FUJI         = 0x15, // 21d FUJI
+		can_Sofar_V21003 = 0x16, // 22d Sofar_V21003
+	};
+
+	enum NewStyleProtocolList_RS485 : uint8_t
+	{
+		rs485_empty        = 0xFF, // 255d <blank entry> I believe this means "turned off"
+		rs485_PaceModbus   = 0x00, // 00d Pace Modbus
+		rs485_Pylon        = 0x01, // 01d Pylon / DeYe / Bentterson
+		rs485_Growatt      = 0x02, // 02d Growatt
+		rs485_Voltronic    = 0x03, // 03d Voltronic / EA Sun Power / MPP Solar
+		rs485_Schneider    = 0x04, // 04d Schneider / SE
+		rs485_PHOCOS       = 0x05, // 05d PHOCOS
+		rs485_LuxPower     = 0x06, // 06d LuxPower
+		rs485_Solar        = 0x07, // 07d Solar
+		rs485_Lithium      = 0x08, // 08d Lithium
+		rs485_EP           = 0x09, // 09d EP
+		rs485_RTU04        = 0x0A, // 10d RTU04
+		rs485_LuxPower_V01 = 0x0B, // 11d LuxPower_V01
+		rs485_LuxPower_V03 = 0x0C, // 12d LuxPower_V03
+		rs485_SRNE         = 0x0D, // 13d SRNE / WOW
+		rs485_LEOCH        = 0x0E, // 14d LEOCH
+		rs485_Pylon_F      = 0x0F, // 15d Pylon_F
+		rs485_Afore        = 0x10, // 16d Afore
+		rs485_UPS_AGXN     = 0x11, // 17d UPS_AGXN
+		rs485_Orex_Sunpolo = 0x12, // 18d Orex_Sunpolo
+		rs485_XIONGTAO     = 0x13, // 19d XIONGTAO
+		rs485_RONGKE       = 0x14, // 20d RONGKE
+		rs485_XINRUI       = 0x15, // 21d XINRUI
+		rs485_ELTEK        = 0x16, // 22d ELTEK
+		rs485_GT           = 0x17, // 23d GT
+		rs485_Leoch_V106   = 0x18, // 24d Leoch_V106
+	};
+
+	enum NewStyleProtocolList_Type : uint8_t
+	{
+		empty  = 0xFF, // 255d <blank entry>
+		Auto   = 0x00, // 00d Auto
+		Manual = 0x01, // 01d Manual
+	};
+
+	static const uint8_t exampleReadProtocolsRequestV25[];
+	static const uint8_t exampleReadProtocolsResponseV25[];
+	static const uint8_t exampleWriteProtocolsRequestV25[];
+	static const uint8_t exampleWriteProtocolsResponseV25[];
+
+	struct Protocols
+	{
+		NewStyleProtocolList_CAN   CAN;
+		NewStyleProtocolList_RS485 RS485;
+		NewStyleProtocolList_Type  Type;
+	};
+
+	void CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& dateTime);
+	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols dateTime, std::vector<uint8_t>& request);
+	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 };
 

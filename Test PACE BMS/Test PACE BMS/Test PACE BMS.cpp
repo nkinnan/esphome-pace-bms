@@ -3186,10 +3186,10 @@ bool WriteSerial(HANDLE hComPort, unsigned char* buffer, int bufferLen)
 int ReadSerialUntilTerminator(HANDLE hComPort, unsigned char* buffer, int bufferLen, char terminator)
 {
 	int offset = 0;
-	while (buffer[offset - 1] != terminator)
+	while (buffer[offset - 1] != terminator && bufferLen - offset > 0)
 	{
 		DWORD dwBytesRead;
-		bool success = ReadFile(hComPort, buffer + offset, bufferLen - offset, &dwBytesRead, NULL);
+		bool success = ReadFile(hComPort, buffer + offset, 1, &dwBytesRead, NULL);
 		if (!success)
 			return -1;
 		if (dwBytesRead == 0)
@@ -3409,9 +3409,77 @@ void ComPortTests(int portNum, int rs485_address)
 	CloseHandle(serialHandle);
 }
 
+// temp code for forcing PBmsTools to give up it's secrets, used with a software NULL serial port loopback emulator, but I guess you could use a physical loopback too
+void EmulatePaceBms(int portNum, int rs485_address)
+{
+	HANDLE serialHandle;
+	std::string comName = std::string("\\\\.\\COM") + std::to_string(portNum);
+	std::wstring comNameW = std::wstring(comName.begin(), comName.end());
+	serialHandle = CreateFile(comNameW.c_str(), GENERIC_READ | GENERIC_WRITE, 0, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
+
+	DCB serialParams = { 0 };
+	serialParams.DCBlength = sizeof(serialParams);
+	serialParams.BaudRate = CBR_9600;
+	serialParams.fBinary = TRUE;
+	serialParams.Parity = FALSE;
+	serialParams.ByteSize = 8;
+	serialParams.StopBits = ONESTOPBIT;
+	serialParams.fRtsControl = RTS_CONTROL_TOGGLE;
+	SetCommState(serialHandle, &serialParams);
+
+	// Set timeouts
+	COMMTIMEOUTS timeout = { 0 };
+	timeout.ReadIntervalTimeout = 5;
+	timeout.ReadTotalTimeoutConstant = 5;
+	timeout.ReadTotalTimeoutMultiplier = 5;
+	timeout.WriteTotalTimeoutConstant = 5;
+	timeout.WriteTotalTimeoutMultiplier = 1;
+	SetCommTimeouts(serialHandle, &timeout);
+
+	SetCommMask(serialHandle, EV_RXCHAR);
+
+	unsigned char buf[1024];
+	while (true)
+	{
+		int read = ReadSerialUntilTerminator(serialHandle, buf, 1024, '\r');
+		if (read == -1)
+			continue;
+		buf[read] = 0;
+		printf("read:  %s\n", buf);
+
+		// read protocol
+		if (buf[7] == '9' && buf[8] == '9' ||
+			buf[7] == 'E' && buf[8] == 'B')
+		{
+			std::string test_response("~25004600A006131400FD11\r");
+
+			std::vector<uint8_t> vec(test_response.c_str(), test_response.c_str() + test_response.length());
+			uint16_t cs = PaceBmsV25::CalculateRequestOrResponseChecksum(vec);
+			uint16_t offset = 19;
+			PaceBmsV25::WriteHexEncodedUShort(vec, offset, cs);
+			test_response = std::string(vec.data(), vec.data() + test_response.length());
+
+			printf("write: %s\n", test_response.c_str());
+			WriteSerial(serialHandle, (unsigned char*)(test_response.c_str()), (int)test_response.length());
+		}
+		else
+		{
+			// generic command error
+			printf("werr:  ~250046040000FDAB\n");
+			WriteSerial(serialHandle, (unsigned char*)"~250046040000FDAB\r", 18);
+		}
+	}
+
+
+	CloseHandle(serialHandle);
+}
+
 int main()
 {
-	BasicTests();
-	std::cout << std::endl << std::endl << " LIVE serial tests:" << std::endl << std::endl;
+	//BasicTests();
+
+	//std::cout << std::endl << std::endl << " LIVE serial tests:" << std::endl << std::endl;
 	//ComPortTests(8, 1);
+
+	EmulatePaceBms(31, 1);
 }

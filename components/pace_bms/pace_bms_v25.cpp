@@ -9,9 +9,9 @@ PaceBmsV25::PaceBmsV25(PaceBmsV25::LogFuncPtr logError, PaceBmsV25::LogFuncPtr l
 	LogErrorPtr = logError;
 	LogWarningPtr = logWarning;
 	LogInfoPtr = logInfo;
-	LogVerbosePtr = logDebug;
+	LogDebugPtr = logDebug;
 	LogVerbosePtr = logVerbose;
-	LogVerbosePtr = logVeryVerbose;
+	LogVeryVerbosePtr = logVeryVerbose;
 }
 
 // dependency injection
@@ -2978,6 +2978,74 @@ bool PaceBmsV25::ProcessReadRemainingCapacityResponse(const uint8_t busId, const
 	return true;
 }
 
+// ==== Protocols
+// 1 - CAN protocol, see enum, this example is "AFORE"
+// 2 - RS485 protocol, see enum, this example is "RONGKE"
+// 3 - "Type", see enum, not sure what this means exactly, I'd go with "Auto" which is in this example
+// read:  ~250046EB0000FD88.
+// resp:  ~25004600A006131400FC6F.
+//                     112233
+// write: ~250046ECA006131400FC47.
+// resp:  ~250046000000FDAF.
+
+const unsigned char PaceBmsV25::exampleReadProtocolsRequestV25[] = "~250046EB0000FD88\r";
+const unsigned char PaceBmsV25::exampleReadProtocolsResponseV25[] = "~25004600A006131400FC6F\r";
+const unsigned char PaceBmsV25::exampleWriteProtocolsRequestV25[] = "~250046ECA006131400FC47\r";
+const unsigned char PaceBmsV25::exampleWriteProtocolsResponseV25[] = "~250046000000FDAF\r";
+
+void PaceBmsV25::CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request)
+{
+	CreateRequest(busId, CID2_ReadCommunicationsProtocols, std::vector<uint8_t>(), request);
+}
+bool PaceBmsV25::ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols)
+{
+	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
+	if (payloadLen == -1)
+	{
+		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+
+	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
+	uint16_t byteOffset = 13;
+
+	protocols.CAN = (NewStyleProtocolList_CAN)ReadHexEncodedByte(response, byteOffset);
+	protocols.RS485 = (NewStyleProtocolList_RS485)ReadHexEncodedByte(response, byteOffset);
+	protocols.Type = (NewStyleProtocolList_Type)ReadHexEncodedByte(response, byteOffset);
+
+	return true;
+}
+bool PaceBmsV25::CreateWriteProtocolsRequest(const uint8_t busId, const Protocols protocols, std::vector<uint8_t>& request)
+{
+	const uint16_t payloadLen = 12;
+	std::vector<uint8_t> payload(payloadLen);
+	uint16_t payloadOffset = 0;
+	WriteHexEncodedByte(payload, payloadOffset, protocols.CAN);
+	WriteHexEncodedByte(payload, payloadOffset, protocols.RS485);
+	WriteHexEncodedByte(payload, payloadOffset, protocols.Type);
+
+	CreateRequest(busId, CID2_WriteCommunicationsProtocols, payload, request);
+
+	return true;
+}
+bool PaceBmsV25::ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+{
+	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
+	if (payloadLen == -1)
+	{
+		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+
+	if (payloadLen != 0)
+	{
+		std::string message = std::string("Write protocols response should include no payload, but this response's payload length is ") + std::to_string(payloadLen);
+		LogError(message);
+		return false;
+	}
+
+	return true;
+}
 
 // There are many other settings in "System Configuration" that can be written and/or calibrated here, 
 // none of which I am exposing because it would be a Very Bad Idea to mess with them
