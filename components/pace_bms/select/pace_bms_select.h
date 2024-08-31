@@ -16,9 +16,9 @@ class PaceBmsSelect : public Component {
   // current switch states are actually in the status information response, so subscribe to that in order to update switch state
   void set_charge_current_limiter_gear_select(PaceBmsSelectImplementation* charge_current_limiter_gear_select) { this->charge_current_limiter_gear_select_ = charge_current_limiter_gear_select; request_status_information_callback_ = true; }
 
-  void set_protocol_can_select(PaceBmsSelectImplementation* protocol_can_select) { this->protocol_can_select_ = protocol_can_select; request_protocol_callback_ = true; }
-  void set_protocol_rs485_select(PaceBmsSelectImplementation* protocol_rs485_select) { this->protocol_rs485_select_ = protocol_rs485_select; request_protocol_callback_ = true; }
-  void set_protocol_type_select(PaceBmsSelectImplementation* protocol_type_select) { this->protocol_type_select_ = protocol_type_select; request_protocol_callback_ = true; }
+  void set_protocol_can_select(PaceBmsSelectImplementation* protocol_can_select) { this->protocol_can_select_ = protocol_can_select; request_protocols_callback_ = true; }
+  void set_protocol_rs485_select(PaceBmsSelectImplementation* protocol_rs485_select) { this->protocol_rs485_select_ = protocol_rs485_select; request_protocols_callback_ = true; }
+  void set_protocol_type_select(PaceBmsSelectImplementation* protocol_type_select) { this->protocol_type_select_ = protocol_type_select; request_protocols_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -30,7 +30,7 @@ class PaceBmsSelect : public Component {
   bool request_status_information_callback_ = false;
   void status_information_callback(PaceBmsV25::StatusInformation& status_information);
 
-  bool request_protocol_callback_ = false;
+  bool request_protocols_callback_ = false;
   void protocol_callback(PaceBmsV25::Protocols& protocols);
 
   pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
