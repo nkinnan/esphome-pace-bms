@@ -304,6 +304,7 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   if (result == false) {
       ESP_LOGW(TAG, "BMS response did not indicate success for read serial number request");
       return;
+  }
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->serial_number_callbacks_.size(); i++) {
@@ -315,7 +316,6 @@ void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand swi
     ESP_LOGV(TAG, "Processing write switch command response");
 
     bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, switch_command, response);
-
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
         return;
@@ -326,7 +326,6 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
     ESP_LOGV(TAG, "Processing write switch command response");
 
     bool result = this->pace_bms_v25_->ProcessWriteMosfetSwitchCommandResponse(this->address_, type, state, response);
-
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
         return;
@@ -353,7 +352,6 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
     ESP_LOGV(TAG, "Processing write protocols response");
 
     bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, response);
-
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write protocols request");
         return;
