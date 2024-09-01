@@ -39,20 +39,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(callback); }
 
   // child sensors call these to request new values be sent to the hardware
-  enum SwitchType {
-	  ST_BuzzerAlarm,
-	  ST_LedAlarm,
-	  ST_ChargeCurrentLimiter,
-	  ST_ChargeMosfet,
-	  ST_DischargeMosfet,
-  };
-  void set_switch_state(SwitchType switch_type, bool state);
-  // this is a "switch state" but it's not an ON/OFF value so it's treated differently
-  enum CurrentLimiterGear {
-	  CLG_LowGear,
-	  CLG_HighGear,
-  };
-  void set_charge_current_limiter_gear(CurrentLimiterGear gear);
+  void set_switch_state(PaceBmsV25::SwitchCommand state);
+  void set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state);
   //void send_shutdown();
   void set_protocols(PaceBmsV25::Protocols& protocols);
 

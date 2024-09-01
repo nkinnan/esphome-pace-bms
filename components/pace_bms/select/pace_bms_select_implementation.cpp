@@ -11,16 +11,35 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 }
 
 void PaceBmsSelectImplementation::control(const std::string& text) {
-	auto options = this->traits.get_options();
-	auto opt_it = std::find(options.cbegin(), options.cend(), text);
-	size_t idx = std::distance(options.cbegin(), opt_it);
-	uint8_t value = this->values_[idx];
-	ESP_LOGD(TAG, "%s found value %02X for option '%s'", this->name_, value, text.c_str());
+	uint8_t value = value_from_option(text);
 
 	this->control_callback_.call(text, value);
 
 	// required for the UX not to get out of sync
 	this->publish_state(text);
+}
+
+uint8_t value_from_option(std::string str)
+{
+	auto options = this->traits.get_options();
+	auto opt_it = std::find(options.cbegin(), options.cend(), text);
+	size_t idx = std::distance(options.cbegin(), opt_it);
+	uint8_t value = this->values_[idx];
+
+	ESP_LOGD(TAG, "%s found value %02X for option '%s'", this->name_, value, text.c_str());
+
+	return value;
+}
+
+std::string option_from_value(uint8_t number) {
+	auto options = this->traits.get_options();
+	auto opt_it = std::find(this->values_.cbegin(), this->values_.cend(), number);
+	size_t idx = std::distance(this->values_.cbegin(), opt_it);
+	std::string value = options[idx];
+
+	ESP_LOGD(TAG, "%s found option '%s' for value %02X", this->name_, text.c_str(), value);
+
+	return value;
 }
 
 float PaceBmsSelectImplementation::get_setup_priority() const { return setup_priority::DATA; }
