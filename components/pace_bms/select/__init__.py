@@ -47,7 +47,7 @@ protocol_can_options_config = {
 }
 
 CONF_PROTOCOL_RS485           = "protocol_rs485"
-CONF_PROTOCOL_RS485_OPTIONS   = {
+protocol_rs485_options_config = {
 	"":                                     0xFF, # 255d <blank entry> I believe this means "turned off"
 	"Pace Modbus":                          0x00, # 00d  Pace Modbus
 	"Pylon / DeYe / Bentterson":            0x01, # 01d  Pylon / DeYe / Bentterson
@@ -77,7 +77,7 @@ CONF_PROTOCOL_RS485_OPTIONS   = {
 }
 
 CONF_PROTOCOL_TYPE           = "protocol_type"
-CONF_PROTOCOL_TYPE_OPTIONS   = {
+protocol_type_options_config = {
 	""      : 0xFF, # 255d <blank entry>
 	"Auto"  : 0x00, # 00d Auto
 	"Manual": 0x01, # 01d Manual
@@ -103,14 +103,14 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
-    #if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
-    #    charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
-    #    sel = await select.new_select(
-    #        charge_current_limiter_gear_config,
-    #        options=list(charge_current_limiter_gear_options_config.keys()),
-    #    )
-    #    cg.add(var.set_charge_current_limiter_gear_select(sel))
-    #    #cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values())
+    if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
+        charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
+        sel = await select.new_select(
+            charge_current_limiter_gear_config,
+            options=list(charge_current_limiter_gear_options_config.keys()),
+        )
+        cg.add(var.set_charge_current_limiter_gear_select(sel))
+        cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values())
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
         sel = await select.new_select(
@@ -121,7 +121,6 @@ async def to_code(config):
         cg.add(sel.set_protocol_values(list(protocol_can_options_config.values())))
     
     if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
-        protocol_rs485_options_config = config.get(CONF_PROTOCOL_RS485_OPTIONS)
         sel = await select.new_select(
             protocol_rs485_config,
             options=list(protocol_rs485_options_config.keys()),
@@ -130,7 +129,6 @@ async def to_code(config):
         cg.add(sel.set_protocol_values(protocol_rs485_options_config.values()))
 
     if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
-        protocol_type_options_config = config.get(CONF_PROTOCOL_TYPE_OPTIONS)
         sel = await select.new_select(
             protocol_type_config,
             options=list(protocol_type_options_config.keys()),
