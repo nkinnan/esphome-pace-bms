@@ -6,7 +6,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.button_impl";
 
-void press_action() {
+void PaceBmsButtonImplementation::press_action() {
 	// nothing to do, not even a publish
 }
 
