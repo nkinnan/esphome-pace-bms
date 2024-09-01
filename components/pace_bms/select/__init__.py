@@ -14,7 +14,7 @@ PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", 
 
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
 CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS   = {
-    "LowGear": 0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
+    "LowGear":  0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
     "HighGear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
 }
 
@@ -103,14 +103,14 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
-    if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
-        charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
-        sel = await select.new_select(
-            charge_current_limiter_gear_config,
-            options=list(charge_current_limiter_gear_options_config.keys()),
-        )
-        cg.add(var.set_charge_current_limiter_gear_select(sel))
-        cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values())
+    #if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
+    #    charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
+    #    sel = await select.new_select(
+    #        charge_current_limiter_gear_config,
+    #        options=list(charge_current_limiter_gear_options_config.keys()),
+    #    )
+    #    cg.add(var.set_charge_current_limiter_gear_select(sel))
+    #    cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values())
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
         protocol_can_options_config = config.get(CONF_PROTOCOL_CAN_OPTIONS)
