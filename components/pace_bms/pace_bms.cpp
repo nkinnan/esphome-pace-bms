@@ -252,7 +252,11 @@ void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response)
   ESP_LOGV(TAG, "Processing read analog information response");
 
   PaceBmsV25::AnalogInformation analog_information;
-  this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
+  bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
+  if (result == false) {
+      ESP_LOGW(TAG, "BMS response did not indicate success for read analog information request");
+      return;
+  }
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->analog_information_callbacks_.size(); i++) {
@@ -264,7 +268,11 @@ void PaceBms::handle_status_information_response(std::vector<uint8_t>& response)
   ESP_LOGV(TAG, "Processing read status information response");
 
   PaceBmsV25::StatusInformation status_information;
-  this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
+  bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
+  if (result == false) {
+      ESP_LOGW(TAG, "BMS response did not indicate success for read status information request");
+      return;
+  }
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->status_information_callbacks_.size(); i++) {
@@ -276,7 +284,10 @@ void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
   ESP_LOGV(TAG, "Processing read hardware version response");
 
   std::string hardware_version;
-  this->pace_bms_v25_->ProcessReadHardwareVersionResponse(this->address_, response, hardware_version);
+  bool result = this->pace_bms_v25_->ProcessReadHardwareVersionResponse(this->address_, response, hardware_version);
+  if (result == false) {
+      ESP_LOGW(TAG, "BMS response did not indicate success for read hardware version request");
+      return;
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->hardware_version_callbacks_.size(); i++) {
@@ -288,7 +299,10 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   ESP_LOGV(TAG, "Processing read serial number response");
 
   std::string serial_number;
-  this->pace_bms_v25_->ProcessReadSerialNumberResponse(this->address_, response, serial_number);
+  bool result = this->pace_bms_v25_->ProcessReadSerialNumberResponse(this->address_, response, serial_number);
+  if (result == false) {
+      ESP_LOGW(TAG, "BMS response did not indicate success for read serial number request");
+      return;
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->serial_number_callbacks_.size(); i++) {
@@ -301,8 +315,10 @@ void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand swi
 
     bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, switch_command, response);
 
-    if (result == false)
+    if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
+        return;
+    }
 }
 
 void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state, std::vector<uint8_t>& response) {
@@ -310,15 +326,21 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 
     bool result = this->pace_bms_v25_->ProcessWriteMosfetSwitchCommandResponse(this->address_, type, state, response);
 
-    if (result == false)
+    if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
+        return;
+    }
 }
 
 void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
     ESP_LOGV(TAG, "Processing read protocols response");
 
     PaceBmsV25::Protocols protocols;
-    this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
+    bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
+    if (result == false) {
+        ESP_LOGW(TAG, "BMS response did not indicate success for read protocols request");
+        return;
+    }
 
     // dispatch to any child sensor components that registered for a callback with us
     for (int i = 0; i < this->protocols_callbacks_.size(); i++) {
@@ -331,8 +353,10 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
 
     bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, response);
 
-    if (result == false)
+    if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write protocols request");
+        return;
+    }
 }
 
 void PaceBms::set_switch_state(PaceBmsV25::SwitchCommand state) {
