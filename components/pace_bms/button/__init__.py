@@ -18,6 +18,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
         cv.Optional(CONF_SHUTDOWN): button.button_schema(
+            Button
         ),
     }
 )
