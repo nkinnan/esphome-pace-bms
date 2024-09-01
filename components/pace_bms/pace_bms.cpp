@@ -339,7 +339,7 @@ void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
     bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for read protocols request");
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        return;
+        return;
     }
 
     // dispatch to any child sensor components that registered for a callback with us
