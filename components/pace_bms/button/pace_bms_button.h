@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 #include "esphome/components/pace_bms/pace_bms.h"
-#include "esphome/components/sensor/sensor.h"
+#include "esphome/components/button/button.h"
 
 #include "../pace_bms_v25.h"
 
