@@ -103,6 +103,13 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
+	    if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
+        sel = await select.new_select(
+            charge_current_limiter_gear_config,
+            options=CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS,
+        )
+        cg.add(var.set_charge_current_limiter_gear_select(sel))
+
     #if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
     #    charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
     #    sel = await select.new_select(
@@ -119,7 +126,7 @@ async def to_code(config):
             options=list(protocol_can_options_config.keys()),
         )
         cg.add(var.set_protocol_can_select(sel))
-        cg.add(sel.set_protocol_values(list(protocol_can_options_config.values()))
+        cg.add(sel.set_protocol_values(list(protocol_can_options_config.values())))
     
     if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
         protocol_rs485_options_config = config.get(CONF_PROTOCOL_RS485_OPTIONS)
@@ -128,7 +135,7 @@ async def to_code(config):
             options=list(protocol_rs485_options_config.keys()),
         )
         cg.add(var.set_protocol_rs485_select(sel))
-        cg.add(sel.set_protocol_values(protocol_rs485_options_config.values())
+        cg.add(sel.set_protocol_values(protocol_rs485_options_config.values()))
 
     if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
         protocol_type_options_config = config.get(CONF_PROTOCOL_TYPE_OPTIONS)
