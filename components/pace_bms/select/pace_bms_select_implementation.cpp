@@ -19,7 +19,7 @@ void PaceBmsSelectImplementation::control(const std::string& text) {
 	this->publish_state(text);
 }
 
-uint8_t PaceBmsSelectImplementation::value_from_option(std::string str)
+uint8_t PaceBmsSelectImplementation::value_from_option(std::string text)
 {
 	auto options = this->traits.get_options();
 	auto opt_it = std::find(options.cbegin(), options.cend(), text);
