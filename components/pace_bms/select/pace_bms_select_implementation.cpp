@@ -11,12 +11,16 @@ void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(con
 }
 
 void PaceBmsSelectImplementation::control(const std::string& text) {
+	ESP_LOGD(TAG, "a");
 	uint8_t value = value_from_option(text);
 
+	ESP_LOGD(TAG, "s");
 	this->control_callback_.call(text, value);
 
+	ESP_LOGD(TAG, "d");
 	// required for the UX not to get out of sync
 	this->publish_state(text);
+	ESP_LOGD(TAG, "f");
 }
 
 uint8_t PaceBmsSelectImplementation::value_from_option(std::string text)

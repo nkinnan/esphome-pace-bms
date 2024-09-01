@@ -24,10 +24,12 @@ void PaceBmsSelect::setup() {
   }
   if (this->protocol_can_select_ != nullptr) {
 	this->protocol_can_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	ESP_LOGD(TAG, "8");
 	  if(!protocols_seen) {
 	    ESP_LOGE(TAG, "Protocol CAN cannot be set because the BMS hasn't responded to a get protocols request");
 		return;
 	  }
+	  ESP_LOGD(TAG, "9");
 	  ESP_LOGD(TAG, "Protocol CAN user selected value '%s' = %02X", text.c_str(), value);
 	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
 	  new_protocols.CAN = (PaceBmsV25::NewStyleProtocolList_CAN)value;
