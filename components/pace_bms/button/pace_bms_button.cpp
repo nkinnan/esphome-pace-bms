@@ -8,7 +8,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.sensor";
 
-void PaceBmsSensor::setup() {
+void PaceBmsButton::setup() {
   if (this->shutdown_button_ != nullptr) {
 	this->shutdown_button_->add_on_press_callback([this]() {
 	  ESP_LOGD(TAG, "Sending shutdown");
@@ -17,9 +17,9 @@ void PaceBmsSensor::setup() {
   }
 }
 
-float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
+float PaceBmsButton::get_setup_priority() const { return setup_priority::DATA; }
 
-void PaceBmsSensor::dump_config() { 
+void PaceBmsButton::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
 	LOG_BUTTON("  ", "Shutdown", this->shutdown_);
 }

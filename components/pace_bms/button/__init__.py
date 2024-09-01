@@ -14,7 +14,7 @@ CONF_SHUTDOWN = "shutdown"
 
 CONFIG_SCHEMA = cv.Schema(
     {
-        cv.GenerateID(): cv.declare_id(PaceBmsSensor),
+        cv.GenerateID(): cv.declare_id(PaceBmsButton),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,

@@ -9,7 +9,7 @@
 namespace esphome {
 namespace pace_bms {
 
-class PaceBmsSensor : public Component {
+class PaceBmsButton : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
