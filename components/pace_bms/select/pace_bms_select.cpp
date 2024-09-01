@@ -80,7 +80,7 @@ void PaceBmsSelect::status_information_callback(PaceBmsV25::StatusInformation& s
 
 void PaceBmsSelect::protocols_callback(PaceBmsV25::Protocols& protocols) {
   this->last_seen_protocols = protocols;
-  this->protocols_callback = true;
+  this->protocols_seen = true;
 
   if (this->protocol_can_select_ != nullptr) {
 	std::string state = this->protocol_can_select_->option_from_value(protocols.CAN);
