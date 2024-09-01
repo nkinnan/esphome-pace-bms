@@ -109,7 +109,7 @@ async def to_code(config):
             options=list(charge_current_limiter_gear_options_config.keys()),
         )
         cg.add(var.set_charge_current_limiter_gear_select(sel))
-        cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values()))
+        cg.add(sel.set_protocol_values(list(charge_current_limiter_gear_options_config.values())))
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
         sel = await select.new_select(
