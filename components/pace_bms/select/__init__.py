@@ -79,8 +79,8 @@ protocol_rs485_options_config = {
 CONF_PROTOCOL_TYPE           = "protocol_type"
 protocol_type_options_config = {
 	""      : 0xFF, # 255d <blank entry>
-	"Auto"  : 0x00, # 00d Auto
-	"Manual": 0x01, # 01d Manual
+	"Auto"  : 0x00, # 00d  Auto
+	"Manual": 0x01, # 01d  Manual
 }
 
 CONFIG_SCHEMA = cv.Schema(
