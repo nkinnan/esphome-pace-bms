@@ -332,19 +332,24 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
     }
 }
 
-void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing read protocols response");
+void PaceBms::handle_write_shutdown_command_response(std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing write shutdown command response");
 
-    PaceBmsV25::Protocols protocols;
-    bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
+    bool result = this->pace_bms_v25_->ProcessSendShutdownRequestResponse(this->address_, type, state, response);
     if (result == false) {
-        ESP_LOGW(TAG, "BMS response did not indicate success for read protocols request");
+        ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
         return;
     }
+}
 
-    // dispatch to any child sensor components that registered for a callback with us
-    for (int i = 0; i < this->protocols_callbacks_.size(); i++) {
-        protocols_callbacks_[i](protocols);
+void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing write shutdown response");
+
+    PaceBmsV25::Protocols protocols;
+    bool result = this->pace_bms_v25_->ProcessWriteShutdownCommandResponse(this->address_, response);
+    if (result == false) {
+        ESP_LOGW(TAG, "BMS response did not indicate success for write shutdown request");
+        return;
     }
 }
 
@@ -407,15 +412,15 @@ void PaceBms::set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetSt
   ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 }
 
-//void PaceBms::send_shutdown() {
-//  command_item* item = new command_item;
-//  item->description_ = std::string("send shutdown");
-//  item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteSwitchCommandRequest, this->pace_bms_v25_, this->address_, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
-//  item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_switch_command_response, this, (gear == CLG_HighGear ? PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear : PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear), std::placeholders::_1);
-//  command_queue_.push(item);
-//
-//  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
-//}
+void PaceBms::send_shutdown() {
+  command_item* item = new command_item;
+  item->description_ = std::string("send shutdown");
+  item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteShutdownCommandRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
+  item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_shutdown_command_response, this, std::placeholders::_1);
+  command_queue_.push(item);
+
+  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
+}
 
 void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
     command_item* item = new command_item;

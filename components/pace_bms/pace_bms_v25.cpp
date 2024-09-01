@@ -1476,7 +1476,7 @@ bool PaceBmsV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, co
 const unsigned char PaceBmsV25::exampleWriteRebootCommandRequestV25[] = "~2500469CE00201FD1B\r";
 const unsigned char PaceBmsV25::exampleWriteRebootCommandResponseV25[] = "~250046000000FDAF\r";
 
-void PaceBmsV25::CreateWriteRebootCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
+void PaceBmsV25::CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	// the payload is the mosfet state to set
 	const uint16_t payloadLen = 2;
@@ -1486,7 +1486,7 @@ void PaceBmsV25::CreateWriteRebootCommandRequest(const uint8_t busId, std::vecto
 
 	CreateRequest(busId, CID2_WriteRebootCommand, payload, request);
 }
-bool PaceBmsV25::ProcessWriteRebootCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)

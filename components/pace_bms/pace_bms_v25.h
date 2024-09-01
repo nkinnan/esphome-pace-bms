@@ -587,8 +587,8 @@ public:
 	static const uint8_t exampleWriteRebootCommandRequestV25[];
 	static const uint8_t exampleWriteRebootCommandResponseV25[];
 
-	void CreateWriteRebootCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessWriteRebootCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
+	void CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 
 	// ============================================================================
