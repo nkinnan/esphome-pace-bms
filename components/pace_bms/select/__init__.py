@@ -125,7 +125,7 @@ async def to_code(config):
             options=list(protocol_rs485_options_config.keys()),
         )
         cg.add(var.set_protocol_rs485_select(sel))
-        cg.add(sel.set_protocol_values(protocol_rs485_options_config.values()))
+        cg.add(sel.set_protocol_values(list(protocol_rs485_options_config.values())))
 
     if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
         sel = await select.new_select(
@@ -133,4 +133,4 @@ async def to_code(config):
             options=list(protocol_type_options_config.keys()),
         )
         cg.add(var.set_protocol_type_select(sel))
-        cg.add(sel.set_protocol_values(protocol_type_options_config.values()))
+        cg.add(sel.set_protocol_values(list(protocol_type_options_config.values())))
