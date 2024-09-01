@@ -13,9 +13,9 @@ void PaceBmsSelect::setup() {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::status_information_callback, this, std::placeholders::_1));
   }
   if (this->charge_current_limiter_gear_select_ != nullptr) {
-	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, PaceBmsV25::SwitchCommand value) {
+	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 	  ESP_LOGD(TAG, "Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
-	  this->parent_->set_switch_state(value);
+	  this->parent_->set_switch_state((PaceBmsV25::SwitchCommand)value);
 	});
   }
 
