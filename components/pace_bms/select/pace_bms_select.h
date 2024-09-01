@@ -31,9 +31,10 @@ class PaceBmsSelect : public Component {
 
   bool request_protocols_callback_ = false;
   void protocols_callback(PaceBmsV25::Protocols& protocols);
+  PaceBmsV25::Protocols last_seen_protocols;
+  bool protocols_seen = false;
 
   pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
-
   pace_bms::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
   pace_bms::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };
   pace_bms::PaceBmsSelectImplementation* protocol_type_select_{ nullptr };

@@ -23,21 +23,39 @@ void PaceBmsSelect::setup() {
 	  this->parent_->register_protocols_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::protocols_callback, this, std::placeholders::_1));
   }
   if (this->protocol_can_select_ != nullptr) {
-	this->protocol_can_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	this->protocol_can_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_CAN value) {
+	  if(!protocols_seen) {
+	    ESP_LOGE(TAG, "Protocol CAN cannot be set because the BMS hasn't responded to a get protocols request");
+		return;
+	  }
 	  ESP_LOGD(TAG, "Protocol CAN user selected value '%s' = %02X", text.c_str(), value);
-	  this->parent_->set_protocol_can(value);
+	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
+	  new_protocols.CAN = value;
+	  this->parent_->set_protocols(new_protocols);
 	});
   }
   if (this->protocol_rs485_select_ != nullptr) {
-	this->protocol_rs485_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	this->protocol_rs485_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_RS485 value) {
+	  if(!protocols_seen) {
+	    ESP_LOGE(TAG, "Protocol RS485 cannot be set because the BMS hasn't responded to a get protocols request");
+		return;
+	  }
 	  ESP_LOGD(TAG, "Protocol RS485 user selected value '%s' = %02X", text.c_str(), value);
-	  this->parent_->set_protocol_rs485(value);
+	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
+	  new_protocols.RS485 = value;
+	  this->parent_->set_protocols(new_protocols);
 	});
   }
   if (this->protocol_type_select_ != nullptr) {
-	this->protocol_type_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	this->protocol_type_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_Type value) {
+	  if(!protocols_seen) {
+	    ESP_LOGE(TAG, "Protocol Type cannot be set because the BMS hasn't responded to a get protocols request");
+		return;
+	  }
 	  ESP_LOGD(TAG, "Protocol Type user selected value '%s' = %02X", text.c_str(), value);
-	  this->parent_->set_protocol_type(value);
+	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
+	  new_protocols.Type = value;
+	  this->parent_->set_protocols(new_protocols);
 	});
   }
 }
@@ -61,6 +79,9 @@ void PaceBmsSelect::status_information_callback(PaceBmsV25::StatusInformation& s
 }
 
 void PaceBmsSelect::protocols_callback(PaceBmsV25::Protocols& protocols) {
+  this->last_seen_protocols = protocols;
+  this->protocols_callback = true;
+
   if (this->protocol_can_select_ != nullptr) {
 	std::string state = this->protocol_can_select_->option_from_value(protocols.CAN);
 	ESP_LOGV(TAG, "'protocol_can': Publishing state due to update from the hardware: %s", state.c_str());
