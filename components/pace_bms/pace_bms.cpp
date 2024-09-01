@@ -87,13 +87,13 @@ void PaceBms::update() {
       item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_serial_number_response, this, std::placeholders::_1);
       command_queue_.push(item);
     }
-    //if (this->protocols_callbacks_.size() > 0) {
-    //  command_item* item = new command_item;
-    //  item->description_ = std::string("read protocols");
-    //  item->create_request_frame_ = std::bind(&PaceBmsV25::CreateReadProtocolsRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
-    //  item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_read_protocols_response, this, std::placeholders::_1);
-    //  command_queue_.push(item);
-    //}
+    if (this->protocols_callbacks_.size() > 0) {
+      command_item* item = new command_item;
+      item->description_ = std::string("read protocols");
+      item->create_request_frame_ = std::bind(&PaceBmsV25::CreateReadProtocolsRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
+      item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_read_protocols_response, this, std::placeholders::_1);
+      command_queue_.push(item);
+    }
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
   }
 }
