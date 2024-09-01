@@ -35,7 +35,7 @@ std::string PaceBmsSelectImplementation::option_from_value(uint8_t value) {
 	auto options = this->traits.get_options();
 	auto opt_it = std::find(this->values_.cbegin(), this->values_.cend(), value);
 	size_t idx = std::distance(this->values_.cbegin(), opt_it);
-	std::string text = options[idx];
+	std::string text = std::string(options[idx]);
 
 	ESP_LOGD(TAG, "%s found option '%s' for value 0x%02X", this->name_.c_str(), text.c_str(), value);
 
