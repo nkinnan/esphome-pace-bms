@@ -296,18 +296,6 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   }
 }
 
-void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing read protocols response");
-
-  PaceBmsV25::Protocols protocols;
-  this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
-
-  // dispatch to any child sensor components that registered for a callback with us
-  for (int i = 0; i < this->protocols_callbacks_.size(); i++) {
-    protocols_callbacks_[i](protocols);
-  }
-}
-
 void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand switch_command, std::vector<uint8_t>& response) {
     ESP_LOGV(TAG, "Processing write switch command response");
 
@@ -324,6 +312,18 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 
     if (result == false)
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
+}
+
+void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing read protocols response");
+
+    PaceBmsV25::Protocols protocols;
+    this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
+
+    // dispatch to any child sensor components that registered for a callback with us
+    for (int i = 0; i < this->protocols_callbacks_.size(); i++) {
+        protocols_callbacks_[i](protocols);
+    }
 }
 
 void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>& response) {

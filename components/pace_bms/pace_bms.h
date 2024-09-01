@@ -75,6 +75,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_write_switch_command_response(PaceBmsV25::SwitchCommand, std::vector<uint8_t>& response);
   void handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state, std::vector<uint8_t>& response);
   void handle_read_protocols_response(std::vector<uint8_t>& response);
+  void handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
 
   // each item points to:
   //     a description of what is happening such as "Read Analog Information" for logging
