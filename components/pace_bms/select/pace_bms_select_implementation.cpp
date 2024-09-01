@@ -39,7 +39,7 @@ std::string PaceBmsSelectImplementation::option_from_value(uint8_t value) {
 
 	ESP_LOGD(TAG, "%s found option '%s' for value %02X", this->name_, text.c_str(), value);
 
-	return value;
+	return text;
 }
 
 float PaceBmsSelectImplementation::get_setup_priority() const { return setup_priority::DATA; }

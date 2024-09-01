@@ -13,9 +13,9 @@ void PaceBmsSelect::setup() {
     this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::status_information_callback, this, std::placeholders::_1));
   }
   if (this->charge_current_limiter_gear_select_ != nullptr) {
-	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, PaceBmsV25::SwitchCommand value) {
 	  ESP_LOGD(TAG, "Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
-	  this->parent_->set_charge_current_limiter_gear(value);
+	  this->parent_->set_switch_state(value);
 	});
   }
 
@@ -23,38 +23,38 @@ void PaceBmsSelect::setup() {
 	  this->parent_->register_protocols_callback(std::bind(&esphome::pace_bms::PaceBmsSelect::protocols_callback, this, std::placeholders::_1));
   }
   if (this->protocol_can_select_ != nullptr) {
-	this->protocol_can_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_CAN value) {
+	this->protocol_can_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 	  if(!protocols_seen) {
 	    ESP_LOGE(TAG, "Protocol CAN cannot be set because the BMS hasn't responded to a get protocols request");
 		return;
 	  }
 	  ESP_LOGD(TAG, "Protocol CAN user selected value '%s' = %02X", text.c_str(), value);
 	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
-	  new_protocols.CAN = value;
+	  new_protocols.CAN = (PaceBmsV25::NewStyleProtocolList_CAN)value;
 	  this->parent_->set_protocols(new_protocols);
 	});
   }
   if (this->protocol_rs485_select_ != nullptr) {
-	this->protocol_rs485_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_RS485 value) {
+	this->protocol_rs485_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 	  if(!protocols_seen) {
 	    ESP_LOGE(TAG, "Protocol RS485 cannot be set because the BMS hasn't responded to a get protocols request");
 		return;
 	  }
 	  ESP_LOGD(TAG, "Protocol RS485 user selected value '%s' = %02X", text.c_str(), value);
 	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
-	  new_protocols.RS485 = value;
+	  new_protocols.RS485 = (PaceBmsV25::NewStyleProtocolList_RS485)value;
 	  this->parent_->set_protocols(new_protocols);
 	});
   }
   if (this->protocol_type_select_ != nullptr) {
-	this->protocol_type_select_->add_on_control_callback([this](std::string text, PaceBmsV25::NewStyleProtocolList_Type value) {
+	this->protocol_type_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 	  if(!protocols_seen) {
 	    ESP_LOGE(TAG, "Protocol Type cannot be set because the BMS hasn't responded to a get protocols request");
 		return;
 	  }
 	  ESP_LOGD(TAG, "Protocol Type user selected value '%s' = %02X", text.c_str(), value);
 	  PaceBmsV25::Protocols new_protocols = last_seen_protocols;
-	  new_protocols.Type = value;
+	  new_protocols.Type = (PaceBmsV25::NewStyleProtocolList_Type)value;
 	  this->parent_->set_protocols(new_protocols);
 	});
   }
