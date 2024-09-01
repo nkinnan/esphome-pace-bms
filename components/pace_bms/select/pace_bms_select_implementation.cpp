@@ -39,7 +39,7 @@ uint8_t PaceBmsSelectImplementation::value_from_option(std::string text)
 	ESP_LOGD(TAG, "7 '%s'", text.c_str());
 
 
-	ESP_LOGD(TAG, "%s found value %02X for option '%s'", "blah", value, text.c_str());
+	ESP_LOGD(TAG, "%s found value %02X for option '%s'", this->name_, value, text.c_str());
 
 	return value;
 }
