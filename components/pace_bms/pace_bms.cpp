@@ -288,6 +288,7 @@ void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
   if (result == false) {
       ESP_LOGW(TAG, "BMS response did not indicate success for read hardware version request");
       return;
+  }
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->hardware_version_callbacks_.size(); i++) {
