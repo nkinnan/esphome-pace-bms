@@ -88,12 +88,12 @@ void PaceBmsSelect::protocols_callback(PaceBmsV25::Protocols& protocols) {
     this->protocol_can_select_->publish_state(state);
   }
   if (this->protocol_rs485_select_ != nullptr) {
-	std::string state = this->protocol_rs485_select_->option_from_value(protocols.CAN);
+	std::string state = this->protocol_rs485_select_->option_from_value(protocols.RS485);
 	ESP_LOGV(TAG, "'protocol_rs485': Publishing state due to update from the hardware: %s", state.c_str());
     this->protocol_rs485_select_->publish_state(state);
   }
   if (this->protocol_type_select_ != nullptr) {
-	std::string state = this->protocol_type_select_->option_from_value(protocols.CAN);
+	std::string state = this->protocol_type_select_->option_from_value(protocols.Type);
 	ESP_LOGV(TAG, "'protocol_type': Publishing state due to update from the hardware: %s", state.c_str());
     this->protocol_type_select_->publish_state(state);
   }

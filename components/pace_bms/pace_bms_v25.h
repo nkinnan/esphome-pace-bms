@@ -1230,8 +1230,8 @@ public:
 	};
 
 	void CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& dateTime);
-	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols dateTime, std::vector<uint8_t>& request);
+	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols);
+	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
 	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 };

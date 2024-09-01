@@ -26,7 +26,7 @@ uint8_t PaceBmsSelectImplementation::value_from_option(std::string text)
 	size_t idx = std::distance(options.cbegin(), opt_it);
 	uint8_t value = this->values_[idx];
 
-	ESP_LOGD(TAG, "%s found value %02X for option '%s'", this->name_.c_str(), value, text.c_str());
+	ESP_LOGD(TAG, "%s found value 0x%02X for option '%s'", this->name_.c_str(), value, text.c_str());
 
 	return value;
 }
@@ -37,7 +37,7 @@ std::string PaceBmsSelectImplementation::option_from_value(uint8_t value) {
 	size_t idx = std::distance(this->values_.cbegin(), opt_it);
 	std::string text = options[idx];
 
-	ESP_LOGD(TAG, "%s found option '%s' for value %02X", this->name_.c_str(), text.c_str(), value);
+	ESP_LOGD(TAG, "%s found option '%s' for value 0x%02X", this->name_.c_str(), text.c_str(), value);
 
 	return text;
 }

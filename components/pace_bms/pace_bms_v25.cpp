@@ -3015,7 +3015,7 @@ bool PaceBmsV25::ProcessReadProtocolsResponse(const uint8_t busId, const std::ve
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteProtocolsRequest(const uint8_t busId, const Protocols protocols, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request)
 {
 	const uint16_t payloadLen = 12;
 	std::vector<uint8_t> payload(payloadLen);
