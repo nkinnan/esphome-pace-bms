@@ -16,11 +16,8 @@ CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsButton),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
-        cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
-            #unit_of_measurement=,
-            accuracy_decimals=0,
-            #device_class=,
-            state_class=STATE_CLASS_MEASUREMENT,
+
+        cv.Optional(CONF_SHUTDOWN): button.button_schema(
         ),
     }
 )
