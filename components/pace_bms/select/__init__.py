@@ -19,7 +19,7 @@ CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS   = {
 }
 
 CONF_PROTOCOL_CAN           = "protocol_can"
-CONF_PROTOCOL_CAN_OPTIONS   = {
+protocol_can_options_config = {
 	"":                                                                                          0xFF, # 255d <blank entry> I believe this means "turned off"
 	"PACE":                                                                                      0x00, # 00d  PACE
 	"Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge": 0x01, # 01d  Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
@@ -113,7 +113,6 @@ async def to_code(config):
     #    #cg.add(sel.set_protocol_values(charge_current_limiter_gear_options_config.values())
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
-        protocol_can_options_config = config.get(CONF_PROTOCOL_CAN_OPTIONS)
         sel = await select.new_select(
             protocol_can_config,
             options=list(protocol_can_options_config.keys()),
