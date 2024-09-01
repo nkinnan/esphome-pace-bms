@@ -335,7 +335,7 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 void PaceBms::handle_write_shutdown_command_response(std::vector<uint8_t>& response) {
     ESP_LOGV(TAG, "Processing write shutdown command response");
 
-    bool result = this->pace_bms_v25_->ProcessSendShutdownRequestResponse(this->address_, type, state, response);
+    bool result = this->pace_bms_v25_->ProcessWriteShutdownCommandResponse(this->address_, response);
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
         return;
