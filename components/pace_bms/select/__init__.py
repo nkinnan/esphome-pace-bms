@@ -13,7 +13,7 @@ PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", 
 
 
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
-CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS   = {
+charge_current_limiter_gear_options_config = {
     "LowGear":  0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
     "HighGear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
 }
@@ -104,7 +104,6 @@ async def to_code(config):
     cg.add(var.set_parent(paren))
 
     if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
-        charge_current_limiter_gear_options_config = config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS)
         sel = await select.new_select(
             charge_current_limiter_gear_config,
             options=list(charge_current_limiter_gear_options_config.keys()),
