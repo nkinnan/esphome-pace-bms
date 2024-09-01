@@ -91,7 +91,7 @@ void PaceBms::update() {
       command_item* item = new command_item;
       item->description_ = std::string("read protocols");
       item->create_request_frame_ = std::bind(&PaceBmsV25::CreateReadProtocolsRequest, this->pace_bms_v25_, this->address_, std::placeholders::_1);
-      item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_protocols_response, this, std::placeholders::_1);
+      item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_read_protocols_response, this, std::placeholders::_1);
       command_queue_.push(item);
     }
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
@@ -296,15 +296,15 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   }
 }
 
-void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
-  ESP_LOGV(TAG, "Processing read serial number response");
+void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
+  ESP_LOGV(TAG, "Processing read protocols response");
 
   PaceBmsV25::Protocols protocols;
   this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
 
   // dispatch to any child sensor components that registered for a callback with us
   for (int i = 0; i < this->protocols_callbacks_.size(); i++) {
-    protocols_callbacks_[i](serial_number);
+    protocols_callbacks_[i](protocols);
   }
 }
 
