@@ -119,7 +119,7 @@ async def to_code(config):
             options=list(protocol_can_options_config.keys()),
         )
         cg.add(var.set_protocol_can_select(sel))
-        cg.add(sel.set_protocol_values(protocol_can_options_config.values())
+        cg.add(sel.set_protocol_values(list(protocol_can_options_config.values()))
     
     if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
         protocol_rs485_options_config = config.get(CONF_PROTOCOL_RS485_OPTIONS)
