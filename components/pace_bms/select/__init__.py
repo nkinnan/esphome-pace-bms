@@ -19,20 +19,20 @@ CONF_CHARGE_CURRENT_LIMITER_GEAR_OPTIONS   = [
 ]
 
 CONF_PROTOCOL_CAN           = "protocol_can"
-CONF_PROTOCOL_CAN_OPTIONS   = [
-    "can1",
-    "can2",
-]
+CONF_PROTOCOL_CAN_OPTIONS   = {
+    "can1": 1,
+    "can2": 2,
+}
 CONF_PROTOCOL_RS485           = "protocol_rs485"
-CONF_PROTOCOL_RS485_OPTIONS   = [
-    "rs485-1",
-    "rs485-2",
-]
+CONF_PROTOCOL_RS485_OPTIONS   = {
+    "rs485-1": 1,
+    "rs485-2": 2,
+}
 CONF_PROTOCOL_TYPE           = "protocol_type"
-CONF_PROTOCOL_TYPE_OPTIONS   = [
-    "type1",
-    "type2",
-]
+CONF_PROTOCOL_TYPE_OPTIONS   = {
+    "type1": 1,
+    "type2": 2,
+}
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -62,22 +62,28 @@ async def to_code(config):
         cg.add(var.set_charge_current_limiter_gear_select(sel))
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
+        protocol_can_options_config = config.get(CONF_PROTOCOL_CAN_OPTIONS)
         sel = await select.new_select(
             protocol_can_config,
-            options=CONF_PROTOCOL_CAN_OPTIONS,
+            options=list(protocol_can_options_config.keys()),
         )
         cg.add(var.set_protocol_can_select(sel))
-
+        cg.add(sel.set_protocol_values(protocol_can_options_config.values())
+    
     if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
+        protocol_rs485_options_config = config.get(CONF_PROTOCOL_RS485_OPTIONS)
         sel = await select.new_select(
             protocol_rs485_config,
-            options=CONF_PROTOCOL_RS485_OPTIONS,
+            options=list(protocol_rs485_options_config.keys()),
         )
         cg.add(var.set_protocol_rs485_select(sel))
-    
+        cg.add(sel.set_protocol_values(protocol_rs485_options_config.values())
+
     if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
+        protocol_type_options_config = config.get(CONF_PROTOCOL_TYPE_OPTIONS)
         sel = await select.new_select(
             protocol_type_config,
-            options=CONF_PROTOCOL_TYPE_OPTIONS,
+            options=list(protocol_type_options_config.keys()),
         )
         cg.add(var.set_protocol_type_select(sel))
+        cg.add(sel.set_protocol_values(protocol_type_options_config.values())

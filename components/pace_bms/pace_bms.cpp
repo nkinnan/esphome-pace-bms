@@ -370,6 +370,16 @@ void PaceBms::set_charge_current_limiter_gear(CurrentLimiterGear gear) {
 //  ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 //}
 
+void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
+    command_item* item = new command_item;
+    item->description_ = std::string("setting protocols");
+    item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteProtocolsRequest, this->pace_bms_v25_, this->address_, protocols, std::placeholders::_1);
+    item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_protocols_response, this, protocols, std::placeholders::_1);
+    command_queue_.push(item);
+
+    ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
+}
+
 void PaceBms::dump_config() {
   ESP_LOGCONFIG(TAG, "pace_bms:");
   LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);

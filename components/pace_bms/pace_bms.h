@@ -28,12 +28,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   float get_setup_priority() const override;
   void dump_config() override;
 
+  // child sensors call these to request notification upon reciept of various types of data from the BMS
   void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(callback); }
   void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(callback); }
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(callback); }
   void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(callback); }
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(callback); }
 
+  // child sensors call these to request new values be sent to the hardware
   enum SwitchType {
 	  ST_BuzzerAlarm,
 	  ST_LedAlarm,
@@ -49,6 +51,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   };
   void set_charge_current_limiter_gear(CurrentLimiterGear gear);
   //void send_shutdown();
+  void set_protocols(PaceBmsV25::Protocols& protocols);
 
  protected:
   GPIOPin* flow_control_pin_{ nullptr };

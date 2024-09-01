@@ -26,13 +26,9 @@ void PaceBmsSelect::setup() {
 	});
   }
   if (this->protocol_can_select_ != nullptr) {
-	this->protocol_can_select_->add_on_control_callback([this](std::string value) {
-	  if(value == "LowGear")
-	    this->parent_->set_protocol_can(PaceBms::CLG_LowGear);
-	  else if(value == "HighGear")
-	    this->parent_->set_protocol_can(PaceBms::CLG_HighGear);
-	  else
-		ESP_LOGE(TAG, "Select value not understood: %s", value.c_str());
+	this->protocol_can_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+	  ESP_LOGD(TAG, "CAN selected value %s = %02X", text.c_str(), value);
+	  this->parent_->set_protocol_can(value);
 	});
   }
 }
