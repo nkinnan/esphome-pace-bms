@@ -4,8 +4,6 @@
 #include "esphome/components/pace_bms/pace_bms.h"
 #include "esphome/components/button/button.h"
 
-#include "../pace_bms_v25.h"
-
 namespace esphome {
 namespace pace_bms {
 
@@ -13,7 +11,7 @@ class PaceBmsButton : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
-  void set_cell_count_sensor(button::Button* shutdown_button) { this->shutdown_button_ = shutdown_button;  }
+  void set_shutdown_button(button::Button* shutdown_button) { this->shutdown_button_ = shutdown_button;  }
 
   void setup() override;
   float get_setup_priority() const override;

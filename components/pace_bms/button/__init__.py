@@ -9,6 +9,7 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsButton = pace_bms_ns.class_("PaceBmsButton", cg.Component)
+PaceBmsButtonImplementation = pace_bms_ns.class_("PaceBmsButtonImplementation", cg.Component, button.Button)
 
 CONF_SHUTDOWN = "shutdown"
 
@@ -17,9 +18,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(PaceBmsButton),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
-        cv.Optional(CONF_SHUTDOWN): button.button_schema(
-            Button
-        ),
+        cv.Optional(CONF_SHUTDOWN): button.button_schema(PaceBmsButtonImplementation),
     }
 )
 
@@ -32,4 +31,4 @@ async def to_code(config):
 
     if shutdown_config := config.get(CONF_SHUTDOWN):
         btn = await button.new_button(shutdown_config)
-        cg.add(var.set_shutdown(btn))
+        cg.add(var.set_shutdown_button(btn))

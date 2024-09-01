@@ -1,12 +1,10 @@
 #include "pace_bms_button.h"
 #include "esphome/core/log.h"
 
-#include <functional>
-
 namespace esphome {
 namespace pace_bms {
 
-static const char* const TAG = "pace_bms.sensor";
+static const char* const TAG = "pace_bms.button";
 
 void PaceBmsButton::setup() {
   if (this->shutdown_button_ != nullptr) {
@@ -20,8 +18,8 @@ void PaceBmsButton::setup() {
 float PaceBmsButton::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsButton::dump_config() {
-	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");
-	LOG_BUTTON("  ", "Shutdown", this->shutdown_);
+	ESP_LOGCONFIG(TAG, "pace_bms_button:");
+	LOG_BUTTON("  ", "Shutdown", this->shutdown_button_);
 }
 
 }  // namespace pace_bms
