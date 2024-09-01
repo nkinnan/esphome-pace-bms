@@ -307,6 +307,15 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
         ESP_LOGW(TAG, "BMS response did not indicate success for write switch command request");
 }
 
+void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing write protocols response");
+
+    bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, response);
+
+    if (result == false)
+        ESP_LOGW(TAG, "BMS response did not indicate success for write protocols request");
+}
+
 void PaceBms::set_switch_state(SwitchType switch_type, bool state) {
   command_item* item;
   switch (switch_type) {
