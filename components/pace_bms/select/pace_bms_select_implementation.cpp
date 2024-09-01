@@ -19,7 +19,7 @@ void PaceBmsSelectImplementation::control(const std::string& text) {
 	this->publish_state(text);
 }
 
-uint8_t value_from_option(std::string str)
+uint8_t PaceBmsSelectImplementation::value_from_option(std::string str)
 {
 	auto options = this->traits.get_options();
 	auto opt_it = std::find(options.cbegin(), options.cend(), text);
@@ -31,7 +31,7 @@ uint8_t value_from_option(std::string str)
 	return value;
 }
 
-std::string option_from_value(uint8_t number) {
+std::string PaceBmsSelectImplementation::option_from_value(uint8_t number) {
 	auto options = this->traits.get_options();
 	auto opt_it = std::find(this->values_.cbegin(), this->values_.cend(), number);
 	size_t idx = std::distance(this->values_.cbegin(), opt_it);
