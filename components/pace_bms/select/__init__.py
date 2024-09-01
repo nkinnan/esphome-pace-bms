@@ -137,4 +137,4 @@ async def to_code(config):
             options=list(protocol_type_options_config.keys()),
         )
         cg.add(var.set_protocol_type_select(sel))
-        cg.add(sel.set_protocol_values(protocol_type_options_config.values())
+        cg.add(sel.set_protocol_values(protocol_type_options_config.values()))
