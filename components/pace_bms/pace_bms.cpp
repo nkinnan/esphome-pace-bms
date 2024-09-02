@@ -68,7 +68,7 @@ void PaceBms::update() {
 
   // writes are always processed first so no need to check that as well
   if (!read_queue_.empty()) {
-    ESP_LOGW(TAG, "Commands still in queue on update(), skipping this refresh cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.", command_queue_.size());
+    ESP_LOGW(TAG, "Commands still in queue on update(), skipping this refresh cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.");
   }
   else {
     ESP_LOGV(TAG, "Queueing refresh commands");
@@ -507,7 +507,7 @@ void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response
 void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
     auto iter = std::find(this->write_queue_.begin(), this->write_queue_.end(),
         [item](const command_item * test) {
-            if (test->description_ == item->description_)
+            if (0 == item->description_.compare(test->description_))
                 return true;
             return false;
     });
