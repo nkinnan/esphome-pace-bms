@@ -38,14 +38,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(std::move(callback)); }
   void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(std::move(callback)); }
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(std::move(callback)); }
-  void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_pack_over_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&) > callback) { pack_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&) > callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&) > callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_charge_over_current_configuration_callback(std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&) > callback) { charge_over_current_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_discharge_over_current1_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&) > callback) { discharge_over_current1_configuration_callbacks_.push_back(std::move(callback)); }
-  void registerdischarge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&) > callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_short_circuit_protection_configuration_callback(std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&) > callback) { short_circuit_protection_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)> callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_pack_over_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)> callback) { pack_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)> callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)> callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_charge_over_current_configuration_callback(std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)> callback) { charge_over_current_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_discharge_over_current1_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)> callback) { discharge_over_current1_configuration_callbacks_.push_back(std::move(callback)); }
+  void registerdischarge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_short_circuit_protection_configuration_callback(std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)> callback) { short_circuit_protection_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
@@ -100,11 +100,11 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)>> pack_over_voltage_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)>> cell_under_voltage_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)>> pack_under_voltage_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> charge_over_current_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)>> discharge_over_current1_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)>> discharge_over_current2_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)>> short_circuit_protection_configuration_callbacks_;
-
+  std::vector<std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)>> charge_over_current_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)>> discharge_over_current1_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)>> discharge_over_current2_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)>> short_circuit_protection_configuration_callbacks_;
+  
   // along with loop() this is the "engine" of BMS communications
   // send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
   // process_response_frame_ will call next_response_handler_ (which was saved from the command_item in send_next_request_frame_) once a response arrives
