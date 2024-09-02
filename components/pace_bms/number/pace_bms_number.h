@@ -13,8 +13,10 @@ class PaceBmsNumber : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
-  // current switch states are actually in the status information response, so subscribe to that in order to update switch state
-  void set_test_number(PaceBmsNumberImplementation* test_number) { this->test_number_ = test_number; request_test_callback_ = true; }
+  void set_cell_over_voltage_alarm_number(PaceBmsNumberImplementation* cell_over_voltage_alarm_number) { this->cell_over_voltage_alarm_number_ = cell_over_voltage_alarm_number; request_cell_over_voltage_configuration_callback_ = true; }
+  void set_cell_over_voltage_protection_number(PaceBmsNumberImplementation* cell_over_voltage_protection_number) { this->cell_over_voltage_protection_number_ = cell_over_voltage_protection_number; request_cell_over_voltage_configuration_callback_ = true; }
+  void set_cell_over_voltage_protection_release_number(PaceBmsNumberImplementation* cell_over_voltage_protection_release_number) { this->cell_over_voltage_protection_release_number_ = cell_over_voltage_protection_release_number; request_cell_over_voltage_configuration_callback_ = true; }
+  void set_cell_over_voltage_protection_delay_number(PaceBmsNumberImplementation* cell_over_voltage_protection_delay_number) { this->cell_over_voltage_protection_delay_number_ = cell_over_voltage_protection_delay_number; request_cell_over_voltage_configuration_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -22,12 +24,15 @@ class PaceBmsNumber : public Component {
 
  protected:
   pace_bms::PaceBms *parent_;
-  bool request_test_callback_ = false;
-  void test_callback(PaceBmsV25::StatusInformation& status_information);
 
-  pace_bms::PaceBmsNumberImplementation* test_number_{ nullptr };
+  bool request_cell_over_voltage_configuration_callback_{ false };
+  PaceBmsV25::CellOverVoltageConfiguration cell_over_voltage_configuration_;
+  bool cell_over_voltage_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* cell_over_voltage_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_release_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_delay_number_{ nullptr };
 };
 
 }  // namespace pace_bms
 }  // namespace esphome
-
