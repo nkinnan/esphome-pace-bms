@@ -18,7 +18,7 @@ esp8266:
 
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
-  level: VERBOSE
+  level: VERY_VERBOSE
 
 # Enable Home Assistant API
 api:
@@ -57,7 +57,7 @@ uart:
 
 pace_bms:
   id: pace_bms_at_address_1
-  address: 1
+  address: 0
   protocol_version: 0x25
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232

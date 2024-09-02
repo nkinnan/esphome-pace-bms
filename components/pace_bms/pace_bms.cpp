@@ -98,11 +98,10 @@ void PaceBms::update() {
       command_queue_.push(item);
     }
     if (this->cell_over_voltage_configuration_callbacks_.size() > 0) {
-        ESP_LOGE(TAG, "queueing cell over voltage request");
         command_item* item = new command_item;
         item->description_ = std::string("read cell over voltage configuration");
-        item->create_request_frame_ = [this](std::vector<uint8_t> request) -> void { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
-        item->process_response_frame_ = [this](std::vector<uint8_t> response) -> void { this->handle_read_cell_over_voltage_configuration_response(response); };
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> void { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_over_voltage_configuration_response(response); };
         command_queue_.push(item);
     }
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
@@ -485,8 +484,8 @@ void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
 void PaceBms::set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config) {
     command_item* item = new command_item;
     item->description_ = std::string("setting cell over voltage configuration");
-    item->create_request_frame_ = [this, config](std::vector<uint8_t> request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
-    item->process_response_frame_ = [this](std::vector<uint8_t> response) -> void { return this->handle_write_configuration_response(response); };
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { return this->handle_write_configuration_response(response); };
     command_queue_.push(item);
 
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
