@@ -110,12 +110,6 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 	  std::string description_;
 	  std::function<bool(std::vector<uint8_t>&)> create_request_frame_;
 	  std::function<void(std::vector<uint8_t>&)> process_response_frame_;
-
-	  //bool operator==(const command_item& test) const
-	  //{
-		 // ESP_LOGE("test", "'%s' == '%s' = %i", description_, test.description_, description_ == test.description_);
-		 // return (description_ == test.description_);
-	  //}
   };
   // when the bus is clear:
   //     the next command_item will be popped from command_queue_
