@@ -389,7 +389,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<u
     ESP_LOGV(TAG, "Processing %s response", this->last_request_description.c_str());
 
     PaceBmsV25::CellOverVoltageConfiguration config;
-    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, &config);
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for %s request", this->last_request_description.c_str());
         return;
