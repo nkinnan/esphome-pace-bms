@@ -94,7 +94,7 @@ void PaceBmsNumber::cell_over_voltage_configuration_callback(PaceBmsV25::CellOve
 	}
 	if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
 		int state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-		ESP_LOGV(TAG, "'test': Publishing state due to update from the hardware: %s", state);
+		ESP_LOGV(TAG, "'cell_over_voltage_protection_delay': Publishing state due to update from the hardware: %s", state);
 		this->cell_over_voltage_protection_delay_number_->publish_state(state);
 	}
 }
