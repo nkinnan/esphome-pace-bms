@@ -509,7 +509,7 @@ void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
     if (iter != this->write_queue_.end()) {
         ESP_LOGE(TAG, "***replacing*** write!");
         this->write_queue_.remove(*iter);
-        this->write_queue_.insert(iter, item);
+        this->write_queue_.push_back(item);
     }
     else {
         ESP_LOGE(TAG, "push_back write");
