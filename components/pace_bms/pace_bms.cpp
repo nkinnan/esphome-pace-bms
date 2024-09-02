@@ -508,8 +508,8 @@ void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
     auto iter = std::find(this->write_queue_.begin(), this->write_queue_.end(), item);
     if (iter != this->write_queue_.end()) {
         ESP_LOGE(TAG, "***replacing*** write!");
-        this->write_queue_.remove(*iter);
-        this->write_queue_.push_back(item);
+        std::swap((*iter), item);
+        delete item;
     }
     else {
         ESP_LOGE(TAG, "push_back write");
