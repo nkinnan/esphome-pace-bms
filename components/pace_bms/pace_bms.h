@@ -39,8 +39,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(std::move(callback)); }
   void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
   void register_pack_over_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&) > callback) { pack_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&) > callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&) > callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&) > callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
