@@ -10,7 +10,7 @@ static const char* const TAG = "pace_bms.number";
 
 void PaceBmsNumber::setup() {
   if (this->request_test_callback_ == true) {
-    this->parent_->register_test_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::test_callback, this, std::placeholders::_1));
+    //this->parent_->register_test_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::test_callback, this, std::placeholders::_1));
   }
 }
 
