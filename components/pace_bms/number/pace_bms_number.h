@@ -44,7 +44,7 @@ class PaceBmsNumber : public Component {
   void set_discharge_over_current2_protection_number(PaceBmsNumberImplementation* number) { this->discharge_over_current2_protection_number_ = number; request_discharge_over_current2_configuration_callback_ = true; }
   void set_discharge_over_current2_protection_delay_number(PaceBmsNumberImplementation* number) { this->discharge_over_current2_protection_delay_number_ = number; request_discharge_over_current2_configuration_callback_ = true; }
 
-  void set_short_circuit_protection_delay_number(PaceBmsNumberImplementation* number) { this->short_circuit_protection_delay_number_ = number; request_short_circuit_configuration_callback_ = true; }
+  void set_short_circuit_protection_delay_number(PaceBmsNumberImplementation* number) { this->short_circuit_protection_delay_number_ = number; request_short_circuit_protection_configuration_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
@@ -116,7 +116,7 @@ class PaceBmsNumber : public Component {
   bool request_short_circuit_protection_configuration_callback_{ false };
   PaceBmsV25::ShortCircuitProtectionConfiguration short_circuit_protection_configuration_;
   bool short_circuit_protection_configuration_seen_{ false };
-  pace_bms::PaceBmsNumberImplementation* short_circuit_protection_protection_delay_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* short_circuit_protection_delay_number_{ nullptr };
 };
 
 }  // namespace pace_bms

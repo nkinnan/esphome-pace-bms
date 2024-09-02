@@ -306,18 +306,18 @@ void PaceBmsNumber::setup() {
 			});
 	}
 
-	if (this->request_short_circuit_configuration_callback_ == true) {
-		this->parent_->register_short_circuit_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::short_circuit_configuration_callback, this, std::placeholders::_1));
+	if (this->request_short_circuit_protection_configuration_callback_ == true) {
+		this->parent_->register_short_circuit_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::short_circuit_protection_configuration_callback, this, std::placeholders::_1));
 	}
 	if (this->short_circuit_protection_delay_number_ != nullptr) {
 		this->short_circuit_protection_delay_number_->add_on_control_callback([this](float value) {
-			if (!short_circuit_configuration_seen_) {
+			if (!short_circuit_protection_configuration_seen_) {
 				ESP_LOGE(TAG, "short_circuit_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
 				return;
 			}
 			ESP_LOGD(TAG, "Setting short_circuit_protection_delay user selected value %f", value);
-			this->short_circuit_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000.0f);
-			this->parent_->set_short_circuit_configuration(this->short_circuit_configuration_);
+			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->parent_->set_short_circuit_configuration(this->short_circuit_protection_configuration_);
 			});
 	}
 }
