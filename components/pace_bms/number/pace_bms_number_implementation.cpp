@@ -6,7 +6,7 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.switch_impl";
 
-void PaceBmsNumberImplementation::add_on_control_callback(std::function<void(bool)>&& callback) {
+void PaceBmsNumberImplementation::add_on_control_callback(std::function<void(float)>&& callback) {
 	this->control_callbacks_.add(std::move(callback));
 }
 
