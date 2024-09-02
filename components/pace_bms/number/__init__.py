@@ -68,7 +68,7 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_DURATION,
             unit_of_measurement=UNIT_SECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
-        )
+        ),
 
         cv.Optional(CONF_PACK_OVER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,
@@ -93,7 +93,7 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_DURATION,
             unit_of_measurement=UNIT_SECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
-        )
+        ),
 
         cv.Optional(CONF_CELL_UNDER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,
@@ -118,7 +118,7 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_DURATION,
             unit_of_measurement=UNIT_SECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
-        )
+        ),
 
         cv.Optional(CONF_PACK_UNDER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,
@@ -143,7 +143,7 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_DURATION,
             unit_of_measurement=UNIT_SECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
-        )
+        ),
     }
 )
 
