@@ -175,3 +175,10 @@ button:
 
    shutdown:
      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+  
+number:
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   test:
+     name: "Test" 

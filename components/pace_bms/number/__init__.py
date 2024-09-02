@@ -9,7 +9,7 @@ from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsNumber = pace_bms_ns.class_("PaceBmsNumber", cg.Component)
-PaceBmsNumberImplementation = pace_bms_ns.class_("PaceBmsNumberImplementation", cg.Component, switch.Switch)
+PaceBmsNumberImplementation = pace_bms_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
 
 
 CONF_TEST           = "test"
