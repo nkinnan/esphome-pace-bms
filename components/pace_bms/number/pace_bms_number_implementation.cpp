@@ -7,6 +7,8 @@ namespace pace_bms {
 static const char* const TAG = "pace_bms.switch_impl";
 
 void PaceBmsNumberImplementation::control(float number) {
+	ESP_LOGE(TAG, "Publishing new value %f", number);
+
 	// required for the UX not to get out of sync
 	this->publish_state(state);
 }

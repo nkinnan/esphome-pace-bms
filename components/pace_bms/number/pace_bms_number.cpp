@@ -9,7 +9,17 @@ namespace pace_bms {
 static const char* const TAG = "pace_bms.number";
 
 void PaceBmsNumber::setup() {
-  if (this->request_test_callback_ == true) {
+	//source_->add_on_state_callback([this](float value) { this->publish_state(value); });
+
+	//traits.set_min_value(source_->traits.get_min_value());
+	//traits.set_max_value(source_->traits.get_max_value());
+	//traits.set_step(source_->traits.get_step());
+
+	//if (source_->has_state())
+	//	this->publish_state(source_->state);
+
+	
+	if (this->request_test_callback_ == true) {
     //this->parent_->register_test_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::test_callback, this, std::placeholders::_1));
   }
 }
