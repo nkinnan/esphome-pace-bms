@@ -402,6 +402,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<u
     for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
         cell_over_voltage_configuration_callbacks_[i](config);
     }
+    ESP_LOGE(TAG, "config dispatched, returning");
 }
 
 void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response) {
