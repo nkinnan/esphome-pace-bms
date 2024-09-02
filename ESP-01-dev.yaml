@@ -180,5 +180,11 @@ number:
  - platform: pace_bms
    pace_bms_id: pace_bms_at_address_1
 
-   test:
-     name: "Test" 
+   cell_over_voltage_alarm:
+     name: "Cell Over Voltage Alarm" 
+   cell_over_voltage_protection:
+     name: "Cell Over Voltage Protection" 
+   cell_over_voltage_protection_release:
+     name: "Cell Over Voltage Protection Release" 
+   cell_over_voltage_protection_delay:
+     name: "Cell Over Voltage Protection Delay" 

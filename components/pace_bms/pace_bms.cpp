@@ -98,6 +98,7 @@ void PaceBms::update() {
       command_queue_.push(item);
     }
     if (this->cell_over_voltage_configuration_callbacks_.size() > 0) {
+        ESP_LOGE(TAG, "queueing cell over voltage request");
         command_item* item = new command_item;
         item->description_ = std::string("read cell over voltage configuration");
         item->create_request_frame_ = [this](std::vector<uint8_t> request) -> void { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
