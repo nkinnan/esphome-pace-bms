@@ -1,4 +1,4 @@
-#include "pace_bms_switch_implementation.h"
+#include "pace_bms_number_implementation.h"
 #include "esphome/core/log.h"
 
 namespace esphome {
