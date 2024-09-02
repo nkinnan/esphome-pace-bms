@@ -67,15 +67,10 @@ float PaceBmsNumber::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsNumber::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms_number:");
-	LOG_NUMBER("  ", "test", this->test_number_);
-}
-
-void PaceBmsNumber::test_callback(PaceBmsV25::StatusInformation& test) {
-  if (this->test_number_ != nullptr) {
-	int state = test.system_value;
-	ESP_LOGV(TAG, "'test': Publishing state due to update from the hardware: %s", state);
-    this->test_number_->publish_state(state);
-  }
+	LOG_NUMBER("  ", "Cell Over Voltage Alarm", this->cell_over_voltage_alarm_number_);
+	LOG_NUMBER("  ", "Cell Over Voltage Protection", this->cell_over_voltage_protection_number_);
+	LOG_NUMBER("  ", "Cell Over Voltage Protection Release", this->cell_over_voltage_protection_release_number_);
+	LOG_NUMBER("  ", "Cell Over Voltage Protection Delay", this->cell_over_voltage_protection_delay_number_);
 }
 
 void PaceBmsNumber::cell_over_voltage_configuration_callback(PaceBmsV25::CellOverVoltageConfiguration& configuration) {
