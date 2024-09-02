@@ -136,6 +136,57 @@ void PaceBms::update() {
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_pack_under_voltage_configuration_response(response); };
       read_queue_.push(item);
     }
+    if (this->charge_over_current_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read charge over current configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_ChargeOverCurrent, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_charge_over_current_configuration_response(response); };
+        read_queue_.push(item);
+    }
+    if (this->discharge_over_current1_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read discharge over current 1 configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_DischargeOverCurrent1, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_discharge_over_current1_configuration_response(response); };
+        read_queue_.push(item);
+    }
+    if (this->discharge_over_current2_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read discharge over current 2 configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_DischargeOverCurrent2, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_discharge_over_current2_configuration_response(response); };
+        read_queue_.push(item);
+    }
+    if (this->short_circuit_protection_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read short circuit protection configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_ShortCircuitProtection, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_short_circuit_protection_configuration_response(response); };
+        read_queue_.push(item);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
   }
@@ -493,6 +544,68 @@ void PaceBms::handle_read_pack_under_voltage_configuration_response(std::vector<
     }
 }
 
+void PaceBms::handle_read_charge_over_current_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::ChargeOverCurrentConfiguration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
+        charge_over_current_configuration_callbacks_[i](config);
+    }
+}
+
+void PaceBms::handle_read_discharge_over_current1_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::DischargeOverCurrent1Configuration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->pack_over_voltage_configuration_callbacks_.size(); i++) {
+        discharge_over_current1_configuration_callbacks_[i](config);
+    }
+}
+
+void PaceBms::handle_read_discharge_over_current2_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::DischargeOverCurrent2Configuration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->cell_under_voltage_configuration_callbacks_.size(); i++) {
+        discharge_over_current2_configuration_callbacks_[i](config);
+    }
+}
+
+void PaceBms::handle_read_short_circuit_protection_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::ShortCircuitProtectionConfiguration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->pack_under_voltage_configuration_callbacks_.size(); i++) {
+        short_circuit_protection_configuration_callbacks_[i](config);
+    }
+}
+
+
+
 void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response) {
     ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
@@ -502,6 +615,7 @@ void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response
         return;
     }
 }
+
 
 
 void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
@@ -634,5 +748,53 @@ void PaceBms::set_pack_under_voltage_configuration(PaceBmsV25::PackUnderVoltageC
     ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
+void PaceBms::set_charge_over_current_configuration(PaceBmsV25::ChargeOverCurrentConfiguration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write charge over current configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
+void PaceBms::set_discharge_over_current1_configuration(PaceBmsV25::DischargeOverCurrent1Configuration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write discharge over current 1 configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
+void PaceBms::set_discharge_over_current2_configuration(PaceBmsV25::DischargeOverCurrent2Configuration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write discharge over current 2 configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
+void PaceBms::set_short_circuit_protection_configuration(PaceBmsV25::ShortCircuitProtectionConfiguration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write short circuit protection configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
 }  // namespace pace_bms
 }  // namespace esphome
+
+
+
+

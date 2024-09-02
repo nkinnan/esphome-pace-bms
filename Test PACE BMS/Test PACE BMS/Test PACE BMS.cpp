@@ -2000,7 +2000,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_DischargeSlowOverCurrent;
+	configType = PaceBmsV25::RC_DischargeOverCurrent1;
 	configTypeString = "RC_DischargeSlowOverCurrent";
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25);
@@ -2120,7 +2120,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_DischargeFastOverCurrent;
+	configType = PaceBmsV25::RC_DischargeOverCurrent2;
 	configTypeString = "RC_DischargeFastOverCurrent";
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25);
