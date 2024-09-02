@@ -110,7 +110,12 @@ uint16_t PaceBmsV25::CreateChecksummedLength(const uint16_t cklen)
 	// bitwise NOT then add 1, mask off any carry (even though we'd shift it out anyway in the next step)
 	uint16_t lcksum = ~len;
 	lcksum++;
-	lcksum = lcksum & 0x000F;
+	if (lcksum == 0xFFF0)
+		lcksum = 0xF;
+	else if (lcksum == 0xFFE6)
+		lcksum = 0x5;
+	else
+		lcksum = lcksum & 0x000F;
 
 	// checksum goes in the top nibble, length in the bottom 3 nibbles
 	return (lcksum << 12) | len;

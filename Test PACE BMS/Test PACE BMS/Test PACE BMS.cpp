@@ -1092,7 +1092,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandRequestV25);
-	paceBms->CreateWriteRebootCommandRequest(0, buffer);
+	paceBms->CreateWriteShutdownCommandRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteRebootCommandRequest logged something above verbose" << std::endl;
@@ -1114,7 +1114,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandResponseV25);
-	res = paceBms->ProcessWriteRebootCommandResponse(
+	res = paceBms->ProcessWriteShutdownCommandResponse(
 		0,
 		std::vector<uint8_t>(
 			PaceBmsV25::exampleWriteRebootCommandResponseV25,
@@ -1422,11 +1422,11 @@ void BasicTests()
 	cellOverVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, cellOverVoltageConfig, buffer);
 	std::string fixed_exampleWriteCellOverVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25, PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteCellOverVoltageConfigurationRequestV25[9] = '0';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWriteCellOverVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteCellOverVoltageConfigurationRequestV25[31] = '3';
-	fixed_exampleWriteCellOverVoltageConfigurationRequestV25[32] = '7';
+	//fixed_exampleWriteCellOverVoltageConfigurationRequestV25[31] = '3';
+	//fixed_exampleWriteCellOverVoltageConfigurationRequestV25[32] = '7';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1552,12 +1552,12 @@ void BasicTests()
 	packOverVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, packOverVoltageConfig, buffer);
 	std::string fixed_exampleWritePackOverVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25, PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWritePackOverVoltageConfigurationRequestV25[9] = '0';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWritePackOverVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWritePackOverVoltageConfigurationRequestV25[30] = 'A';
-	fixed_exampleWritePackOverVoltageConfigurationRequestV25[31] = '1';
-	fixed_exampleWritePackOverVoltageConfigurationRequestV25[32] = '1';
+	//fixed_exampleWritePackOverVoltageConfigurationRequestV25[30] = 'A';
+	//fixed_exampleWritePackOverVoltageConfigurationRequestV25[31] = '1';
+	//fixed_exampleWritePackOverVoltageConfigurationRequestV25[32] = '1';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1683,11 +1683,11 @@ void BasicTests()
 	cellUnderVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, cellUnderVoltageConfig, buffer);
 	std::string fixed_exampleWriteCellUnderVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25, PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[9] = '0';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[31] = '2';
-	fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[32] = '4';
+	//fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[31] = '2';
+	//fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[32] = '4';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1813,11 +1813,11 @@ void BasicTests()
 	packUnderVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, packUnderVoltageConfig, buffer);
 	std::string fixed_exampleWritePackUnderVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25, PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWritePackUnderVoltageConfigurationRequestV25[9] = '0';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWritePackUnderVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWritePackUnderVoltageConfigurationRequestV25[31] = '2';
-	fixed_exampleWritePackUnderVoltageConfigurationRequestV25[32] = '0';
+	//fixed_exampleWritePackUnderVoltageConfigurationRequestV25[31] = '2';
+	//fixed_exampleWritePackUnderVoltageConfigurationRequestV25[32] = '0';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2781,10 +2781,10 @@ void BasicTests()
 	chargeAndDischargeOverTemperatureConfig.DischargeProtectionRelease = 55;
 	paceBms->CreateWriteConfigurationRequest(0, chargeAndDischargeOverTemperatureConfig, buffer);
 	std::string fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25, PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[9] = '6';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[9] = '6';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[42] = '6';
+	//fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[42] = '6';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2915,10 +2915,10 @@ void BasicTests()
 	chargeAndDischargeUnderTemperatureConfig.DischargeProtectionRelease = -15;
 	paceBms->CreateWriteConfigurationRequest(0, chargeAndDischargeUnderTemperatureConfig, buffer);
 	std::string fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25, PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 + exlen);
-	// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[9] = '6';
+	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
+	//fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[9] = '6';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
-	fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[42] = 'B';
+	//fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[42] = 'B';
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -3476,10 +3476,9 @@ void EmulatePaceBms(int portNum, int rs485_address)
 
 int main()
 {
-	//BasicTests();
+	BasicTests();
 
-	//std::cout << std::endl << std::endl << " LIVE serial tests:" << std::endl << std::endl;
 	//ComPortTests(8, 1);
 
-	EmulatePaceBms(31, 1);
+	//EmulatePaceBms(31, 1);
 }
