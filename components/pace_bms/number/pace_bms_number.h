@@ -14,7 +14,7 @@ class PaceBmsNumber : public Component {
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
   // current switch states are actually in the status information response, so subscribe to that in order to update switch state
-  void set_test_switch(PaceBmsNumberImplementation* test_number) { this->test_number_ = test_number; request_test_callback_ = true; }
+  void set_test_number(PaceBmsNumberImplementation* test_number) { this->test_number_ = test_number; request_test_callback_ = true; }
 
   void setup() override;
   float get_setup_priority() const override;
