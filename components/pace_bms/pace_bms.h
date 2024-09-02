@@ -44,7 +44,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)> callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
   void register_charge_over_current_configuration_callback(std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)> callback) { charge_over_current_configuration_callbacks_.push_back(std::move(callback)); }
   void register_discharge_over_current1_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)> callback) { discharge_over_current1_configuration_callbacks_.push_back(std::move(callback)); }
-  void registerdischarge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_discharge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
   void register_short_circuit_protection_configuration_callback(std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)> callback) { short_circuit_protection_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware

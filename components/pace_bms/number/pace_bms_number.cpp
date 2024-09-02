@@ -307,7 +307,7 @@ void PaceBmsNumber::setup() {
 	}
 
 	if (this->request_short_circuit_protection_configuration_callback_ == true) {
-		this->parent_->register_short_circuit_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::short_circuit_protection_configuration_callback, this, std::placeholders::_1));
+		this->parent_->register_short_circuit_protection_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::short_circuit_protection_configuration_callback, this, std::placeholders::_1));
 	}
 	if (this->short_circuit_protection_delay_number_ != nullptr) {
 		this->short_circuit_protection_delay_number_->add_on_control_callback([this](float value) {
