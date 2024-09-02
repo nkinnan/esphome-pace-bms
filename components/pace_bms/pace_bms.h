@@ -1,13 +1,13 @@
 #pragma once
 
 #include <vector>
+#include <functional>
+#include <queue>
 
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
 #include "pace_bms_v25.h"
-#include <functional>
-#include <queue>
 
 namespace esphome {
 namespace pace_bms {
@@ -76,10 +76,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> cell_over_voltage_configuration_callbacks_;
 
   // along with loop() this is the "engine" of BMS communications
-  // send_next_request_frame will pop a command_item from the queue and dispatch a frame to the BMS
-  // process_response_frame_ will call next_response_handler_ (which was saved from the command_item) once a response arrives
-  // see: "each item points to:"
-  // see: "when the bus is clear:"
+  // send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
+  // process_response_frame_ will call next_response_handler_ (which was saved from the command_item in send_next_request_frame_) once a response arrives
   PaceBmsV25* pace_bms_v25_;
   static const uint8_t max_data_len_ = 200;
   uint8_t raw_data_[max_data_len_];
@@ -91,9 +89,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
   // each item points to:
-//     a description of what is happening such as "Read Analog Information" for logging
-//     a function pointer that will generate the request frame (to avoid holding the memory prior to it being required)
-//     a function pointer that will process the response frame and dispatch the results to any child sensors registered via the callback vectors
+  //     a description of what is happening such as "Read Analog Information" for logging purposes
+  //     a function pointer that will generate the request frame (to avoid holding the memory prior to it being required)
+  //     a function pointer that will process the response frame and dispatch the results to any child sensors registered via the callback vectors
   struct command_item
   {
 	  std::string description_;
@@ -107,6 +105,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   //     last_request_description is also saved for logging purposes as:
   //     once this sequence starts, the command_item is thrown away - it's all bytes and pointers from this point
   //         see section: "along with loop() this is the "engine" of BMS communications" for how this works
+  // commands generated as a result of user interaction are pushed to the front of the queue for immediate dispatch
+  // queue is otherwise filled each update() with only the commands necessary to refresh child components that have been declared in the yaml config
   std::deque<command_item*> command_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
