@@ -19,7 +19,7 @@ void PaceBmsNumber::setup() {
 			  ESP_LOGE(TAG, "cell_over_voltage_alarm cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
               return;
 		  }
-		  ESP_LOGE(TAG, "Setting cell_over_voltage_alarm user selected value %f", value);
+		  ESP_LOGD(TAG, "Setting cell_over_voltage_alarm user selected value %f", value);
 		  PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
 		  new_config.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 		  this->parent_->set_cell_over_voltage_configuration(new_config);
