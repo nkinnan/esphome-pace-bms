@@ -2026,7 +2026,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25);
-	PaceBmsV25::DishargeOverCurrent1Configuration dischargeSlowOverCurrentConfig;
+	PaceBmsV25::DischargeOverCurrent1Configuration dischargeSlowOverCurrentConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
@@ -2146,7 +2146,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25);
-	PaceBmsV25::DishargeOverCurrent2Configuration dischargeFastOverCurrentConfig;
+	PaceBmsV25::DischargeOverCurrent2Configuration dischargeFastOverCurrentConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(

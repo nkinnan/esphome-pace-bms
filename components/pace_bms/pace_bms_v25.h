@@ -846,15 +846,15 @@ public:
 	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationRequestV25[];
 	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationResponseV25[];
 
-	struct DishargeOverCurrent1Configuration
+	struct DischargeOverCurrent1Configuration
 	{
 		uint16_t AlarmAmperage;
 		uint16_t ProtectionAmperage;
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent1Configuration& config);
-	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent1Configuration& config, std::vector<uint8_t>& request);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DischargeOverCurrent1Configuration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent1Configuration& config, std::vector<uint8_t>& request);
 
 	// ==== Dicharge Over Current 2 Configuration
 	// 1 Discharge OC 2 Protect: 150 - stored directly in amps - valid range reported by PBmsTools as 5-300 in steps of 5, but since this is an 8 bit store location, the actual max is 255????????
@@ -871,14 +871,14 @@ public:
 	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationRequestV25[];
 	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationResponseV25[];
 
-	struct DishargeOverCurrent2Configuration
+	struct DischargeOverCurrent2Configuration
 	{
 		uint8_t ProtectionAmperage;
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent2Configuration& config);
-	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent2Configuration& config, std::vector<uint8_t>& request);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DischargeOverCurrent2Configuration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent2Configuration& config, std::vector<uint8_t>& request);
 
 	// ==== Short Circuit Protection Configuration
 	// 1 Delay Time (us): 300 - stored in 25 microsecond steps, 300 is 12 - valid range reported by PBmsTools as as 100-500 in steps of 50

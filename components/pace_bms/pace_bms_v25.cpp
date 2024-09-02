@@ -1879,7 +1879,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 5000)
+	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
 		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -1989,7 +1989,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 5000)
+	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
 		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -2099,7 +2099,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 5000)
+	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
 		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -2171,19 +2171,19 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
-	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 150)
+	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 220)
 	{
 		const char* message = "AlarmAmperage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionAmperage < 1 || config.ProtectionAmperage > 150)
+	if (config.ProtectionAmperage < 1 || config.ProtectionAmperage > 220)
 	{
 		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 10000)
+	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 25000)
 	{
 		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -2228,7 +2228,7 @@ const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResp
 const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
 const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent1Configuration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DischargeOverCurrent1Configuration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2254,22 +2254,22 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent1Configuration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent1Configuration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
-	if (config.AlarmAmperage < 1.0f || config.AlarmAmperage > 150.0f)
+	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 220)
 	{
 		const char* message = "AlarmAmperage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionAmperage < 1.0f || config.ProtectionAmperage > 150.0f)
+	if (config.ProtectionAmperage < 1 || config.ProtectionAmperage > 220)
 	{
 		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 10000)
+	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 25000)
 	{
 		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -2311,7 +2311,7 @@ const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResp
 const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
 const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent2Configuration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DischargeOverCurrent2Configuration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2338,10 +2338,10 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent2Configuration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent2Configuration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
-	if (config.ProtectionAmperage < 5.0f || config.ProtectionAmperage > 300.0f)
+	if (config.ProtectionAmperage < 5 || config.ProtectionAmperage > 255)
 	{
 		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);

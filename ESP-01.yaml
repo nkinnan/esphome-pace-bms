@@ -300,3 +300,43 @@ number:
    cell_over_voltage_protection_delay:
      name: "Cell Over Voltage Protection Delay" 
      mode: BOX
+
+   pack_over_voltage_alarm:
+     name: "Pack Over Voltage Alarm" 
+     mode: BOX
+   pack_over_voltage_protection:
+     name: "Pack Over Voltage Protection" 
+     mode: BOX
+   pack_over_voltage_protection_release:
+     name: "Pack Over Voltage Protection Release" 
+     mode: BOX
+   pack_over_voltage_protection_delay:
+     name: "Pack Over Voltage Protection Delay" 
+     mode: BOX
+
+   cell_under_voltage_alarm:
+     name: "Cell Under Voltage Alarm" 
+     mode: BOX
+   cell_under_voltage_protection:
+     name: "Cell Under Voltage Protection" 
+     mode: BOX
+   cell_under_voltage_protection_release:
+     name: "Cell Under Voltage Protection Release" 
+     mode: BOX
+   cell_under_voltage_protection_delay:
+     name: "Cell Under Voltage Protection Delay" 
+     mode: BOX
+
+   pack_under_voltage_alarm:
+     name: "Pack Under Voltage Alarm" 
+     mode: BOX
+   pack_under_voltage_protection:
+     name: "Pack Under Voltage Protection" 
+     mode: BOX
+   pack_under_voltage_protection_release:
+     name: "Pack Under Voltage Protection Release" 
+     mode: BOX
+   pack_under_voltage_protection_delay:
+     name: "Pack Under Voltage Protection Delay" 
+     mode: BOX
+

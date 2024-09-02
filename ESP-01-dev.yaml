@@ -183,57 +183,39 @@ number:
  - platform: pace_bms
    pace_bms_id: pace_bms_at_address_1
 
-   cell_over_voltage_alarm:
-     name: "Cell Over Voltage Alarm" 
+   charge_over_current_alarm:
+     name: "Charge Over Current Alarm" 
      mode: BOX
-   cell_over_voltage_protection:
-     name: "Cell Over Voltage Protection" 
+   charge_over_current_protection:
+     name: "Charge Over Current Protection" 
      mode: BOX
-   cell_over_voltage_protection_release:
-     name: "Cell Over Voltage Protection Release" 
-     mode: BOX
-   cell_over_voltage_protection_delay:
-     name: "Cell Over Voltage Protection Delay" 
+   charge_over_current_protection_delay:
+     name: "Charge Over Current Protection Delay" 
      mode: BOX
 
-   pack_over_voltage_alarm:
-     name: "Pack Over Voltage Alarm" 
+   discharge_over_current1_alarm:
+     name: "Discharge Over Current 1 Alarm" 
      mode: BOX
-   pack_over_voltage_protection:
-     name: "Pack Over Voltage Protection" 
+   discharge_over_current1_protection:
+     name: "Discharge Over Current 1 Protection" 
      mode: BOX
-   pack_over_voltage_protection_release:
-     name: "Pack Over Voltage Protection Release" 
-     mode: BOX
-   pack_over_voltage_protection_delay:
-     name: "Pack Over Voltage Protection Delay" 
+   discharge_over_current1_protection_delay:
+     name: "Discharge Over Current 1 Protection Delay" 
      mode: BOX
 
-   cell_under_voltage_alarm:
-     name: "Cell Under Voltage Alarm" 
+   discharge_over_current2_protection:
+     name: "Discharge Over Current 2 Protection" 
      mode: BOX
-   cell_under_voltage_protection:
-     name: "Cell Under Voltage Protection" 
-     mode: BOX
-   cell_under_voltage_protection_release:
-     name: "Cell Under Voltage Protection Release" 
-     mode: BOX
-   cell_under_voltage_protection_delay:
-     name: "Cell Under Voltage Protection Delay" 
+   discharge_over_current2_protection_delay:
+     name: "Discharge Over Current 2 Protection Delay" 
      mode: BOX
 
-   pack_under_voltage_alarm:
-     name: "Pack Under Voltage Alarm" 
+   short_circuit_protection_delay:
+     name: "Short Circuit Protection Delay" 
      mode: BOX
-   pack_under_voltage_protection:
-     name: "Pack Under Voltage Protection" 
-     mode: BOX
-   pack_under_voltage_protection_release:
-     name: "Pack Under Voltage Protection Release" 
-     mode: BOX
-   pack_under_voltage_protection_delay:
-     name: "Pack Under Voltage Protection Delay" 
-     mode: BOX
+
+
+
 
 
 
