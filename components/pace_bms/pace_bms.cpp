@@ -221,9 +221,15 @@ void PaceBms::send_next_request_frame_() {
     PaceBms::command_item* command = command_queue_.front();
     command_queue_.pop();
 
+    // process_response_frame_ will call this on the next frame received
+    this->next_response_handler_ = command->process_response_frame_;
+    // saved for logging
+    this->last_request_description = command->description_;
+
     std::vector<uint8_t> request;
     command->create_request_frame_(request);
 
+    ESP_LOGV(TAG, "Sending %s request", command->description_.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
     {
         std::string str(request.data(), request.data() + request.size());
@@ -231,16 +237,10 @@ void PaceBms::send_next_request_frame_() {
     }
 #endif
 
-    // process_response_frame_ will call this on the next frame received
-    this->next_response_handler_ = command->process_response_frame_;
-    // saved for logging
-    this->last_request_description = command->description_;
-
-    ESP_LOGV(TAG, "Sending %s request", command->description_.c_str());
     if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(true);
     this->write_array(request.data(), request.size());
-    // if flow control is required (rs485 does read+write on the same differential pair) then I don't see any other option than to block on flush(), even at this abysmal data rate
+    // if flow control is required (rs485 does read+write on the same differential pair) then I don't see any other option than to block on flush()
     // if using rs232, a flow control pin should not be assigned in yaml in order to avoid this block
     if (this->flow_control_pin_ != nullptr) {
         this->flush();

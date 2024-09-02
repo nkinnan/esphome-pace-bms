@@ -14,7 +14,7 @@ void PaceBmsNumber::setup() {
 	this->parent_->register_cell_over_voltage_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::cell_over_voltage_configuration_callback, this, std::placeholders::_1));
   }
   if (this->cell_over_voltage_alarm_number_ != nullptr) {
-	  this->cell_over_voltage_alarm_number_->add_on_state_callback([this](float value) {
+	  this->cell_over_voltage_alarm_number_->add_on_control_callback([this](float value) {
 		  if (!cell_over_voltage_configuration_seen_) {
 			  ESP_LOGE(TAG, "cell_over_voltage_alarm cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
               return;
@@ -26,7 +26,7 @@ void PaceBmsNumber::setup() {
 	  });
   }
   if (this->cell_over_voltage_protection_number_ != nullptr) {
-	  this->cell_over_voltage_protection_number_->add_on_state_callback([this](float value) {
+	  this->cell_over_voltage_protection_number_->add_on_control_callback([this](float value) {
 		  if (!cell_over_voltage_configuration_seen_) {
 			  ESP_LOGE(TAG, "Cell cell_over_voltage_protection cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
               return;
@@ -38,7 +38,7 @@ void PaceBmsNumber::setup() {
 	  });
   }
   if (this->cell_over_voltage_protection_release_number_ != nullptr) {
-	  this->cell_over_voltage_protection_release_number_->add_on_state_callback([this](float value) {
+	  this->cell_over_voltage_protection_release_number_->add_on_control_callback([this](float value) {
 		  if (!cell_over_voltage_configuration_seen_) {
 			  ESP_LOGE(TAG, "cell_over_voltage_protection_release cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
               return;
@@ -50,7 +50,7 @@ void PaceBmsNumber::setup() {
 	  });
   }
   if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
-	  this->cell_over_voltage_protection_delay_number_->add_on_state_callback([this](float value) {
+	  this->cell_over_voltage_protection_delay_number_->add_on_control_callback([this](float value) {
 		  if (!cell_over_voltage_configuration_seen_) {
 			  ESP_LOGE(TAG, "cell_over_voltage_protection_delay cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
               return;

@@ -10,8 +10,12 @@ class PaceBmsNumberImplementation : public Component, public number::Number {
  public:
   float get_setup_priority() const override;
 
- protected:
+  void add_on_control_callback(std::function<void(bool)>&& callback);
+
+protected:
   void control(float value) override;
+
+  CallbackManager<void(float)> control_callbacks_{};
 };
 
 }  // namespace pace_bms
