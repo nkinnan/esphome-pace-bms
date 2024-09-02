@@ -101,7 +101,7 @@ void PaceBms::update() {
         command_item* item = new command_item;
         item->description_ = std::string("read cell over voltage configuration");
         item->create_request_frame_ = [this](std::vector<uint8_t> request) -> void { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
-        item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_read_protocols_response, this, std::placeholders::_1);
+        item->process_response_frame_ = [this](std::vector<uint8_t> response) -> bool { this->handle_read_configuration_response(response); };
         command_queue_.push(item);
     }
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
@@ -382,6 +382,22 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for write protocols request");
         return;
+    }
+}
+
+void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing %s response", this->last_request_description.c_str());
+
+    PaceBmsV25::CellOverVoltageConfiguration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, &config);
+    if (result == false) {
+        ESP_LOGW(TAG, "BMS response did not indicate success for %s request", this->last_request_description.c_str());
+        return;
+    }
+
+    // dispatch to any child sensor components that registered for a callback with us
+    for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
+        cell_over_voltage_configuration_callbacks_[i](config);
     }
 }
 

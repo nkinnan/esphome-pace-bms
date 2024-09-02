@@ -64,6 +64,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_write_shutdown_command_response(std::vector<uint8_t>& response);
   void handle_read_protocols_response(std::vector<uint8_t>& response);
   void handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
+  void handle_read_cell_over_voltage_configuration_response(std::vector<uint8_t>& response);
   void handle_write_configuration_response(std::vector<uint8_t>& response);
 
   // child sensor requested callbacks
