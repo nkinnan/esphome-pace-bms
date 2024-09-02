@@ -34,7 +34,6 @@ void PaceBmsNumber::setup() {
 		  ESP_LOGD(TAG, "Setting cell_over_voltage_protection user selected value %f", value);
 		  PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
 		  new_config.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
-		  ESP_LOGE(TAG, "calculated value %i", new_config.ProtectionMillivolts);
 		  this->parent_->set_cell_over_voltage_configuration(new_config);
 	  });
   }

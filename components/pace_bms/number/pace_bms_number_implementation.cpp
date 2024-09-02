@@ -11,7 +11,7 @@ void PaceBmsNumberImplementation::add_on_control_callback(std::function<void(flo
 }
 
 void PaceBmsNumberImplementation::control(float number) {
-	ESP_LOGE(TAG, "control: new value %f", number);
+	ESP_LOGD(TAG, "control: new value %f", number);
 
 	// callbacks
 	this->control_callbacks_.call(number);
