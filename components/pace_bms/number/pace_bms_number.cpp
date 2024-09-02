@@ -205,7 +205,125 @@ void PaceBmsNumber::setup() {
 			this->parent_->set_pack_under_voltage_configuration(this->pack_under_voltage_configuration_);
 			});
 	}
+
+	if (this->request_charge_over_current_configuration_callback_ == true) {
+		this->parent_->register_charge_over_current_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::charge_over_current_configuration_callback, this, std::placeholders::_1));
+	}
+	if (this->charge_over_current_alarm_number_ != nullptr) {
+		this->charge_over_current_alarm_number_->add_on_control_callback([this](float value) {
+			if (!charge_over_current_configuration_seen_) {
+				ESP_LOGE(TAG, "charge_over_current_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting charge_over_current_alarm user selected value %f", value);
+			this->charge_over_current_configuration_.AlarmAmperage = (uint16_t)std::roundl(value);
+			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			});
+	}
+	if (this->charge_over_current_protection_number_ != nullptr) {
+		this->charge_over_current_protection_number_->add_on_control_callback([this](float value) {
+			if (!charge_over_current_configuration_seen_) {
+				ESP_LOGE(TAG, "charge_over_current_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting charge_over_current_protection user selected value %f", value);
+			this->charge_over_current_configuration_.ProtectionAmperage = (uint16_t)std::roundl(value);
+			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			});
+	}
+	if (this->charge_over_current_protection_delay_number_ != nullptr) {
+		this->charge_over_current_protection_delay_number_->add_on_control_callback([this](float value) {
+			if (!charge_over_current_configuration_seen_) {
+				ESP_LOGE(TAG, "charge_over_current_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting charge_over_current_protection_delay user selected value %f", value);
+			this->charge_over_current_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			});
+	}
+
+	if (this->request_discharge_over_current1_configuration_callback_ == true) {
+		this->parent_->register_discharge_over_current1_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::discharge_over_current1_configuration_callback, this, std::placeholders::_1));
+	}
+	if (this->discharge_over_current1_alarm_number_ != nullptr) {
+		this->discharge_over_current1_alarm_number_->add_on_control_callback([this](float value) {
+			if (!discharge_over_current1_configuration_seen_) {
+				ESP_LOGE(TAG, "discharge_over_current1_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting discharge_over_current1_alarm user selected value %f", value);
+			this->discharge_over_current1_configuration_.AlarmAmperage = (uint16_t)std::roundl(value);
+			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			});
+	}
+	if (this->discharge_over_current1_protection_number_ != nullptr) {
+		this->discharge_over_current1_protection_number_->add_on_control_callback([this](float value) {
+			if (!discharge_over_current1_configuration_seen_) {
+				ESP_LOGE(TAG, "discharge_over_current1_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting discharge_over_current1_protection user selected value %f", value);
+			this->discharge_over_current1_configuration_.ProtectionAmperage = (uint16_t)std::roundl(value);
+			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			});
+	}
+	if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
+		this->discharge_over_current1_protection_delay_number_->add_on_control_callback([this](float value) {
+			if (!discharge_over_current1_configuration_seen_) {
+				ESP_LOGE(TAG, "discharge_over_current1_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting discharge_over_current1_protection_delay user selected value %f", value);
+			this->discharge_over_current1_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			});
+	}
+
+	if (this->request_discharge_over_current2_configuration_callback_ == true) {
+		this->parent_->register_discharge_over_current2_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::discharge_over_current2_configuration_callback, this, std::placeholders::_1));
+	}
+	if (this->discharge_over_current2_protection_number_ != nullptr) {
+		this->discharge_over_current2_protection_number_->add_on_control_callback([this](float value) {
+			if (!discharge_over_current2_configuration_seen_) {
+				ESP_LOGE(TAG, "discharge_over_current2_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting discharge_over_current2_protection user selected value %f", value);
+			this->discharge_over_current2_configuration_.ProtectionAmperage = (uint16_t)std::roundl(value);
+			this->parent_->set_discharge_over_current2_configuration(this->discharge_over_current2_configuration_);
+			});
+	}
+	if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
+		this->discharge_over_current2_protection_delay_number_->add_on_control_callback([this](float value) {
+			if (!discharge_over_current2_configuration_seen_) {
+				ESP_LOGE(TAG, "discharge_over_current2_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting discharge_over_current2_protection_delay user selected value %f", value);
+			this->discharge_over_current2_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->parent_->set_discharge_over_current2_configuration(this->discharge_over_current2_configuration_);
+			});
+	}
+
+	if (this->request_short_circuit_configuration_callback_ == true) {
+		this->parent_->register_short_circuit_configuration_callback(std::bind(&esphome::pace_bms::PaceBmsNumber::short_circuit_configuration_callback, this, std::placeholders::_1));
+	}
+	if (this->short_circuit_protection_delay_number_ != nullptr) {
+		this->short_circuit_protection_delay_number_->add_on_control_callback([this](float value) {
+			if (!short_circuit_configuration_seen_) {
+				ESP_LOGE(TAG, "short_circuit_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting short_circuit_protection_delay user selected value %f", value);
+			this->short_circuit_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000000.0f);
+			this->parent_->set_short_circuit_configuration(this->short_circuit_configuration_);
+			});
+	}
 }
+
+
+
 
 float PaceBmsNumber::get_setup_priority() const { return setup_priority::DATA; }
 
@@ -335,3 +453,17 @@ void PaceBmsNumber::pack_under_voltage_configuration_callback(PaceBmsV25::PackUn
 
 }  // namespace pace_bms
 }  // namespace esphome
+
+
+
+
+
+
+
+
+
+
+
+
+
+

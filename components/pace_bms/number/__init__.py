@@ -8,6 +8,7 @@ from esphome.const import (
     UNIT_VOLT,
     DEVICE_CLASS_DURATION,
     UNIT_SECOND,
+    DEVICE_CLASS_CURRENT,
 )
 
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
@@ -38,6 +39,25 @@ CONF_PACK_UNDER_VOLTAGE_ALARM                       = "pack_under_voltage_alarm"
 CONF_PACK_UNDER_VOLTAGE_PROTECTION                  = "pack_under_voltage_protection"
 CONF_PACK_UNDER_VOLTAGE_PROTECTION_RELEASE          = "pack_under_voltage_protection_release"
 CONF_PACK_UNDER_VOLTAGE_PROTECTION_DELAY            = "pack_under_voltage_protection_delay"
+
+
+CONF_CHARGE_OVER_CURRENT_ALARM                      = "charge_over_current_alarm"
+CONF_CHARGE_OVER_CURRENT_PROTECTION                 = "charge_over_current_protection"
+CONF_CHARGE_OVER_CURRENT_PROTECTION_DELAY           = "charge_over_current_protection_delay"
+
+CONF_DISCHARGE_OVER_CURRENT1_ALARM                  = "discharge_over_current1_alarm"
+CONF_DISCHARGE_OVER_CURRENT1_PROTECTION             = "discharge_over_current1_protection"
+CONF_DISCHARGE_OVER_CURRENT1_PROTECTION_DELAY       = "discharge_over_current1_protection_delay"
+
+CONF_DISCHARGE_OVER_CURRENT2_PROTECTION             = "discharge_over_current2_protection"
+CONF_DISCHARGE_OVER_CURRENT2_PROTECTION_DELAY       = "discharge_over_current2_protection_delay"
+
+CONF_SHORT_CIRCUIT_PROTECTION_DELAY                 = "short_circuit_protection_delay"
+
+
+
+
+
 
 
 CONFIG_SCHEMA = cv.Schema(
@@ -144,8 +164,73 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_SECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
+
+        cv.Optional(CONF_CHARGE_OVER_CURRENT_ALARM): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_CURRENT,
+            unit_of_measurement=UNIT_AMPERE,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+        cv.Optional(CONF_CHARGE_OVER_CURRENT_PROTECTION): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_CURRENT,
+            unit_of_measurement=UNIT_AMPERE,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+        cv.Optional(CONF_CHARGE_OVER_CURRENT_PROTECTION_DELAY): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_DURATION,
+            unit_of_measurement=UNIT_SECOND,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+
+        cv.Optional(CONF_DISCHARGE_OVER_CURRENT1_ALARM): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_CURRENT,
+            unit_of_measurement=UNIT_AMPERE,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+        cv.Optional(CONF_DISCHARGE_OVER_CURRENT1_PROTECTION): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_CURRENT,
+            unit_of_measurement=UNIT_AMPERE,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+        cv.Optional(CONF_DISCHARGE_OVER_CURRENT1_PROTECTION_DELAY): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_DURATION,
+            unit_of_measurement=UNIT_SECOND,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+
+        cv.Optional(CONF_DISCHARGE_OVER_CURRENT2_PROTECTION): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_CURRENT,
+            unit_of_measurement=UNIT_AMPERE,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+        cv.Optional(CONF_DISCHARGE_OVER_CURRENT2_PROTECTION_DELAY): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_DURATION,
+            unit_of_measurement=UNIT_SECOND,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+
+        cv.Optional(CONF_SHORT_CIRCUIT_PROTECTION_DELAY): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_DURATION,
+            unit_of_measurement=UNIT_SECOND,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ),
+
     }
 )
+
+
+
+
+
+
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -270,6 +355,69 @@ async def to_code(config):
             step=0.5)
         cg.add(var.set_pack_under_voltage_protection_delay_number(num))
 
+    if charge_over_current_alarm_config := config.get(CONF_CHARGE_OVER_CURRENT_ALARM):
+        num = await number.new_number(
+            charge_over_current_alarm_config, 
+            min_value=1, 
+            max_value=220, 
+            step=1)
+        cg.add(var.set_charge_over_current_alarm_number(num))
+    if charge_over_current_protection_config := config.get(CONF_CHARGE_OVER_CURRENT_PROTECTION):
+        num = await number.new_number(
+            charge_over_current_protection_config, 
+            min_value=1, 
+            max_value=220, 
+            step=1)
+        cg.add(var.set_charge_over_current_protection_number(num))
+    if charge_over_current_protection_delay_config := config.get(CONF_CHARGE_OVER_CURRENT_PROTECTION_DELAY):
+        num = await number.new_number(
+            charge_over_current_protection_delay_config, 
+            min_value=0.5, 
+            max_value=25, 
+            step=0.5)
+        cg.add(var.set_charge_over_current_protection_delay_number(num))
 
+    if discharge_over_current1_alarm_config := config.get(CONF_DISCHARGE_OVER_CURRENT1_ALARM):
+        num = await number.new_number(
+            discharge_over_current1_alarm_config, 
+            min_value=1, 
+            max_value=220, 
+            step=1)
+        cg.add(var.set_discharge_over_current1_alarm_number(num))
+    if discharge_over_current1_protection_config := config.get(CONF_DISCHARGE_OVER_CURRENT1_PROTECTION):
+        num = await number.new_number(
+            discharge_over_current1_protection_config, 
+            min_value=1, 
+            max_value=220, 
+            step=1)
+        cg.add(var.set_discharge_over_current1_protection_number(num))
+    if discharge_over_current1_protection_delay_config := config.get(CONF_DISCHARGE_OVER_CURRENT1_PROTECTION_DELAY):
+        num = await number.new_number(
+            discharge_over_current1_protection_delay_config, 
+            min_value=0.5, 
+            max_value=25, 
+            step=0.5)
+        cg.add(var.set_discharge_over_current1_protection_delay_number(num))
 
+    if discharge_over_current2_protection_config := config.get(CONF_DISCHARGE_OVER_CURRENT2_PROTECTION):
+        num = await number.new_number(
+            discharge_over_current2_protection_config, 
+            min_value=5, 
+            max_value=255, 
+            step=5)
+        cg.add(var.set_discharge_over_current2_protection_number(num))
+    if discharge_over_current2_protection_delay_config := config.get(CONF_DISCHARGE_OVER_CURRENT2_PROTECTION_DELAY):
+        num = await number.new_number(
+            discharge_over_current2_protection_delay_config, 
+            min_value=0.1, 
+            max_value=2, 
+            step=0.1)
+        cg.add(var.set_discharge_over_current2_protection_delay_number(num))
 
+    if short_circuit_protection_delay_config := config.get(CONF_SHORT_CIRCUIT_PROTECTION_DELAY):
+        num = await number.new_number(
+            short_circuit_protection_delay_config, 
+            min_value=0.0001, 
+            max_value=0.0005, 
+            step=0.00005)
+        cg.add(var.set_short_circuit_protection_delay_number(num))

@@ -33,6 +33,19 @@ class PaceBmsNumber : public Component {
   void set_pack_under_voltage_protection_release_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_protection_release_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
   void set_pack_under_voltage_protection_delay_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_protection_delay_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
 
+  void set_charge_over_current_alarm_number(PaceBmsNumberImplementation* number) { this->charge_over_current_alarm_number_ = number; request_charge_over_current_callback_ = true; }
+  void set_charge_over_current_protection_number(PaceBmsNumberImplementation* number) { this->charge_over_current_protection_number_ = number; request_charge_over_current_callback_ = true; }
+  void set_charge_over_current_protection_delay_number(PaceBmsNumberImplementation* number) { this->charge_over_current_protection_delay_number_ = number; request_charge_over_current_callback_ = true; }
+
+  void set_discharge_over_current1_alarm_number(PaceBmsNumberImplementation* number) { this->discharge_over_current1_alarm_number_ = number; request_discharge_over_current1_callback_ = true; }
+  void set_discharge_over_current1_protection_number(PaceBmsNumberImplementation* number) { this->discharge_over_current1_protection_number_ = number; request_discharge_over_current1_callback_ = true; }
+  void set_discharge_over_current1_protection_delay_number(PaceBmsNumberImplementation* number) { this->discharge_over_current1_protection_delay_number_ = number; request_discharge_over_current1_callback_ = true; }
+
+  void set_discharge_over_current2_protection_number(PaceBmsNumberImplementation* number) { this->discharge_over_current2_protection_number_ = number; request_discharge_over_current2_callback_ = true; }
+  void set_discharge_over_current2_protection_delay_number(PaceBmsNumberImplementation* number) { this->discharge_over_current2_protection_delay_number_ = number; request_discharge_over_current2_callback_ = true; }
+
+  void set_short_circuit_protection_delay_number(PaceBmsNumberImplementation* number) { this->short_circuit_protection_delay_number_ = number; request_short_circuit_callback_ = true; }
+
   void setup() override;
   float get_setup_priority() const override;
   void dump_config() override;
@@ -75,6 +88,35 @@ class PaceBmsNumber : public Component {
   pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_release_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_delay_number_{ nullptr };
+
+  void charge_over_current_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
+  bool request_charge_over_current_configuration_callback_{ false };
+  PaceBmsV25::ChargeOverCurrentConfiguration charge_over_current_configuration_;
+  bool charge_over_current_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* charge_over_current_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* charge_over_current_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* charge_over_current_protection_delay_number_{ nullptr };
+
+  void discharge_over_current1_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
+  bool request_discharge_over_current1_configuration_callback_{ false };
+  PaceBmsV25::DishargeOverCurrent1Configuration discharge_over_current1_configuration_;
+  bool discharge_over_current1_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* discharge_over_current1_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* discharge_over_current1_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* discharge_over_current1_protection_delay_number_{ nullptr };
+
+  void discharge_over_current2_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
+  bool request_discharge_over_current2_configuration_callback_{ false };
+  PaceBmsV25::DishargeOverCurrent2Configuration discharge_over_current2_configuration_;
+  bool discharge_over_current2_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* discharge_over_current2_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* discharge_over_current2_protection_delay_number_{ nullptr };
+
+  void short_circuit_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
+  bool request_short_circuit_configuration_callback_{ false };
+  PaceBmsV25::ShortCircuitProtectionConfiguration short_circuit_configuration_;
+  bool short_circuit_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* short_circuit_protection_delay_number_{ nullptr };
 };
 
 }  // namespace pace_bms

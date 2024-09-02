@@ -806,9 +806,9 @@ public:
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const PackUnderVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Charge Over Current Configuration
-	// 1 Charge OC Alarm (A): 104 - stored directly in amps - valid range reported by PBmsTools as 1-150
-	// 2 Charge OC Protect (A): 110 - stored directly in amps - valid range reported by PBmsTools as 1-150
-	// 3 Charge OCP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 500 to 10000 in steps of 500
+	// 1 Charge OC Alarm (A): 104 - stored directly in amps - valid range reported by PBmsTools as 1-220
+	// 2 Charge OC Protect (A): 110 - stored directly in amps - valid range reported by PBmsTools as 1-220
+	// 3 Charge OCP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 500 to 25000 in steps of 500
 	// read:  ~250046D90000FD92.
 	// resp:  ~25004600400C010068006E0AFB1D.
 	//                     ??1111222233
@@ -831,9 +831,9 @@ public:
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Discharge Over Current 1 Configuration
-	// 1 Discharge OC Alarm (A): 105 - stored as negative two's complement in amps***, -105 is FF97 - valid range reported by PBmsTools as 1-150
-	// 2 Discharge OC 1 Protect (A): 110 - stored as negative two's complement in amps***, -110 is FF92 - valid range reported by PBmsTools as 1-150
-	// 3 Discharge OC 1 Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 500 to 10000 in steps of 500
+	// 1 Discharge OC Alarm (A): 105 - stored as negative two's complement in amps***, -105 is FF97 - valid range reported by PBmsTools as 1-220
+	// 2 Discharge OC 1 Protect (A): 110 - stored as negative two's complement in amps***, -110 is FF92 - valid range reported by PBmsTools as 1-220
+	// 3 Discharge OC 1 Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 500 to 25000 in steps of 500
 	// ********* important *********: this is returned as the negative two's complement, but is STORED (written back) as the normal positive value!
 	// read:  ~250046DB0000FD89.
 	// resp:  ~25004600400C01FF97FF920AFAD3.
@@ -858,7 +858,7 @@ public:
 
 	// ==== Dicharge Over Current 2 Configuration
 	// 1 Discharge OC 2 Protect: 150 - stored directly in amps - valid range reported by PBmsTools as 5-300 in steps of 5, but since this is an 8 bit store location, the actual max is 255????????
-	// 2 Discharge OC 2 Delay Time (us): 100 - stored in 25ms steps, so 100 is 4 (4x25=100), 400 is 16 (16x25=400) - valid range reported by PBmsTools as 100-2000 in steps of 100
+	// 2 Discharge OC 2 Delay Time (ms): 100 - stored in 25ms steps, so 100 is 4 (4x25=100), 400 is 16 (16x25=400) - valid range reported by PBmsTools as 100-2000 in steps of 100
 	// x = apparently, garbage written by the firmware - it's not included in the PBmsTools write
 	// read:  ~250046E30000FD97.
 	// resp:  ~25004600400C009604009604FB32.
