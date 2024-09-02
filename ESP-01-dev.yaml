@@ -182,6 +182,7 @@ number:
 
    cell_over_voltage_alarm:
      name: "Cell Over Voltage Alarm" 
+     mode: BOX
    cell_over_voltage_protection:
      name: "Cell Over Voltage Protection" 
    cell_over_voltage_protection_release:

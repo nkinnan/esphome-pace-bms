@@ -40,7 +40,6 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_VOLT,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
-            mode=BOX,
         ),
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION): number.number_schema(
             PaceBmsNumberImplementation,
@@ -62,7 +61,7 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_SECOND,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
-        ),
+        )
     }
 )
 
