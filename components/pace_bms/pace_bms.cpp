@@ -100,7 +100,7 @@ void PaceBms::update() {
     if (this->cell_over_voltage_configuration_callbacks_.size() > 0) {
         command_item* item = new command_item;
         item->description_ = std::string("read cell over voltage configuration");
-        item->create_request_frame_ = [=, this](std::vector<uint8_t> request) void -> { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
+        item->create_request_frame_ = [=, this](std::vector<uint8_t> request) -> void { this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
         item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_read_protocols_response, this, std::placeholders::_1);
         command_queue_.push(item);
     }
