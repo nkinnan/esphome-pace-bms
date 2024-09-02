@@ -316,8 +316,8 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting short_circuit_protection_delay user selected value %f", value);
-			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000.0f);
-			this->parent_->set_short_circuit_configuration(this->short_circuit_protection_configuration_);
+			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000000.0f);
+			this->parent_->set_short_circuit_protection_configuration(this->short_circuit_protection_configuration_);
 			});
 	}
 }
@@ -456,12 +456,12 @@ void PaceBmsNumber::charge_over_current_configuration_callback(PaceBmsV25::Charg
 	this->charge_over_current_configuration_ = configuration;
 	this->charge_over_current_configuration_seen_ = true;
 	if (this->charge_over_current_alarm_number_ != nullptr) {
-		float state = configuration.AlarmMillivolts / 1000.0f;
+		float state = configuration.AlarmAmperage;
 		ESP_LOGV(TAG, "'charge_over_current_alarm': Publishing state due to update from the hardware: %f", state);
 		this->charge_over_current_alarm_number_->publish_state(state);
 	}
 	if (this->charge_over_current_protection_number_ != nullptr) {
-		float state = configuration.ProtectionMillivolts / 1000.0f;
+		float state = configuration.ProtectionAmperage;
 		ESP_LOGV(TAG, "'charge_over_current_protection': Publishing state due to update from the hardware: %f", state);
 		this->charge_over_current_protection_number_->publish_state(state);
 	}
@@ -477,12 +477,12 @@ void PaceBmsNumber::discharge_over_current1_configuration_callback(PaceBmsV25::D
 	this->discharge_over_current1_configuration_ = configuration;
 	this->discharge_over_current1_configuration_seen_ = true;
 	if (this->discharge_over_current1_alarm_number_ != nullptr) {
-		float state = configuration.AlarmMillivolts / 1000.0f;
+		float state = configuration.AlarmAmperage;
 		ESP_LOGV(TAG, "'discharge_over_current1_alarm': Publishing state due to update from the hardware: %f", state);
 		this->discharge_over_current1_alarm_number_->publish_state(state);
 	}
 	if (this->discharge_over_current1_protection_number_ != nullptr) {
-		float state = configuration.ProtectionMillivolts / 1000.0f;
+		float state = configuration.ProtectionAmperage;
 		ESP_LOGV(TAG, "'discharge_over_current1_protection': Publishing state due to update from the hardware: %f", state);
 		this->discharge_over_current1_protection_number_->publish_state(state);
 	}
@@ -498,7 +498,7 @@ void PaceBmsNumber::discharge_over_current2_configuration_callback(PaceBmsV25::D
 	this->discharge_over_current2_configuration_ = configuration;
 	this->discharge_over_current2_configuration_seen_ = true;
 	if (this->discharge_over_current2_protection_number_ != nullptr) {
-		float state = configuration.ProtectionMillivolts / 1000.0f;
+		float state = configuration.ProtectionAmperage;
 		ESP_LOGV(TAG, "'discharge_over_current2_protection': Publishing state due to update from the hardware: %f", state);
 		this->discharge_over_current2_protection_number_->publish_state(state);
 	}
@@ -511,10 +511,10 @@ void PaceBmsNumber::discharge_over_current2_configuration_callback(PaceBmsV25::D
 
 void PaceBmsNumber::short_circuit_protection_configuration_callback(PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
 
-	this->short_circuit_configuration_ = configuration;
-	this->short_circuit_configuration_seen_ = true;
+	this->short_circuit_protection_configuration_ = configuration;
+	this->short_circuit_protection_configuration_seen_ = true;
 	if (this->short_circuit_protection_delay_number_ != nullptr) {
-		float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+		float state = configuration.ProtectionDelayMicroseconds / 1000000.0f;
 		ESP_LOGV(TAG, "'short_circuit_protection_delay': Publishing state due to update from the hardware: %f", state);
 		this->short_circuit_protection_delay_number_->publish_state(state);
 	}
