@@ -136,6 +136,7 @@ void PaceBms::loop() {
     this->last_transmit_ = now;
     this->last_receive_ = now;
     this->raw_data_index_ = 0;
+    return;
   }
 
   // if a request is active but we have passed the response timeout period and no more data is available, abandon the request
