@@ -51,7 +51,7 @@ class PaceBmsNumber : public Component {
 
   void pack_over_voltage_configuration_callback(PaceBmsV25::PackOverVoltageConfiguration& configuration);
   bool request_pack_over_voltage_configuration_callback_{ false };
-  PaceBmsV25::CellOverVoltageConfiguration pack_over_voltage_configuration_;
+  PaceBmsV25::PackOverVoltageConfiguration pack_over_voltage_configuration_;
   bool pack_over_voltage_configuration_seen_{ false };
   pace_bms::PaceBmsNumberImplementation* pack_over_voltage_alarm_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_number_{ nullptr };
@@ -69,7 +69,7 @@ class PaceBmsNumber : public Component {
 
   void pack_under_voltage_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
   bool request_pack_under_voltage_configuration_callback_{ false };
-  PaceBmsV25::CellUnderVoltageConfiguration pack_under_voltage_configuration_;
+  PaceBmsV25::PackUnderVoltageConfiguration pack_under_voltage_configuration_;
   bool pack_under_voltage_configuration_seen_{ false };
   pace_bms::PaceBmsNumberImplementation* pack_under_voltage_alarm_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_number_{ nullptr };
