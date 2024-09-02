@@ -507,7 +507,7 @@ void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response
 void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
     auto iter = std::find(this->write_queue_.begin(), this->write_queue_.end(), 
         [item](const command_item* test) -> bool {
-            return (**test) == (*item);
+            return 0 != ((*test).description_ == (*item).description_);
         });
 
     if (iter != this->write_queue_.end()) {
