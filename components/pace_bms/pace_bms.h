@@ -37,7 +37,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(callback); }
   void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(callback); }
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(callback); }
-  void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(callback); }
+  void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
