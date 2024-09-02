@@ -37,6 +37,7 @@ void very_verbose_log_func(std::string message) {
     ESP_LOGVV(TAG_V25, "%s", message.c_str());
 }
 
+
 void PaceBms::setup() {
   if (this->protocol_version_ != 0x25) {
     this->status_set_error();
@@ -190,6 +191,17 @@ void PaceBms::loop() {
 // preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
 //     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
 float PaceBms::get_setup_priority() const { return setup_priority::LATE; }
+
+void PaceBms::dump_config() {
+    ESP_LOGCONFIG(TAG, "pace_bms:");
+    LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+    ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
+    ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
+    ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
+    ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
+    this->check_uart_settings(9600);
+}
+
 
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
 void PaceBms::send_next_request_frame_() {
@@ -366,6 +378,17 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
     }
 }
 
+void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGV(TAG, "Processing write configuration response");
+
+    bool result = this->pace_bms_v25_->ProcessWriteConfigurationResponse(this->address_, response);
+    if (result == false) {
+        ESP_LOGW(TAG, "BMS response did not indicate success for write configuration request");
+        return;
+    }
+}
+
+
 void PaceBms::set_switch_state(PaceBmsV25::SwitchCommand state) {
   command_item* item = new command_item;
 
@@ -435,14 +458,14 @@ void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
     ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 }
 
-void PaceBms::dump_config() {
-  ESP_LOGCONFIG(TAG, "pace_bms:");
-  LOG_PIN(           "  Flow Control Pin: ", this->flow_control_pin_);
-  ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-  ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
-  ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
-  ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
-  this->check_uart_settings(9600);
+void PaceBms::set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config) {
+    command_item* item = new command_item;
+    item->description_ = std::string("setting cell over voltage configuration");
+    item->create_request_frame_ = std::bind(&PaceBmsV25::CreateWriteConfigurationRequest, this->pace_bms_v25_, this->address_, config, std::placeholders::_1);
+    item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_configuration_response, this, std::placeholders::_1);
+    command_queue_.push(item);
+
+    ESP_LOGV(TAG, "Update commands queued: %i", command_queue_.size());
 }
 
 }  // namespace pace_bms

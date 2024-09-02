@@ -44,6 +44,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state);
   void send_shutdown();
   void set_protocols(PaceBmsV25::Protocols& protocols);
+  void set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config);
 
  protected:
   // config values set in YAML
@@ -52,21 +53,6 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   int protocol_version_{ 0 };
   int request_throttle_{ 0 };
   int response_timeout_{ 0 };
-
-  // along with loop() this is the "engine" of BMS communications
-  // send_next_request_frame will pop a command_item from the queue and dispatch a frame to the BMS
-  // process_response_frame_ will call next_response_handler_ (which was saved from the command_item) once a response arrives
-  // see: "each item points to:"
-  // see: "when the bus is clear:"
-  PaceBmsV25* pace_bms_v25_;
-  static const uint8_t max_data_len_ = 200;
-  uint8_t raw_data_[max_data_len_];
-  uint8_t raw_data_index_{0};
-  uint32_t last_transmit_{ 0 };
-  uint32_t last_receive_{ 0 };
-  bool request_outstanding_ = false;
-  void send_next_request_frame_();
-  void process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
   // put into command_item as a pointer to handle the BMS response
   void handle_analog_information_response(std::vector<uint8_t>& response);
@@ -78,11 +64,35 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_write_shutdown_command_response(std::vector<uint8_t>& response);
   void handle_read_protocols_response(std::vector<uint8_t>& response);
   void handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
+  void handle_write_configuration_response(std::vector<uint8_t>& response);
+
+  // child sensor requested callbacks
+  std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
+  std::vector<std::function<void(std::string&)>> hardware_version_callbacks_;
+  std::vector<std::function<void(std::string&)>> serial_number_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::Protocols&)>> protocols_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> cell_over_voltage_configuration_callbacks_;
+
+  // along with loop() this is the "engine" of BMS communications
+  // send_next_request_frame will pop a command_item from the queue and dispatch a frame to the BMS
+  // process_response_frame_ will call next_response_handler_ (which was saved from the command_item) once a response arrives
+  // see: "each item points to:"
+  // see: "when the bus is clear:"
+  PaceBmsV25* pace_bms_v25_;
+  static const uint8_t max_data_len_ = 200;
+  uint8_t raw_data_[max_data_len_];
+  uint8_t raw_data_index_{ 0 };
+  uint32_t last_transmit_{ 0 };
+  uint32_t last_receive_{ 0 };
+  bool request_outstanding_ = false;
+  void send_next_request_frame_();
+  void process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length);
 
   // each item points to:
-  //     a description of what is happening such as "Read Analog Information" for logging
-  //     a function pointer that will generate the request frame (to avoid holding the memory prior to it being required)
-  //     a function pointer that will process the response frame and dispatch the results to any child sensors registered via the callback vectors
+//     a description of what is happening such as "Read Analog Information" for logging
+//     a function pointer that will generate the request frame (to avoid holding the memory prior to it being required)
+//     a function pointer that will process the response frame and dispatch the results to any child sensors registered via the callback vectors
   struct command_item
   {
 	  std::string description_;
@@ -99,15 +109,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::queue<command_item*> command_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
-
-  // child sensor requested callbacks
-  std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
-  std::vector<std::function<void(std::string&)>> hardware_version_callbacks_;
-  std::vector<std::function<void(std::string&)>> serial_number_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::Protocols&)>> protocols_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> cell_over_voltage_configuration_callbacks_;
 };
- 
+
 }  // namespace pace_bms
 }  // namespace esphome
