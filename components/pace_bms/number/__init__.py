@@ -7,7 +7,7 @@ from esphome.const import (
     DEVICE_CLASS_VOLTAGE,
     UNIT_VOLT,
     DEVICE_CLASS_DURATION,
-    UNIT_SECONDS
+    UNIT_SECOND,
 )
 
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
@@ -57,7 +57,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION_DELAY): number.number_schema(
             PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_DURATION,
-            unit_of_measurement=UNIT_SECONDS,
+            unit_of_measurement=UNIT_SECOND,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
