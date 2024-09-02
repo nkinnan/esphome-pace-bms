@@ -26,6 +26,18 @@
     <ClCompile Include="..\..\components\pace_bms\text_sensor\pace_bms_text_sensor.cpp">
       <Filter>components\pace_bms\text_sensor</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\button\pace_bms_button.cpp">
+      <Filter>components\pace_bms\button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\button\pace_bms_button_implementation.cpp">
+      <Filter>components\pace_bms\button</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\number\pace_bms_number.cpp">
+      <Filter>components\pace_bms\number</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\number\pace_bms_number_implementation.cpp">
+      <Filter>components\pace_bms\number</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
@@ -52,6 +64,18 @@
     <ClInclude Include="..\..\components\pace_bms\text_sensor\pace_bms_text_sensor.h">
       <Filter>components\pace_bms\text_sensor</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\button\pace_bms_button.h">
+      <Filter>components\pace_bms\button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\button\pace_bms_button_implementation.h">
+      <Filter>components\pace_bms\button</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\number\pace_bms_number.h">
+      <Filter>components\pace_bms\number</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\number\pace_bms_number_implementation.h">
+      <Filter>components\pace_bms\number</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\components\pace_bms\__init__.py">
@@ -72,6 +96,12 @@
     <None Include="..\..\ESP-01.yaml" />
     <None Include="..\..\ESP-01-dev.yaml" />
     <None Include="..\..\ESP-WROOM-32.yaml" />
+    <None Include="..\..\components\pace_bms\button\__init__.py">
+      <Filter>components\pace_bms\button</Filter>
+    </None>
+    <None Include="..\..\components\pace_bms\number\__init__.py">
+      <Filter>components\pace_bms\number</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
@@ -91,6 +121,12 @@
     </Filter>
     <Filter Include="components\pace_bms\select">
       <UniqueIdentifier>{aea05c82-2a8f-4e11-9aee-25617eb3afdc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components\pace_bms\button">
+      <UniqueIdentifier>{8e6200c2-40bd-4af6-9c51-ec3e84bcf7b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components\pace_bms\number">
+      <UniqueIdentifier>{511b70b5-4095-4af0-99a1-524615f98513}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
