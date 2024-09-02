@@ -79,25 +79,29 @@ void PaceBmsNumber::cell_over_voltage_configuration_callback(PaceBmsV25::CellOve
 	this->cell_over_voltage_configuration_seen_ = true;
 	ESP_LOGE(TAG, "1");
 	if (this->cell_over_voltage_alarm_number_ != nullptr) {
-		int state = configuration.AlarmMillivolts / 1000.0f;
+		ESP_LOGE(TAG, "1.1");
+		float state = configuration.AlarmMillivolts / 1000.0f;
+		ESP_LOGE(TAG, "1.2");
 		ESP_LOGV(TAG, "'cell_over_voltage_alarm': Publishing state due to update from the hardware: %s", state);
+		ESP_LOGE(TAG, "1.3");
 		this->cell_over_voltage_alarm_number_->publish_state(state);
+		ESP_LOGE(TAG, "1.4");
 	}
 	ESP_LOGE(TAG, "2");
 	if (this->cell_over_voltage_protection_number_ != nullptr) {
-		int state = configuration.ProtectionMillivolts / 1000.0f;
+		float state = configuration.ProtectionMillivolts / 1000.0f;
 		ESP_LOGV(TAG, "'cell_over_voltage_protection': Publishing state due to update from the hardware: %s", state);
 		this->cell_over_voltage_protection_number_->publish_state(state);
 	}
 	ESP_LOGE(TAG, "3");
 	if (this->cell_over_voltage_protection_release_number_ != nullptr) {
-		int state = configuration.ProtectionReleaseMillivolts / 1000.0f;
+		float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
 		ESP_LOGV(TAG, "'cell_over_voltage_protection_release': Publishing state due to update from the hardware: %s", state);
 		this->cell_over_voltage_protection_release_number_->publish_state(state);
 	}
 	ESP_LOGE(TAG, "4");
 	if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
-		int state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+		float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 		ESP_LOGV(TAG, "'cell_over_voltage_protection_delay': Publishing state due to update from the hardware: %s", state);
 		this->cell_over_voltage_protection_delay_number_->publish_state(state);
 	}
