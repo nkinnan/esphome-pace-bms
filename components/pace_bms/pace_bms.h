@@ -3,6 +3,7 @@
 #include <vector>
 #include <functional>
 #include <queue>
+#include <list>
 
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
@@ -119,10 +120,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   //         see section: "along with loop() this is the "engine" of BMS communications" for how this works
   // commands generated as a result of user interaction are pushed to the front of the queue for immediate dispatch
   // queue is otherwise filled each update() with only the commands necessary to refresh child components that have been declared in the yaml config
-  std::deque<command_item*> command_queue_;
+  std::queue<command_item*> read_queue_;
+  std::list<command_item*> write_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
   bool first_request{ true }; 
+
+  // helper
+  void write_queue_push_back_with_deduplication(command_item* item);
 };
 
 }  // namespace pace_bms

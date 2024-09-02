@@ -66,7 +66,8 @@ void PaceBms::update() {
   if (this->pace_bms_v25_ == nullptr)
     return;
 
-  if (!command_queue_.empty()) {
+  // writes are always processed first so no need to check that as well
+  if (!read_queue_.empty()) {
     ESP_LOGW(TAG, "Commands still in queue on update(), skipping this refresh cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.", command_queue_.size());
   }
   else {
@@ -77,66 +78,66 @@ void PaceBms::update() {
       item->description_ = std::string("read analog information");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_analog_information_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->status_information_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read status information");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_status_information_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->hardware_version_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read hardware version");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadHardwareVersionRequest(this->address_, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_hardware_version_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->serial_number_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read serial number");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadSerialNumberRequest(this->address_, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_serial_number_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->protocols_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read protocols");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadProtocolsRequest(this->address_, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_protocols_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->cell_over_voltage_configuration_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read cell over voltage configuration");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellOverVoltage, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_over_voltage_configuration_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->pack_over_voltage_configuration_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read pack over voltage configuration");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_PackOverVoltage, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_pack_over_voltage_configuration_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->cell_under_voltage_configuration_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read cell under voltage configuration");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_CellUnderVoltage, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_under_voltage_configuration_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
     if (this->pack_under_voltage_configuration_callbacks_.size() > 0) {
       command_item* item = new command_item;
       item->description_ = std::string("read pack under voltage configuration");
       item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_PackUnderVoltage, request); };
       item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_pack_under_voltage_configuration_response(response); };
-      command_queue_.push_back(item);
+      read_queue_.push(item);
     }
 
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
   }
 }
 
@@ -161,7 +162,7 @@ void PaceBms::loop() {
   // if no request is active, we are not throttled, and there are pending requests to send, do so
   if (this->request_outstanding_ == false &&
       now - this->last_transmit_ >= this->request_throttle_ &&
-      this->command_queue_.size() > 0) {
+      (this->read_queue_.size() > 0 || this->write_queue_.size() > 0)) {
     // this will do any desired logging
     this->send_next_request_frame_();
     this->request_outstanding_ = true;
@@ -247,12 +248,21 @@ void PaceBms::dump_config() {
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
 void PaceBms::send_next_request_frame_() {
 
-    if (command_queue_.empty()) {
+    if (read_queue_.empty() && write_queue_.empty()) {
       ESP_LOGE(TAG, "command queue empty on send_next_request_frame");
       return;
     }
-    PaceBms::command_item* command = command_queue_.front();
-    command_queue_.pop_front();
+
+    // always process writes first
+    PaceBms::command_item* command;
+    if (!write_queue_.empty()) {
+        command = write_queue_.front();
+        write_queue_.pop_front();
+    }
+    else {
+        command = read_queue_.front();
+        read_queue_.pop();
+    }
 
     // process_response_frame_ will call this on the next frame received
     this->next_response_handler_ = command->process_response_frame_;
@@ -314,7 +324,7 @@ void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response)
   PaceBmsV25::AnalogInformation analog_information;
   bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
   if (result == false) {
-      ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+      ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
       return;
   }
 
@@ -330,7 +340,7 @@ void PaceBms::handle_status_information_response(std::vector<uint8_t>& response)
   PaceBmsV25::StatusInformation status_information;
   bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
   if (result == false) {
-      ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+      ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
       return;
   }
 
@@ -346,7 +356,7 @@ void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
   std::string hardware_version;
   bool result = this->pace_bms_v25_->ProcessReadHardwareVersionResponse(this->address_, response, hardware_version);
   if (result == false) {
-      ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+      ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
       return;
   }
 
@@ -362,7 +372,7 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
   std::string serial_number;
   bool result = this->pace_bms_v25_->ProcessReadSerialNumberResponse(this->address_, response, serial_number);
   if (result == false) {
-      ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+      ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
       return;
   }
 
@@ -377,7 +387,7 @@ void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand swi
 
     bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, switch_command, response);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
@@ -387,7 +397,7 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 
     bool result = this->pace_bms_v25_->ProcessWriteMosfetSwitchCommandResponse(this->address_, type, state, response);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
@@ -397,7 +407,7 @@ void PaceBms::handle_write_shutdown_command_response(std::vector<uint8_t>& respo
 
     bool result = this->pace_bms_v25_->ProcessWriteShutdownCommandResponse(this->address_, response);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
@@ -408,7 +418,7 @@ void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
     PaceBmsV25::Protocols protocols;
     bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
@@ -418,7 +428,7 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
 
     bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, response);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
@@ -429,7 +439,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<u
     PaceBmsV25::CellOverVoltageConfiguration config;
     bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
     // dispatch to any child components that registered for a callback with us
@@ -444,7 +454,7 @@ void PaceBms::handle_read_pack_over_voltage_configuration_response(std::vector<u
     PaceBmsV25::PackOverVoltageConfiguration config;
     bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
     // dispatch to any child components that registered for a callback with us
@@ -459,7 +469,7 @@ void PaceBms::handle_read_cell_under_voltage_configuration_response(std::vector<
     PaceBmsV25::CellUnderVoltageConfiguration config;
     bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
     // dispatch to any child components that registered for a callback with us
@@ -474,7 +484,7 @@ void PaceBms::handle_read_pack_under_voltage_configuration_response(std::vector<
     PaceBmsV25::PackUnderVoltageConfiguration config;
     bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
     // dispatch to any child components that registered for a callback with us
@@ -488,11 +498,27 @@ void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response
 
     bool result = this->pace_bms_v25_->ProcessWriteConfigurationResponse(this->address_, response);
     if (result == false) {
-        ESP_LOGE(TAG, "BMS response did not indicate success for '%s' request", this->last_request_description.c_str());
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
 }
 
+
+void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
+    auto iter = std::find(this->write_queue_.begin(), this->write_queue_.end(),
+        [item](const command_item * test) {
+            if (test->description_ == item->description_)
+                return true;
+            return false;
+    });
+    if (iter != this->write_queue_.end()) {
+        this->write_queue_.remove(*iter);
+        this->write_queue_.insert(iter, item);
+    }
+    else {
+        this->write_queue_.push_back(item);
+    }
+}
 
 void PaceBms::set_switch_state(PaceBmsV25::SwitchCommand state) {
   command_item* item = new command_item;
@@ -516,11 +542,11 @@ void PaceBms::set_switch_state(PaceBmsV25::SwitchCommand state) {
       item->description_ = std::string("write charge current limiter gear ") + (state == PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear ? "High" : "Low");
   }
 
-  ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+  ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
   item->create_request_frame_ = [this, state](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteSwitchCommandRequest(this->address_, state, request); };
   item->process_response_frame_ = [this, state](std::vector<uint8_t>& response) -> void { this->handle_write_switch_command_response(state, response); };
-  command_queue_.push_front(item);
-  ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+  write_queue_push_back_with_deduplication(item);
+  ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state) {
@@ -536,77 +562,77 @@ void PaceBms::set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetSt
       break;
   }
 
-  ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+  ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
   item->create_request_frame_ = [this, type, state](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteMosfetSwitchCommandRequest(this->address_, type, state, request); };
   item->process_response_frame_ = [this, type, state](std::vector<uint8_t>& response) -> void { this->handle_write_mosfet_switch_command_response(type, state, response); };
-  command_queue_.push_front(item);
-  ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+  write_queue_push_back_with_deduplication(item);
+  ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::send_shutdown() {
   command_item* item = new command_item;
 
   item->description_ = std::string("write shutdown");
-  ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+  ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
   item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteShutdownCommandRequest(this->address_, request); };
   item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_write_shutdown_command_response(response); };
-  command_queue_.push_front(item);
-  ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+  write_queue_push_back_with_deduplication(item);
+  ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
     command_item* item = new command_item;
 
     item->description_ = std::string("write protocols");
-    ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
     item->create_request_frame_ = [this, protocols](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteProtocolsRequest(this->address_, protocols, request); };
     item->process_response_frame_ = [this, protocols](std::vector<uint8_t>& response) -> void { this->handle_write_protocols_response(protocols, response); };
-    command_queue_.push_front(item);
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config) {
     command_item* item = new command_item;
 
     item->description_ = std::string("write cell over voltage configuration");
-    ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
     item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
-    command_queue_.push_front(item);
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_pack_over_voltage_configuration(PaceBmsV25::PackOverVoltageConfiguration& config) {
     command_item* item = new command_item;
 
     item->description_ = std::string("write pack over voltage configuration");
-    ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
     item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
-    command_queue_.push_front(item);
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_cell_under_voltage_configuration(PaceBmsV25::CellUnderVoltageConfiguration& config) {
     command_item* item = new command_item;
 
     item->description_ = std::string("write cell under voltage configuration");
-    ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
     item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
-    command_queue_.push_front(item);
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 void PaceBms::set_pack_under_voltage_configuration(PaceBmsV25::PackUnderVoltageConfiguration& config) {
     command_item* item = new command_item;
 
     item->description_ = std::string("write pack under voltage configuration");
-    ESP_LOGV(TAG, "Queueing command item '%s'", item->description_.c_str());
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
     item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
-    command_queue_.push_front(item);
-    ESP_LOGV(TAG, "Commands queued: %i", command_queue_.size());
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
 }  // namespace pace_bms

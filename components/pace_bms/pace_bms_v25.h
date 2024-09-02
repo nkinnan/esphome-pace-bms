@@ -858,7 +858,7 @@ public:
 
 	// ==== Dicharge FAST Over Current Configuration
 	// 1 Discharge OC 2 Protect: 150 - stored directly in amps - valid range reported by PBmsTools as 5-300 in steps of 5, but since this is an 8 bit store location, the actual max is 255????????
-	// 2 Discharge OC 2 Delay Time (ms): 100 - stored in 25ms steps, so 100 is 4 (4x25=100), 400 is 16 (16x25=400) - valid range reported by PBmsTools as 100-2000 in steps of 100
+	// 2 Discharge OC 2 Delay Time (us): 100 - stored in 25ms steps, so 100 is 4 (4x25=100), 400 is 16 (16x25=400) - valid range reported by PBmsTools as 100-2000 in steps of 100
 	// x = apparently, garbage written by the firmware - it's not included in the PBmsTools write
 	// read:  ~250046E30000FD97.
 	// resp:  ~25004600400C009604009604FB32.
