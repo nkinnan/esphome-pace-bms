@@ -346,7 +346,7 @@ void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
     ESP_LOGV(TAG, "Processing read protocols response");
 
     PaceBmsV25::Protocols protocols;
-    bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response);
+    bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
     if (result == false) {
         ESP_LOGW(TAG, "BMS response did not indicate success for read protocols request");
         return;
