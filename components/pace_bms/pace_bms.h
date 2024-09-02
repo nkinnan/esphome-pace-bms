@@ -49,7 +49,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
  protected:
   // config values set in YAML
   GPIOPin* flow_control_pin_{ nullptr };
-  int address_{ 0 };
+  uint8_t address_{ 0 };
   int protocol_version_{ 0 };
   int request_throttle_{ 0 };
   int response_timeout_{ 0 };
