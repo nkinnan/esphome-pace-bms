@@ -25,6 +25,7 @@ class PaceBmsNumber : public Component {
  protected:
   pace_bms::PaceBms *parent_;
 
+  void cell_over_voltage_configuration_callback(PaceBmsV25::CellOverVoltageConfiguration& configuration);
   bool request_cell_over_voltage_configuration_callback_{ false };
   PaceBmsV25::CellOverVoltageConfiguration cell_over_voltage_configuration_;
   bool cell_over_voltage_configuration_seen_{ false };
