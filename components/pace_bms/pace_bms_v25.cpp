@@ -2223,12 +2223,12 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 // write: ~250046DA400C010069006E0AFAF7.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBmsV25::exampleReadDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DB0000FD89\r";
-const unsigned char PaceBmsV25::exampleReadDishargeSlowOverCurrentConfigurationResponseV25[] = "~25004600400C01FF97FF920AFAD3\r";
-const unsigned char PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
-const unsigned char PaceBmsV25::exampleWriteDishargeSlowOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25[] = "~250046DB0000FD89\r";
+const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25[] = "~25004600400C01FF97FF920AFAD3\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeSlowOverCurrentConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent1Configuration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2254,7 +2254,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeSlowOverCurrentConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent1Configuration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmAmperage < 1.0f || config.AlarmAmperage > 150.0f)
@@ -2306,12 +2306,12 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Dish
 // write: ~250046E2A006009604FC4E.
 // resp:  ~250046000000FDAF.
 
-const unsigned char PaceBmsV25::exampleReadDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E30000FD97\r";
-const unsigned char PaceBmsV25::exampleReadDishargeFastOverCurrentConfigurationResponseV25[] = "~25004600400C009604009604FB32\r";
-const unsigned char PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
-const unsigned char PaceBmsV25::exampleWriteDishargeFastOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25[] = "~250046E30000FD97\r";
+const unsigned char PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25[] = "~25004600400C009604009604FB32\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
+const unsigned char PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeFastOverCurrentConfiguration& config)
+bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent2Configuration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2338,7 +2338,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeFastOverCurrentConfiguration& config, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent2Configuration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
 	if (config.ProtectionAmperage < 5.0f || config.ProtectionAmperage > 300.0f)

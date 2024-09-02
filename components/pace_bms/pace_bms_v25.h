@@ -830,7 +830,7 @@ public:
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeOverCurrentConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request);
 
-	// ==== Discharge SLOW Over Current Configuration
+	// ==== Discharge Over Current 1 Configuration
 	// 1 Discharge OC Alarm (A): 105 - stored as negative two's complement in amps***, -105 is FF97 - valid range reported by PBmsTools as 1-150
 	// 2 Discharge OC 1 Protect (A): 110 - stored as negative two's complement in amps***, -110 is FF92 - valid range reported by PBmsTools as 1-150
 	// 3 Discharge OC 1 Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 500 to 10000 in steps of 500
@@ -841,22 +841,22 @@ public:
 	// write: ~250046DA400C010069006E0AFAF7.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadDishargeSlowOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleReadDishargeSlowOverCurrentConfigurationResponseV25[];
-	static const uint8_t exampleWriteDishargeSlowOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleWriteDishargeSlowOverCurrentConfigurationResponseV25[];
+	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationRequestV25[];
+	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationResponseV25[];
+	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationRequestV25[];
+	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationResponseV25[];
 
-	struct DishargeSlowOverCurrentConfiguration
+	struct DishargeOverCurrent1Configuration
 	{
 		uint16_t AlarmAmperage;
 		uint16_t ProtectionAmperage;
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeSlowOverCurrentConfiguration& config);
-	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeSlowOverCurrentConfiguration& config, std::vector<uint8_t>& request);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent1Configuration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent1Configuration& config, std::vector<uint8_t>& request);
 
-	// ==== Dicharge FAST Over Current Configuration
+	// ==== Dicharge Over Current 2 Configuration
 	// 1 Discharge OC 2 Protect: 150 - stored directly in amps - valid range reported by PBmsTools as 5-300 in steps of 5, but since this is an 8 bit store location, the actual max is 255????????
 	// 2 Discharge OC 2 Delay Time (us): 100 - stored in 25ms steps, so 100 is 4 (4x25=100), 400 is 16 (16x25=400) - valid range reported by PBmsTools as 100-2000 in steps of 100
 	// x = apparently, garbage written by the firmware - it's not included in the PBmsTools write
@@ -866,19 +866,19 @@ public:
 	// write: ~250046E2A006009604FC4E.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadDishargeFastOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleReadDishargeFastOverCurrentConfigurationResponseV25[];
-	static const uint8_t exampleWriteDishargeFastOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleWriteDishargeFastOverCurrentConfigurationResponseV25[];
+	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationRequestV25[];
+	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationResponseV25[];
+	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationRequestV25[];
+	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationResponseV25[];
 
-	struct DishargeFastOverCurrentConfiguration
+	struct DishargeOverCurrent2Configuration
 	{
 		uint8_t ProtectionAmperage;
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeFastOverCurrentConfiguration& config);
-	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeFastOverCurrentConfiguration& config, std::vector<uint8_t>& request);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, DishargeOverCurrent2Configuration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const DishargeOverCurrent2Configuration& config, std::vector<uint8_t>& request);
 
 	// ==== Short Circuit Protection Configuration
 	// 1 Delay Time (us): 300 - stored in 25 microsecond steps, 300 is 12 - valid range reported by PBmsTools as as 100-500 in steps of 50
