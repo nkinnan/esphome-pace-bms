@@ -107,7 +107,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   //     last_request_description is also saved for logging purposes as:
   //     once this sequence starts, the command_item is thrown away - it's all bytes and pointers from this point
   //         see section: "along with loop() this is the "engine" of BMS communications" for how this works
-  std::queue<command_item*> command_queue_;
+  std::deque<command_item*> command_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
 };

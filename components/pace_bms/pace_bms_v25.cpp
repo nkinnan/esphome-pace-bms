@@ -1719,7 +1719,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const CellOverVoltageConfiguration& config, std::vector<uint8_t>& request)
 {
 	// validate values conform to what PBmsTools would send
-	if (config.AlarmMillivolts < 2400 || config.AlarmMillivolts > 4500)
+	if (config.AlarmMillivolts < 2500 || config.AlarmMillivolts > 4500)
 	{
 		const char* message = "AlarmVoltage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -1727,11 +1727,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01 volts without excessive precision";
+		const char* message = "AlarmVoltage should be in steps of 0.01 volts";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionMillivolts < 2400 || config.ProtectionMillivolts > 4500)
+	if (config.ProtectionMillivolts < 2500 || config.ProtectionMillivolts > 4500)
 	{
 		const char* message = "ProtectionVoltage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -1739,11 +1739,11 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01 volts without excessive precision";
+		const char* message = "ProtectionVoltage should be in steps of 0.01 volts";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionReleaseMillivolts < 2400 || config.ProtectionReleaseMillivolts > 4500)
+	if (config.ProtectionReleaseMillivolts < 2500 || config.ProtectionReleaseMillivolts > 4500)
 	{
 		const char* message = "ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
@@ -1751,19 +1751,19 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 volts without excessive precision";
+		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 volts";
 		LogError(message);
 		return false;
 	}
-	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 5000)
+	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
+		const char* message = "ProtectionDelaySeconds is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelaySeconds should be in steps of 0.5 seconds";
 		LogError(message);
 		return false;
 	}
@@ -1837,7 +1837,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.AlarmMillivolts % 10)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "AlarmVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1849,7 +1849,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1861,7 +1861,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1873,7 +1873,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
 		LogError(message);
 		return false;
 	}
@@ -1947,7 +1947,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "AlarmVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1959,7 +1959,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1971,7 +1971,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -1983,7 +1983,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
 		LogError(message);
 		return false;
 	}
@@ -2057,7 +2057,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "AlarmVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -2069,7 +2069,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -2081,7 +2081,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -2093,7 +2093,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
 		LogError(message);
 		return false;
 	}
@@ -2177,7 +2177,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
 		LogError(message);
 		return false;
 	}
@@ -2263,7 +2263,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Dish
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
 		LogError(message);
 		return false;
 	}
@@ -2347,7 +2347,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Dish
 	}
 	if (config.ProtectionDelayMilliseconds % 100 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 100 without excessive precision";
+		const char* message = "ProtectionDelayMilliseconds should be in steps of 100";
 		LogError(message);
 		return false;
 	}
@@ -2405,7 +2405,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Shor
 	}
 	if (config.ProtectionDelayMicroseconds % 50 != 0)
 	{
-		const char* message = "ProtectionDelayMicroseconds should be in steps of 50 without excessive precision";
+		const char* message = "ProtectionDelayMicroseconds should be in steps of 50";
 		LogError(message);
 		return false;
 	}
@@ -2462,7 +2462,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	}
 	if (config.ThresholdMillivolts % 10 != 0)
 	{
-		const char* message = "ThresholdVolts should be in steps of 0.01 without excessive precision";
+		const char* message = "ThresholdVolts should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -2534,7 +2534,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Slee
 	}
 	if (config.CellMillivolts % 10 != 0)
 	{
-		const char* message = "CellVoltage should be in steps of 0.01 without excessive precision";
+		const char* message = "CellVoltage should be in steps of 0.01";
 		LogError(message);
 		return false;
 	}
@@ -2601,7 +2601,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Full
 	}
 	if (config.FullChargeMillivolts % 10 != 0)
 	{
-		const char* message = "FullChargeVoltage should be in steps of 0.001 without excessive precision";
+		const char* message = "FullChargeVoltage should be in steps of 0.001";
 		LogError(message);
 		return false;
 	}
@@ -2613,7 +2613,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Full
 	}
 	if (config.FullChargeMilliamps % 500 != 0)
 	{
-		const char* message = "FullChargeCurrentMilliamps should be in steps of 500 without excessive precision";
+		const char* message = "FullChargeCurrentMilliamps should be in steps of 500";
 		LogError(message);
 		return false;
 	}

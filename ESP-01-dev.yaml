@@ -185,7 +185,10 @@ number:
      mode: BOX
    cell_over_voltage_protection:
      name: "Cell Over Voltage Protection" 
+     mode: BOX
    cell_over_voltage_protection_release:
      name: "Cell Over Voltage Protection Release" 
+     mode: BOX
    cell_over_voltage_protection_delay:
      name: "Cell Over Voltage Protection Delay" 
+     mode: BOX
