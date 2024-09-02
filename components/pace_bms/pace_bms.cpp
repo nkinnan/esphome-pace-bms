@@ -9,6 +9,8 @@ namespace esphome {
 namespace pace_bms { 
 
 static const char* const TAG = "pace_bms";
+
+// for the protocol implementation dependency injection only
 static const char* const TAG_V25 = "pace_bms_v25";
 
 void error_log_func(std::string message) {
@@ -56,7 +58,7 @@ void PaceBms::update() {
     return;
 
  if (!command_queue_.empty()) {
-    ESP_LOGW(TAG, "Commands still in queue on update(), skipping this cycle: Could not speak with the BMS fast enough, increase update_interval, or reduce request_throttle setting in YAML, or reduce response_timeout.", command_queue_.size());
+    ESP_LOGW(TAG, "Commands still in queue on update(), skipping this cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.", command_queue_.size());
   }
   else {
     if (this->analog_information_callbacks_.size() > 0) {
@@ -137,7 +139,7 @@ void PaceBms::loop() {
       ESP_LOGW(TAG, "Response frame timeout for request %s after %i ms, partial frame: %s", this->last_request_description.c_str(), now - this->last_receive_, str.c_str());
     }
     else {
-      ESP_LOGW(TAG, "Response frame timeout for request %s after %i ms, no (valid) data received", this->last_request_description.c_str(), now - this->last_receive_);
+      ESP_LOGW(TAG, "Response frame timeout for request %s after %i ms, no valid data received", this->last_request_description.c_str(), now - this->last_receive_);
     }
     request_outstanding_ = false;
     this->raw_data_index_ = 0;
@@ -193,7 +195,7 @@ float PaceBms::get_setup_priority() const { return setup_priority::LATE; }
 void PaceBms::send_next_request_frame_() {
 
     if (command_queue_.empty()) {
-      ESP_LOGV(TAG, "command queue empty on send_next_request_frame");
+      ESP_LOGE(TAG, "command queue empty on send_next_request_frame");
       return;
     }
     PaceBms::command_item* command = command_queue_.front();
@@ -205,12 +207,13 @@ void PaceBms::send_next_request_frame_() {
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
     {
         std::string str(request.data(), request.data() + request.size());
-        ESP_LOGVV(TAG, "Sending request frame: %s", str);
+        ESP_LOGVV(TAG, "Sending request frame: %s", str.c_str());
     }
 #endif
 
     // process_response_frame_ will call this on the next frame received
     this->next_response_handler_ = command->process_response_frame_;
+    // saved for logging
     this->last_request_description = command->description_;
 
     delete(command);
@@ -221,10 +224,10 @@ void PaceBms::send_next_request_frame_() {
     this->write_array(request.data(), request.size());
     // if flow control is required (rs485 does read+write on the same differential pair) then I don't see any other option than to block on flush(), even at this abysmal data rate
     // if using rs232, a flow control pin should not be assigned in yaml in order to avoid this block
-    if (this->flow_control_pin_ != nullptr)
+    if (this->flow_control_pin_ != nullptr) {
         this->flush();
-    if (this->flow_control_pin_ != nullptr)
         this->flow_control_pin_->digital_write(false);
+    }
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
@@ -232,7 +235,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
   {
     std::string str(frame_bytes, frame_bytes + frame_length);
-    ESP_LOGVV(TAG, "Response frame received: %s", str);
+    ESP_LOGVV(TAG, "Response frame received: %s", str.c_str());
   }
 #endif
 

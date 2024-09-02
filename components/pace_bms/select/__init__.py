@@ -14,8 +14,8 @@ PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", 
 
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
 charge_current_limiter_gear_options_config = {
-    "LowGear":  0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
-    "HighGear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
+    "Low Gear":  0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
+    "High Gear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
 }
 
 CONF_PROTOCOL_CAN           = "protocol_can"

@@ -31,14 +31,6 @@ wifi:
   # Set up a wifi access point
   ap: {}
 
-# In combination with the `ap` this allows the user
-# to provision wifi credentials to the device via WiFi AP.
-#############captive_portal:
-
-#######dashboard_import:
-#########  package_import_url: github://esphome/example-configs/esphome-web/esp8266.yaml@main
-#########  import_full_config: true
-
 # To have a "next url" for improv serial
 web_server:
   local: true
@@ -68,10 +60,10 @@ pace_bms:
   address: 1
   protocol_version: 0x25
   uart_id: uart_0
-  flow_control_pin: GPIO0
+  flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 1000ms # responses are typically immediate but I do occasionally see a larger delay
+  response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
 
 
 sensor:
@@ -170,12 +162,12 @@ select:
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
-    protocol_can:
-      name: "Protocol (CAN)"
-    protocol_rs485:
-      name: "Protocol (RS485)"
-    protocol_type:
-      name: "Protocol (Type)"
+    #protocol_can:
+    #  name: "Protocol (CAN)"
+    #protocol_rs485:
+    #  name: "Protocol (RS485)"
+    #protocol_type:
+    #  name: "Protocol (Type)"
 
 button:
  - platform: pace_bms
