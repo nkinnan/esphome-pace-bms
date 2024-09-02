@@ -397,7 +397,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<u
         ESP_LOGW(TAG, "BMS response did not indicate success for %s request", this->last_request_description.c_str());
         return;
     }
-
+    ESP_LOGE(TAG, "dispatching config");
     // dispatch to any child sensor components that registered for a callback with us
     for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
         cell_over_voltage_configuration_callbacks_[i](config);
