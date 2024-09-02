@@ -11,14 +11,12 @@ void PaceBmsNumberImplementation::add_on_control_callback(std::function<void(boo
 }
 
 void PaceBmsNumberImplementation::control(float number) {
-	ESP_LOGE(TAG, "Publishing new value %f", number);
+	ESP_LOGE(TAG, "control: new value %f", number);
 
 	// callbacks
-	ESP_LOGE(TAG, "number.control: callbacks");
 	this->control_callbacks_.call(number);
 
 	// required for the UX not to get out of sync
-	ESP_LOGE(TAG, "number.control: publish_state");
 	this->publish_state(number);
 }
 
