@@ -24,8 +24,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_alarm user selected value %f", value);
-			PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
-			new_config.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_over_voltage_configuration_.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_over_voltage_configuration(new_config);
 			});
 	}
@@ -36,8 +35,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection user selected value %f", value);
-			PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
-			new_config.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_over_voltage_configuration_.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_over_voltage_configuration(new_config);
 			});
 	}
@@ -48,8 +46,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection_release user selected value %f", value);
-			PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
-			new_config.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_over_voltage_configuration_.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_over_voltage_configuration(new_config);
 			});
 	}
@@ -60,8 +57,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection_delay user selected value %f", value);
-			PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
-			new_config.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_over_voltage_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_over_voltage_configuration(new_config);
 			});
 	}
@@ -76,8 +72,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_alarm user selected value %f", value);
-			PaceBmsV25::PackOverVoltageConfiguration new_config = pack_over_voltage_configuration_;
-			new_config.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_over_voltage_configuration_.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_over_voltage_configuration(new_config);
 			});
 	}
@@ -88,8 +83,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection user selected value %f", value);
-			PaceBmsV25::PackOverVoltageConfiguration new_config = pack_over_voltage_configuration_;
-			new_config.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_over_voltage_configuration_.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_over_voltage_configuration(new_config);
 			});
 	}
@@ -100,8 +94,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection_release user selected value %f", value);
-			PaceBmsV25::PackOverVoltageConfiguration new_config = pack_over_voltage_configuration_;
-			new_config.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_over_voltage_configuration_.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_over_voltage_configuration(new_config);
 			});
 	}
@@ -112,8 +105,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection_delay user selected value %f", value);
-			PaceBmsV25::PackOverVoltageConfiguration new_config = pack_over_voltage_configuration_;
-			new_config.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_over_voltage_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_over_voltage_configuration(new_config);
 			});
 	}
@@ -128,8 +120,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_alarm user selected value %f", value);
-			PaceBmsV25::CellUnderVoltageConfiguration new_config = cell_under_voltage_configuration_;
-			new_config.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_under_voltage_configuration_.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_under_voltage_configuration(new_config);
 			});
 	}
@@ -140,8 +131,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection user selected value %f", value);
-			PaceBmsV25::CellUnderVoltageConfiguration new_config = cell_under_voltage_configuration_;
-			new_config.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_under_voltage_configuration_.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_under_voltage_configuration(new_config);
 			});
 	}
@@ -152,8 +142,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection_release user selected value %f", value);
-			PaceBmsV25::CellUnderVoltageConfiguration new_config = cell_under_voltage_configuration_;
-			new_config.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_under_voltage_configuration_.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_under_voltage_configuration(new_config);
 			});
 	}
@@ -164,8 +153,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection_delay user selected value %f", value);
-			PaceBmsV25::CellUnderVoltageConfiguration new_config = cell_under_voltage_configuration_;
-			new_config.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->cell_under_voltage_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_under_voltage_configuration(new_config);
 			});
 	}
@@ -180,8 +168,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_alarm user selected value %f", value);
-			PaceBmsV25::PackUnderVoltageConfiguration new_config = pack_under_voltage_configuration_;
-			new_config.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_under_voltage_configuration_.AlarmMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_under_voltage_configuration(new_config);
 			});
 	}
@@ -192,8 +179,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection user selected value %f", value);
-			PaceBmsV25::PackUnderVoltageConfiguration new_config = pack_under_voltage_configuration_;
-			new_config.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_under_voltage_configuration_.ProtectionMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_under_voltage_configuration(new_config);
 			});
 	}
@@ -204,8 +190,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection_release user selected value %f", value);
-			PaceBmsV25::PackUnderVoltageConfiguration new_config = pack_under_voltage_configuration_;
-			new_config.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_under_voltage_configuration_.ProtectionReleaseMillivolts = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_under_voltage_configuration(new_config);
 			});
 	}
@@ -216,8 +201,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection_delay user selected value %f", value);
-			PaceBmsV25::PackUnderVoltageConfiguration new_config = pack_under_voltage_configuration_;
-			new_config.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
+			this->pack_under_voltage_configuration_.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_pack_under_voltage_configuration(new_config);
 			});
 	}
