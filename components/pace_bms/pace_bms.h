@@ -110,6 +110,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::deque<command_item*> command_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
+  bool first_request{ true }; 
 };
 
 }  // namespace pace_bms

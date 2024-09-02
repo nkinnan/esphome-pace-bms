@@ -238,7 +238,7 @@ void PaceBms::send_next_request_frame_() {
         return;
     }
 
-    ESP_LOGV(TAG, "Sending '%s' request frame", command->description_.c_str());
+    ESP_LOGD(TAG, "Sending '%s' request", command->description_.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
     {
         std::string str(request.data(), request.data() + request.size());
@@ -282,7 +282,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 
 
 void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
   PaceBmsV25::AnalogInformation analog_information;
   bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
@@ -298,7 +298,7 @@ void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response)
 }
 
 void PaceBms::handle_status_information_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
   PaceBmsV25::StatusInformation status_information;
   bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
@@ -314,7 +314,7 @@ void PaceBms::handle_status_information_response(std::vector<uint8_t>& response)
 }
 
 void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
   std::string hardware_version;
   bool result = this->pace_bms_v25_->ProcessReadHardwareVersionResponse(this->address_, response, hardware_version);
@@ -330,7 +330,7 @@ void PaceBms::handle_hardware_version_response(std::vector<uint8_t>& response) {
 }
 
 void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
   std::string serial_number;
   bool result = this->pace_bms_v25_->ProcessReadSerialNumberResponse(this->address_, response, serial_number);
@@ -346,7 +346,7 @@ void PaceBms::handle_serial_number_response(std::vector<uint8_t>& response) {
 }
 
 void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand switch_command, std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, switch_command, response);
     if (result == false) {
@@ -356,7 +356,7 @@ void PaceBms::handle_write_switch_command_response(PaceBmsV25::SwitchCommand swi
 }
 
 void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state, std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     bool result = this->pace_bms_v25_->ProcessWriteMosfetSwitchCommandResponse(this->address_, type, state, response);
     if (result == false) {
@@ -366,7 +366,7 @@ void PaceBms::handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType
 }
 
 void PaceBms::handle_write_shutdown_command_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     bool result = this->pace_bms_v25_->ProcessWriteShutdownCommandResponse(this->address_, response);
     if (result == false) {
@@ -376,7 +376,7 @@ void PaceBms::handle_write_shutdown_command_response(std::vector<uint8_t>& respo
 }
 
 void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     PaceBmsV25::Protocols protocols;
     bool result = this->pace_bms_v25_->ProcessReadProtocolsResponse(this->address_, response, protocols);
@@ -387,7 +387,7 @@ void PaceBms::handle_read_protocols_response(std::vector<uint8_t>& response) {
 }
 
 void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, response);
     if (result == false) {
@@ -397,7 +397,7 @@ void PaceBms::handle_write_protocols_response(PaceBmsV25::Protocols protocols, s
 }
 
 void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     PaceBmsV25::CellOverVoltageConfiguration config;
     bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
@@ -412,7 +412,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response(std::vector<u
 }
 
 void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response) {
-    ESP_LOGV(TAG, "Processing '%s' response", this->last_request_description.c_str());
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
     bool result = this->pace_bms_v25_->ProcessWriteConfigurationResponse(this->address_, response);
     if (result == false) {
