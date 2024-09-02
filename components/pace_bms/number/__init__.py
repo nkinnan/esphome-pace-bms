@@ -20,7 +20,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
 
-        cv.Optional(CONF_TEST): switch.switch_schema(PaceBmsNumberImplementation),
+        cv.Optional(CONF_TEST): number.number_schema(PaceBmsNumberImplementation),
     }
 )
 
