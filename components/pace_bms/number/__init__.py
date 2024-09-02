@@ -35,6 +35,6 @@ async def to_code(config):
         num = await number.new_number(
             test_config, 
             min_value=0, 
-            max_value=0, 
-            step=0)
+            max_value=10, 
+            step=0.25)
         cg.add(var.set_test_number(num))
