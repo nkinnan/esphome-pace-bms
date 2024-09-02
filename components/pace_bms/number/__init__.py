@@ -9,6 +9,7 @@ from esphome.const import (
     DEVICE_CLASS_DURATION,
     UNIT_SECOND,
     DEVICE_CLASS_CURRENT,
+    UNIT_AMPERE,
 )
 
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
