@@ -63,6 +63,9 @@ void PaceBmsNumber::setup() {
 			PaceBmsV25::CellOverVoltageConfiguration new_config = cell_over_voltage_configuration_;
 			new_config.ProtectionDelayMilliseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_cell_over_voltage_configuration(new_config);
+			this->parent_->set_cell_over_voltage_configuration(new_config);
+			this->parent_->set_cell_over_voltage_configuration(new_config);
+			this->parent_->set_cell_over_voltage_configuration(new_config);
 			});
 	}
 

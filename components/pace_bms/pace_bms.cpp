@@ -596,10 +596,6 @@ void PaceBms::set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageCon
     item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
     write_queue_push_back_with_deduplication(item);
-    write_queue_push_back_with_deduplication(item);
-    write_queue_push_back_with_deduplication(item);
-    write_queue_push_back_with_deduplication(item);
-    write_queue_push_back_with_deduplication(item);
     ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
