@@ -53,6 +53,12 @@ void PaceBms::setup() {
 
   if (this->flow_control_pin_ != nullptr) 
     this->flow_control_pin_->setup();
+
+  // clear uart buffer
+  uint8_t byte;
+  while (this->available() != 0) {
+      this->read_byte(&byte);
+  }
 }
 
 // fills command_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by sensor instances via callbacks
