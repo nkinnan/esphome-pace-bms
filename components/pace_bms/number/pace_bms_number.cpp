@@ -509,7 +509,7 @@ void PaceBmsNumber::discharge_over_current2_configuration_callback(PaceBmsV25::D
 	}
 }
 
-void PaceBmsNumber::short_circuit_configuration_callback(PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
+void PaceBmsNumber::short_circuit_protection_configuration_callback(PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
 
 	this->short_circuit_configuration_ = configuration;
 	this->short_circuit_configuration_seen_ = true;
