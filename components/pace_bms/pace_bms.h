@@ -32,11 +32,11 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 
   // child sensors call these to request notification upon reciept of various types of data from the BMS
   // the callbacks lists not being empty is what prompts update() to queue command_items for BMS communication
-  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(callback); }
-  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(callback); }
-  void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(callback); }
-  void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(callback); }
-  void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(callback); }
+  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(std::move(callback)); }
+  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(std::move(callback)); }
+  void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(std::move(callback)); }
+  void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(std::move(callback)); }
+  void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(std::move(callback)); }
   void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware
@@ -97,7 +97,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   struct command_item
   {
 	  std::string description_;
-	  std::function<void(std::vector<uint8_t>&)> create_request_frame_;
+	  std::function<bool(std::vector<uint8_t>&)> create_request_frame_;
 	  std::function<void(std::vector<uint8_t>&)> process_response_frame_;
   };
   // when the bus is clear:

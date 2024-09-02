@@ -213,7 +213,7 @@ public:
 		uint16_t maxCellDifferentialMillivolts;
 	};
 
-	void CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadAnalogInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation);
 
 	// ==== Read Status Information
@@ -378,7 +378,7 @@ public:
 		uint8_t     fault_value; // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
 	};
 
-	void CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
 
 private:
 	// helper for: ProcessStatusInformationResponse
@@ -417,7 +417,7 @@ public:
 	static const uint8_t exampleReadHardwareVersionRequestV25[];
 	static const uint8_t exampleReadHardwareVersionResponseV25[];
 
-	void CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadHardwareVersionResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& hardwareVersion);
 
 	// ==== Read Serial Number
@@ -429,7 +429,7 @@ public:
 	static const uint8_t exampleReadSerialNumberRequestV25[];
 	static const uint8_t exampleReadSerialNumberResponseV25[];
 
-	void CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber);
 
 	// ============================================================================
@@ -522,7 +522,7 @@ public:
 		SC_SetChargeCurrentLimiterCurrentLimitLowGear = 0x09,
 	};
 
-	void CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request);
+	bool CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request);
 	bool ProcessWriteSwitchCommandResponse(const uint8_t busId, const SwitchCommand command, const std::vector<uint8_t>& response);
 
 	// ==== Charge MOSFET Switch
@@ -575,7 +575,7 @@ public:
 		MS_Close = 0x00
 	};
 
-	void CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request);
+	bool CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request);
 	bool ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, const MosfetType type, const MosfetState command, const std::vector<uint8_t>& response);
 
 	// ==== Reboot (labeled as "Shutdown" in PBmsTools, but it actually causes a reboot in my experience)
@@ -587,7 +587,7 @@ public:
 	static const uint8_t exampleWriteRebootCommandRequestV25[];
 	static const uint8_t exampleWriteRebootCommandResponseV25[];
 
-	void CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 
@@ -662,7 +662,7 @@ public:
 		uint8_t Second;
 	};
 
-	void CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
 	bool CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
 	bool ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response);
@@ -691,7 +691,7 @@ public:
 		RC_ChargeAndDischargeUnderTemperature = CID2_ReadChargeAndDischargeUnderTemperatureConfiguration,
 	};
 
-	void CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request);
+	bool CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request);
 	bool ProcessWriteConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 	// ==== Cell Over Voltage Configuration
@@ -1073,7 +1073,7 @@ public:
 	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentRequestV25[];
 	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentResponseV25[];
 
-	void CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint8_t& current);
 	bool CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, const uint8_t current, std::vector<uint8_t>& request);
 	bool ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response);
@@ -1089,7 +1089,7 @@ public:
 	static const uint8_t exampleReadRemainingCapacityRequestV25[];
 	static const uint8_t exampleReadRemainingCapacityResponseV25[];
 
-	void CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
 
 
@@ -1229,7 +1229,7 @@ public:
 		NewStyleProtocolList_Type  Type;
 	};
 
-	void CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols);
 	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
 	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
