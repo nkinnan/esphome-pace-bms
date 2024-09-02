@@ -73,7 +73,8 @@ void PaceBmsSelect::dump_config() {
 void PaceBmsSelect::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
   if (this->charge_current_limiter_gear_select_ != nullptr) {
 	std::string state = this->charge_current_limiter_gear_select_->option_from_value(
-		(status_information.configuration_value & PaceBmsV25::CF_ChargeCurrentLimiterLowGearSetBit ? 0x08 : 0x09))
+		// values stored in init.py but we get them back from the hardware as a status flag rather than a value so have to map here unfortunately
+		(status_information.configuration_value & PaceBmsV25::CF_ChargeCurrentLimiterLowGearSetBit ? 0x08 : 0x09));
 	ESP_LOGV(TAG, "'charge_current_limiter_gear': Publishing state due to update from the hardware: %s", state.c_str());
     this->charge_current_limiter_gear_select_->publish_state(state);
   }
