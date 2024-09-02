@@ -461,7 +461,7 @@ void PaceBms::set_protocols(PaceBmsV25::Protocols& protocols) {
 void PaceBms::set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config) {
     command_item* item = new command_item;
     item->description_ = std::string("setting cell over voltage configuration");
-    item->create_request_frame_ = [=, this, config](std::vector<uint8_t> request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request) };
+    item->create_request_frame_ = [=, this, config](std::vector<uint8_t> request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
     item->process_response_frame_ = std::bind(&esphome::pace_bms::PaceBms::handle_write_configuration_response, this, std::placeholders::_1);
     command_queue_.push(item);
 
