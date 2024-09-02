@@ -32,5 +32,5 @@ async def to_code(config):
     cg.add(var.set_parent(paren))
 
     if test_config := config.get(CONF_TEST):
-        num = await switch.new_number(test_config)
+        num = await number.new_number(test_config)
         cg.add(var.set_test_number(num))
