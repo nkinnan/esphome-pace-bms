@@ -728,7 +728,7 @@ public:
 	// 1 Pack OV Alarm (V): 57.6 (write: 57.61) - stored as v * 100, so 57.6 is 57600 - valid range reported by PBmsTools as 20-65 in steps of 0.01
 	// 2 Pack OV Protect (V): 59.2 - stored as v * 1000, so 59.2 is 59200 - valid range reported by PBmsTools as 20-65 in steps of 0.01
 	// 3 Pack OVP Release (V): 54.0 - stored as v * 1000, so 54.0 is 54000 - valid range reported by PBmsTools as 20-65 in steps of 0.01
-	// 4 Pack OVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 5000 in steps of 500
+	// 4 Pack OVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 20000 in steps of 500
 	// read:  ~250046D50000FD96.
 	// resp:  ~25004600F01001E100E740D2F00AFA24.
 	//                     ??11112222333344
@@ -755,7 +755,7 @@ public:
 	// 1 Cell UV Alarm (V): 2.8 - stored as v * 1000, so 2.8 is 2800 - valid range reported by PBmsTools as 2-3.5 in steps of 0.01
 	// 2 Cell UV Protect (V): 2.5 - stored as v * 1000, so 2.5 is 2500 - valid range reported by PBmsTools as 2-3.5 in steps of 0.01
 	// 3 Cell UVP Release (V): 2.9 - stored as v * 1000, so 2.9 is 2900 - valid range reported by PBmsTools as 2-3.5 in steps of 0.01
-	// 4 Cell UVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 5000 in steps of 500
+	// 4 Cell UVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 20000 in steps of 500
 	// read:  ~250046D30000FD98.
 	// resp:  ~25004600F010010AF009C40B540AFA24.
 	//                     ??11112222333344
@@ -782,7 +782,7 @@ public:
 	// 1 Pack UV Alarm (V): 44.8 - stored as v * 1000, so 44.8 is 44800 - valid range reported by PBmsTools as 15-50 in steps of 0.01
 	// 2 Pack UV Protect (V): 40.0 - stored as v * 1000, so 40.0 is 40000 - valid range reported by PBmsTools as 15-50 in steps of 0.01
 	// 3 Pack UVP Release (V): 46.4 - stored as v * 1000, so 46.4 is 46400 - valid range reported by PBmsTools as 15-50 in steps of 0.01
-	// 4 Pack UVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 5000 in steps of 500
+	// 4 Pack UVP Delay Time (ms): 1000 - stored in 100ms steps, so 1000ms is 10 - valid range reported by PBmsTools as 1000 to 20000 in steps of 500
 	// read:  ~250046D70000FD94.
 	// resp:  ~25004600F01001AF009C40B5400AFA24.
 	//                     ??11112222333344

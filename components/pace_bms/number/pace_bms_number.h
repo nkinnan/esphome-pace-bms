@@ -18,6 +18,21 @@ class PaceBmsNumber : public Component {
   void set_cell_over_voltage_protection_release_number(PaceBmsNumberImplementation* cell_over_voltage_protection_release_number) { this->cell_over_voltage_protection_release_number_ = cell_over_voltage_protection_release_number; request_cell_over_voltage_configuration_callback_ = true; }
   void set_cell_over_voltage_protection_delay_number(PaceBmsNumberImplementation* cell_over_voltage_protection_delay_number) { this->cell_over_voltage_protection_delay_number_ = cell_over_voltage_protection_delay_number; request_cell_over_voltage_configuration_callback_ = true; }
 
+  void set_pack_over_voltage_alarm_number(PaceBmsNumberImplementation* number) { this->pack_over_voltage_alarm_number_ = number; request_pack_over_voltage_configuration_callback_ = true; }
+  void set_pack_over_voltage_protection_number(PaceBmsNumberImplementation* number) { this->pack_over_voltage_protection_number_ = number; request_pack_over_voltage_configuration_callback_ = true; }
+  void set_pack_over_voltage_protection_release_number(PaceBmsNumberImplementation* number) { this->pack_over_voltage_protection_release_number_ = number; request_pack_over_voltage_configuration_callback_ = true; }
+  void set_pack_over_voltage_protection_delay_number(PaceBmsNumberImplementation* number) { this->pack_over_voltage_protection_delay_number_ = number; request_pack_over_voltage_configuration_callback_ = true; }
+
+  void set_cell_under_voltage_alarm_number(PaceBmsNumberImplementation* cell_under_voltage_alarm_number) { this->cell_under_voltage_alarm_number_ = cell_under_voltage_alarm_number; request_cell_under_voltage_configuration_callback_ = true; }
+  void set_cell_under_voltage_protection_number(PaceBmsNumberImplementation* cell_under_voltage_protection_number) { this->cell_under_voltage_protection_number_ = cell_under_voltage_protection_number; request_cell_under_voltage_configuration_callback_ = true; }
+  void set_cell_under_voltage_protection_release_number(PaceBmsNumberImplementation* cell_under_voltage_protection_release_number) { this->cell_under_voltage_protection_release_number_ = cell_under_voltage_protection_release_number; request_cell_under_voltage_configuration_callback_ = true; }
+  void set_cell_under_voltage_protection_delay_number(PaceBmsNumberImplementation* cell_under_voltage_protection_delay_number) { this->cell_under_voltage_protection_delay_number_ = cell_under_voltage_protection_delay_number; request_cell_under_voltage_configuration_callback_ = true; }
+
+  void set_pack_under_voltage_alarm_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_alarm_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
+  void set_pack_under_voltage_protection_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_protection_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
+  void set_pack_under_voltage_protection_release_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_protection_release_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
+  void set_pack_under_voltage_protection_delay_number(PaceBmsNumberImplementation* number) { this->pack_under_voltage_protection_delay_number_ = number; request_pack_under_voltage_configuration_callback_ = true; }
+
   void setup() override;
   float get_setup_priority() const override;
   void dump_config() override;
@@ -33,7 +48,37 @@ class PaceBmsNumber : public Component {
   pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_release_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_delay_number_{ nullptr };
+
+  void pack_over_voltage_configuration_callback(PaceBmsV25::PackOverVoltageConfiguration& configuration);
+  bool request_pack_over_voltage_configuration_callback_{ false };
+  PaceBmsV25::CellOverVoltageConfiguration pack_over_voltage_configuration_;
+  bool pack_over_voltage_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* pack_over_voltage_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_release_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_delay_number_{ nullptr };
+
+  void cell_under_voltage_configuration_callback(PaceBmsV25::CellUnderVoltageConfiguration& configuration);
+  bool request_cell_under_voltage_configuration_callback_{ false };
+  PaceBmsV25::CellUnderVoltageConfiguration cell_under_voltage_configuration_;
+  bool cell_under_voltage_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* cell_under_voltage_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_release_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_delay_number_{ nullptr };
+
+  void pack_under_voltage_configuration_callback(PaceBmsV25::PackUnderVoltageConfiguration& configuration);
+  bool request_pack_under_voltage_configuration_callback_{ false };
+  PaceBmsV25::CellUnderVoltageConfiguration pack_under_voltage_configuration_;
+  bool pack_under_voltage_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* pack_under_voltage_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_release_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_delay_number_{ nullptr };
 };
 
 }  // namespace pace_bms
 }  // namespace esphome
+
+
+

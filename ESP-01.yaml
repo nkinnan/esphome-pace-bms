@@ -149,7 +149,7 @@ sensor:
       name: "Max Cell Differential"
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
-    # you can probably just use the 6 text sensor equivalents which are already decoded and suitable for display
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
     warning_status_value_cell_01:
       name: "Warning Status Value Cell 01"
     warning_status_value_cell_02:
@@ -230,7 +230,7 @@ text_sensor:
     serial_number:
       name: "Serial Number"
 
-    # pre-decoded human readable text that describes all of the specific status values and is suitable for display
+    # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
     warning_status:
       name: "Warning Status"
     balancing_status:
@@ -260,6 +260,7 @@ switch:
     discharge_mosfet:
       name: "Discharge Mosfet"
 
+
 select:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
@@ -274,9 +275,28 @@ select:
     protocol_type:
       name: "Protocol (Type)"
 
+
 button:
  - platform: pace_bms
    pace_bms_id: pace_bms_at_address_1
 
    shutdown:
      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+
+
+number:
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   cell_over_voltage_alarm:
+     name: "Cell Over Voltage Alarm" 
+     mode: BOX
+   cell_over_voltage_protection:
+     name: "Cell Over Voltage Protection" 
+     mode: BOX
+   cell_over_voltage_protection_release:
+     name: "Cell Over Voltage Protection Release" 
+     mode: BOX
+   cell_over_voltage_protection_delay:
+     name: "Cell Over Voltage Protection Delay" 
+     mode: BOX

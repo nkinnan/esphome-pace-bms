@@ -38,6 +38,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(std::move(callback)); }
   void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(std::move(callback)); }
   void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_pack_over_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&) > callback) { pack_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&) > callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&) > callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
 
   // child sensors call these to request new values be sent to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
@@ -45,6 +48,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void send_shutdown();
   void set_protocols(PaceBmsV25::Protocols& protocols);
   void set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config);
+  void set_pack_over_voltage_configuration(PaceBmsV25::PackOverVoltageConfiguration& config);
+  void set_cell_under_voltage_configuration(PaceBmsV25::CellUnderVoltageConfiguration& config);
+  void set_pack_under_voltage_configuration(PaceBmsV25::PackUnderVoltageConfiguration& config);
 
  protected:
   // config values set in YAML
@@ -65,6 +71,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_read_protocols_response(std::vector<uint8_t>& response);
   void handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
   void handle_read_cell_over_voltage_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_pack_over_voltage_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_cell_under_voltage_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_pack_under_voltage_configuration_response(std::vector<uint8_t>& response);
   void handle_write_configuration_response(std::vector<uint8_t>& response);
 
   // child sensor requested callbacks
@@ -74,6 +83,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(std::string&)>> serial_number_callbacks_;
   std::vector<std::function<void(PaceBmsV25::Protocols&)>> protocols_callbacks_;
   std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> cell_over_voltage_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)>> pack_over_voltage_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)>> cell_under_voltage_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)>> pack_under_voltage_configuration_callbacks_;
 
   // along with loop() this is the "engine" of BMS communications
   // send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
