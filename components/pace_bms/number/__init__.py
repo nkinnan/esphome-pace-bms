@@ -34,28 +34,28 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_TEST): number.number_schema(PaceBmsNumberImplementation),
 
         cv.Optional(CONF_CELL_OVER_VOLTAGE_ALARM): number.number_schema(
-            PaceBmsNumberImplementation
+            PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_VOLTAGE,
             unit_of_measurement=UNIT_VOLT,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION): number.number_schema(
-            PaceBmsNumberImplementation
+            PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_VOLTAGE,
             unit_of_measurement=UNIT_VOLT,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION_RELEASE): number.number_schema(
-            PaceBmsNumberImplementation
+            PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_VOLTAGE,
             unit_of_measurement=UNIT_VOLT,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION_DELAY): number.number_schema(
-            PaceBmsNumberImplementation
+            PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_DURATION,
             unit_of_measurement=UNIT_SECONDS,
             #icon=,
