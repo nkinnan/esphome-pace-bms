@@ -71,14 +71,6 @@ async def to_code(config):
     paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(paren))
 
-    if test_config := config.get(CONF_TEST):
-        num = await number.new_number(
-            test_config, 
-            min_value=0, 
-            max_value=10, 
-            step=0.25)
-        cg.add(var.set_test_number(num))
-
     if cell_over_voltage_alarm_config := config.get(CONF_CELL_OVER_VOLTAGE_ALARM):
         num = await number.new_number(
             cell_over_voltage_alarm_config, 
