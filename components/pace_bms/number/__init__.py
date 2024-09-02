@@ -17,6 +17,7 @@ DEPENDENCIES = ["pace_bms"]
 PaceBmsNumber = pace_bms_ns.class_("PaceBmsNumber", cg.Component)
 PaceBmsNumberImplementation = pace_bms_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
 
+BOX = "BOX"
 
 CONF_TEST           = "test"
 
@@ -39,6 +40,7 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_VOLT,
             #icon=,
             entity_category=ENTITY_CATEGORY_CONFIG,
+            mode=BOX,
         ),
         cv.Optional(CONF_CELL_OVER_VOLTAGE_PROTECTION): number.number_schema(
             PaceBmsNumberImplementation,
@@ -96,7 +98,7 @@ async def to_code(config):
         num = await number.new_number(
             cell_over_voltage_protection_delay_config, 
             min_value=1, 
-            max_value=5, 
+            max_value=20, 
             step=0.5)
         cg.add(var.set_cell_over_voltage_protection_delay_number(num))
 
