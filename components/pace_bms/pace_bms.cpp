@@ -248,8 +248,6 @@ void PaceBms::send_next_request_frame_() {
     }
 
     delete(command);
-
-    ESP_LOGE(TAG, "returning after flush");
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
