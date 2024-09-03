@@ -316,7 +316,7 @@ void PaceBmsNumber::setup() {
 				return;
 			}
 			ESP_LOGD(TAG, "Setting short_circuit_protection_delay user selected value %f", value);
-			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000000.0f);
+			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = (uint16_t)std::roundl(value * 1000.0f);
 			this->parent_->set_short_circuit_protection_configuration(this->short_circuit_protection_configuration_);
 			});
 	}
@@ -514,7 +514,7 @@ void PaceBmsNumber::short_circuit_protection_configuration_callback(PaceBmsV25::
 	this->short_circuit_protection_configuration_ = configuration;
 	this->short_circuit_protection_configuration_seen_ = true;
 	if (this->short_circuit_protection_delay_number_ != nullptr) {
-		float state = configuration.ProtectionDelayMicroseconds / 1000000.0f;
+		float state = configuration.ProtectionDelayMicroseconds / 1000.0f;
 		ESP_LOGV(TAG, "'short_circuit_protection_delay': Publishing state due to update from the hardware: %f", state);
 		this->short_circuit_protection_delay_number_->publish_state(state);
 	}
