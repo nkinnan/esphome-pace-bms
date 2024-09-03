@@ -553,9 +553,9 @@ void PaceBms::handle_read_charge_over_current_configuration_response(std::vector
         ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
-    ESP_LOGE(TAG, "dispatching to %i children", this->cell_over_voltage_configuration_callbacks_.size());
+
     // dispatch to any child components that registered for a callback with us
-    for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
+    for (int i = 0; i < this->charge_over_current_configuration_callbacks_.size(); i++) {
         charge_over_current_configuration_callbacks_[i](config);
     }
 }
@@ -570,7 +570,7 @@ void PaceBms::handle_read_discharge_over_current1_configuration_response(std::ve
         return;
     }
     // dispatch to any child components that registered for a callback with us
-    for (int i = 0; i < this->pack_over_voltage_configuration_callbacks_.size(); i++) {
+    for (int i = 0; i < this->discharge_over_current1_configuration_callbacks_.size(); i++) {
         discharge_over_current1_configuration_callbacks_[i](config);
     }
 }
@@ -585,7 +585,7 @@ void PaceBms::handle_read_discharge_over_current2_configuration_response(std::ve
         return;
     }
     // dispatch to any child components that registered for a callback with us
-    for (int i = 0; i < this->cell_under_voltage_configuration_callbacks_.size(); i++) {
+    for (int i = 0; i < this->discharge_over_current2_configuration_callbacks_.size(); i++) {
         discharge_over_current2_configuration_callbacks_[i](config);
     }
 }
@@ -600,7 +600,7 @@ void PaceBms::handle_read_short_circuit_protection_configuration_response(std::v
         return;
     }
     // dispatch to any child components that registered for a callback with us
-    for (int i = 0; i < this->pack_under_voltage_configuration_callbacks_.size(); i++) {
+    for (int i = 0; i < this->short_circuit_protection_configuration_callbacks_.size(); i++) {
         short_circuit_protection_configuration_callbacks_[i](config);
     }
 }
