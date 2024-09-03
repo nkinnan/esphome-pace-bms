@@ -452,7 +452,7 @@ void PaceBmsNumber::pack_under_voltage_configuration_callback(PaceBmsV25::PackUn
 }
 
 void PaceBmsNumber::charge_over_current_configuration_callback(PaceBmsV25::ChargeOverCurrentConfiguration& configuration) {
-
+	ESP_LOGE(TAG, "charge over current configuration callback");
 	this->charge_over_current_configuration_ = configuration;
 	this->charge_over_current_configuration_seen_ = true;
 	if (this->charge_over_current_alarm_number_ != nullptr) {
