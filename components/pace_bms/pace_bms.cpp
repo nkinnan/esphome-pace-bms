@@ -553,6 +553,7 @@ void PaceBms::handle_read_charge_over_current_configuration_response(std::vector
         ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
         return;
     }
+    ESP_LOGE(TAG, "dispatching to %i children", this->cell_over_voltage_configuration_callbacks_.size());
     // dispatch to any child components that registered for a callback with us
     for (int i = 0; i < this->cell_over_voltage_configuration_callbacks_.size(); i++) {
         charge_over_current_configuration_callbacks_[i](config);
