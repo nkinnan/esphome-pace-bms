@@ -19,8 +19,8 @@ esp8266:
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
   #level: INFO
-  level: DEBUG
-  #level: VERBOSE
+  #level: DEBUG
+  level: VERBOSE
   #level: VERY_VERBOSE
 
 # Enable Home Assistant API
