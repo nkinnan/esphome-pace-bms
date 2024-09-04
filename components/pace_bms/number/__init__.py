@@ -221,7 +221,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SHORT_CIRCUIT_PROTECTION_DELAY): number.number_schema(
             PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_DURATION,
-            unit_of_measurement=UNIT_SECOND,
+            unit_of_measurement=UNIT_MILLISECOND,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ),
 
@@ -419,7 +419,7 @@ async def to_code(config):
     if short_circuit_protection_delay_config := config.get(CONF_SHORT_CIRCUIT_PROTECTION_DELAY):
         num = await number.new_number(
             short_circuit_protection_delay_config, 
-            min_value=0.0001, 
-            max_value=0.0005, 
-            step=0.00005)
+            min_value=0.1, 
+            max_value=0.5, 
+            step=0.05)
         cg.add(var.set_short_circuit_protection_delay_number(num))

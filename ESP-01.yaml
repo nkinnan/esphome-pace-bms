@@ -340,3 +340,23 @@ number:
      name: "Pack Under Voltage Protection Delay" 
      mode: BOX
 
+   charge_over_current_alarm:
+     name: "Charge Over Current Alarm" 
+     mode: BOX
+   charge_over_current_protection:
+     name: "Charge Over Current Protection" 
+     mode: BOX
+   charge_over_current_protection_delay:
+     name: "Charge Over Current Protection Delay" 
+     mode: BOX
+
+   discharge_over_current1_alarm:
+     name: "Discharge Over Current 1 Alarm" 
+     mode: BOX
+   discharge_over_current1_protection:
+     name: "Discharge Over Current 1 Protection" 
+     mode: BOX
+   discharge_over_current1_protection_delay:
+     name: "Discharge Over Current 1 Protection Delay" 
+     mode: BOX
+

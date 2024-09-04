@@ -36,7 +36,10 @@ wifi:
 
 # To have a "next url" for improv serial
 web_server:
-  local: true
+  # uses an extra 75,920 bytes (V3) or 11,792 bytes (V2), but avoids referencing external web resources for 
+  #     situations where you won't have internet while accessing the on-device dashboard
+  #local: true
+  version: 3
 
 external_components:
   - source:
@@ -182,26 +185,6 @@ button:
 number:
  - platform: pace_bms
    pace_bms_id: pace_bms_at_address_1
-
-   charge_over_current_alarm:
-     name: "Charge Over Current Alarm" 
-     mode: BOX
-   charge_over_current_protection:
-     name: "Charge Over Current Protection" 
-     mode: BOX
-   charge_over_current_protection_delay:
-     name: "Charge Over Current Protection Delay" 
-     mode: BOX
-
-   discharge_over_current1_alarm:
-     name: "Discharge Over Current 1 Alarm" 
-     mode: BOX
-   discharge_over_current1_protection:
-     name: "Discharge Over Current 1 Protection" 
-     mode: BOX
-   discharge_over_current1_protection_delay:
-     name: "Discharge Over Current 1 Protection Delay" 
-     mode: BOX
 
    discharge_over_current2_protection:
      name: "Discharge Over Current 2 Protection" 
