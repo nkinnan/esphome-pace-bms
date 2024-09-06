@@ -25,6 +25,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 
   // standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
+  void dump_config() override;
   void setup() override;
   void update() override;
   void loop() override;
@@ -32,17 +33,6 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   // preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
   //     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
   float get_setup_priority() const { return setup_priority::LATE; }
-
-  // print logs 
-  void dump_config() {
-      ESP_LOGCONFIG(TAG, "pace_bms:");
-      LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
-      ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-      ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
-      ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
-      ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
-      this->check_uart_settings(9600);
-  }
 
   // child sensors call these to request notification upon reciept of various types of data from the BMS
   // the callbacks lists not being empty is what prompts update() to queue command_items for BMS communication
