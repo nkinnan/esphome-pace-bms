@@ -33,7 +33,7 @@ wifi:
 
 # To have a "next url" for improv serial
 web_server:
-  local: true
+  #local: true
 
 external_components:
   - source:
@@ -62,7 +62,36 @@ pace_bms:
   response_timeout: 1000ms  # responses are typically recieved immediately, but I have occasionally seen a sub-second delay
 
 
+
 sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+      unit_of_measurement: kB
+      accuracy_decimals: 3
+      filters:
+        - multiply: 0.001
+#    block:
+#      name: "Heap Max Block"
+#      unit_of_measurement: kB
+#      accuracy_decimals: 3
+#      filters:
+#        - multiply: 0.001
+#    fragmentation:
+#      name: "Heap Fragmentation"
+    loop_time:
+      name: "Loop Time"
+# ESP-32 only
+#    psram:
+#      name: "Free PSRAM"
+
+  - platform: uptime
+    update_interval: 1s
+    type: seconds
+    name: "Uptime"
+
+
+
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
@@ -359,4 +388,18 @@ number:
    discharge_over_current1_protection_delay:
      name: "Discharge Over Current 1 Protection Delay" 
      mode: BOX
+
+   discharge_over_current2_protection:
+     name: "Discharge Over Current 2 Protection" 
+     mode: BOX
+   discharge_over_current2_protection_delay:
+     name: "Discharge Over Current 2 Protection Delay" 
+     mode: BOX
+
+   short_circuit_protection_delay:
+     name: "Short Circuit Protection Delay (Milliseconds)" 
+     mode: BOX
+
+
+
 

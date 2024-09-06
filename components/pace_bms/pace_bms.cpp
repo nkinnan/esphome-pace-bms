@@ -13,37 +13,39 @@ static const char* const TAG = "pace_bms";
 // for the protocol implementation dependency injection only
 static const char* const TAG_V25 = "pace_bms_v25";
 
+/*
+* dependency injection to the protocol implementation
+*/
+
 void error_log_func(std::string message) {
     ESP_LOGE(TAG_V25, "%s", message.c_str());
 }
-
 void warning_log_func(std::string message) {
     ESP_LOGW(TAG_V25, "%s", message.c_str());
 }
-
 void info_log_func(std::string message) {
     ESP_LOGI(TAG_V25, "%s", message.c_str());
 }
-
 void debug_log_func(std::string message) {
     ESP_LOGD(TAG_V25, "%s", message.c_str());
 }
-
 void verbose_log_func(std::string message) {
     ESP_LOGV(TAG_V25, "%s", message.c_str());
 }
-
 void very_verbose_log_func(std::string message) {
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
     ESP_LOGVV(TAG_V25, "%s", message.c_str());
 #endif
 }
 
+/*
+* setup component
+*/
 
 void PaceBms::setup() {
   if (this->protocol_version_ != 0x25) {
     this->status_set_error();
-    ESP_LOGE(TAG, "Protocol version %02X is not supported", this->protocol_version_);
+    ESP_LOGE(TAG, "Protocol version 0x%02X is not supported", this->protocol_version_);
     return;
   }
   else {
@@ -61,7 +63,11 @@ void PaceBms::setup() {
   }
 }
 
-// fills command_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by sensor instances via callbacks
+/*
+* fill command_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensor 
+* instances via setting callbacks to receive the updates
+*/
+
 void PaceBms::update() {
   if (this->pace_bms_v25_ == nullptr)
     return;
@@ -192,8 +198,11 @@ void PaceBms::update() {
   }
 }
 
-// incrementally process incoming bytes off the bus, eventually dispatching a full response to process_response_frame_
-// once request_throttle has been satisfied, call send_next_request_frame to continue popping the command_queue_
+/*
+* incrementally process incoming bytes off the bus, eventually dispatching a full response to process_response_frame_
+* once request_throttle has been satisfied, call send_next_request_frame to continue popping the command_queue_
+*/
+
 void PaceBms::loop() {
   if (this->pace_bms_v25_ == nullptr)
     return;
@@ -281,21 +290,6 @@ void PaceBms::loop() {
   }
 }
 
-// preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
-//     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
-float PaceBms::get_setup_priority() const { return setup_priority::LATE; }
-
-void PaceBms::dump_config() {
-    ESP_LOGCONFIG(TAG, "pace_bms:");
-    LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
-    ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-    ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
-    ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
-    ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
-    this->check_uart_settings(9600);
-}
-
-
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
 void PaceBms::send_next_request_frame_() {
 
@@ -368,6 +362,10 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
   next_response_handler_ = nullptr;
 }
 
+
+/*
+* read/write response frame received handlers, called via next_response_handler_ from process_response_frame 
+*/
 
 void PaceBms::handle_analog_information_response(std::vector<uint8_t>& response) {
     ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
@@ -617,10 +615,13 @@ void PaceBms::handle_write_configuration_response(std::vector<uint8_t>& response
     }
 }
 
+/*
+* callbacks from settable child sensors to set BMS state
+*/
 
-
+// helper for when multiple callbacks come due to fast UX interaction
 void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
-    auto iter = std::find_if(this->write_queue_.begin(), this->write_queue_.end(), 
+    auto iter = std::find_if(this->write_queue_.begin(), this->write_queue_.end(),
         [&item](const command_item* test) -> bool {
             return test->description_ == item->description_;
         });
@@ -793,9 +794,7 @@ void PaceBms::set_short_circuit_protection_configuration(PaceBmsV25::ShortCircui
     ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
+
+
 }  // namespace pace_bms
 }  // namespace esphome
-
-
-
-

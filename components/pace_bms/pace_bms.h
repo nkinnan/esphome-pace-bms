@@ -28,11 +28,25 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void setup() override;
   void update() override;
   void loop() override;
-  float get_setup_priority() const override;
-  void dump_config() override;
+
+  // preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
+  //     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
+  float get_setup_priority() const { return setup_priority::LATE; }
+
+  // print logs 
+  void dump_config() {
+      ESP_LOGCONFIG(TAG, "pace_bms:");
+      LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+      ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
+      ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
+      ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
+      ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
+      this->check_uart_settings(9600);
+  }
 
   // child sensors call these to request notification upon reciept of various types of data from the BMS
   // the callbacks lists not being empty is what prompts update() to queue command_items for BMS communication
+  // in order to send these updates
   void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(std::move(callback)); }
   void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(std::move(callback)); }
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(std::move(callback)); }

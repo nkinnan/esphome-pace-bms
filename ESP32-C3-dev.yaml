@@ -1,6 +1,6 @@
 substitutions:
-  name: "esp01-jk48v100"
-  friendly_name: "ESP-01 - JK48V100 Battery"
+  name: "esp32-c3-supermini-jk48v100"
+  friendly_name: "ESP32-C3-Supermini JK48V100 Battery"
 
 esphome:
   name: ${name}
@@ -11,17 +11,21 @@ esphome:
     name: esphome.web
     version: dev
   libraries:
+    - WiFi
+    - FS
+    - Update
     # huge improvement to event throughput to the on-device web_server dashboard
     - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 
-esp8266:
-  board: esp01_1m
-
-
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+  framework:
+    type: arduino
 
 # Enable logging
 logger:
-  hardware_uart: UART1 # using UART0 for BMS communications
+  #hardware_uart: UART1 # using UART0 for BMS communications
   #level: INFO
   #level: DEBUG
   level: VERBOSE
@@ -54,26 +58,32 @@ external_components:
     refresh: 1s
 
 
+    ##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
+
+
 debug:
   update_interval: 1s
 
 
 uart:
-    id: uart_0
+    id: uart_1
     baud_rate: 9600
-    tx_pin: GPIO1
-    rx_pin: GPIO3
+    tx_pin: GPIO2
+    rx_pin: GPIO1
 
 
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
-  uart_id: uart_0
+  uart_id: uart_1
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
+
+
+
 
 
 sensor:
@@ -105,104 +115,58 @@ sensor:
 
 
 
-
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
-#    total_voltage:
-#      name: "Total Voltage"
-#    current:
-#      name: "Current"
+    cell_count:
+      name: "Cell Count"
+
+
+    temperature_count:
+      name: "Temperature Count"
+
+    temperature_01:
+      name: "Cell Temperature 1"
+    temperature_02:
+      name: "Cell Temperature 2"
+    temperature_03:
+      name: "Cell Temperature 3"
+    temperature_04:
+      name: "Cell Temperature 4"
+    temperature_05:
+      name: "MOSFET Temperature"
+    temperature_06:
+      name: "Environment Temperature"
+
+    total_voltage:
+      name: "Total Voltage"
+    current:
+      name: "Current"
     power:
       name: "Power"
-#    state_of_charge:
-#      name: "State of Charge"
 
+    remaining_capacity:
+      name: "Remaining Capacity"
+    full_capacity:
+      name: "Full Capacity"
+    design_capacity:
+      name: "Design Capacity"
 
-text_sensor:
-#  - platform: debug
-#    device:
-#      name: "Device Info"
-#    reset_reason:
-#      name: "Reset Reason"
+    cycle_count:
+      name: "Cycle Count"
+    state_of_charge:
+      name: "State of Charge"
+    state_of_health:
+      name: "State of Health"
 
-
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-#    hardware_version:
-#      name: "Hardware Version"
-#    serial_number:
-#      name: "Serial Number"
-
-#    warning_status:
-#      name: "Warning Status"
-#    balancing_status:
-#      name: "Balancing Status"
-#    protection_status:
-#      name: "Protection Status"
-#    fault_status:
-#      name: "Fault Status"
-
-    configuration_status:
-      name: "Configuration Status"
-    system_status:
-      name: "System Status"
-
-
-switch:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    buzzer_alarm:
-      name: "Buzzer Alarm"
-    led_alarm:
-      name: "Led Alarm"
-    charge_current_limiter:
-      name: "Charge Current Limiter"
-    charge_mosfet:
-      name: "Charge Mosfet"
-    discharge_mosfet:
-      name: "Discharge Mosfet"
-
-
-select:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    charge_current_limiter_gear:
-      name: "Charge Current Limiter Gear"
-
-    #protocol_can:
-    #  name: "Protocol (CAN)"
-    #protocol_rs485:
-    #  name: "Protocol (RS485)"
-    #protocol_type:
-    #  name: "Protocol (Type)"
-
-button:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   shutdown:
-     name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
-  
-number:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   discharge_over_current2_protection:
-     name: "Discharge Over Current 2 Protection" 
-     mode: BOX
-   discharge_over_current2_protection_delay:
-     name: "Discharge Over Current 2 Protection Delay" 
-     mode: BOX
-
-   short_circuit_protection_delay:
-     name: "Short Circuit Protection Delay (Milliseconds)" 
-     mode: BOX
-
-
+    min_cell_voltage:
+      name: "Min Cell Voltage"
+    max_cell_voltage:
+      name: "Max Cell Voltage"
+    avg_cell_voltage:
+      name: "Avg Cell Voltage"
+    max_cell_differential:
+      name: "Max Cell Differential"
 
 
 

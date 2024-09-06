@@ -102,6 +102,7 @@
     <None Include="..\..\components\pace_bms\number\__init__.py">
       <Filter>components\pace_bms\number</Filter>
     </None>
+    <None Include="..\..\ESP32-C3-dev.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
