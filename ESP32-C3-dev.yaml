@@ -53,11 +53,11 @@ web_server:
 
 external_components:
   - source:
-      #type: git
-      #url: https://github.com/nkinnan/esphome-pace-bms
-      #ref: "main"
-      type: local
-      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
+      type: git
+      url: https://github.com/nkinnan/esphome-pace-bms
+      ref: "main"
+      #type: local
+      #path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
     refresh: 1s
     
