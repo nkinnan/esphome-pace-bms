@@ -10,10 +10,10 @@ static const char* const TAG = "pace_bms.sensor";
 
 void PaceBmsSensor::setup() {
   if (request_analog_info_callback_ == true) {
-	  this->parent_->register_analog_information_callback([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback(analog_information); });
+	  this->parent_->register_analog_information_callback_v25([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback(analog_information); });
   }
   if (request_status_info_callback_ == true) {
-	  this->parent_->register_status_information_callback([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback(status_information); });
+	  this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback(status_information); });
   }
 }
 

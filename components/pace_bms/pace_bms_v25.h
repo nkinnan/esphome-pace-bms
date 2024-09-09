@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-
 /*
 General format of requests/responses:
 -------------------------------------
@@ -51,70 +50,70 @@ private:
 	enum CID1 : uint8_t
 	{
 		CID1_LithiumIron = 0x46,
-		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a knock-off, rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
+		CID1_LithiumIon  = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a knock-off, rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
 	};
 
 	enum CID2 : uint8_t
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
-		CID2_ReadAnalogInformation = 0x42,
-		CID2_ReadStatusInformation = 0x44,
-		CID2_ReadHardwareVersion = 0xC1,
-		CID2_ReadSerialNumber = 0xC2,
+		CID2_ReadAnalogInformation                                = 0x42,
+		CID2_ReadStatusInformation                                = 0x44,
+		CID2_ReadHardwareVersion                                  = 0xC1,
+		CID2_ReadSerialNumber                                     = 0xC2,
 
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are in the "Switch Control" section
-		CID2_WriteSwitchCommand = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
-		CID2_WriteChargeMosfetSwitchCommand = 0x9A,
-		CID2_WriteDischargeMosfetSwitchCommand = 0x9B,
-		CID2_WriteRebootCommand = 0x9C,
+		CID2_WriteSwitchCommand                                   = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
+		CID2_WriteChargeMosfetSwitchCommand                       = 0x9A,
+		CID2_WriteDischargeMosfetSwitchCommand                    = 0x9B,
+		CID2_WriteRebootCommand                                   = 0x9C,
 
 		// "Memory Information" tab of PBmsTools 2.4
-		CID2_ReadDateTime = 0xB1,
-		CID2_WriteDateTime = 0xB2,
+		CID2_ReadDateTime                                         = 0xB1,
+		CID2_WriteDateTime                                        = 0xB2,
 
 		// "Parameter Setting" tab of PBmsTools 2.4
-		CID2_ReadCellOverVoltageConfiguration = 0xD1,
-		CID2_WriteCellOverVoltageConfiguration = 0xD0,
-		CID2_ReadPackOverVoltageConfiguration = 0xD5,
-		CID2_WritePackOverVoltageConfiguration = 0xD4,
-		CID2_ReadCellUnderVoltageConfiguration = 0xD3,
-		CID2_WriteCellUnderVoltageConfiguration = 0xD2,
-		CID2_ReadPackUnderVoltageConfiguration = 0xD7,
-		CID2_WritePackUnderVoltageConfiguration = 0xD6,
-		CID2_ReadChargeOverCurrentConfiguration = 0xD9,
-		CID2_WriteChargeOverCurrentConfiguration = 0xD8,
-		CID2_ReadDischargeSlowOverCurrentConfiguration = 0xDB,
-		CID2_WriteDischargeSlowOverCurrentConfiguration = 0xDA,
-		CID2_ReadDischargeFastOverCurrentConfiguration = 0xE3,
-		CID2_WriteDischargeFastOverCurrentConfiguration = 0xE2,
-		CID2_ReadShortCircuitProtectionConfiguration = 0xE5,
-		CID2_WriteShortCircuitProtectionConfiguration = 0xE4,
-		CID2_ReadCellBalancingConfiguration = 0xB6,
-		CID2_WriteCellBalancingConfiguration = 0xB5,
-		CID2_ReadSleepConfiguration = 0xA0,
-		CID2_WriteSleepConfiguration = 0xA8,
-		CID2_ReadFullChargeLowChargeConfiguration = 0xAF,
-		CID2_WriteFullChargeLowChargeConfiguration = 0xAE,
-		CID2_ReadChargeAndDischargeOverTemperatureConfiguration = 0xDD,
-		CID2_WriteChargeAndDischargeOverTemperatureConfiguration = 0xDC,
-		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
+		CID2_ReadCellOverVoltageConfiguration                     = 0xD1,
+		CID2_WriteCellOverVoltageConfiguration                    = 0xD0,
+		CID2_ReadPackOverVoltageConfiguration                     = 0xD5,
+		CID2_WritePackOverVoltageConfiguration                    = 0xD4,
+		CID2_ReadCellUnderVoltageConfiguration                    = 0xD3,
+		CID2_WriteCellUnderVoltageConfiguration                   = 0xD2,
+		CID2_ReadPackUnderVoltageConfiguration                    = 0xD7,
+		CID2_WritePackUnderVoltageConfiguration                   = 0xD6,
+		CID2_ReadChargeOverCurrentConfiguration                   = 0xD9,
+		CID2_WriteChargeOverCurrentConfiguration                  = 0xD8,
+		CID2_ReadDischargeSlowOverCurrentConfiguration            = 0xDB,
+		CID2_WriteDischargeSlowOverCurrentConfiguration           = 0xDA,
+		CID2_ReadDischargeFastOverCurrentConfiguration            = 0xE3,
+		CID2_WriteDischargeFastOverCurrentConfiguration           = 0xE2,
+		CID2_ReadShortCircuitProtectionConfiguration              = 0xE5,
+		CID2_WriteShortCircuitProtectionConfiguration             = 0xE4,
+		CID2_ReadCellBalancingConfiguration                       = 0xB6,
+		CID2_WriteCellBalancingConfiguration                      = 0xB5,
+		CID2_ReadSleepConfiguration                               = 0xA0,
+		CID2_WriteSleepConfiguration                              = 0xA8,
+		CID2_ReadFullChargeLowChargeConfiguration                 = 0xAF,
+		CID2_WriteFullChargeLowChargeConfiguration                = 0xAE,
+		CID2_ReadChargeAndDischargeOverTemperatureConfiguration   = 0xDD,
+		CID2_WriteChargeAndDischargeOverTemperatureConfiguration  = 0xDC,
+		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration  = 0xDF,
 		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
-		CID2_ReadMosfetOverTemperatureConfiguration = 0xE1,
-		CID2_WriteMosfetOverTemperatureConfiguration = 0xE0,
-		CID2_ReadEnvironmentOverUnderTemperatureConfiguration = 0xE7,
-		CID2_WriteEnvironmentOverUnderTemperatureConfiguration = 0xE6,
+		CID2_ReadMosfetOverTemperatureConfiguration               = 0xE1,
+		CID2_WriteMosfetOverTemperatureConfiguration              = 0xE0,
+		CID2_ReadEnvironmentOverUnderTemperatureConfiguration     = 0xE7,
+		CID2_WriteEnvironmentOverUnderTemperatureConfiguration    = 0xE6,
 
 		// "System Configuration" tab of PBmsTools 2.4
-		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
-		CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
-		CID2_ReadRemainingCapacity = 0xA6,
+		CID2_ReadChargeCurrentLimiterStartCurrent                 = 0xED,
+		CID2_WriteChargeCurrentLimiterStartCurrent                = 0xEE,
+		CID2_ReadRemainingCapacity                                = 0xA6,
 
-		CID2_WriteOlderVersionOfSetCommunicationProtocol = 0x99,
+		CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
 
-		CID2_ReadCommunicationsProtocols = 0xEB,
-		CID2_WriteCommunicationsProtocols = 0xEC,
+		CID2_ReadCommunicationsProtocols                          = 0xEB,
+		CID2_WriteCommunicationsProtocols                         = 0xEC,
 	};
 
 	static std::string FormatReturnCode(const uint8_t returnCode);
@@ -127,17 +126,17 @@ private:
 
 	// Length is just the lower 12 bits of the checksummed length 
 	static uint16_t LengthFromChecksummedLength(const uint16_t cklen);
-public:
+
 	// Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
 	static uint16_t CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data);
-private:
+
 	// helper for WriteHexEncoded----
-	// Works with ASCII encoding, not portable, but that's what the protocol uses
+	// Works with ASCII encoding, not portable, but then that's what the protocol uses
 	static uint8_t NibbleToHex(const uint8_t nibbleByte);
 
 	// todo: error check input range and log error and/or handle upstream to abort decode
 	// helper for ReadHexEncoded----
-	// Works with ASCII encoding, not portable, but that's what the protocol uses
+	// Works with ASCII encoding, not portable, but then that's what the protocol uses
 	static uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
@@ -151,10 +150,10 @@ private:
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
 	static void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
-public:
+
 	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
 	static void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
-private:
+
 	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
 	static void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
 
@@ -167,12 +166,12 @@ private:
 
 public:
 
-	// ============================================================================
-	// 
-	// Main "Realtime Monitoring" tab of PBmsTools 2.4
-	// These are the commands sent in a loop to fill out the display
-	// 
-	// ============================================================================
+// ============================================================================
+// 
+// Main "Realtime Monitoring" tab of PBmsTools 2.4
+// These are the commands sent in a loop to fill out the display
+// 
+// ============================================================================
 
 	// ==== Read Analog Information
 	// 0 Responding Bus Id
@@ -198,19 +197,19 @@ public:
 	static const uint8_t MAX_TEMP_COUNT = 6;
 	struct AnalogInformation
 	{
-		uint8_t cellCount;
+		uint8_t  cellCount;
 		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
-		uint8_t temperatureCount;
-		int16_t temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
-		int32_t currentMilliamps; 
+		uint8_t  temperatureCount;
+		int16_t  temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
+		int32_t  currentMilliamps; 
 		uint16_t totalVoltageMillivolts;
 		uint32_t remainingCapacityMilliampHours;
 		uint32_t fullCapacityMilliampHours;
 		uint16_t cycleCount;
 		uint32_t designCapacityMilliampHours;
-		float SoC; // in percent
-		float SoH; // in percent
-		float powerWatts;
+		float    SoC; // in percent
+		float    SoH; // in percent
+		float    powerWatts;
 		uint16_t minCellVoltageMillivolts;
 		uint16_t maxCellVoltageMillivolts;
 		uint16_t avgCellVoltageMillivolts;
@@ -293,7 +292,7 @@ public:
 	enum StatusInformation_SystemFlags
 	{
 		SF_HeartIndicatorBit                    = (1 << 7),
-		SF_UndefinedStatusBit7                   = (1 << 6),
+		SF_UndefinedStatusBit7                  = (1 << 6),
 		SF_ChargingBit                          = (1 << 5),
 		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
 		SF_DischargingBit                       = (1 << 3),
@@ -358,28 +357,27 @@ public:
 		W2F_HighChargeTemperature        = (1 << 0),
 	};
 
-
 	struct StatusInformation
 	{
 		std::string warningText;
 		uint8_t     warning_value_cell[MAX_CELL_COUNT]; // DecodeWarningValue / enum StatusInformation_WarningValues
 		uint8_t     warning_value_temp[MAX_TEMP_COUNT]; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_charge_current; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_total_voltage; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_discharge_current; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value1; // DecodeWarningStatus1Value / enum StatusInformation_Warning1Flags
-		uint8_t     warning_value2; // DecodeWarningStatus2Value / enum StatusInformation_Warning2Flags
+		uint8_t     warning_value_charge_current;       // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_total_voltage;        // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_discharge_current;    // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value1;                     // DecodeWarningStatus1Value / enum StatusInformation_Warning1Flags
+		uint8_t     warning_value2;                     // DecodeWarningStatus2Value / enum StatusInformation_Warning2Flags
 		std::string balancingText;
-		uint16_t    balancing_value; // one bit per cell, lowest bit = cell 1
+		uint16_t    balancing_value;                    // one bit per cell, lowest bit = cell 1
 		std::string systemText;
-		uint8_t     system_value; // DecodeStatusValue / enum StatusInformation_SystemFlags
+		uint8_t     system_value;                       // DecodeStatusValue / enum StatusInformation_SystemFlags
 		std::string configurationText;
-		uint8_t     configuration_value; // DecodeConfigurationStatusValue / enum StatusInformation_ConfigurationFlags
+		uint8_t     configuration_value;                // DecodeConfigurationStatusValue / enum StatusInformation_ConfigurationFlags
 		std::string protectionText;
-		uint8_t     protection_value1; // DecodeProtectionStatus1Value / enum StatusInformation_Protection1Flags
-		uint8_t     protection_value2; // DecodeProtectionStatus2Value / enum StatusInformation_Protection2Flags
+		uint8_t     protection_value1;                  // DecodeProtectionStatus1Value / enum StatusInformation_Protection1Flags
+		uint8_t     protection_value2;                  // DecodeProtectionStatus2Value / enum StatusInformation_Protection2Flags
 		std::string faultText;
-		uint8_t     fault_value; // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
+		uint8_t     fault_value;                        // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
 	};
 
 	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
@@ -436,12 +434,12 @@ public:
 	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber);
 
-	// ============================================================================
-	// 
-	// Main "Realtime Monitoring" tab of PBmsTools 2.4
-	// These are in the "Switch Control" section
-	// 
-	// ============================================================================
+// ============================================================================
+// 
+// Main "Realtime Monitoring" tab of PBmsTools 2.4
+// These are in the "Switch Control" section
+// 
+// ============================================================================
 
 	// ==== Sound Alarm Switch
 	// 1: The "on/off" switch command, see: enum SwitchCommand
@@ -582,7 +580,7 @@ public:
 	bool CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request);
 	bool ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, const MosfetType type, const MosfetState command, const std::vector<uint8_t>& response);
 
-	// ==== Reboot (labeled as "Shutdown" in PBmsTools, but it actually causes a reboot in my experience)
+	// ==== Shutdown (if the BMS is active charge/discharging it will immediately reboot after shutdown)
 	// x: unknown payload, this may be a command code and there may be more but I'm not going to test that due to potentially unknown consequences
 	// write: ~2500469CE00201FD1B.
 	//                     xx
@@ -595,11 +593,11 @@ public:
 	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 
-	// ============================================================================
-	// 
-	// "Memory Information" tab of PBmsTools 2.4 
-	// 
-	// ============================================================================
+// ============================================================================
+// 
+// "Memory Information" tab of PBmsTools 2.4 
+// 
+// ============================================================================
 
 	// ==== Read Log History
 	// This appears to be a "history" table
@@ -672,11 +670,11 @@ public:
 
 
 
-	// ============================================================================
-	// 
-	// "Parameter Setting" tab of PBmsTools 2.4
-	// 
-	// ============================================================================
+// ============================================================================
+// 
+// "Parameter Setting" tab of PBmsTools 2.4
+// 
+// ============================================================================
 
 	enum ReadConfigurationType {
 		RC_CellOverVoltage = CID2_ReadCellOverVoltageConfiguration,
@@ -1096,11 +1094,11 @@ public:
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const EnvironmentOverUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
-	// ============================================================================
-	// 
-	// "System Configuration" tab of PBmsTools 2.4
-	// 
-	// ============================================================================
+// ============================================================================
+// 
+// "System Configuration" tab of PBmsTools 2.4
+// 
+// ============================================================================
 
 	// note: "Charge Current Limiter Current Limit Gear Switch" is in this page in PBmsTools but I moved it to the SwitchCommand section above because it uses the same CID2 and fits in nicely with that code
 
@@ -1138,17 +1136,101 @@ public:
 	bool CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
 
+	// ==== Protocol
+	// 1 - CAN protocol, see enum, this example is "AFORE"
+	// 2 - RS485 protocol, see enum, this example is "RONGKE"
+	// 3 - "Type", see enum, not sure what this means exactly, I'd go with "Auto" which is in this example
+	// read:  ~250046EB0000FD88.
+	// resp:  ~25004600A006131400FC6F.
+	//                     112233
+	// write: ~250046ECA006131400FC47.
+	// resp:  ~250046000000FDAF.
+
+	enum ProtocolList_CAN : uint8_t
+	{
+		can_empty = 0xFF,        // 255d <blank entry> I believe this means "turned off"
+		can_Pace = 0x00,         // 00d PACE
+		can_Pylon = 0x01,        // 01d Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
+		can_Growatt = 0x02,      // 02d Growatt / Sacolar
+		can_Victron = 0x03,      // 03d Victron
+		can_Schneider = 0x04,    // 04d Schneider / SE / SMA
+		can_LuxPower = 0x05,     // 05d LuxPower
+		can_SoroTec = 0x06,      // 06d SoroTec (SRD)
+		can_SMA = 0x07,          // 07d SMA / Studer
+		can_GoodWe = 0x08,       // 08d GoodWe
+		can_Studer = 0x09,       // 09d Studer
+		can_Sofar = 0x0A,        // 10d Sofar
+		can_Must = 0x0B,         // 11d Must / PV
+		can_Solis = 0x0C,        // 12d Solis / Jinlang
+		can_DIDU = 0x0D,         // 13d DIDU
+		can_Senergy = 0x0E,      // 14d Senergy
+		can_TBB = 0x0F,          // 15d TBB
+		can_Pylon_V202 = 0x10,   // 16d Pylon_V202
+		can_Growatt_V109 = 0x11, // 17d Growatt_V109
+		can_Must_V202 = 0x12,    // 18d Must_V202
+		can_Afore = 0x13,        // 19d Afore
+		can_INVT = 0x14,         // 20d INVT / YWT
+		can_FUJI = 0x15,         // 21d FUJI
+		can_Sofar_V21003 = 0x16, // 22d Sofar_V21003
+	};
+
+	enum ProtocolList_RS485 : uint8_t
+	{
+		rs485_empty = 0xFF,        // 255d <blank entry> I believe this means "turned off"
+		rs485_PaceModbus = 0x00,   // 00d Pace Modbus
+		rs485_Pylon = 0x01,        // 01d Pylon / DeYe / Bentterson
+		rs485_Growatt = 0x02,      // 02d Growatt
+		rs485_Voltronic = 0x03,    // 03d Voltronic / EA Sun Power / MPP Solar
+		rs485_Schneider = 0x04,    // 04d Schneider / SE
+		rs485_PHOCOS = 0x05,       // 05d PHOCOS
+		rs485_LuxPower = 0x06,     // 06d LuxPower
+		rs485_Solar = 0x07,        // 07d Solar
+		rs485_Lithium = 0x08,      // 08d Lithium
+		rs485_EP = 0x09,           // 09d EP
+		rs485_RTU04 = 0x0A,        // 10d RTU04
+		rs485_LuxPower_V01 = 0x0B, // 11d LuxPower_V01
+		rs485_LuxPower_V03 = 0x0C, // 12d LuxPower_V03
+		rs485_SRNE = 0x0D,         // 13d SRNE / WOW
+		rs485_LEOCH = 0x0E,        // 14d LEOCH
+		rs485_Pylon_F = 0x0F,      // 15d Pylon_F
+		rs485_Afore = 0x10,        // 16d Afore
+		rs485_UPS_AGXN = 0x11,     // 17d UPS_AGXN
+		rs485_Orex_Sunpolo = 0x12, // 18d Orex_Sunpolo
+		rs485_XIONGTAO = 0x13,     // 19d XIONGTAO
+		rs485_RONGKE = 0x14,       // 20d RONGKE
+		rs485_XINRUI = 0x15,       // 21d XINRUI
+		rs485_ELTEK = 0x16,        // 22d ELTEK
+		rs485_GT = 0x17,           // 23d GT
+		rs485_Leoch_V106 = 0x18,   // 24d Leoch_V106
+	};
+
+	enum ProtocolList_Type : uint8_t
+	{
+		empty = 0xFF, // 255d <blank entry>
+		Auto = 0x00, // 00d Auto
+		Manual = 0x01, // 01d Manual
+	};
+
+	static const uint8_t exampleReadProtocolsRequestV25[];
+	static const uint8_t exampleReadProtocolsResponseV25[];
+	static const uint8_t exampleWriteProtocolsRequestV25[];
+	static const uint8_t exampleWriteProtocolsResponseV25[];
+
+	struct Protocols
+	{
+		ProtocolList_CAN   CAN;
+		ProtocolList_RS485 RS485;
+		ProtocolList_Type  Type;
+	};
+
+	bool CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols);
+	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
+	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
+
 
 	// There are many other settings in "System Configuration" that can be written and/or calibrated here, 
 	// none of which I am exposing because it would be a Very Bad Idea to mess with them
-
-
-	 
-
-
-
-
-
 
 
 	/*
@@ -1174,7 +1256,7 @@ public:
 		11 = LuxPower 485
 	*/
 
-
+	/*
 	enum OldStyleProtocolList
 	{
 		old_paceic = 0x0E,
@@ -1184,101 +1266,8 @@ public:
 		old_Growatt = 0x12,
 		old_LuxPower = 0x11,
 	};
+	*/
 
-
-
-
-	// ==== Protocol
-	// 1 - CAN protocol, see enum, this example is "AFORE"
-	// 2 - RS485 protocol, see enum, this example is "RONGKE"
-	// 3 - "Type", see enum, not sure what this means exactly, I'd go with "Auto" which is in this example
-	// read:  ~250046EB0000FD88.
-	// resp:  ~25004600A006131400FC6F.
-	//                     112233
-	// write: ~250046ECA006131400FC47.
-	// resp:  ~250046000000FDAF.
-
-	enum NewStyleProtocolList_CAN : uint8_t
-	{
-		can_empty        = 0xFF, // 255d <blank entry> I believe this means "turned off"
-		can_Pace         = 0x00, // 00d PACE
-		can_Pylon        = 0x01, // 01d Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
-		can_Growatt      = 0x02, // 02d Growatt / Sacolar
-		can_Victron      = 0x03, // 03d Victron
-		can_Schneider    = 0x04, // 04d Schneider / SE / SMA
-		can_LuxPower     = 0x05, // 05d LuxPower
-		can_SoroTec      = 0x06, // 06d SoroTec (SRD)
-		can_SMA          = 0x07, // 07d SMA / Studer
-		can_GoodWe       = 0x08, // 08d GoodWe
-		can_Studer       = 0x09, // 09d Studer
-		can_Sofar        = 0x0A, // 10d Sofar
-		can_Must         = 0x0B, // 11d Must / PV
-		can_Solis        = 0x0C, // 12d Solis / Jinlang
-		can_DIDU         = 0x0D, // 13d DIDU
-		can_Senergy      = 0x0E, // 14d Senergy
-		can_TBB          = 0x0F, // 15d TBB
-		can_Pylon_V202   = 0x10, // 16d Pylon_V202
-		can_Growatt_V109 = 0x11, // 17d Growatt_V109
-		can_Must_V202    = 0x12, // 18d Must_V202
-		can_Afore        = 0x13, // 19d Afore
-		can_INVT         = 0x14, // 20d INVT / YWT
-		can_FUJI         = 0x15, // 21d FUJI
-		can_Sofar_V21003 = 0x16, // 22d Sofar_V21003
-	};
-
-	enum NewStyleProtocolList_RS485 : uint8_t
-	{
-		rs485_empty        = 0xFF, // 255d <blank entry> I believe this means "turned off"
-		rs485_PaceModbus   = 0x00, // 00d Pace Modbus
-		rs485_Pylon        = 0x01, // 01d Pylon / DeYe / Bentterson
-		rs485_Growatt      = 0x02, // 02d Growatt
-		rs485_Voltronic    = 0x03, // 03d Voltronic / EA Sun Power / MPP Solar
-		rs485_Schneider    = 0x04, // 04d Schneider / SE
-		rs485_PHOCOS       = 0x05, // 05d PHOCOS
-		rs485_LuxPower     = 0x06, // 06d LuxPower
-		rs485_Solar        = 0x07, // 07d Solar
-		rs485_Lithium      = 0x08, // 08d Lithium
-		rs485_EP           = 0x09, // 09d EP
-		rs485_RTU04        = 0x0A, // 10d RTU04
-		rs485_LuxPower_V01 = 0x0B, // 11d LuxPower_V01
-		rs485_LuxPower_V03 = 0x0C, // 12d LuxPower_V03
-		rs485_SRNE         = 0x0D, // 13d SRNE / WOW
-		rs485_LEOCH        = 0x0E, // 14d LEOCH
-		rs485_Pylon_F      = 0x0F, // 15d Pylon_F
-		rs485_Afore        = 0x10, // 16d Afore
-		rs485_UPS_AGXN     = 0x11, // 17d UPS_AGXN
-		rs485_Orex_Sunpolo = 0x12, // 18d Orex_Sunpolo
-		rs485_XIONGTAO     = 0x13, // 19d XIONGTAO
-		rs485_RONGKE       = 0x14, // 20d RONGKE
-		rs485_XINRUI       = 0x15, // 21d XINRUI
-		rs485_ELTEK        = 0x16, // 22d ELTEK
-		rs485_GT           = 0x17, // 23d GT
-		rs485_Leoch_V106   = 0x18, // 24d Leoch_V106
-	};
-
-	enum NewStyleProtocolList_Type : uint8_t
-	{
-		empty  = 0xFF, // 255d <blank entry>
-		Auto   = 0x00, // 00d Auto
-		Manual = 0x01, // 01d Manual
-	};
-
-	static const uint8_t exampleReadProtocolsRequestV25[];
-	static const uint8_t exampleReadProtocolsResponseV25[];
-	static const uint8_t exampleWriteProtocolsRequestV25[];
-	static const uint8_t exampleWriteProtocolsResponseV25[];
-
-	struct Protocols
-	{
-		NewStyleProtocolList_CAN   CAN;
-		NewStyleProtocolList_RS485 RS485;
-		NewStyleProtocolList_Type  Type;
-	};
-
-	bool CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols);
-	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
-	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
-
+	// -------- NOT IMPLEMENTED --------
 };
 

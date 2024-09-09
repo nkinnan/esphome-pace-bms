@@ -14,7 +14,7 @@ void PaceBmsSwitch::setup() {
 	  this->charge_current_limiter_switch_ != nullptr ||
 	  this->charge_mosfet_switch_ != nullptr ||
 	  this->discharge_mosfet_switch_ != nullptr) {
-    this->parent_->register_status_information_callback([this](PaceBmsV25::StatusInformation& status_information) {
+    this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) {
 		if (this->buzzer_alarm_switch_ != nullptr) {
 			bool state = (status_information.configuration_value & PaceBmsV25::CF_BuzzerAlarmEnabledBit);
 			ESP_LOGV(TAG, "'buzzer_switch': Publishing state due to update from the hardware: %s", ONOFF(state));
@@ -44,27 +44,27 @@ void PaceBmsSwitch::setup() {
   }
   if (this->buzzer_alarm_switch_ != nullptr) {
 	this->buzzer_alarm_switch_->add_on_write_state_callback([this](bool state) {
-	  this->parent_->set_switch_state(state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer);
+	  this->parent_->set_switch_state_v25(state ? PaceBmsV25::SC_EnableBuzzer : PaceBmsV25::SC_DisableBuzzer);
 	});
   }
   if (this->led_alarm_switch_ != nullptr) {
 	this->led_alarm_switch_->add_on_write_state_callback([this](bool state) {
-	  this->parent_->set_switch_state(state ? PaceBmsV25::SC_EnableLedWarning : PaceBmsV25::SC_DisableLedWarning);
+	  this->parent_->set_switch_state_v25(state ? PaceBmsV25::SC_EnableLedWarning : PaceBmsV25::SC_DisableLedWarning);
 	});
   }
   if (this->charge_current_limiter_switch_ != nullptr) {
 	this->charge_current_limiter_switch_->add_on_write_state_callback([this](bool state) {
-	  this->parent_->set_switch_state(state ? PaceBmsV25::SC_EnableChargeCurrentLimiter : PaceBmsV25::SC_DisableChargeCurrentLimiter);
+	  this->parent_->set_switch_state_v25(state ? PaceBmsV25::SC_EnableChargeCurrentLimiter : PaceBmsV25::SC_DisableChargeCurrentLimiter);
 	});
   }
   if (this->charge_mosfet_switch_ != nullptr) {
 	this->charge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-	  this->parent_->set_mosfet_state(PaceBmsV25::MT_Charge, state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open);
+	  this->parent_->set_mosfet_state_v25(PaceBmsV25::MT_Charge, state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open);
 	});
   }
   if (this->discharge_mosfet_switch_ != nullptr) {
 	this->discharge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-	  this->parent_->set_mosfet_state(PaceBmsV25::MT_Discharge, state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open);
+	  this->parent_->set_mosfet_state_v25(PaceBmsV25::MT_Discharge, state ? PaceBmsV25::MS_Close : PaceBmsV25::MS_Open);
 	});
   }
 }

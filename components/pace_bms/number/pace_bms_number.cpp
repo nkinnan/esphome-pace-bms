@@ -16,7 +16,7 @@ void PaceBmsNumber::setup() {
 		this->cell_over_voltage_protection_number_ != nullptr ||
 		this->cell_over_voltage_protection_release_number_ != nullptr ||
 		this->cell_over_voltage_protection_delay_number_ != nullptr) {
-		this->parent_->register_cell_over_voltage_configuration_callback([this](PaceBmsV25::CellOverVoltageConfiguration & configuration) {
+		this->parent_->register_cell_over_voltage_configuration_callback_v25([this](PaceBmsV25::CellOverVoltageConfiguration & configuration) {
 			this->cell_over_voltage_configuration_ = configuration;
 			this->cell_over_voltage_configuration_seen_ = true;
 			if (this->cell_over_voltage_alarm_number_ != nullptr) {
@@ -49,7 +49,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_alarm user selected value %f", value);
 			this->cell_over_voltage_configuration_.AlarmMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_over_voltage_configuration(this->cell_over_voltage_configuration_);
+			this->parent_->set_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 		});
 	}
 	if (this->cell_over_voltage_protection_number_ != nullptr) {
@@ -60,7 +60,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection user selected value %f", value);
 			this->cell_over_voltage_configuration_.ProtectionMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_over_voltage_configuration(this->cell_over_voltage_configuration_);
+			this->parent_->set_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 		});
 	}
 	if (this->cell_over_voltage_protection_release_number_ != nullptr) {
@@ -71,7 +71,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection_release user selected value %f", value);
 			this->cell_over_voltage_configuration_.ProtectionReleaseMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_over_voltage_configuration(this->cell_over_voltage_configuration_);
+			this->parent_->set_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 		});
 	}
 	if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
@@ -82,7 +82,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_over_voltage_protection_delay user selected value %f", value);
 			this->cell_over_voltage_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_cell_over_voltage_configuration(this->cell_over_voltage_configuration_);
+			this->parent_->set_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 		});
 	}
 
@@ -90,7 +90,7 @@ void PaceBmsNumber::setup() {
 		this->pack_over_voltage_protection_number_ != nullptr ||
 		this->pack_over_voltage_protection_release_number_ != nullptr ||
 		this->pack_over_voltage_protection_delay_number_ != nullptr) {
-		this->parent_->register_pack_over_voltage_configuration_callback([this](PaceBmsV25::PackOverVoltageConfiguration & configuration) {
+		this->parent_->register_pack_over_voltage_configuration_callback_v25([this](PaceBmsV25::PackOverVoltageConfiguration & configuration) {
 			this->pack_over_voltage_configuration_ = configuration;
 			this->pack_over_voltage_configuration_seen_ = true;
 			if (this->pack_over_voltage_alarm_number_ != nullptr) {
@@ -123,7 +123,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_alarm user selected value %f", value);
 			this->pack_over_voltage_configuration_.AlarmMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_over_voltage_configuration(this->pack_over_voltage_configuration_);
+			this->parent_->set_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 		});
 	}
 	if (this->pack_over_voltage_protection_number_ != nullptr) {
@@ -134,7 +134,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection user selected value %f", value);
 			this->pack_over_voltage_configuration_.ProtectionMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_over_voltage_configuration(this->pack_over_voltage_configuration_);
+			this->parent_->set_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 		});
 	}
 	if (this->pack_over_voltage_protection_release_number_ != nullptr) {
@@ -145,7 +145,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection_release user selected value %f", value);
 			this->pack_over_voltage_configuration_.ProtectionReleaseMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_over_voltage_configuration(this->pack_over_voltage_configuration_);
+			this->parent_->set_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 		});
 	}
 	if (this->pack_over_voltage_protection_delay_number_ != nullptr) {
@@ -156,7 +156,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_over_voltage_protection_delay user selected value %f", value);
 			this->pack_over_voltage_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_pack_over_voltage_configuration(this->pack_over_voltage_configuration_);
+			this->parent_->set_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 		});
 	}
 
@@ -164,7 +164,7 @@ void PaceBmsNumber::setup() {
 		this->cell_under_voltage_protection_number_ != nullptr ||
 		this->cell_under_voltage_protection_release_number_ != nullptr ||
 		this->cell_under_voltage_protection_delay_number_ != nullptr) {
-		this->parent_->register_cell_under_voltage_configuration_callback([this](PaceBmsV25::CellUnderVoltageConfiguration & configuration) {
+		this->parent_->register_cell_under_voltage_configuration_callback_v25([this](PaceBmsV25::CellUnderVoltageConfiguration & configuration) {
 			this->cell_under_voltage_configuration_ = configuration;
 			this->cell_under_voltage_configuration_seen_ = true;
 			if (this->cell_under_voltage_alarm_number_ != nullptr) {
@@ -197,7 +197,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_alarm user selected value %f", value);
 			this->cell_under_voltage_configuration_.AlarmMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_under_voltage_configuration(this->cell_under_voltage_configuration_);
+			this->parent_->set_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 		});
 	}
 	if (this->cell_under_voltage_protection_number_ != nullptr) {
@@ -208,7 +208,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection user selected value %f", value);
 			this->cell_under_voltage_configuration_.ProtectionMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_under_voltage_configuration(this->cell_under_voltage_configuration_);
+			this->parent_->set_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 		});
 	}
 	if (this->cell_under_voltage_protection_release_number_ != nullptr) {
@@ -219,7 +219,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection_release user selected value %f", value);
 			this->cell_under_voltage_configuration_.ProtectionReleaseMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_under_voltage_configuration(this->cell_under_voltage_configuration_);
+			this->parent_->set_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 		});
 	}
 	if (this->cell_under_voltage_protection_delay_number_ != nullptr) {
@@ -230,7 +230,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_under_voltage_protection_delay user selected value %f", value);
 			this->cell_under_voltage_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_cell_under_voltage_configuration(this->cell_under_voltage_configuration_);
+			this->parent_->set_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 		});
 	}
 
@@ -238,7 +238,7 @@ void PaceBmsNumber::setup() {
 		this->pack_under_voltage_protection_number_ != nullptr ||
 		this->pack_under_voltage_protection_release_number_ != nullptr ||
 		this->pack_under_voltage_protection_delay_number_ != nullptr) {
-		this->parent_->register_pack_under_voltage_configuration_callback([this](PaceBmsV25::PackUnderVoltageConfiguration& configuration) {
+		this->parent_->register_pack_under_voltage_configuration_callback_v25([this](PaceBmsV25::PackUnderVoltageConfiguration& configuration) {
 			this->pack_under_voltage_configuration_ = configuration;
 			this->pack_under_voltage_configuration_seen_ = true;
 			if (this->pack_under_voltage_alarm_number_ != nullptr) {
@@ -271,7 +271,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_alarm user selected value %f", value);
 			this->pack_under_voltage_configuration_.AlarmMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_under_voltage_configuration(this->pack_under_voltage_configuration_);
+			this->parent_->set_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 		});
 	}
 	if (this->pack_under_voltage_protection_number_ != nullptr) {
@@ -282,7 +282,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection user selected value %f", value);
 			this->pack_under_voltage_configuration_.ProtectionMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_under_voltage_configuration(this->pack_under_voltage_configuration_);
+			this->parent_->set_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 		});
 	}
 	if (this->pack_under_voltage_protection_release_number_ != nullptr) {
@@ -293,7 +293,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection_release user selected value %f", value);
 			this->pack_under_voltage_configuration_.ProtectionReleaseMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_pack_under_voltage_configuration(this->pack_under_voltage_configuration_);
+			this->parent_->set_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 		});
 	}
 	if (this->pack_under_voltage_protection_delay_number_ != nullptr) {
@@ -304,14 +304,14 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting pack_under_voltage_protection_delay user selected value %f", value);
 			this->pack_under_voltage_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_pack_under_voltage_configuration(this->pack_under_voltage_configuration_);
+			this->parent_->set_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 		});
 	}
 
 	if (this->charge_over_current_alarm_number_ != nullptr ||
 		this->charge_over_current_protection_number_ != nullptr ||
 		this->charge_over_current_protection_delay_number_ != nullptr) {
-		this->parent_->register_charge_over_current_configuration_callback([this](PaceBmsV25::ChargeOverCurrentConfiguration& configuration) {
+		this->parent_->register_charge_over_current_configuration_callback_v25([this](PaceBmsV25::ChargeOverCurrentConfiguration& configuration) {
 			this->charge_over_current_configuration_ = configuration;
 			this->charge_over_current_configuration_seen_ = true;
 			if (this->charge_over_current_alarm_number_ != nullptr) {
@@ -339,7 +339,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_current_alarm user selected value %f", value);
 			this->charge_over_current_configuration_.AlarmAmperage = std::lround(value);
-			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			this->parent_->set_charge_over_current_configuration_v25(this->charge_over_current_configuration_);
 		});
 	}
 	if (this->charge_over_current_protection_number_ != nullptr) {
@@ -350,7 +350,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_current_protection user selected value %f", value);
 			this->charge_over_current_configuration_.ProtectionAmperage = std::lround(value);
-			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			this->parent_->set_charge_over_current_configuration_v25(this->charge_over_current_configuration_);
 		});
 	}
 	if (this->charge_over_current_protection_delay_number_ != nullptr) {
@@ -361,14 +361,14 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_current_protection_delay user selected value %f", value);
 			this->charge_over_current_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_charge_over_current_configuration(this->charge_over_current_configuration_);
+			this->parent_->set_charge_over_current_configuration_v25(this->charge_over_current_configuration_);
 		});
 	}
 
 	if (this->discharge_over_current1_alarm_number_ != nullptr ||
 		this->discharge_over_current1_protection_number_ != nullptr ||
 		this->discharge_over_current1_protection_delay_number_ != nullptr) {
-		this->parent_->register_discharge_over_current1_configuration_callback([this](PaceBmsV25::DischargeOverCurrent1Configuration& configuration) {
+		this->parent_->register_discharge_over_current1_configuration_callback_v25([this](PaceBmsV25::DischargeOverCurrent1Configuration& configuration) {
 			this->discharge_over_current1_configuration_ = configuration;
 			this->discharge_over_current1_configuration_seen_ = true;
 			if (this->discharge_over_current1_alarm_number_ != nullptr) {
@@ -396,7 +396,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_current1_alarm user selected value %f", value);
 			this->discharge_over_current1_configuration_.AlarmAmperage = std::lround(value);
-			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			this->parent_->set_discharge_over_current1_configuration_v25(this->discharge_over_current1_configuration_);
 		});
 	}
 	if (this->discharge_over_current1_protection_number_ != nullptr) {
@@ -407,7 +407,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_current1_protection user selected value %f", value);
 			this->discharge_over_current1_configuration_.ProtectionAmperage = std::lround(value);
-			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			this->parent_->set_discharge_over_current1_configuration_v25(this->discharge_over_current1_configuration_);
 		});
 	}
 	if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
@@ -418,13 +418,13 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_current1_protection_delay user selected value %f", value);
 			this->discharge_over_current1_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_discharge_over_current1_configuration(this->discharge_over_current1_configuration_);
+			this->parent_->set_discharge_over_current1_configuration_v25(this->discharge_over_current1_configuration_);
 		});
 	}
 
 	if (this->discharge_over_current2_protection_number_ != nullptr ||
 		this->discharge_over_current2_protection_delay_number_ != nullptr) {
-		this->parent_->register_discharge_over_current2_configuration_callback([this](PaceBmsV25::DischargeOverCurrent2Configuration& configuration) {
+		this->parent_->register_discharge_over_current2_configuration_callback_v25([this](PaceBmsV25::DischargeOverCurrent2Configuration& configuration) {
 			this->discharge_over_current2_configuration_ = configuration;
 			this->discharge_over_current2_configuration_seen_ = true;
 			if (this->discharge_over_current2_protection_number_ != nullptr) {
@@ -447,7 +447,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_current2_protection user selected value %f", value);
 			this->discharge_over_current2_configuration_.ProtectionAmperage = std::lround(value);
-			this->parent_->set_discharge_over_current2_configuration(this->discharge_over_current2_configuration_);
+			this->parent_->set_discharge_over_current2_configuration_v25(this->discharge_over_current2_configuration_);
 		});
 	}
 	if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
@@ -458,12 +458,12 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_current2_protection_delay user selected value %f", value);
 			this->discharge_over_current2_configuration_.ProtectionDelayMilliseconds = std::lround(value * 1000.0f);
-			this->parent_->set_discharge_over_current2_configuration(this->discharge_over_current2_configuration_);
+			this->parent_->set_discharge_over_current2_configuration_v25(this->discharge_over_current2_configuration_);
 		});
 	}
 
 	if (this->short_circuit_protection_delay_number_ != nullptr) {
-		this->parent_->register_short_circuit_protection_configuration_callback([this](PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
+		this->parent_->register_short_circuit_protection_configuration_callback_v25([this](PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
 
 			this->short_circuit_protection_configuration_ = configuration;
 			this->short_circuit_protection_configuration_seen_ = true;
@@ -482,13 +482,13 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting short_circuit_protection_delay user selected value %f", value);
 			this->short_circuit_protection_configuration_.ProtectionDelayMicroseconds = std::lround(value * 1000.0f);
-			this->parent_->set_short_circuit_protection_configuration(this->short_circuit_protection_configuration_);
+			this->parent_->set_short_circuit_protection_configuration_v25(this->short_circuit_protection_configuration_);
 		});
 	}
 
 	if (this->cell_balancing_threshold_number_ != nullptr ||
 		this->cell_balancing_delta_number_ != nullptr) {
-		this->parent_->register_cell_balancing_configuration_callback([this](PaceBmsV25::CellBalancingConfiguration& configuration) {
+		this->parent_->register_cell_balancing_configuration_callback_v25([this](PaceBmsV25::CellBalancingConfiguration& configuration) {
 
 			this->cell_balancing_configuration_ = configuration;
 			this->cell_balancing_configuration_seen_ = true;
@@ -512,7 +512,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_balancing_threshold user selected value %f", value);
 			this->cell_balancing_configuration_.ThresholdMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_balancing_configuration(this->cell_balancing_configuration_);
+			this->parent_->set_cell_balancing_configuration_v25(this->cell_balancing_configuration_);
 		});
 	}
 	if (this->cell_balancing_delta_number_ != nullptr) {
@@ -523,13 +523,13 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting cell_balancing_delta user selected value %f", value);
 			this->cell_balancing_configuration_.DeltaCellMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_cell_balancing_configuration(this->cell_balancing_configuration_);
+			this->parent_->set_cell_balancing_configuration_v25(this->cell_balancing_configuration_);
 		});
 	}
 
 	if (this->sleep_cell_voltage_number_ != nullptr ||
 		this->sleep_delay_number_ != nullptr) {
-		this->parent_->register_sleep_configuration_callback([this](PaceBmsV25::SleepConfiguration& configuration) {
+		this->parent_->register_sleep_configuration_callback_v25([this](PaceBmsV25::SleepConfiguration& configuration) {
 			this->sleep_configuration_ = configuration;
 			this->sleep_configuration_seen_ = true;
 			if (this->sleep_cell_voltage_number_ != nullptr) {
@@ -552,7 +552,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting sleep_cell_voltage user selected value %f", value);
 			this->sleep_configuration_.CellMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_sleep_configuration(this->sleep_configuration_);
+			this->parent_->set_sleep_configuration_v25(this->sleep_configuration_);
 		});
 	}
 	if (this->sleep_delay_number_ != nullptr) {
@@ -563,14 +563,14 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting sleep_delay user selected value %f", value);
 			this->sleep_configuration_.DelayMinutes = std::lround(value);
-			this->parent_->set_sleep_configuration(this->sleep_configuration_);
+			this->parent_->set_sleep_configuration_v25(this->sleep_configuration_);
 		});
 	}
 
 	if (this->full_charge_voltage_number_ != nullptr ||
 		this->full_charge_amps_number_ != nullptr ||
 		this->low_charge_alarm_percent_number_ != nullptr) {
-		this->parent_->register_full_charge_low_charge_configuration_callback([this](PaceBmsV25::FullChargeLowChargeConfiguration& configuration) {
+		this->parent_->register_full_charge_low_charge_configuration_callback_v25([this](PaceBmsV25::FullChargeLowChargeConfiguration& configuration) {
 			this->full_charge_low_charge_configuration_ = configuration;
 			this->full_charge_low_charge_configuration_seen_ = true;
 			if (this->full_charge_voltage_number_ != nullptr) {
@@ -598,7 +598,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting full_charge_voltage user selected value %f", value);
 			this->full_charge_low_charge_configuration_.FullChargeMillivolts = std::lround(value * 1000.0f);
-			this->parent_->set_full_charge_low_charge_configuration(this->full_charge_low_charge_configuration_);
+			this->parent_->set_full_charge_low_charge_configuration_v25(this->full_charge_low_charge_configuration_);
 		});
 	}
 	if (this->full_charge_amps_number_ != nullptr) {
@@ -609,7 +609,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting full_charge_amps user selected value %f", value);
 			this->full_charge_low_charge_configuration_.FullChargeMilliamps = std::lround(value * 1000.0f);
-			this->parent_->set_full_charge_low_charge_configuration(this->full_charge_low_charge_configuration_);
+			this->parent_->set_full_charge_low_charge_configuration_v25(this->full_charge_low_charge_configuration_);
 		});
 	}
 	if (this->low_charge_alarm_percent_number_ != nullptr) {
@@ -620,7 +620,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting low_charge_alarm_percent user selected value %f", value);
 			this->full_charge_low_charge_configuration_.LowChargeAlarmPercent = std::lround(value);
-			this->parent_->set_full_charge_low_charge_configuration(this->full_charge_low_charge_configuration_);
+			this->parent_->set_full_charge_low_charge_configuration_v25(this->full_charge_low_charge_configuration_);
 		});
 	}
 
@@ -630,7 +630,7 @@ void PaceBmsNumber::setup() {
 		this->discharge_over_temperature_alarm_number_ != nullptr ||
 		this->discharge_over_temperature_protection_number_ != nullptr ||
 		this->discharge_over_temperature_protection_release_number_ != nullptr) {
-		this->parent_->register_charge_and_discharge_over_temperature_configuration_callback([this](PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
+		this->parent_->register_charge_and_discharge_over_temperature_configuration_callback_v25([this](PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
 			this->charge_and_discharge_over_temperature_configuration_ = configuration;
 			this->charge_and_discharge_over_temperature_configuration_seen_ = true;
 			if (this->charge_over_temperature_alarm_number_ != nullptr) {
@@ -673,7 +673,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.ChargeAlarm = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 	if (this->charge_over_temperature_protection_number_ != nullptr) {
@@ -684,7 +684,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.ChargeProtection = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 	if (this->charge_over_temperature_protection_release_number_ != nullptr) {
@@ -695,7 +695,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_over_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.ChargeProtectionRelease = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 	if (this->discharge_over_temperature_alarm_number_ != nullptr) {
@@ -706,7 +706,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.DischargeAlarm = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 	if (this->discharge_over_temperature_protection_number_ != nullptr) {
@@ -717,7 +717,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.DischargeProtection = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 	if (this->discharge_over_temperature_protection_release_number_ != nullptr) {
@@ -728,7 +728,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_over_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_over_temperature_configuration_.DischargeProtectionRelease = std::lround(value);
-			this->parent_->set_charge_and_discharge_over_temperature_configuration(this->charge_and_discharge_over_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 		});
 	}
 
@@ -738,7 +738,7 @@ void PaceBmsNumber::setup() {
 		this->discharge_under_temperature_alarm_number_ != nullptr ||
 		this->discharge_under_temperature_protection_number_ != nullptr ||
 		this->discharge_under_temperature_protection_release_number_ != nullptr) {
-		this->parent_->register_charge_and_discharge_under_temperature_configuration_callback([this](PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
+		this->parent_->register_charge_and_discharge_under_temperature_configuration_callback_v25([this](PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
 			this->charge_and_discharge_under_temperature_configuration_ = configuration;
 			this->charge_and_discharge_under_temperature_configuration_seen_ = true;
 			if (this->charge_under_temperature_alarm_number_ != nullptr) {
@@ -781,7 +781,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_under_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeAlarm = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 	if (this->charge_under_temperature_protection_number_ != nullptr) {
@@ -792,7 +792,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_under_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeProtection = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 	if (this->charge_under_temperature_protection_release_number_ != nullptr) {
@@ -803,7 +803,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting charge_under_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeProtectionRelease = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 	if (this->discharge_under_temperature_alarm_number_ != nullptr) {
@@ -814,7 +814,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeAlarm = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 	if (this->discharge_under_temperature_protection_number_ != nullptr) {
@@ -825,7 +825,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeProtection = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 	if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
@@ -836,14 +836,14 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeProtectionRelease = std::lround(value);
-			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			this->parent_->set_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 	}
 
 	if (this->mosfet_over_temperature_alarm_number_ != nullptr ||
 		this->mosfet_over_temperature_protection_number_ != nullptr ||
 		this->mosfet_over_temperature_protection_release_number_ != nullptr) {
-		this->parent_->register_mosfet_over_temperature_configuration_callback([this](PaceBmsV25::MosfetOverTemperatureConfiguration& configuration) {
+		this->parent_->register_mosfet_over_temperature_configuration_callback_v25([this](PaceBmsV25::MosfetOverTemperatureConfiguration& configuration) {
 			this->mosfet_over_temperature_configuration_ = configuration;
 			this->mosfet_over_temperature_configuration_seen_ = true;
 			if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
@@ -871,7 +871,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting mosfet_over_temperature_alarm user selected value %f", value);
 			this->mosfet_over_temperature_configuration_.Alarm = std::lround(value);
-			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			this->parent_->set_mosfet_over_temperature_configuration_v25(this->mosfet_over_temperature_configuration_);
 			});
 	}
 	if (this->mosfet_over_temperature_protection_number_ != nullptr) {
@@ -882,7 +882,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting mosfet_over_temperature_protection user selected value %f", value);
 			this->mosfet_over_temperature_configuration_.Protection = std::lround(value);
-			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			this->parent_->set_mosfet_over_temperature_configuration_v25(this->mosfet_over_temperature_configuration_);
 			});
 	}
 	if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
@@ -893,7 +893,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting mosfet_over_temperature_protection_release user selected value %f", value);
 			this->mosfet_over_temperature_configuration_.ProtectionRelease = std::lround(value);
-			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			this->parent_->set_mosfet_over_temperature_configuration_v25(this->mosfet_over_temperature_configuration_);
 			});
 	}
 
@@ -903,7 +903,7 @@ void PaceBmsNumber::setup() {
 		this->environment_over_temperature_alarm_number_ != nullptr ||
 		this->environment_over_temperature_protection_number_ != nullptr ||
 		this->environment_over_temperature_protection_release_number_ != nullptr) {
-		this->parent_->register_environment_over_under_temperature_configuration_callback([this](PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
+		this->parent_->register_environment_over_under_temperature_configuration_callback_v25([this](PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
 			this->environment_over_under_temperature_configuration_ = configuration;
 			this->environment_over_under_temperature_configuration_seen_ = true;
 			if (this->environment_under_temperature_alarm_number_ != nullptr) {
@@ -946,7 +946,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_under_temperature_alarm user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.UnderAlarm = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 	if (this->environment_under_temperature_protection_number_ != nullptr) {
@@ -957,7 +957,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_under_temperature_protection user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.UnderProtection = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 	if (this->environment_under_temperature_protection_release_number_ != nullptr) {
@@ -968,7 +968,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_under_temperature_protection_release user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.UnderProtectionRelease = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 	if (this->environment_over_temperature_alarm_number_ != nullptr) {
@@ -979,7 +979,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_over_temperature_alarm user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.OverAlarm = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 	if (this->environment_over_temperature_protection_number_ != nullptr) {
@@ -990,7 +990,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_over_temperature_protection user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.OverProtection = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 	if (this->environment_over_temperature_protection_release_number_ != nullptr) {
@@ -1001,7 +1001,7 @@ void PaceBmsNumber::setup() {
 			}
 			ESP_LOGD(TAG, "Setting environment_over_temperature_protection_release user selected value %f", value);
 			this->environment_over_under_temperature_configuration_.OverProtectionRelease = std::lround(value);
-			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			this->parent_->set_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 	}
 }

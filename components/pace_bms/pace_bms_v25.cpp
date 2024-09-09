@@ -3198,9 +3198,9 @@ bool PaceBmsV25::ProcessReadProtocolsResponse(const uint8_t busId, const std::ve
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	protocols.CAN = (NewStyleProtocolList_CAN)ReadHexEncodedByte(response, byteOffset);
-	protocols.RS485 = (NewStyleProtocolList_RS485)ReadHexEncodedByte(response, byteOffset);
-	protocols.Type = (NewStyleProtocolList_Type)ReadHexEncodedByte(response, byteOffset);
+	protocols.CAN = (ProtocolList_CAN)ReadHexEncodedByte(response, byteOffset);
+	protocols.RS485 = (ProtocolList_RS485)ReadHexEncodedByte(response, byteOffset);
+	protocols.Type = (ProtocolList_Type)ReadHexEncodedByte(response, byteOffset);
 
 	return true;
 }

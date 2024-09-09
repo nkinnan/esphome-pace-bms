@@ -19,10 +19,10 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
   // called by the codegen to set our YAML property values
   void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
-  void set_address(int address) { this->address_ = address; }
-  void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
-  void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
-  void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
+  void set_address         (int address)               { this->address_ = address; }
+  void set_protocol_version(int protocol_version)      { this->protocol_version_ = protocol_version; }
+  void set_request_throttle(int request_throttle)      { this->request_throttle_ = request_throttle; }
+  void set_response_timeout(int response_timeout)      { this->response_timeout_ = response_timeout; }
 
   // standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
   void dump_config() override;
@@ -38,49 +38,49 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   // child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
   //     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
   //     periodically gather these updates for fan-out to the sensors the first place
-  void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(std::move(callback)); }
-  void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(std::move(callback)); }
-  void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(std::move(callback)); }
-  void register_serial_number_callback(std::function<void(std::string&) > callback) { serial_number_callbacks_.push_back(std::move(callback)); }
-  void register_protocols_callback(std::function<void(PaceBmsV25::Protocols&) > callback) { protocols_callbacks_.push_back(std::move(callback)); }
-  void register_cell_over_voltage_configuration_callback(std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)> callback) { cell_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_pack_over_voltage_configuration_callback(std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)> callback) { pack_over_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_cell_under_voltage_configuration_callback(std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)> callback) { cell_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_pack_under_voltage_configuration_callback(std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)> callback) { pack_under_voltage_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_charge_over_current_configuration_callback(std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)> callback) { charge_over_current_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_discharge_over_current1_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)> callback) { discharge_over_current1_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_discharge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_short_circuit_protection_configuration_callback(std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)> callback) { short_circuit_protection_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_cell_balancing_configuration_callback(std::function<void(PaceBmsV25::CellBalancingConfiguration&)> callback) { cell_balancing_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_sleep_configuration_callback(std::function<void(PaceBmsV25::SleepConfiguration&)> callback) { sleep_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_full_charge_low_charge_configuration_callback(std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)> callback) { full_charge_low_charge_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_charge_and_discharge_over_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback) { charge_and_discharge_over_temperature_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_charge_and_discharge_under_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback) { charge_and_discharge_under_temperature_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_mosfet_over_temperature_configuration_callback(std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)> callback) { mosfet_over_temperature_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_environment_over_under_temperature_configuration_callback(std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)> callback) { environment_over_under_temperature_configuration_callbacks_.push_back(std::move(callback)); }
-  void register_system_datetime_callback(std::function<void(PaceBmsV25::DateTime&)> callback) { system_datetime_callbacks_.push_back(std::move(callback)); }
+  void register_analog_information_callback_v25                                  (std::function<void(PaceBmsV25::AnalogInformation&)> callback)                                                                 { analog_information_callbacks_v25_.push_back(std::move(callback)); }
+  void register_status_information_callback_v25                                  (std::function<void(PaceBmsV25::StatusInformation&)> callback)                                                                 { status_information_callbacks_v25_.push_back(std::move(callback)); }
+  void register_hardware_version_callback_v25                                    (std::function<void(std::string&)> callback)                                                                                     { hardware_version_callbacks_v25_.push_back(std::move(callback)); }
+  void register_serial_number_callback_v25                                       (std::function<void(std::string&) > callback)                                                                                       { serial_number_callbacks_v25_.push_back(std::move(callback)); }
+  void register_protocols_callback_v25                                           (std::function<void(PaceBmsV25::Protocols&) > callback)                                                                                 { protocols_callbacks_v25_.push_back(std::move(callback)); }
+  void register_cell_over_voltage_configuration_callback_v25                     (std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)> callback)                                         { cell_over_voltage_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_pack_over_voltage_configuration_callback_v25                     (std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)> callback)                                         { pack_over_voltage_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_cell_under_voltage_configuration_callback_v25                    (std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)> callback)                                       { cell_under_voltage_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_pack_under_voltage_configuration_callback_v25                    (std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)> callback)                                       { pack_under_voltage_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_charge_over_current_configuration_callback_v25                   (std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)> callback)                                     { charge_over_current_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_discharge_over_current1_configuration_callback_v25               (std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)> callback)                             { discharge_over_current1_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_discharge_over_current2_configuration_callback_v25               (std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback)                             { discharge_over_current2_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_short_circuit_protection_configuration_callback_v25              (std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)> callback)                           { short_circuit_protection_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_cell_balancing_configuration_callback_v25                        (std::function<void(PaceBmsV25::CellBalancingConfiguration&)> callback)                                              { cell_balancing_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_sleep_configuration_callback_v25                                 (std::function<void(PaceBmsV25::SleepConfiguration&)> callback)                                                               { sleep_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_full_charge_low_charge_configuration_callback_v25                (std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)> callback)                                { full_charge_low_charge_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_charge_and_discharge_over_temperature_configuration_callback_v25 (std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback)   { charge_and_discharge_over_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_charge_and_discharge_under_temperature_configuration_callback_v25(std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback) { charge_and_discharge_under_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_mosfet_over_temperature_configuration_callback_v25               (std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)> callback)                             { mosfet_over_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_environment_over_under_temperature_configuration_callback_v25    (std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)> callback)        { environment_over_under_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
+  void register_system_datetime_callback_v25                                     (std::function<void(PaceBmsV25::DateTime&)> callback)                                                                             { system_datetime_callbacks_v25_.push_back(std::move(callback)); }
 
   // child sensors call these to schedule new values be written out to the hardware
-  void set_switch_state(PaceBmsV25::SwitchCommand state);
-  void set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state);
-  void send_shutdown();
-  void set_protocols(PaceBmsV25::Protocols& protocols);
-  void set_cell_over_voltage_configuration(PaceBmsV25::CellOverVoltageConfiguration& config);
-  void set_pack_over_voltage_configuration(PaceBmsV25::PackOverVoltageConfiguration& config);
-  void set_cell_under_voltage_configuration(PaceBmsV25::CellUnderVoltageConfiguration& config);
-  void set_pack_under_voltage_configuration(PaceBmsV25::PackUnderVoltageConfiguration& config);
-  void set_charge_over_current_configuration(PaceBmsV25::ChargeOverCurrentConfiguration& config);
-  void set_discharge_over_current1_configuration(PaceBmsV25::DischargeOverCurrent1Configuration& config);
-  void set_discharge_over_current2_configuration(PaceBmsV25::DischargeOverCurrent2Configuration& config);
-  void set_short_circuit_protection_configuration(PaceBmsV25::ShortCircuitProtectionConfiguration& config);
-  void set_cell_balancing_configuration(PaceBmsV25::CellBalancingConfiguration& config);
-  void set_sleep_configuration(PaceBmsV25::SleepConfiguration& config);
-  void set_full_charge_low_charge_configuration(PaceBmsV25::FullChargeLowChargeConfiguration& config);
-  void set_charge_and_discharge_over_temperature_configuration(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& config);
-  void set_charge_and_discharge_under_temperature_configuration(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
-  void set_mosfet_over_temperature_configuration(PaceBmsV25::MosfetOverTemperatureConfiguration& config);
-  void set_environment_over_under_temperature_configuration(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& config);
-  void set_system_datetime(PaceBmsV25::DateTime& dt);
+  void set_switch_state_v25                                        (PaceBmsV25::SwitchCommand state);
+  void set_mosfet_state_v25                                        (PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state);
+  void send_shutdown_v25                                           ();
+  void set_protocols_v25                                           (PaceBmsV25::Protocols& protocols);
+  void set_cell_over_voltage_configuration_v25                     (PaceBmsV25::CellOverVoltageConfiguration& config);
+  void set_pack_over_voltage_configuration_v25                     (PaceBmsV25::PackOverVoltageConfiguration& config);
+  void set_cell_under_voltage_configuration_v25                    (PaceBmsV25::CellUnderVoltageConfiguration& config);
+  void set_pack_under_voltage_configuration_v25                    (PaceBmsV25::PackUnderVoltageConfiguration& config);
+  void set_charge_over_current_configuration_v25                   (PaceBmsV25::ChargeOverCurrentConfiguration& config);
+  void set_discharge_over_current1_configuration_v25               (PaceBmsV25::DischargeOverCurrent1Configuration& config);
+  void set_discharge_over_current2_configuration_v25               (PaceBmsV25::DischargeOverCurrent2Configuration& config);
+  void set_short_circuit_protection_configuration_v25              (PaceBmsV25::ShortCircuitProtectionConfiguration& config);
+  void set_cell_balancing_configuration_v25                        (PaceBmsV25::CellBalancingConfiguration& config);
+  void set_sleep_configuration_v25                                 (PaceBmsV25::SleepConfiguration& config);
+  void set_full_charge_low_charge_configuration_v25                (PaceBmsV25::FullChargeLowChargeConfiguration& config);
+  void set_charge_and_discharge_over_temperature_configuration_v25 (PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& config);
+  void set_charge_and_discharge_under_temperature_configuration_v25(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
+  void set_mosfet_over_temperature_configuration_v25               (PaceBmsV25::MosfetOverTemperatureConfiguration& config);
+  void set_environment_over_under_temperature_configuration_v25    (PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& config);
+  void set_system_datetime_v25                                     (PaceBmsV25::DateTime& dt);
 
  protected:
   // config values set in YAML
@@ -91,56 +91,56 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   int response_timeout_{ 0 };
 
   // put into command_item as a pointer to handle the BMS response
-  void handle_analog_information_response(std::vector<uint8_t>& response);
-  void handle_status_information_response(std::vector<uint8_t>& response);
-  void handle_hardware_version_response(std::vector<uint8_t>& response);
-  void handle_serial_number_response(std::vector<uint8_t>& response);
-  void handle_write_switch_command_response(PaceBmsV25::SwitchCommand, std::vector<uint8_t>& response);
-  void handle_write_mosfet_switch_command_response(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state, std::vector<uint8_t>& response);
-  void handle_write_shutdown_command_response(std::vector<uint8_t>& response);
-  void handle_read_protocols_response(std::vector<uint8_t>& response);
-  void handle_write_protocols_response(PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
-  void handle_read_cell_over_voltage_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_pack_over_voltage_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_cell_under_voltage_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_pack_under_voltage_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_charge_over_current_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_discharge_over_current1_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_discharge_over_current2_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_short_circuit_protection_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_cell_balancing_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_sleep_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_full_charge_low_charge_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_charge_and_discharge_over_temperature_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_charge_and_discharge_under_temperature_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_mosfet_over_temperature_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_environment_over_under_temperature_configuration_response(std::vector<uint8_t>& response);
-  void handle_read_system_datetime_response(std::vector<uint8_t>& response);
-  void handle_write_system_datetime_response(std::vector<uint8_t>& response);
-  void handle_write_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_analog_information_response_v25                                  (std::vector<uint8_t>& response);
+  void handle_read_status_information_response_v25                                  (std::vector<uint8_t>& response);
+  void handle_read_hardware_version_response_v25                                    (std::vector<uint8_t>& response);
+  void handle_read_serial_number_response_v25                                       (std::vector<uint8_t>& response);
+  void handle_write_switch_command_response_v25                                     (PaceBmsV25::SwitchCommand, std::vector<uint8_t>& response);
+  void handle_write_mosfet_switch_command_response_v25                              (PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state, std::vector<uint8_t>& response);
+  void handle_write_shutdown_command_response_v25                                   (std::vector<uint8_t>& response);
+  void handle_read_protocols_response_v25                                           (std::vector<uint8_t>& response);
+  void handle_write_protocols_response_v25                                          (PaceBmsV25::Protocols protocols, std::vector<uint8_t>&response);
+  void handle_read_cell_over_voltage_configuration_response_v25                     (std::vector<uint8_t>& response);
+  void handle_read_pack_over_voltage_configuration_response_v25                     (std::vector<uint8_t>& response);
+  void handle_read_cell_under_voltage_configuration_response_v25                    (std::vector<uint8_t>& response);
+  void handle_read_pack_under_voltage_configuration_response_v25                    (std::vector<uint8_t>& response);
+  void handle_read_charge_over_current_configuration_response_v25                   (std::vector<uint8_t>& response);
+  void handle_read_discharge_over_current1_configuration_response_v25               (std::vector<uint8_t>& response);
+  void handle_read_discharge_over_current2_configuration_response_v25               (std::vector<uint8_t>& response);
+  void handle_read_short_circuit_protection_configuration_response_v25              (std::vector<uint8_t>& response);
+  void handle_read_cell_balancing_configuration_response_v25                        (std::vector<uint8_t>& response);
+  void handle_read_sleep_configuration_response_v25                                 (std::vector<uint8_t>& response);
+  void handle_read_full_charge_low_charge_configuration_response_v25                (std::vector<uint8_t>& response);
+  void handle_read_charge_and_discharge_over_temperature_configuration_response_v25 (std::vector<uint8_t>& response);
+  void handle_read_charge_and_discharge_under_temperature_configuration_response_v25(std::vector<uint8_t>& response);
+  void handle_read_mosfet_over_temperature_configuration_response_v25               (std::vector<uint8_t>& response);
+  void handle_read_environment_over_under_temperature_configuration_response_v25    (std::vector<uint8_t>& response);
+  void handle_read_system_datetime_response_v25                                     (std::vector<uint8_t>& response);
+  void handle_write_system_datetime_response_v25                                    (std::vector<uint8_t>& response);
+  void handle_write_configuration_response_v25                                      (std::vector<uint8_t>& response);
 
   // child sensor requested callback lists
-  std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
-  std::vector<std::function<void(std::string&)>> hardware_version_callbacks_;
-  std::vector<std::function<void(std::string&)>> serial_number_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::Protocols&)>> protocols_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>> cell_over_voltage_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)>> pack_over_voltage_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)>> cell_under_voltage_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)>> pack_under_voltage_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)>> charge_over_current_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)>> discharge_over_current1_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)>> discharge_over_current2_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)>> short_circuit_protection_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::CellBalancingConfiguration&)>> cell_balancing_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::SleepConfiguration&)>> sleep_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)>> full_charge_low_charge_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)>> charge_and_discharge_over_temperature_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)>> charge_and_discharge_under_temperature_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)>> mosfet_over_temperature_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)>> environment_over_under_temperature_configuration_callbacks_;
-  std::vector<std::function<void(PaceBmsV25::DateTime&)>> system_datetime_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::StatusInformation&)>>                               status_information_callbacks_v25_;
+  std::vector<std::function<void(std::string&)>>                                                 hardware_version_callbacks_v25_;
+  std::vector<std::function<void(std::string&)>>                                                 serial_number_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::Protocols&)>>                                       protocols_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::CellOverVoltageConfiguration&)>>                    cell_over_voltage_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::PackOverVoltageConfiguration&)>>                    pack_over_voltage_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::CellUnderVoltageConfiguration&)>>                   cell_under_voltage_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::PackUnderVoltageConfiguration&)>>                   pack_under_voltage_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::ChargeOverCurrentConfiguration&)>>                  charge_over_current_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)>>              discharge_over_current1_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)>>              discharge_over_current2_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)>>             short_circuit_protection_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::CellBalancingConfiguration&)>>                      cell_balancing_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::SleepConfiguration&)>>                              sleep_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)>>                full_charge_low_charge_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)>>  charge_and_discharge_over_temperature_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)>> charge_and_discharge_under_temperature_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)>>              mosfet_over_temperature_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)>>    environment_over_under_temperature_configuration_callbacks_v25_;
+  std::vector<std::function<void(PaceBmsV25::DateTime&)>>                                        system_datetime_callbacks_v25_;
 
   // along with loop() this is the "engine" of BMS communications
   //     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS

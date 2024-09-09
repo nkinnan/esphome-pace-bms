@@ -15,7 +15,7 @@ void PaceBmsTextSensor::setup() {
 	  this->configuration_status_sensor_ != nullptr ||
 	  this->protection_status_sensor_ != nullptr ||
 	  this->fault_status_sensor_ != nullptr) {
-	  this->parent_->register_status_information_callback([this](PaceBmsV25::StatusInformation& status_information) {
+	  this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) {
 		  if (this->warning_status_sensor_ != nullptr) {
 			  this->warning_status_sensor_->publish_state(status_information.warningText);
 		  }
@@ -37,14 +37,14 @@ void PaceBmsTextSensor::setup() {
 	  });
   }
   if (this->hardware_version_sensor_ != nullptr) {
-    this->parent_->register_hardware_version_callback([this](std::string& hardware_version) {
+    this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
 		if (this->hardware_version_sensor_ != nullptr) {
 			this->hardware_version_sensor_->publish_state(hardware_version);
 		}
 	});
   }
   if (this->serial_number_sensor_ != nullptr) {
-    this->parent_->register_serial_number_callback([this](std::string& serial_number) {
+    this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
 		if (this->serial_number_sensor_ != nullptr) {
 			this->serial_number_sensor_->publish_state(serial_number);
 		}
