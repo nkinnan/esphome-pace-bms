@@ -11,12 +11,13 @@ esphome:
     name: esphome.web
     version: dev
   libraries:
+    # required to be added prior to ESPAsyncWebServer-esphome
     - WiFi
     - FS
     - Update
     # huge improvement to event throughput to the on-device web_server dashboard
-    #- ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
-    - ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+    #- ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -26,7 +27,7 @@ esp32:
 
 # Enable logging
 logger:
-  #hardware_uart: UART1 # using UART0 for BMS communications
+  hardware_uart: USB_CDC 
   #level: INFO
   #level: DEBUG
   level: VERBOSE
@@ -54,7 +55,7 @@ external_components:
   - source:
       #type: git
       #url: https://github.com/nkinnan/esphome-pace-bms
-      #ref: "initial_commit"
+      #ref: "main"
       type: local
       path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
@@ -70,8 +71,7 @@ external_components:
     refresh: 1s
     
 
-
-    ##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
+##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
 
 
 debug:
@@ -122,7 +122,6 @@ sensor:
     update_interval: 1s
     type: seconds
     name: "Uptime"
-
 
 
   - platform: pace_bms
@@ -212,75 +211,75 @@ sensor:
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
-    warning_status_value_cell_01:
-      name: "Warning Status Value Cell 01"
-    warning_status_value_cell_02:
-      name: "Warning Status Value Cell 02"
-    warning_status_value_cell_03:
-      name: "Warning Status Value Cell 03"
-    warning_status_value_cell_04:
-      name: "Warning Status Value Cell 04"
-    warning_status_value_cell_05:
-      name: "Warning Status Value Cell 05"
-    warning_status_value_cell_06:
-      name: "Warning Status Value Cell 06"
-    warning_status_value_cell_07:
-      name: "Warning Status Value Cell 07"
-    warning_status_value_cell_08:
-      name: "Warning Status Value Cell 08"
-    warning_status_value_cell_09:
-      name: "Warning Status Value Cell 09"
-    warning_status_value_cell_10:
-      name: "Warning Status Value Cell 10"
-    warning_status_value_cell_11:
-      name: "Warning Status Value Cell 11"
-    warning_status_value_cell_12:
-      name: "Warning Status Value Cell 12"
-    warning_status_value_cell_13:
-      name: "Warning Status Value Cell 13"
-    warning_status_value_cell_14:
-      name: "Warning Status Value Cell 14"
-    warning_status_value_cell_15:
-      name: "Warning Status Value Cell 15"
-    warning_status_value_cell_16:
-      name: "Warning Status Value Cell 16"
-
-    warning_status_value_temperature_01:
-      name: "Warning Status Value Temperature 01"
-    warning_status_value_temperature_02:
-      name: "Warning Status Value Temperature 02"
-    warning_status_value_temperature_03:
-      name: "Warning Status Value Temperature 03"
-    warning_status_value_temperature_04:
-      name: "Warning Status Value Temperature 04"
-    warning_status_value_temperature_05:
-      name: "Warning Status Value Temperature 05"
-    warning_status_value_temperature_06:
-      name: "Warning Status Value Temperature 06"
-
-    warning_status_value_charge_current:
-      name: "Warning Status Value Charge Current"
-    warning_status_value_total_voltage:
-      name: "Warning Status Value Total Voltage"
-    warning_status_value_discharge_current:
-      name: "Warning Status Value Discharge Current"
-    warning_status_value_1:
-      name: "Warning Status Value 1"
-    warning_status_value_2:
-      name: "Warning Status Value 2"
-
-    balancing_status_value:
-      name: "Balancing Status Value"
-    system_status_value:
-      name: "System Status Value"
-    configuration_status_value:
-      name: "Configuration Status Value"
-    protection_status_value_1:
-      name: "Protection Status Value 1"
-    protection_status_value_2:
-      name: "Protection Status Value 2"
-    fault_status_value:
-      name: "Fault Status Value"
+    #warning_status_value_cell_01:
+    #  name: "Warning Status Value Cell 01"
+    #warning_status_value_cell_02:
+    #  name: "Warning Status Value Cell 02"
+    #warning_status_value_cell_03:
+    #  name: "Warning Status Value Cell 03"
+    #warning_status_value_cell_04:
+    #  name: "Warning Status Value Cell 04"
+    #warning_status_value_cell_05:
+    #  name: "Warning Status Value Cell 05"
+    #warning_status_value_cell_06:
+    #  name: "Warning Status Value Cell 06"
+    #warning_status_value_cell_07:
+    #  name: "Warning Status Value Cell 07"
+    #warning_status_value_cell_08:
+    #  name: "Warning Status Value Cell 08"
+    #warning_status_value_cell_09:
+    #  name: "Warning Status Value Cell 09"
+    #warning_status_value_cell_10:
+    #  name: "Warning Status Value Cell 10"
+    #warning_status_value_cell_11:
+    #  name: "Warning Status Value Cell 11"
+    #warning_status_value_cell_12:
+    #  name: "Warning Status Value Cell 12"
+    #warning_status_value_cell_13:
+    #  name: "Warning Status Value Cell 13"
+    #warning_status_value_cell_14:
+    #  name: "Warning Status Value Cell 14"
+    #warning_status_value_cell_15:
+    #  name: "Warning Status Value Cell 15"
+    #warning_status_value_cell_16:
+    #  name: "Warning Status Value Cell 16"
+    #
+    #warning_status_value_temperature_01:
+    #  name: "Warning Status Value Temperature 01"
+    #warning_status_value_temperature_02:
+    #  name: "Warning Status Value Temperature 02"
+    #warning_status_value_temperature_03:
+    #  name: "Warning Status Value Temperature 03"
+    #warning_status_value_temperature_04:
+    #  name: "Warning Status Value Temperature 04"
+    #warning_status_value_temperature_05:
+    #  name: "Warning Status Value Temperature 05"
+    #warning_status_value_temperature_06:
+    #  name: "Warning Status Value Temperature 06"
+    #
+    #warning_status_value_charge_current:
+    #  name: "Warning Status Value Charge Current"
+    #warning_status_value_total_voltage:
+    #  name: "Warning Status Value Total Voltage"
+    #warning_status_value_discharge_current:
+    #  name: "Warning Status Value Discharge Current"
+    #warning_status_value_1:
+    #  name: "Warning Status Value 1"
+    #warning_status_value_2:
+    #  name: "Warning Status Value 2"
+    #
+    #balancing_status_value:
+    #  name: "Balancing Status Value"
+    #system_status_value:
+    #  name: "System Status Value"
+    #configuration_status_value:
+    #  name: "Configuration Status Value"
+    #protection_status_value_1:
+    #  name: "Protection Status Value 1"
+    #protection_status_value_2:
+    #  name: "Protection Status Value 2"
+    #fault_status_value:
+    #  name: "Fault Status Value"
 
 
 text_sensor:
