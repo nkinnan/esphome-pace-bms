@@ -60,6 +60,15 @@ external_components:
     components: [ pace_bms ]
     refresh: 1s
     
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome
+      ref: "make_time_dependency_optional"
+      #type: local
+      #path: C:\Users\nkinnan\Documents\git\esphome\esphome\components
+    components: [ datetime ]
+    refresh: 1s
+    
 
 
     ##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
