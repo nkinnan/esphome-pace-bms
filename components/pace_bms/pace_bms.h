@@ -19,7 +19,8 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
   // called by the codegen to set our YAML property values
   void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
-  void set_address         (int address)               { this->address_ = address; }
+  void set_address(int address)                        { this->address_ = address; }
+  void set_chemistry(int chemistry)                    { this->chemistry_ = chemistry; }
   void set_protocol_version(int protocol_version)      { this->protocol_version_ = protocol_version; }
   void set_request_throttle(int request_throttle)      { this->request_throttle_ = request_throttle; }
   void set_response_timeout(int response_timeout)      { this->response_timeout_ = response_timeout; }
@@ -86,6 +87,7 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   // config values set in YAML
   GPIOPin* flow_control_pin_{ nullptr };
   uint8_t address_{ 0 };
+  uint8_t chemistry_{ 0 };
   int protocol_version_{ 0 };
   int request_throttle_{ 0 };
   int response_timeout_{ 0 };

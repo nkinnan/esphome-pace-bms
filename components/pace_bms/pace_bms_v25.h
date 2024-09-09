@@ -25,13 +25,22 @@ offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '
 class PaceBmsV25
 {
 public:
+	enum CID1 : uint8_t
+	{
+		CID1_LithiumIron = 0x46,
+		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a knock-off, rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
+	};
+
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
 	// takes pointers to the "real" logging functions
-	PaceBmsV25(LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
+	PaceBmsV25(CID1 batteryChemistry, LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 private:
+	// battery chemistry
+	CID1 cid1;
+
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
 	LogFuncPtr LogWarningPtr;
@@ -46,12 +55,6 @@ private:
 	void LogDebug(std::string message);
 	void LogVerbose(std::string message);
 	void LogVeryVerbose(std::string message);
-
-	enum CID1 : uint8_t
-	{
-		CID1_LithiumIron = 0x46,
-		CID1_LithiumIon  = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a knock-off, rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
-	};
 
 	enum CID2 : uint8_t
 	{

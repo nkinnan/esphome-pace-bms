@@ -88,6 +88,7 @@ uart:
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
+  chemistry: 0x46
   protocol_version: 0x25
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232

@@ -19,11 +19,13 @@ PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
 # "this" for pace_bms_sensor/text_sensor/switch/etc. to get parent from
 CONF_PACE_BMS_ID = "pace_bms_id"
 
+CONF_CHEMISTRY        = "chemistry"
 CONF_PROTOCOL_VERSION = "protocol_version"
 CONF_REQUEST_THROTTLE = "request_throttle"
 CONF_RESPONSE_TIMEOUT = "response_timeout"
 
-DEFAULT_ADDRESS = 0
+DEFAULT_ADDRESS = 1
+DEFAULT_CHEMISTRY = 0x46
 DEFAULT_PROTOCOL_VERSION = 0x25
 DEFAULT_REQUEST_THROTTLE = "50ms"
 DEFAULT_RESPONSE_TIMEOUT = "200ms"
@@ -34,6 +36,7 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(PaceBms),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
             cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
+            cv.Optional(CONF_CHEMISTRY, default=DEFAULT_CHEMISTRY): cv.int_range(min=0, max=255),
             cv.Optional(CONF_PROTOCOL_VERSION, default=DEFAULT_PROTOCOL_VERSION): cv.int_range(min=0x25, max=0x25),
             cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
             cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
@@ -58,6 +61,8 @@ async def to_code(config):
         cg.add(var.set_flow_control_pin(pin))
     if CONF_ADDRESS in config:
         cg.add(var.set_address(config[CONF_ADDRESS]))
+    if CONF_CHEMISTRY in config:
+        cg.add(var.set_chemistry(config[CONF_CHEMISTRY]))
     if CONF_PROTOCOL_VERSION in config:
         cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
     if CONF_REQUEST_THROTTLE in config:
