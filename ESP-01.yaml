@@ -313,14 +313,6 @@ button:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
 
 
-datetime:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    system_date_and_time:
-      name: "System Date and Time"
-
-
 number:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
@@ -428,5 +420,31 @@ number:
     discharge_under_temperature_protection_release:
       name: "Discharge Under Temperature Protection Release"
 
+    mosfet_over_temperature_alarm:
+      name: "Mosfet Over Temperature Alarm"
+    mosfet_over_temperature_protection:
+      name: "Mosfet Over Temperature Protection"
+    mosfet_over_temperature_protection_release:
+      name: "Mosfet Over Temperature Protection Release"
 
+    environment_under_temperature_alarm:
+      name: "Environment Under Temperature Alarm"
+    environment_under_temperature_protection:
+      name: "Environment Under Temperature Protection"
+    environment_under_temperature_protection_release:
+      name: "Environment Under Temperature Protection Release"
+    environment_over_temperature_alarm:
+      name: "Environment Over Temperature Alarm"
+    environment_over_temperature_protection:
+      name: "Environment Over Temperature Protection"
+    environment_over_temperature_protection_release:
+      name: "Environment Over Temperature Protection Release"
+
+
+datetime:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    system_date_and_time:
+      name: "System Date and Time"
 

@@ -4,26 +4,29 @@ from esphome.components import sensor
 from esphome.const import (
     CONF_ID,
     CONF_POWER,
+    DEVICE_CLASS_VOLTAGE,
+    DEVICE_CLASS_TEMPERATURE,
+    DEVICE_CLASS_CURRENT,
+    DEVICE_CLASS_ENERGY,
+    DEVICE_CLASS_POWER,
+    DEVICE_CLASS_ENERGY_STORAGE,
+    STATE_CLASS_MEASUREMENT,
     UNIT_VOLT,
     UNIT_CELSIUS,
     UNIT_AMPERE,
     #UNIT_AMP_HOURS,   <--------- added to const.py but need to check in
     UNIT_WATT,
     UNIT_PERCENT,
-    DEVICE_CLASS_VOLTAGE,
-    DEVICE_CLASS_TEMPERATURE,
-    DEVICE_CLASS_CURRENT,
-    DEVICE_CLASS_ENERGY,
-    DEVICE_CLASS_POWER,
-    STATE_CLASS_MEASUREMENT,
-    DEVICE_CLASS_ENERGY_STORAGE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+
+UNIT_AMP_HOURS = "Ah" # todo: use existing
+
+CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
-
 
 CONF_CELL_COUNT = "cell_count"
 CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
@@ -83,12 +86,10 @@ CONF_DESIGN_CAPACITY = "design_capacity"
 CONF_CYCLE_COUNT = "cycle_count"
 CONF_STATE_OF_CHARGE = "state_of_charge"
 CONF_STATE_OF_HEALTH = "state_of_health"
-#CONF_POWER = "power"
 CONF_MIN_CELL_VOLTAGE = "min_cell_voltage"
 CONF_MAX_CELL_VOLTAGE = "max_cell_voltage"
 CONF_AVG_CELL_VOLTAGE = "avg_cell_voltage"
 CONF_MAX_CELL_DIFFERENTIAL = "max_cell_differential"
-
 
 CONF_WARNING_STATUS_VALUE_CELL_01           = "warning_status_value_cell_01"
 CONF_WARNING_STATUS_VALUE_CELL_02           = "warning_status_value_cell_02"
@@ -151,17 +152,11 @@ CONF_PROTECTION_STATUS_VALUE_1  = "protection_status_value_1"
 CONF_PROTECTION_STATUS_VALUE_2  = "protection_status_value_2"
 CONF_FAULT_STATUS_VALUE         = "fault_status_value"
 
-
-
-
-UNIT_AMP_HOURS = "Ah" # todo: use existing
-
-
-
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -385,7 +380,6 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
 
-        
         cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -483,7 +477,6 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
 
-        
         cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -521,7 +514,6 @@ CONFIG_SCHEMA = cv.Schema(
             state_class=STATE_CLASS_MEASUREMENT,
         ),
 
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -552,7 +544,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
 
         cv.Optional(CONF_BALANCING_STATUS_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
@@ -590,7 +581,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
     }
 )
 
@@ -599,8 +589,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
-    cg.add(var.set_parent(paren))
+    parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
+    cg.add(var.set_parent(parent))
 
     if cell_count_config := config.get(CONF_CELL_COUNT):
         sens = await sensor.new_sensor(cell_count_config)
@@ -729,4 +719,3 @@ async def to_code(config):
     if fault_status_value := config.get(CONF_FAULT_STATUS_VALUE):
         sens = await sensor.new_sensor(fault_status_value)
         cg.add(var.set_fault_status_value_sensor(sens))
-

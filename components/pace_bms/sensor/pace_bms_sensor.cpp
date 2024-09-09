@@ -10,14 +10,12 @@ static const char* const TAG = "pace_bms.sensor";
 
 void PaceBmsSensor::setup() {
   if (request_analog_info_callback_ == true) {
-    this->parent_->register_analog_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::analog_information_callback, this, std::placeholders::_1));
+	  this->parent_->register_analog_information_callback([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback(analog_information); });
   }
   if (request_status_info_callback_ == true) {
-    this->parent_->register_status_information_callback(std::bind(&esphome::pace_bms::PaceBmsSensor::status_information_callback, this, std::placeholders::_1));
+	  this->parent_->register_status_information_callback([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback(status_information); });
   }
 }
-
-float PaceBmsSensor::get_setup_priority() const { return setup_priority::DATA; }
 
 void PaceBmsSensor::dump_config() { 
 	ESP_LOGCONFIG(TAG, "pace_bms_sensor:");

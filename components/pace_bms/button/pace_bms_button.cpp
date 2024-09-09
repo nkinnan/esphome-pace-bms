@@ -15,8 +15,6 @@ void PaceBmsButton::setup() {
   }
 }
 
-float PaceBmsButton::get_setup_priority() const { return setup_priority::DATA; }
-
 void PaceBmsButton::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms_button:");
 	LOG_BUTTON("  ", "Shutdown", this->shutdown_button_);

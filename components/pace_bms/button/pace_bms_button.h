@@ -11,10 +11,10 @@ class PaceBmsButton : public Component {
  public:
   void set_parent(PaceBms *parent) { parent_ = parent; }
 
-  void set_shutdown_button(button::Button* shutdown_button) { this->shutdown_button_ = shutdown_button;  }
+  void set_shutdown_button(button::Button* button) { this->shutdown_button_ = button;  }
 
   void setup() override;
-  float get_setup_priority() const override;
+  float get_setup_priority() const { return setup_priority::DATA; }
   void dump_config() override;
 
  protected:

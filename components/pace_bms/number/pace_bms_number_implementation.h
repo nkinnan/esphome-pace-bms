@@ -8,9 +8,9 @@ namespace pace_bms {
 
 class PaceBmsNumberImplementation : public Component, public number::Number {
  public:
-  float get_setup_priority() const override;
+  float get_setup_priority() const override { return setup_priority::DATA; }
 
-  void add_on_control_callback(std::function<void(float)>&& callback);
+  void add_on_control_callback(std::function<void(float)>&& callback) { this->control_callbacks_.add(std::move(callback)); }
 
 protected:
   void control(float value) override;

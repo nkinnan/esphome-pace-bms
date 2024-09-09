@@ -6,20 +6,21 @@ from esphome.const import (
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
 
+CODEOWNERS = ["@nkinnan"]
+
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSelect = pace_bms_ns.class_("PaceBmsSelect", cg.Component)
 PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", cg.Component, select.Select)
 
-
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
-charge_current_limiter_gear_options_config = {
+charge_current_limiter_gear_options = {
     "Low Gear":  0x08, # SC_SetChargeCurrentLimiterCurrentLimitHighGear
     "High Gear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
 }
 
 CONF_PROTOCOL_CAN           = "protocol_can"
-protocol_can_options_config = {
+protocol_can_options = {
 	"":                                                                                          0xFF, # 255d <blank entry> I believe this means "turned off"
 	"PACE":                                                                                      0x00, # 00d  PACE
 	"Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge": 0x01, # 01d  Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
@@ -47,7 +48,7 @@ protocol_can_options_config = {
 }
 
 CONF_PROTOCOL_RS485           = "protocol_rs485"
-protocol_rs485_options_config = {
+protocol_rs485_options = {
 	"":                                     0xFF, # 255d <blank entry> I believe this means "turned off"
 	"Pace Modbus":                          0x00, # 00d  Pace Modbus
 	"Pylon / DeYe / Bentterson":            0x01, # 01d  Pylon / DeYe / Bentterson
@@ -77,7 +78,7 @@ protocol_rs485_options_config = {
 }
 
 CONF_PROTOCOL_TYPE           = "protocol_type"
-protocol_type_options_config = {
+protocol_type_options = {
 	""      : 0xFF, # 255d <blank entry>
 	"Auto"  : 0x00, # 00d  Auto
 	"Manual": 0x01, # 01d  Manual
@@ -100,37 +101,37 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
-    cg.add(var.set_parent(paren))
+    parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
+    cg.add(var.set_parent(parent))
 
     if charge_current_limiter_gear_config := config.get(CONF_CHARGE_CURRENT_LIMITER_GEAR):
         sel = await select.new_select(
             charge_current_limiter_gear_config,
-            options=list(charge_current_limiter_gear_options_config.keys()),
+            options=list(charge_current_limiter_gear_options.keys()),
         )
+        cg.add(sel.set_values(list(charge_current_limiter_gear_options.values())))
         cg.add(var.set_charge_current_limiter_gear_select(sel))
-        cg.add(sel.set_protocol_values(list(charge_current_limiter_gear_options_config.values())))
 
     if protocol_can_config := config.get(CONF_PROTOCOL_CAN):
         sel = await select.new_select(
             protocol_can_config,
-            options=list(protocol_can_options_config.keys()),
+            options=list(protocol_can_options.keys()),
         )
+        cg.add(sel.set_values(list(protocol_can_options.values())))
         cg.add(var.set_protocol_can_select(sel))
-        cg.add(sel.set_protocol_values(list(protocol_can_options_config.values())))
     
     if protocol_rs485_config := config.get(CONF_PROTOCOL_RS485):
         sel = await select.new_select(
             protocol_rs485_config,
-            options=list(protocol_rs485_options_config.keys()),
+            options=list(protocol_rs485_options.keys()),
         )
+        cg.add(sel.set_values(list(protocol_rs485_options.values())))
         cg.add(var.set_protocol_rs485_select(sel))
-        cg.add(sel.set_protocol_values(list(protocol_rs485_options_config.values())))
 
     if protocol_type_config := config.get(CONF_PROTOCOL_TYPE):
         sel = await select.new_select(
             protocol_type_config,
-            options=list(protocol_type_options_config.keys()),
+            options=list(protocol_type_options.keys()),
         )
+        cg.add(sel.set_values(list(protocol_type_options.values())))
         cg.add(var.set_protocol_type_select(sel))
-        cg.add(sel.set_protocol_values(list(protocol_type_options_config.values())))

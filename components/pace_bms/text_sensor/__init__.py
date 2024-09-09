@@ -3,15 +3,14 @@ import esphome.config_validation as cv
 from esphome.components import text_sensor
 from esphome.const import (
     CONF_ID,
-    DEVICE_CLASS_EMPTY,
-    STATE_CLASS_NONE,
 )
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+
+CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsTextSensor = pace_bms_ns.class_("PaceBmsTextSensor", cg.Component)
-
 
 CONF_WARNING_STATUS       = "warning_status"
 CONF_BALANCING_STATUS     = "balancing_status"
@@ -22,8 +21,6 @@ CONF_FAULT_STATUS         = "fault_status"
 
 CONF_HARDWARE_VERSION     = "hardware_version"
 CONF_SERIAL_NUMBER        = "serial_number"
-
-
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -41,7 +38,6 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_SERIAL_NUMBER): text_sensor.text_sensor_schema(),
     }
 )
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -81,4 +77,3 @@ async def to_code(config):
     if serial_number_config := config.get(CONF_SERIAL_NUMBER):
         sens = await text_sensor.new_text_sensor(serial_number_config)
         cg.add(var.set_serial_number_sensor(sens))
-

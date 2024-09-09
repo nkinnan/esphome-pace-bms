@@ -1,15 +1,12 @@
 #include "pace_bms_number.h"
 #include "esphome/core/log.h"
 
-#include <functional>
 #include <cmath>
 
 namespace esphome {
 namespace pace_bms {
 
 static const char* const TAG = "pace_bms.number";
-
-
 
 /*
 * wire up all the lambda callbacks

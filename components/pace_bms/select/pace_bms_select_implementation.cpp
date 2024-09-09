@@ -6,10 +6,6 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.select_impl";
 
-void PaceBmsSelectImplementation::add_on_control_callback(std::function<void(const std::string&, uint8_t value)>&& callback) {
-	this->control_callback_.add(std::move(callback));
-}
-
 void PaceBmsSelectImplementation::control(const std::string& text) {
 	uint8_t value = value_from_option(text);
 
@@ -49,8 +45,6 @@ std::string PaceBmsSelectImplementation::option_from_value(uint8_t value) {
 
 	return text;
 }
-
-float PaceBmsSelectImplementation::get_setup_priority() const { return setup_priority::DATA; }
 
 }  // namespace pace_bms
 }  // namespace esphome

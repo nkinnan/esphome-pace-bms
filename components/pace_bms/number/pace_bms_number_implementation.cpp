@@ -6,10 +6,6 @@ namespace pace_bms {
 
 static const char* const TAG = "pace_bms.switch_impl";
 
-void PaceBmsNumberImplementation::add_on_control_callback(std::function<void(float)>&& callback) {
-	this->control_callbacks_.add(std::move(callback));
-}
-
 void PaceBmsNumberImplementation::control(float number) {
 	ESP_LOGD(TAG, "control: new value %f", number);
 
@@ -19,8 +15,6 @@ void PaceBmsNumberImplementation::control(float number) {
 	// required for the UX not to get out of sync
 	this->publish_state(number);
 }
-
-float PaceBmsNumberImplementation::get_setup_priority() const { return setup_priority::DATA; }
 
 }  // namespace pace_bms
 }  // namespace esphome

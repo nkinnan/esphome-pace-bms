@@ -1,7 +1,5 @@
 #pragma once
 
-#define REQUIRES_TIME_FALSE
-
 #include "esphome/core/component.h"
 #include "esphome/components/pace_bms/pace_bms.h"
 #include "pace_bms_datetime_implementation.h"
@@ -24,8 +22,8 @@ class PaceBmsDatetime : public Component {
  protected:
   pace_bms::PaceBms *parent_;
 
-  PaceBmsV25::DateTime bms_system_time_;
-  bool bms_system_time_seen_{ false };
+  PaceBmsV25::DateTime system_date_and_time_;
+  bool system_date_and_time_seen_{ false };
   pace_bms::PaceBmsDatetimeImplementation* system_date_and_time_datetime_{ nullptr };
 };
 

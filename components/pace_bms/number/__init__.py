@@ -4,23 +4,24 @@ from esphome.components import number
 from esphome.components.number import NUMBER_MODES
 from esphome.const import (
     CONF_ID,
-    ENTITY_CATEGORY_CONFIG,
+    CONF_MODE,
     DEVICE_CLASS_VOLTAGE,
-    UNIT_VOLT,
     DEVICE_CLASS_DURATION,
-    UNIT_SECOND,
     DEVICE_CLASS_CURRENT,
+    DEVICE_CLASS_BATTERY,
+    DEVICE_CLASS_TEMPERATURE,
+    UNIT_VOLT,
+    UNIT_SECOND,
     UNIT_AMPERE,
     UNIT_MILLISECOND,
     UNIT_MINUTE,
     UNIT_PERCENT,
-    DEVICE_CLASS_BATTERY,
-    CONF_MODE,
-    DEVICE_CLASS_TEMPERATURE,
     UNIT_CELSIUS,
+    ENTITY_CATEGORY_CONFIG,
 )
-
 from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+
+CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
@@ -447,8 +448,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
-    cg.add(var.set_parent(paren))
+    parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
+    cg.add(var.set_parent(parent))
 
     if cell_over_voltage_alarm_config := config.get(CONF_CELL_OVER_VOLTAGE_ALARM):
         num = await number.new_number(
