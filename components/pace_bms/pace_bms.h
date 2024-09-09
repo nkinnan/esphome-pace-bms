@@ -50,6 +50,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_discharge_over_current1_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)> callback) { discharge_over_current1_configuration_callbacks_.push_back(std::move(callback)); }
   void register_discharge_over_current2_configuration_callback(std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)> callback) { discharge_over_current2_configuration_callbacks_.push_back(std::move(callback)); }
   void register_short_circuit_protection_configuration_callback(std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)> callback) { short_circuit_protection_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_cell_balancing_configuration_callback(std::function<void(PaceBmsV25::CellBalancingConfiguration&)> callback) { cell_balancing_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_sleep_configuration_callback(std::function<void(PaceBmsV25::SleepConfiguration&)> callback) { sleep_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_full_charge_low_charge_configuration_callback(std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)> callback) { full_charge_low_charge_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_charge_and_discharge_over_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback) { charge_and_discharge_over_temperature_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_charge_and_discharge_under_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback) { charge_and_discharge_under_temperature_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_system_datetime_callback(std::function<void(PaceBmsV25::DateTime&)> callback) { system_datetime_callbacks_.push_back(std::move(callback)); }
+
+
 
   // child sensors call these to request new values be sent to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
@@ -64,6 +72,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void set_discharge_over_current1_configuration(PaceBmsV25::DischargeOverCurrent1Configuration& config);
   void set_discharge_over_current2_configuration(PaceBmsV25::DischargeOverCurrent2Configuration& config);
   void set_short_circuit_protection_configuration(PaceBmsV25::ShortCircuitProtectionConfiguration& config);
+  void set_cell_balancing_configuration(PaceBmsV25::CellBalancingConfiguration& config);
+  void set_sleep_configuration(PaceBmsV25::SleepConfiguration& config);
+  void set_full_charge_low_charge_configuration(PaceBmsV25::FullChargeLowChargeConfiguration& config);
+  void set_charge_and_discharge_over_temperature_configuration(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& config);
+  void set_charge_and_discharge_under_temperature_configuration(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
+  void set_system_datetime(PaceBmsV25::DateTime& dt);
+
+
 
  protected:
   // config values set in YAML
@@ -91,7 +107,13 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_read_discharge_over_current1_configuration_response(std::vector<uint8_t>& response);
   void handle_read_discharge_over_current2_configuration_response(std::vector<uint8_t>& response);
   void handle_read_short_circuit_protection_configuration_response(std::vector<uint8_t>& response);
-
+  void handle_read_cell_balancing_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_sleep_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_full_charge_low_charge_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_charge_and_discharge_over_temperature_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_charge_and_discharge_under_temperature_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_system_datetime_response(std::vector<uint8_t>& response);
+  void handle_write_system_datetime_response(std::vector<uint8_t>& response);
   void handle_write_configuration_response(std::vector<uint8_t>& response);
 
   // child sensor requested callbacks
@@ -108,7 +130,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent1Configuration&)>> discharge_over_current1_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::DischargeOverCurrent2Configuration&)>> discharge_over_current2_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::ShortCircuitProtectionConfiguration&)>> short_circuit_protection_configuration_callbacks_;
-  
+  std::vector<std::function<void(PaceBmsV25::CellBalancingConfiguration&)>> cell_balancing_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::SleepConfiguration&)>> sleep_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)>> full_charge_low_charge_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)>> charge_and_discharge_over_temperature_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)>> charge_and_discharge_under_temperature_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::DateTime&)>> system_datetime_callbacks_;
+
+
   // along with loop() this is the "engine" of BMS communications
   // send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
   // process_response_frame_ will call next_response_handler_ (which was saved from the command_item in send_next_request_frame_) once a response arrives
@@ -145,7 +174,6 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::list<command_item*> write_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
-  bool first_request{ true }; 
 
   // helper
   void write_queue_push_back_with_deduplication(command_item* item);

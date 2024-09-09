@@ -662,10 +662,10 @@ public:
 		uint8_t Second;
 	};
 
-	bool CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
-	bool CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
-	bool ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response);
+	bool CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
+	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
+	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
 
 
@@ -950,7 +950,7 @@ public:
 	// ==== Full Charge and Low Charge
 	// 1 Pack Full Charge Voltage: 56.0 - stored as v * 1000, so 56 is 56000 - valid range reported by PBmsTools as 20-65 in steps of 0.01
 	// 2 Pack Full Charge Current (ma): 2000 - stored directly in ma - valid range reported by PBmsTools as 500-5000 in steps of 500
-	// 3 State of Charge Low Alarm (%): 5 - stored directly - valid range reported by PBmsTools as 1-100
+	// 3 State of Charge Low Alarm (%): 5 - stored directly - valid range reported by PBmsTools as 0-100
 	// read:  ~250046AF0000FD88.
 	// resp:  ~25004600600ADAC007D005FB60.
 	//                     1111222233

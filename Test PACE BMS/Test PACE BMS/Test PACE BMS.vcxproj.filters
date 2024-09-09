@@ -38,6 +38,12 @@
     <ClCompile Include="..\..\components\pace_bms\number\pace_bms_number_implementation.cpp">
       <Filter>components\pace_bms\number</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\datetime\pace_bms_datetime.cpp">
+      <Filter>components\pace_bms\datetime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.cpp">
+      <Filter>components\pace_bms\datetime</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
@@ -76,6 +82,12 @@
     <ClInclude Include="..\..\components\pace_bms\number\pace_bms_number_implementation.h">
       <Filter>components\pace_bms\number</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\datetime\pace_bms_datetime.h">
+      <Filter>components\pace_bms\datetime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.h">
+      <Filter>components\pace_bms\datetime</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\components\pace_bms\__init__.py">
@@ -103,6 +115,9 @@
       <Filter>components\pace_bms\number</Filter>
     </None>
     <None Include="..\..\ESP32-C3-dev.yaml" />
+    <None Include="..\..\components\pace_bms\datetime\__init__.py">
+      <Filter>components\pace_bms\datetime</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
@@ -128,6 +143,9 @@
     </Filter>
     <Filter Include="components\pace_bms\number">
       <UniqueIdentifier>{511b70b5-4095-4af0-99a1-524615f98513}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="components\pace_bms\datetime">
+      <UniqueIdentifier>{0d4ab76e-2d9d-4c2c-9b78-84185a6ada36}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

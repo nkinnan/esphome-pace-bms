@@ -306,100 +306,127 @@ select:
 
 
 button:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
-   shutdown:
-     name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+    shutdown:
+      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+
+
+datetime:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    system_date_and_time:
+      name: "System Date and Time"
 
 
 number:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
-   cell_over_voltage_alarm:
-     name: "Cell Over Voltage Alarm" 
-     mode: BOX
-   cell_over_voltage_protection:
-     name: "Cell Over Voltage Protection" 
-     mode: BOX
-   cell_over_voltage_protection_release:
-     name: "Cell Over Voltage Protection Release" 
-     mode: BOX
-   cell_over_voltage_protection_delay:
-     name: "Cell Over Voltage Protection Delay" 
-     mode: BOX
+    cell_over_voltage_alarm:
+      name: "Cell Over Voltage Alarm" 
+    cell_over_voltage_protection:
+      name: "Cell Over Voltage Protection" 
+    cell_over_voltage_protection_release:
+      name: "Cell Over Voltage Protection Release" 
+    cell_over_voltage_protection_delay:
+      name: "Cell Over Voltage Protection Delay" 
 
-   pack_over_voltage_alarm:
-     name: "Pack Over Voltage Alarm" 
-     mode: BOX
-   pack_over_voltage_protection:
-     name: "Pack Over Voltage Protection" 
-     mode: BOX
-   pack_over_voltage_protection_release:
-     name: "Pack Over Voltage Protection Release" 
-     mode: BOX
-   pack_over_voltage_protection_delay:
-     name: "Pack Over Voltage Protection Delay" 
-     mode: BOX
+    pack_over_voltage_alarm:
+      name: "Pack Over Voltage Alarm" 
+    pack_over_voltage_protection:
+      name: "Pack Over Voltage Protection" 
+    pack_over_voltage_protection_release:
+      name: "Pack Over Voltage Protection Release" 
+    pack_over_voltage_protection_delay:
+      name: "Pack Over Voltage Protection Delay" 
 
-   cell_under_voltage_alarm:
-     name: "Cell Under Voltage Alarm" 
-     mode: BOX
-   cell_under_voltage_protection:
-     name: "Cell Under Voltage Protection" 
-     mode: BOX
-   cell_under_voltage_protection_release:
-     name: "Cell Under Voltage Protection Release" 
-     mode: BOX
-   cell_under_voltage_protection_delay:
-     name: "Cell Under Voltage Protection Delay" 
-     mode: BOX
+    cell_under_voltage_alarm:
+      name: "Cell Under Voltage Alarm" 
+    cell_under_voltage_protection:
+      name: "Cell Under Voltage Protection" 
+    cell_under_voltage_protection_release:
+      name: "Cell Under Voltage Protection Release" 
+    cell_under_voltage_protection_delay:
+      name: "Cell Under Voltage Protection Delay" 
 
-   pack_under_voltage_alarm:
-     name: "Pack Under Voltage Alarm" 
-     mode: BOX
-   pack_under_voltage_protection:
-     name: "Pack Under Voltage Protection" 
-     mode: BOX
-   pack_under_voltage_protection_release:
-     name: "Pack Under Voltage Protection Release" 
-     mode: BOX
-   pack_under_voltage_protection_delay:
-     name: "Pack Under Voltage Protection Delay" 
-     mode: BOX
+    pack_under_voltage_alarm:
+      name: "Pack Under Voltage Alarm" 
+    pack_under_voltage_protection:
+      name: "Pack Under Voltage Protection" 
+    pack_under_voltage_protection_release:
+      name: "Pack Under Voltage Protection Release" 
+    pack_under_voltage_protection_delay:
+      name: "Pack Under Voltage Protection Delay" 
 
-   charge_over_current_alarm:
-     name: "Charge Over Current Alarm" 
-     mode: BOX
-   charge_over_current_protection:
-     name: "Charge Over Current Protection" 
-     mode: BOX
-   charge_over_current_protection_delay:
-     name: "Charge Over Current Protection Delay" 
-     mode: BOX
+    charge_over_current_alarm:
+      name: "Charge Over Current Alarm" 
+    charge_over_current_protection:
+      name: "Charge Over Current Protection" 
+    charge_over_current_protection_delay:
+      name: "Charge Over Current Protection Delay" 
 
-   discharge_over_current1_alarm:
-     name: "Discharge Over Current 1 Alarm" 
-     mode: BOX
-   discharge_over_current1_protection:
-     name: "Discharge Over Current 1 Protection" 
-     mode: BOX
-   discharge_over_current1_protection_delay:
-     name: "Discharge Over Current 1 Protection Delay" 
-     mode: BOX
+    discharge_over_current1_alarm:
+      name: "Discharge Over Current 1 Alarm" 
+    discharge_over_current1_protection:
+      name: "Discharge Over Current 1 Protection" 
+    discharge_over_current1_protection_delay:
+      name: "Discharge Over Current 1 Protection Delay" 
 
-   discharge_over_current2_protection:
-     name: "Discharge Over Current 2 Protection" 
-     mode: BOX
-   discharge_over_current2_protection_delay:
-     name: "Discharge Over Current 2 Protection Delay" 
-     mode: BOX
+    discharge_over_current2_protection:
+      name: "Discharge Over Current 2 Protection" 
+    discharge_over_current2_protection_delay:
+      name: "Discharge Over Current 2 Protection Delay" 
 
-   short_circuit_protection_delay:
-     name: "Short Circuit Protection Delay (Milliseconds)" 
-     mode: BOX
+    short_circuit_protection_delay:
+      name: "Short Circuit Protection Delay (Milliseconds)" 
 
+    cell_balancing_threshold:
+      name: "Cell Balancing Threshold"
+    cell_balancing_delta:
+      name: "Cell Balancing Delta"
+
+    sleep_cell_voltage:
+      name: "Sleep Cell Voltage"
+    sleep_delay:
+      name: "Sleep Delay"
+
+    full_charge_voltage:
+      name: "Full Charge Voltage"
+    full_charge_amps:
+      name: "Full Charge Amps"
+    low_charge_alarm_percent:
+      name: "Low Charge Alarm"
+
+    charge_over_temperature_alarm:
+      name: "Charge Over Temperature Alarm"
+    charge_over_temperature_protection:
+      name: "Charge Over Temperature Protection"
+    charge_over_temperature_protection_release:
+      name: "Charge Over Temperature Protection Release"
+
+    discharge_over_temperature_alarm:
+      name: "Discharge Over Temperature Alarm"
+    discharge_over_temperature_protection:
+      name: "Discharge Over Temperature Protection"
+    discharge_over_temperature_protection_release:
+      name: "Discharge Over Temperature Protection Release"
+
+    charge_under_temperature_alarm:
+      name: "Charge Under Temperature Alarm"
+    charge_under_temperature_protection:
+      name: "Charge Under Temperature Protection"
+    charge_under_temperature_protection_release:
+      name: "Charge Under Temperature Protection Release"
+
+    discharge_under_temperature_alarm:
+      name: "Discharge Under Temperature Alarm"
+    discharge_under_temperature_protection:
+      name: "Discharge Under Temperature Protection"
+    discharge_under_temperature_protection_release:
+      name: "Discharge Under Temperature Protection Release"
 
 
 

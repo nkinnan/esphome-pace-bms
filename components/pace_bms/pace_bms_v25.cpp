@@ -1589,12 +1589,12 @@ const unsigned char PaceBmsV25::exampleReadSystemTimeResponseV25[] = "~250046004
 const unsigned char PaceBmsV25::exampleWriteSystemTimeRequestV25[] = "~250046B2400C1808140E0F25FAFC\r";
 const unsigned char PaceBmsV25::exampleWriteSystemTimeResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsV25::CreateReadSystemTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, CID2_ReadDateTime, std::vector<uint8_t>(), request);
 	return true;
 }
-bool PaceBmsV25::ProcessReadSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime)
+bool PaceBmsV25::ProcessReadSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -1615,7 +1615,7 @@ bool PaceBmsV25::ProcessReadSystemTimeResponse(const uint8_t busId, const std::v
 
 	return true;
 }
-bool PaceBmsV25::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request)
+bool PaceBmsV25::CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request)
 {
 	const uint16_t payloadLen = 12;
 	std::vector<uint8_t> payload(payloadLen);
@@ -1631,7 +1631,7 @@ bool PaceBmsV25::CreateWriteSystemTimeRequest(const uint8_t busId, const DateTim
 
 	return true;
 }
-bool PaceBmsV25::ProcessWriteSystemTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response)
+bool PaceBmsV25::ProcessWriteSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -2631,7 +2631,7 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Full
 		LogError(message);
 		return false;
 	}
-	if (config.LowChargeAlarmPercent < 1 || config.LowChargeAlarmPercent > 100)
+	if (config.LowChargeAlarmPercent < 0 || config.LowChargeAlarmPercent > 100)
 	{
 		const char* message = "LowChargeAlarmPercent is not in the range that PBmsTools would send (or expect back)";
 		LogError(message);

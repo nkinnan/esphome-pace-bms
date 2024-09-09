@@ -15,7 +15,8 @@ esphome:
     - FS
     - Update
     # huge improvement to event throughput to the on-device web_server dashboard
-    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+    #- ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+    - ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
 
 esp32:
   board: esp32-c3-devkitm-1
@@ -51,11 +52,14 @@ web_server:
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/nkinnan/esphome-pace-bms
-      ref: "initial_commit"
+      #type: git
+      #url: https://github.com/nkinnan/esphome-pace-bms
+      #ref: "initial_commit"
+      type: local
+      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
     refresh: 1s
+    
 
 
     ##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
@@ -66,7 +70,7 @@ debug:
 
 
 uart:
-    id: uart_1
+    id: uart_0
     baud_rate: 9600
     tx_pin: GPIO2
     rx_pin: GPIO1
@@ -76,14 +80,11 @@ pace_bms:
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
-  uart_id: uart_1
+  uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
-
-
-
 
 
 sensor:
@@ -171,7 +172,16 @@ sensor:
 
 
 
+number:
+
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
 
 
+datetime:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
+    system_date_and_time:
+      name: "System Date and Time"
