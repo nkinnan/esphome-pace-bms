@@ -101,6 +101,10 @@ private:
 		CID2_WriteChargeAndDischargeOverTemperatureConfiguration = 0xDC,
 		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
 		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
+		CID2_ReadMosfetOverTemperatureConfiguration = 0xE1,
+		CID2_WriteMosfetOverTemperatureConfiguration = 0xE0,
+		CID2_ReadEnvironmentOverUnderTemperatureConfiguration = 0xE7,
+		CID2_WriteEnvironmentOverUnderTemperatureConfiguration = 0xE6,
 
 		// "System Configuration" tab of PBmsTools 2.4
 		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
@@ -633,7 +637,6 @@ public:
 	// -------- NOT IMPLEMENTED --------
 
 
-
 	// ==== System Time
 	// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
 	// 2 Month:  read: 08   write: 08
@@ -689,6 +692,9 @@ public:
 		RC_FullChargeLowCharge = CID2_ReadFullChargeLowChargeConfiguration,
 		RC_ChargeAndDischargeOverTemperature = CID2_ReadChargeAndDischargeOverTemperatureConfiguration,
 		RC_ChargeAndDischargeUnderTemperature = CID2_ReadChargeAndDischargeUnderTemperatureConfiguration,
+		RC_MosfetOverTemperature = CID2_ReadMosfetOverTemperatureConfiguration,
+		RC_EnvironmentOverUnderTemperature = CID2_ReadEnvironmentOverUnderTemperatureConfiguration,
+
 	};
 
 	bool CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request);
@@ -1034,21 +1040,61 @@ public:
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
-	// ????????? mystery ????????? this is sent during "Parameter Setting" tab Read/Write All but does not correspond to ANY value that I can find (and certainly not in the Parameter Setting tab) displayed in PBmsTools
+	// ==== Mosfet Over Temperature Protection Configuration
+	// 1 Mosfet Over Temperature Alarm: 90 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 30-120
+	// 2 Mosfet Over Temperature Protection: 110 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 30-120
+	// 3 Mosfet Over Temperature Release: 85 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 30-120
 	// read:  ~250046E10000FD99.
 	// resp:  ~25004600200E010E2E0EF60DFCFA5D.
-	//                     ??????????????
+	//                     ??111122223333
 	// write: ~250046E0200E010E2E0EF60DFCFA48.
 	// resp:  ~250046000000FDAF.
 
-	// ????????? mystery ????????? this is sent during "Parameter Setting" tab Read/Write All but does not correspond to ANY value that I can find (and certainly not in the Parameter Setting tab) displayed in PBmsTools
+	static const uint8_t exampleReadMosfetOverTemperatureConfigurationRequestV25[];
+	static const uint8_t exampleReadMosfetOverTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationRequestV25[];
+	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationResponseV25[];
+
+	struct MosfetOverTemperatureConfiguration
+	{
+		int8_t Alarm;
+		int8_t Protection;
+		int8_t ProtectionRelease;
+	};
+
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, MosfetOverTemperatureConfiguration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const MosfetOverTemperatureConfiguration& config, std::vector<uint8_t>& request);
+
+	// ==== Environment Over/Under Temperature Protection Configuration
+	// 1 Environment Under Temperature Alarm: (-20) - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as (-35)-30
+	// 2 Environment Under Temperature Protection: (-25) - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as (-35)-30
+	// 3 Environment Under Temperature Release: (-20) - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as (-35)-30
+	// 4 Environment Over Temperature Alarm: 65 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 20-100
+	// 5 Environment Over Temperature Protection: 70 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 20-100
+	// 6 Environment Over Temperature Release: 65 - stored as (value * 10) + 2730 = , to decode (value - 2730) / 10.0 =  - valid range reported by PBmsTools as 20-100
 	// read:  ~250046E70000FD93.
 	// resp:  ~25004600501A0109E209B009E20D340D660D34F806.
-	//                     ??????????????????????????
+	//                     ??111122223333444455556666
 	// write: ~250046E6501A0109E209B009E20D340D660D34F7EB.
 	// resp:  ~250046000000FDAF.
 
+	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationRequestV25[];
+	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationRequestV25[];
+	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationResponseV25[];
 
+	struct EnvironmentOverUnderTemperatureConfiguration
+	{
+		int8_t UnderAlarm;
+		int8_t UnderProtection;
+		int8_t UnderProtectionRelease;
+		int8_t OverAlarm;
+		int8_t OverProtection;
+		int8_t OverProtectionRelease;
+	};
+
+	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config);
+	bool CreateWriteConfigurationRequest(const uint8_t busId, const EnvironmentOverUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
 	// ============================================================================
 	// 

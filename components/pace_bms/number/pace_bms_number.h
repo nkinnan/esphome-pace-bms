@@ -72,6 +72,16 @@ class PaceBmsNumber : public Component {
   void set_discharge_under_temperature_protection_number(PaceBmsNumberImplementation* number) { this->discharge_under_temperature_protection_number_ = number; }
   void set_discharge_under_temperature_protection_release_number(PaceBmsNumberImplementation* number) { this->discharge_under_temperature_protection_release_number_ = number; }
 
+  void set_mosfet_over_temperature_alarm_number(PaceBmsNumberImplementation* number) { this->mosfet_over_temperature_alarm_number_ = number; }
+  void set_mosfet_over_temperature_protection_number(PaceBmsNumberImplementation* number) { this->mosfet_over_temperature_protection_number_ = number; }
+  void set_mosfet_over_temperature_protection_release_number(PaceBmsNumberImplementation* number) { this->mosfet_over_temperature_protection_release_number_ = number; }
+
+  void set_environment_under_temperature_alarm_number(PaceBmsNumberImplementation* number) { this->environment_under_temperature_alarm_number_ = number; }
+  void set_environment_under_temperature_protection_number(PaceBmsNumberImplementation* number) { this->environment_under_temperature_protection_number_ = number; }
+  void set_environment_under_temperature_protection_release_number(PaceBmsNumberImplementation* number) { this->environment_under_temperature_protection_release_number_ = number; }
+  void set_environment_over_temperature_alarm_number(PaceBmsNumberImplementation* number) { this->environment_over_temperature_alarm_number_ = number; }
+  void set_environment_over_temperature_protection_number(PaceBmsNumberImplementation* number) { this->environment_over_temperature_protection_number_ = number; }
+  void set_environment_over_temperature_protection_release_number(PaceBmsNumberImplementation* number) { this->environment_over_temperature_protection_release_number_ = number; }
 
 
   void setup() override;
@@ -164,11 +174,21 @@ class PaceBmsNumber : public Component {
   pace_bms::PaceBmsNumberImplementation* discharge_under_temperature_protection_number_{ nullptr };
   pace_bms::PaceBmsNumberImplementation* discharge_under_temperature_protection_release_number_{ nullptr };
 
+  PaceBmsV25::MosfetOverTemperatureConfiguration mosfet_over_temperature_configuration_;
+  bool mosfet_over_temperature_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_protection_release_number_{ nullptr };
 
+  PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration environment_over_under_temperature_configuration_;
+  bool environment_over_under_temperature_configuration_seen_{ false };
+  pace_bms::PaceBmsNumberImplementation* environment_under_temperature_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* environment_under_temperature_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* environment_under_temperature_protection_release_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* environment_over_temperature_alarm_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* environment_over_temperature_protection_number_{ nullptr };
+  pace_bms::PaceBmsNumberImplementation* environment_over_temperature_protection_release_number_{ nullptr };
 };
 
 }  // namespace pace_bms
 }  // namespace esphome
-
-
-

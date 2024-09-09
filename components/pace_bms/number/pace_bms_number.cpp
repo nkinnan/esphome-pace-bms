@@ -785,7 +785,7 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting charge_under_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeAlarm = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
-		});
+			});
 	}
 	if (this->charge_under_temperature_protection_number_ != nullptr) {
 		this->charge_under_temperature_protection_number_->add_on_control_callback([this](float value) {
@@ -796,7 +796,7 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting charge_under_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeProtection = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
-		});
+			});
 	}
 	if (this->charge_under_temperature_protection_release_number_ != nullptr) {
 		this->charge_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
@@ -807,7 +807,7 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting charge_under_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.ChargeProtectionRelease = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
-		});
+			});
 	}
 	if (this->discharge_under_temperature_alarm_number_ != nullptr) {
 		this->discharge_under_temperature_alarm_number_->add_on_control_callback([this](float value) {
@@ -818,7 +818,7 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_alarm user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeAlarm = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
-		});
+			});
 	}
 	if (this->discharge_under_temperature_protection_number_ != nullptr) {
 		this->discharge_under_temperature_protection_number_->add_on_control_callback([this](float value) {
@@ -829,7 +829,7 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_protection user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeProtection = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
-		});
+			});
 	}
 	if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
 		this->discharge_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
@@ -840,13 +840,174 @@ void PaceBmsNumber::setup() {
 			ESP_LOGD(TAG, "Setting discharge_under_temperature_protection_release user selected value %f", value);
 			this->charge_and_discharge_under_temperature_configuration_.DischargeProtectionRelease = std::lround(value);
 			this->parent_->set_charge_and_discharge_under_temperature_configuration(this->charge_and_discharge_under_temperature_configuration_);
+			});
+	}
+
+	if (this->mosfet_over_temperature_alarm_number_ != nullptr ||
+		this->mosfet_over_temperature_protection_number_ != nullptr ||
+		this->mosfet_over_temperature_protection_release_number_ != nullptr) {
+		this->parent_->register_mosfet_over_temperature_configuration_callback([this](PaceBmsV25::MosfetOverTemperatureConfiguration& configuration) {
+			this->mosfet_over_temperature_configuration_ = configuration;
+			this->mosfet_over_temperature_configuration_seen_ = true;
+			if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
+				float state = configuration.Alarm;
+				ESP_LOGV(TAG, "'mosfet_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+				this->mosfet_over_temperature_alarm_number_->publish_state(state);
+			}
+			if (this->mosfet_over_temperature_protection_number_ != nullptr) {
+				float state = configuration.Protection;
+				ESP_LOGV(TAG, "'mosfet_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+				this->mosfet_over_temperature_protection_number_->publish_state(state);
+			}
+			if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
+				float state = configuration.ProtectionRelease;
+				ESP_LOGV(TAG, "'mosfet_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+				this->mosfet_over_temperature_protection_release_number_->publish_state(state);
+			}
 		});
 	}
+	if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
+		this->mosfet_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
+			if (!mosfet_over_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "mosfet_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting mosfet_over_temperature_alarm user selected value %f", value);
+			this->mosfet_over_temperature_configuration_.Alarm = std::lround(value);
+			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			});
+	}
+	if (this->mosfet_over_temperature_protection_number_ != nullptr) {
+		this->mosfet_over_temperature_protection_number_->add_on_control_callback([this](float value) {
+			if (!mosfet_over_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "mosfet_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting mosfet_over_temperature_protection user selected value %f", value);
+			this->mosfet_over_temperature_configuration_.Protection = std::lround(value);
+			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			});
+	}
+	if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
+		this->mosfet_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
+			if (!mosfet_over_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "mosfet_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting mosfet_over_temperature_protection_release user selected value %f", value);
+			this->mosfet_over_temperature_configuration_.ProtectionRelease = std::lround(value);
+			this->parent_->set_mosfet_over_temperature_configuration(this->mosfet_over_temperature_configuration_);
+			});
+	}
+
+	if (this->environment_under_temperature_alarm_number_ != nullptr ||
+		this->environment_under_temperature_protection_number_ != nullptr ||
+		this->environment_under_temperature_protection_release_number_ != nullptr ||
+		this->environment_over_temperature_alarm_number_ != nullptr ||
+		this->environment_over_temperature_protection_number_ != nullptr ||
+		this->environment_over_temperature_protection_release_number_ != nullptr) {
+		this->parent_->register_environment_over_under_temperature_configuration_callback([this](PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
+			this->environment_over_under_temperature_configuration_ = configuration;
+			this->environment_over_under_temperature_configuration_seen_ = true;
+			if (this->environment_under_temperature_alarm_number_ != nullptr) {
+				float state = configuration.UnderAlarm;
+				ESP_LOGV(TAG, "'environment_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+				this->environment_under_temperature_alarm_number_->publish_state(state);
+			}
+			if (this->environment_under_temperature_protection_number_ != nullptr) {
+				float state = configuration.UnderProtection;
+				ESP_LOGV(TAG, "'environment_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
+				this->environment_under_temperature_protection_number_->publish_state(state);
+			}
+			if (this->environment_under_temperature_protection_release_number_ != nullptr) {
+				float state = configuration.UnderProtectionRelease;
+				ESP_LOGV(TAG, "'environment_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+				this->environment_under_temperature_protection_release_number_->publish_state(state);
+			}
+			if (this->environment_over_temperature_alarm_number_ != nullptr) {
+				float state = configuration.OverAlarm;
+				ESP_LOGV(TAG, "'environment_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+				this->environment_over_temperature_alarm_number_->publish_state(state);
+			}
+			if (this->environment_over_temperature_protection_number_ != nullptr) {
+				float state = configuration.OverProtection;
+				ESP_LOGV(TAG, "'environment_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+				this->environment_over_temperature_protection_number_->publish_state(state);
+			}
+			if (this->environment_over_temperature_protection_release_number_ != nullptr) {
+				float state = configuration.OverProtectionRelease;
+				ESP_LOGV(TAG, "'environment_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+				this->environment_over_temperature_protection_release_number_->publish_state(state);
+			}
+			});
+	}
+	if (this->environment_under_temperature_alarm_number_ != nullptr) {
+		this->environment_under_temperature_alarm_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_under_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_under_temperature_alarm user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.UnderAlarm = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
+	if (this->environment_under_temperature_protection_number_ != nullptr) {
+		this->environment_under_temperature_protection_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_under_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_under_temperature_protection user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.UnderProtection = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
+	if (this->environment_under_temperature_protection_release_number_ != nullptr) {
+		this->environment_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_under_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_under_temperature_protection_release user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.UnderProtectionRelease = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
+	if (this->environment_over_temperature_alarm_number_ != nullptr) {
+		this->environment_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_over_temperature_alarm user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.OverAlarm = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
+	if (this->environment_over_temperature_protection_number_ != nullptr) {
+		this->environment_over_temperature_protection_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_over_temperature_protection user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.OverProtection = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
+	if (this->environment_over_temperature_protection_release_number_ != nullptr) {
+		this->environment_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
+			if (!environment_over_under_temperature_configuration_seen_) {
+				ESP_LOGE(TAG, "environment_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
+				return;
+			}
+			ESP_LOGD(TAG, "Setting environment_over_temperature_protection_release user selected value %f", value);
+			this->environment_over_under_temperature_configuration_.OverProtectionRelease = std::lround(value);
+			this->parent_->set_environment_over_under_temperature_configuration(this->environment_over_under_temperature_configuration_);
+			});
+	}
 }
-
-
-
-
 
 void PaceBmsNumber::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms_number:");
@@ -894,12 +1055,16 @@ void PaceBmsNumber::dump_config() {
 	LOG_NUMBER("  ", "Discharge Under Temperature Alarm", this->discharge_under_temperature_alarm_number_);
 	LOG_NUMBER("  ", "Discharge Under Temperature Protection", this->discharge_under_temperature_protection_number_);
 	LOG_NUMBER("  ", "Discharge Under Temperature Protection Release", this->discharge_under_temperature_protection_release_number_);
+	LOG_NUMBER("  ", "Mosfet Over Temperature Alarm", this->mosfet_over_temperature_alarm_number_);
+	LOG_NUMBER("  ", "Mosfet Over Temperature Protection", this->mosfet_over_temperature_protection_number_);
+	LOG_NUMBER("  ", "Mosfet Over Temperature Protection Release", this->mosfet_over_temperature_protection_release_number_);
+	LOG_NUMBER("  ", "Environment Under Temperature Alarm", this->environment_under_temperature_alarm_number_);
+	LOG_NUMBER("  ", "Environment Under Temperature Protection", this->environment_under_temperature_protection_number_);
+	LOG_NUMBER("  ", "Environment Under Temperature Protection Release", this->environment_under_temperature_protection_release_number_);
+	LOG_NUMBER("  ", "Environment Over Temperature Alarm", this->environment_over_temperature_alarm_number_);
+	LOG_NUMBER("  ", "Environment Over Temperature Protection", this->environment_over_temperature_protection_number_);
+	LOG_NUMBER("  ", "Environment Over Temperature Protection Release", this->environment_over_temperature_protection_release_number_);
 }
 
 }  // namespace pace_bms
 }  // namespace esphome
-
-
-
-
-

@@ -14,7 +14,7 @@ namespace esphome {
 namespace pace_bms {
 
 // this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependencies into it
-// in the future, other protocol versions may be supported
+//     in the future, other protocol versions may be supported
 class PaceBms : public PollingComponent, public uart::UARTDevice {
  public:
   // called by the codegen to set our YAML property values
@@ -30,13 +30,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void update() override;
   void loop() override;
 
-  // preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), 
-  //     but this class still handle the case where they register late, a single update cycle will simply be missed in that case
+  // preferably we'll be setup after all child sensors have registered their callbacks via their own setup(), but
+  //     this class still handles the case where they register late gracefully, a single update cycle will simply 
+  //     be missed in that case
   float get_setup_priority() const { return setup_priority::LATE; }
 
-  // child sensors call these to request notification upon reciept of various types of data from the BMS
-  // the callbacks lists not being empty is what prompts update() to queue command_items for BMS communication
-  // in order to send these updates
+  // child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
+  //     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
+  //     periodically gather these updates for fan-out to the sensors the first place
   void register_analog_information_callback(std::function<void(PaceBmsV25::AnalogInformation&)> callback) { analog_information_callbacks_.push_back(std::move(callback)); }
   void register_status_information_callback(std::function<void(PaceBmsV25::StatusInformation&)> callback) { status_information_callbacks_.push_back(std::move(callback)); }
   void register_hardware_version_callback(std::function<void(std::string&)> callback) { hardware_version_callbacks_.push_back(std::move(callback)); }
@@ -55,11 +56,11 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void register_full_charge_low_charge_configuration_callback(std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)> callback) { full_charge_low_charge_configuration_callbacks_.push_back(std::move(callback)); }
   void register_charge_and_discharge_over_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback) { charge_and_discharge_over_temperature_configuration_callbacks_.push_back(std::move(callback)); }
   void register_charge_and_discharge_under_temperature_configuration_callback(std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback) { charge_and_discharge_under_temperature_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_mosfet_over_temperature_configuration_callback(std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)> callback) { mosfet_over_temperature_configuration_callbacks_.push_back(std::move(callback)); }
+  void register_environment_over_under_temperature_configuration_callback(std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)> callback) { environment_over_under_temperature_configuration_callbacks_.push_back(std::move(callback)); }
   void register_system_datetime_callback(std::function<void(PaceBmsV25::DateTime&)> callback) { system_datetime_callbacks_.push_back(std::move(callback)); }
 
-
-
-  // child sensors call these to request new values be sent to the hardware
+  // child sensors call these to schedule new values be written out to the hardware
   void set_switch_state(PaceBmsV25::SwitchCommand state);
   void set_mosfet_state(PaceBmsV25::MosfetType type, PaceBmsV25::MosfetState state);
   void send_shutdown();
@@ -77,9 +78,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void set_full_charge_low_charge_configuration(PaceBmsV25::FullChargeLowChargeConfiguration& config);
   void set_charge_and_discharge_over_temperature_configuration(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& config);
   void set_charge_and_discharge_under_temperature_configuration(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
+  void set_mosfet_over_temperature_configuration(PaceBmsV25::MosfetOverTemperatureConfiguration& config);
+  void set_environment_over_under_temperature_configuration(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& config);
   void set_system_datetime(PaceBmsV25::DateTime& dt);
-
-
 
  protected:
   // config values set in YAML
@@ -112,11 +113,13 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void handle_read_full_charge_low_charge_configuration_response(std::vector<uint8_t>& response);
   void handle_read_charge_and_discharge_over_temperature_configuration_response(std::vector<uint8_t>& response);
   void handle_read_charge_and_discharge_under_temperature_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_mosfet_over_temperature_configuration_response(std::vector<uint8_t>& response);
+  void handle_read_environment_over_under_temperature_configuration_response(std::vector<uint8_t>& response);
   void handle_read_system_datetime_response(std::vector<uint8_t>& response);
   void handle_write_system_datetime_response(std::vector<uint8_t>& response);
   void handle_write_configuration_response(std::vector<uint8_t>& response);
 
-  // child sensor requested callbacks
+  // child sensor requested callback lists
   std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>> analog_information_callbacks_;
   std::vector<std::function<void(PaceBmsV25::StatusInformation&)>> status_information_callbacks_;
   std::vector<std::function<void(std::string&)>> hardware_version_callbacks_;
@@ -135,12 +138,14 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   std::vector<std::function<void(PaceBmsV25::FullChargeLowChargeConfiguration&)>> full_charge_low_charge_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration&)>> charge_and_discharge_over_temperature_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration&)>> charge_and_discharge_under_temperature_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)>> mosfet_over_temperature_configuration_callbacks_;
+  std::vector<std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)>> environment_over_under_temperature_configuration_callbacks_;
   std::vector<std::function<void(PaceBmsV25::DateTime&)>> system_datetime_callbacks_;
 
-
   // along with loop() this is the "engine" of BMS communications
-  // send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
-  // process_response_frame_ will call next_response_handler_ (which was saved from the command_item in send_next_request_frame_) once a response arrives
+  //     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
+  //     - process_response_frame_ will call next_response_handler_ (which was saved from the command_item popped in 
+  //           send_next_request_frame_) once a response arrives
   PaceBmsV25* pace_bms_v25_;
   static const uint8_t max_data_len_ = 200;
   uint8_t raw_data_[max_data_len_];
@@ -162,20 +167,20 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
 	  std::function<void(std::vector<uint8_t>&)> process_response_frame_;
   };
   // when the bus is clear:
-  //     the next command_item will be popped from command_queue_
+  //     the next command_item will be popped from either the read or the write queue (writes always take priority)
   //     the request frame generated and dispatched via command_item.create_request_frame_
   //     the expected response handler (command_item.process_response_frame_) will be assigned to next_response_handler_ to be called once a response frame arrives
   //     last_request_description is also saved for logging purposes as:
-  //     once this sequence starts, the command_item is thrown away - it's all bytes and pointers from this point
+  //     once this sequence starts, the command_item is thrown away - it's all bytes and saved pointers from this point
   //         see section: "along with loop() this is the "engine" of BMS communications" for how this works
-  // commands generated as a result of user interaction are pushed to the front of the queue for immediate dispatch
-  // queue is otherwise filled each update() with only the commands necessary to refresh child components that have been declared in the yaml config
+  // commands generated as a result of user interaction are pushed to the write queue which has priority over the read queue
+  // the read queue is filled each update() with only the commands necessary to refresh child components that have been declared in the yaml config and requested a callback for the information
   std::queue<command_item*> read_queue_;
   std::list<command_item*> write_queue_;
   std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
   std::string last_request_description;
 
-  // helper
+  // helper to avoid pushing redundant write requests
   void write_queue_push_back_with_deduplication(command_item* item);
 };
 

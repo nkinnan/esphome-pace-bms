@@ -53,7 +53,7 @@ void PaceBms::dump_config() {
 }
 
 /*
-* setup component
+* setup this component
 */
 
 void PaceBms::setup() {
@@ -78,7 +78,7 @@ void PaceBms::setup() {
 }
 
 /*
-* fill command_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensor 
+* fill read_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensor 
 * instances via setting callbacks to receive the updates
 */
 
@@ -226,10 +226,20 @@ void PaceBms::update() {
         item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_system_datetime_response(response); };
         read_queue_.push(item);
     }
-
-
-
-
+    if (this->mosfet_over_temperature_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read mosfet over temperature configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_MosfetOverTemperature, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_mosfet_over_temperature_configuration_response(response); };
+        read_queue_.push(item);
+    }
+    if (this->environment_over_under_temperature_configuration_callbacks_.size() > 0) {
+        command_item* item = new command_item;
+        item->description_ = std::string("read environment over/under temperature configuration");
+        item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsV25::RC_EnvironmentOverUnderTemperature, request); };
+        item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_environment_over_under_temperature_configuration_response(response); };
+        read_queue_.push(item);
+    }
 
     ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
   }
@@ -237,7 +247,7 @@ void PaceBms::update() {
 
 /*
 * incrementally process incoming bytes off the bus, eventually dispatching a full response to process_response_frame_
-* once request_throttle has been satisfied, call send_next_request_frame to continue popping the command_queue_
+* once request_throttle has been satisfied and no request is outstanding, call send_next_request_frame to continue popping the read/write queues
 */
 
 void PaceBms::loop() {
@@ -398,7 +408,6 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
   // this request/response pair is complete, any additional frames received will not be expected and should not be processed until the next command queue pop / send
   next_response_handler_ = nullptr;
 }
-
 
 /*
 * read/write response frame received handlers, called via next_response_handler_ from process_response_frame 
@@ -740,6 +749,36 @@ void PaceBms::handle_read_system_datetime_response(std::vector<uint8_t>& respons
     }
 }
 
+void PaceBms::handle_read_mosfet_over_temperature_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::MosfetOverTemperatureConfiguration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->mosfet_over_temperature_configuration_callbacks_.size(); i++) {
+        mosfet_over_temperature_configuration_callbacks_[i](config);
+    }
+}
+
+void PaceBms::handle_read_environment_over_under_temperature_configuration_response(std::vector<uint8_t>& response) {
+    ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+    PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration config;
+    bool result = this->pace_bms_v25_->ProcessReadConfigurationResponse(this->address_, response, config);
+    if (result == false) {
+        ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+        return;
+    }
+    // dispatch to any child components that registered for a callback with us
+    for (int i = 0; i < this->environment_over_under_temperature_configuration_callbacks_.size(); i++) {
+        environment_over_under_temperature_configuration_callbacks_[i](config);
+    }
+}
+
 void PaceBms::handle_write_system_datetime_response(std::vector<uint8_t>& response) {
     ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
@@ -750,9 +789,8 @@ void PaceBms::handle_write_system_datetime_response(std::vector<uint8_t>& respon
     }
 }
 
-
 /*
-* callbacks from settable child sensors to set BMS state
+* these are called from from user-settable child sensors to set BMS state
 */
 
 // helper for when multiple callbacks come due to fast UX interaction
@@ -985,6 +1023,28 @@ void PaceBms::set_charge_and_discharge_under_temperature_configuration(PaceBmsV2
     ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
+void PaceBms::set_mosfet_over_temperature_configuration(PaceBmsV25::MosfetOverTemperatureConfiguration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write mosfet over temperature configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
+void PaceBms::set_environment_over_under_temperature_configuration(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& config) {
+    command_item* item = new command_item;
+
+    item->description_ = std::string("write environment over under temperature configuration");
+    ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+    item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
+    item->process_response_frame_ = [this, config](std::vector<uint8_t>& response) -> void { this->handle_write_configuration_response(response); };
+    write_queue_push_back_with_deduplication(item);
+    ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
 void PaceBms::set_system_datetime(PaceBmsV25::DateTime& dt) {
     command_item* item = new command_item;
 
@@ -995,9 +1055,6 @@ void PaceBms::set_system_datetime(PaceBmsV25::DateTime& dt) {
     write_queue_push_back_with_deduplication(item);
     ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
-
-
-
 
 }  // namespace pace_bms
 }  // namespace esphome
