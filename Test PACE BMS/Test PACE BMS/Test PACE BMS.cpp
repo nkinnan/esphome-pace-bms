@@ -52,7 +52,7 @@ void VeryVerboseLogFunc(std::string message)
 
 void BasicTests()
 {
-	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
+	PaceBmsV25* paceBms = new PaceBmsV25(PaceBmsV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 	std::vector<uint8_t> buffer;
 	bool res;
 
@@ -1196,7 +1196,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeRequestV25);
-	paceBms->CreateReadSystemTimeRequest(0, buffer);
+	paceBms->CreateReadSystemDateTimeRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadSystemTimeRequest logged something above verbose" << std::endl;
@@ -1219,7 +1219,7 @@ void BasicTests()
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeResponseV25);
 	PaceBmsV25::DateTime dateTime;
-	res = paceBms->ProcessReadSystemTimeResponse(
+	res = paceBms->ProcessReadSystemDateTimeResponse(
 		0,
 		std::vector<uint8_t>(
 			PaceBmsV25::exampleReadSystemTimeResponseV25,
@@ -1258,7 +1258,7 @@ void BasicTests()
 	dateTime.Hour = 14;
 	dateTime.Minute = 15;
 	dateTime.Second = 37;
-	paceBms->CreateWriteSystemTimeRequest(0, dateTime, buffer);
+	paceBms->CreateWriteSystemDateTimeRequest(0, dateTime, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSystemTimeRequest logged something above verbose" << std::endl;
@@ -1280,7 +1280,7 @@ void BasicTests()
 	veryVerbose.str("");
 
 	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSystemTimeResponseV25);
-	res = paceBms->ProcessWriteSystemTimeResponse(
+	res = paceBms->ProcessWriteSystemDateTimeResponse(
 		0,
 		std::vector<uint8_t>(
 			PaceBmsV25::exampleWriteSystemTimeResponseV25,
@@ -3229,7 +3229,7 @@ void ComPortTests(int portNum, int rs485_address)
 	SetCommMask(serialHandle, EV_RXCHAR);
 
 
-	PaceBmsV25* paceBms = new PaceBmsV25(&ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
+	PaceBmsV25* paceBms = new PaceBmsV25(PaceBmsV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 
 	/*
 	ZeroMemory(buffer, bufferLen);
@@ -3407,7 +3407,7 @@ void ComPortTests(int portNum, int rs485_address)
 }
 
 // temp code for forcing PBmsTools to give up it's secrets, used with a software NULL serial port loopback emulator, but I guess you could use a physical loopback too
-void EmulatePaceBms(int portNum, int rs485_address)
+/*void EmulatePaceBms(int portNum, int rs485_address)
 {
 	HANDLE serialHandle;
 	std::string comName = std::string("\\\\.\\COM") + std::to_string(portNum);
@@ -3469,7 +3469,7 @@ void EmulatePaceBms(int portNum, int rs485_address)
 
 
 	CloseHandle(serialHandle);
-}
+}*/
 
 int main()
 {

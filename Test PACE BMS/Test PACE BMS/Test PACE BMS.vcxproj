@@ -148,6 +148,7 @@
     <ClCompile Include="..\..\components\pace_bms\pace_bms.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_v20.cpp" />
     <ClCompile Include="..\..\components\pace_bms\select\pace_bms_select.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -191,6 +192,7 @@
     <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_v20.h" />
     <ClInclude Include="..\..\components\pace_bms\pace_bms_v25.h" />
     <ClInclude Include="..\..\components\pace_bms\select\pace_bms_select.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

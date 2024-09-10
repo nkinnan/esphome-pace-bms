@@ -44,6 +44,9 @@
     <ClCompile Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.cpp">
       <Filter>components\pace_bms\datetime</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_v20.cpp">
+      <Filter>components\pace_bms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
@@ -87,6 +90,9 @@
     </ClInclude>
     <ClInclude Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.h">
       <Filter>components\pace_bms\datetime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_v20.h">
+      <Filter>components\pace_bms</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
