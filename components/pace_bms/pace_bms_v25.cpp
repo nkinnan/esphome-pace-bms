@@ -276,8 +276,7 @@ void PaceBmsV25::CreateRequest(const uint8_t busId, const CID2 cid2, const std::
 
 	if (byteOffset != payload.size() + 18)
 	{
-		const char* message = "Length mismatch creating request, this is a code bug in PACE_BMS";
-		LogError(message);
+		LogError("Length mismatch creating request, this is a code bug in PACE_BMS");
 	}
 }
 
@@ -429,16 +428,14 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
-		const char* message = "Response from wrong bus Id in payload";
-		LogError(message);
+		LogError("Response from wrong bus Id in payload");
 		return false;
 	}
 
 	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
 	if (analogInformation.cellCount > MAX_CELL_COUNT)
 	{
-		const char* message = "Response contains more cell voltage readings than are supported, results will be truncated";
-		LogWarning(message);
+		LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
 	}
 	for (int i = 0; i < analogInformation.cellCount; i++)
 	{
@@ -453,8 +450,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
 	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
-		const char* message = "Response contains more temperature readings than are supported, results will be truncated";
-		LogWarning(message);
+		LogWarning("Response contains more temperature readings than are supported, results will be truncated");
 	}
 	for (int i = 0; i < analogInformation.temperatureCount; i++)
 	{
@@ -475,8 +471,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	uint8_t P3 = ReadHexEncodedByte(response, byteOffset);
 	if (P3 != 3)
 	{
-		const char* message = "Response contains a constant with an unexpected value";
-		LogWarning(message);
+		LogWarning("Response contains a constant with an unexpected value");
 		//return false;
 	}
 
@@ -488,8 +483,7 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 
 	if (byteOffset != payloadLen + 13)
 	{
-		const char* message = "Length mismatch reading analog information response, this is a code bug in PACE_BMS";
-		LogError(message);
+		LogError("Length mismatch reading analog information response, this is a code bug in PACE_BMS");
 		return false;
 	}
 
@@ -846,7 +840,6 @@ const std::string PaceBmsV25::DecodeWarningStatus2Value(const uint8_t val)
 
 bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
 {
-	// todo: consider using string
 	statusInformation.warningText.clear();
 	statusInformation.balancingText.clear();
 	statusInformation.systemText.clear();
@@ -874,9 +867,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
-		// todo: replace *ALL* of these with a direct log call
-		const char* message = "Response from wrong bus Id in payload";
-		LogError(message);
+		LogError("Response from wrong bus Id in payload");
 		return false;
 	}
 
@@ -884,8 +875,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
 	if (cellCount > MAX_CELL_COUNT)
 	{
-		const char* message = "Response contains more cell warnings than are supported, results will be truncated";
-		LogWarning(message);
+		LogWarning("Response contains more cell warnings than are supported, results will be truncated");
 	}
 	for (int i = 0; i < cellCount; i++)
 	{
@@ -905,8 +895,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
 	if (tempCount > MAX_TEMP_COUNT)
 	{
-		const char* message = "Response contains more temperature warnings than are supported, results will be truncated";
-		LogWarning(message);
+		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");
 	}
 	for (int i = 0; i < tempCount; i++)
 	{
@@ -1016,8 +1005,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	if (byteOffset != payloadLen + 13)
 	{
-		const char* message = "Length mismatch reading warning information response, this is a code bug in PACE_BMS";
-		LogError(message);
+		LogError("Length mismatch reading warning information response, this is a code bug in PACE_BMS");
 		return false;
 	}
 
@@ -1508,8 +1496,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1525,50 +1512,42 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 2500 || config.AlarmMillivolts > 4500)
 	{
-		const char* message = "AlarmVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01 volts";
-		LogError(message);
+		LogError("AlarmVoltage should be in steps of 0.01 volts");
 		return false;
 	}
 	if (config.ProtectionMillivolts < 2500 || config.ProtectionMillivolts > 4500)
 	{
-		const char* message = "ProtectionVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01 volts";
-		LogError(message);
+		LogError("ProtectionVoltage should be in steps of 0.01 volts");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts < 2500 || config.ProtectionReleaseMillivolts > 4500)
 	{
-		const char* message = "ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01 volts";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage should be in steps of 0.01 volts");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
-		const char* message = "ProtectionDelaySeconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelaySeconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelaySeconds should be in steps of 0.5 seconds";
-		LogError(message);
+		LogError("ProtectionDelaySeconds should be in steps of 0.5 seconds");
 		return false;
 	}
 
@@ -1607,8 +1586,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1624,50 +1602,42 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 20000 || config.AlarmMillivolts > 65000)
 	{
-		const char* message = "AlarmVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.AlarmMillivolts % 10)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("AlarmVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionMillivolts < 20000 || config.ProtectionMillivolts > 65000)
 	{
-		const char* message = "ProtectionVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts < 20000 || config.ProtectionReleaseMillivolts > 65000)
 	{
-		const char* message = "ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 500");
 		return false;
 	}
 
@@ -1706,8 +1676,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1723,50 +1692,42 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 2000 || config.AlarmMillivolts > 3500)
 	{
-		const char* message = "AlarmVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("AlarmVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionMillivolts < 2000 || config.ProtectionMillivolts > 3500)
 	{
-		const char* message = "ProtectionVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts < 2000 || config.ProtectionReleaseMillivolts > 3500)
 	{
-		const char* message = "ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 500");
 		return false;
 	}
 
@@ -1805,8 +1766,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1822,50 +1782,42 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Pack
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmMillivolts < 15000 || config.AlarmMillivolts > 50000)
 	{
-		const char* message = "AlarmVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.AlarmMillivolts % 10 != 0)
 	{
-		const char* message = "AlarmVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("AlarmVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionMillivolts < 15000 || config.ProtectionMillivolts > 50000)
 	{
-		const char* message = "ProtectionVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts < 15000 || config.ProtectionReleaseMillivolts > 50000)
 	{
-		const char* message = "ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionReleaseMillivolts % 10 != 0)
 	{
-		const char* message = "ProtectionReleaseVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("ProtectionReleaseVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 1000 || config.ProtectionDelayMilliseconds > 20000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 500");
 		return false;
 	}
 
@@ -1904,8 +1856,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1920,26 +1871,22 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 220)
 	{
-		const char* message = "AlarmAmperage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmAmperage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionAmperage < 1 || config.ProtectionAmperage > 220)
 	{
-		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionAmperage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 25000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 500");
 		return false;
 	}
 
@@ -1979,8 +1926,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -1995,26 +1941,22 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Disc
 	// validate values conform to what PBmsTools would send
 	if (config.AlarmAmperage < 1 || config.AlarmAmperage > 220)
 	{
-		const char* message = "AlarmAmperage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("AlarmAmperage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionAmperage < 1 || config.ProtectionAmperage > 220)
 	{
-		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionAmperage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 500 || config.ProtectionDelayMilliseconds > 25000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 500 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 500";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 500");
 		return false;
 	}
 
@@ -2052,8 +1994,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 0)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -2069,26 +2010,22 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Disc
 	// validate values conform to what PBmsTools would send
 	if (config.ProtectionAmperage < 5 || config.ProtectionAmperage > 255)
 	{
-		const char* message = "ProtectionAmperage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionAmperage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionAmperage % 5 != 0)
 	{
-		const char* message = "ProtectionAmperage should be in steps of 5";
-		LogError(message);
+		LogError("ProtectionAmperage should be in steps of 5");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds < 100 || config.ProtectionDelayMilliseconds > 2000)
 	{
-		const char* message = "ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMilliseconds % 100 != 0)
 	{
-		const char* message = "ProtectionDelayMilliseconds should be in steps of 100";
-		LogError(message);
+		LogError("ProtectionDelayMilliseconds should be in steps of 100");
 		return false;
 	}
 
@@ -2131,14 +2068,12 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Shor
 	// validate values conform to what PBmsTools would send
 	if (config.ProtectionDelayMicroseconds < 100 || config.ProtectionDelayMicroseconds > 500)
 	{
-		const char* message = "ProtectionDelayMicroseconds is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionDelayMicroseconds is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionDelayMicroseconds % 50 != 0)
 	{
-		const char* message = "ProtectionDelayMicroseconds should be in steps of 50";
-		LogError(message);
+		LogError("ProtectionDelayMicroseconds should be in steps of 50");
 		return false;
 	}
 
@@ -2179,20 +2114,17 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Cell
 	// validate values conform to what PBmsTools would send
 	if (config.ThresholdMillivolts < 3300 || config.ThresholdMillivolts > 4500)
 	{
-		const char* message = "ThresholdVolts is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ThresholdVolts is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ThresholdMillivolts % 10 != 0)
 	{
-		const char* message = "ThresholdVolts should be in steps of 0.01";
-		LogError(message);
+		LogError("ThresholdVolts should be in steps of 0.01");
 		return false;
 	}
 	if (config.DeltaCellMillivolts < 20 || config.DeltaCellMillivolts > 500)
 	{
-		const char* message = "DeltaCellMillivolts is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DeltaCellMillivolts is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2230,8 +2162,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 
 	if (unknown2 != 0)
 	{
-		const char* message = "Unknown2 value in payload is not zero";
-		LogError(message);
+		LogError("Unknown2 value in payload is not zero");
 		return false;
 	}
 
@@ -2242,20 +2173,17 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Slee
 	// validate values conform to what PBmsTools would send
 	if (config.CellMillivolts < 2000 || config.CellMillivolts > 4000)
 	{
-		const char* message = "CellVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("CellVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.CellMillivolts % 10 != 0)
 	{
-		const char* message = "CellVoltage should be in steps of 0.01";
-		LogError(message);
+		LogError("CellVoltage should be in steps of 0.01");
 		return false;
 	}
 	if (config.DelayMinutes < 1.0f || config.DelayMinutes > 120.0f)
 	{
-		const char* message = "DelayMinutes is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DelayMinutes is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2299,32 +2227,27 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Full
 	// validate values conform to what PBmsTools would send
 	if (config.FullChargeMillivolts < 20000 || config.FullChargeMillivolts > 65000)
 	{
-		const char* message = "FullChargeVoltage is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("FullChargeVoltage is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.FullChargeMillivolts % 10 != 0)
 	{
-		const char* message = "FullChargeVoltage should be in steps of 0.001";
-		LogError(message);
+		LogError("FullChargeVoltage should be in steps of 0.001");
 		return false;
 	}
 	if (config.FullChargeMilliamps < 500 || config.FullChargeMilliamps > 5000)
 	{
-		const char* message = "FullChargeCurrentMilliamps is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("FullChargeCurrentMilliamps is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.FullChargeMilliamps % 500 != 0)
 	{
-		const char* message = "FullChargeCurrentMilliamps should be in steps of 500";
-		LogError(message);
+		LogError("FullChargeCurrentMilliamps should be in steps of 500");
 		return false;
 	}
 	if (config.LowChargeAlarmPercent < 0 || config.LowChargeAlarmPercent > 100)
 	{
-		const char* message = "LowChargeAlarmPercent is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("LowChargeAlarmPercent is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2360,8 +2283,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -2379,38 +2301,32 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	// validate values conform to what PBmsTools would send
 	if (config.ChargeAlarm < 20 || config.ChargeAlarm > 100)
 	{
-		const char* message = "ChargeAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ChargeProtection < 20 || config.ChargeProtection > 100)
 	{
-		const char* message = "ChargeProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ChargeProtectionRelease < 20 || config.ChargeProtectionRelease > 100)
 	{
-		const char* message = "ChargeProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeAlarm < 20 || config.DischargeAlarm > 100)
 	{
-		const char* message = "DischargeAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeProtection < 20 || config.DischargeProtection > 100)
 	{
-		const char* message = "DischargeProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeProtectionRelease < 20 || config.DischargeProtectionRelease > 100)
 	{
-		const char* message = "DischargeProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2451,8 +2367,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -2470,38 +2385,32 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Char
 	// validate values conform to what PBmsTools would send
 	if (config.ChargeAlarm < -35 || config.ChargeAlarm > 30)
 	{
-		const char* message = "ChargeAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ChargeProtection < -35 || config.ChargeProtection > 30)
 	{
-		const char* message = "ChargeProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ChargeProtectionRelease < -35 || config.ChargeProtectionRelease > 30)
 	{
-		const char* message = "ChargeProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ChargeProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeAlarm < -35 || config.DischargeAlarm > 30)
 	{
-		const char* message = "DischargeAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeProtection < -35 || config.DischargeProtection > 30)
 	{
-		const char* message = "DischargeProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.DischargeProtectionRelease < -35 || config.DischargeProtectionRelease > 30)
 	{
-		const char* message = "DischargeProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("DischargeProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2542,8 +2451,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -2558,20 +2466,17 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Mosf
 	// validate values conform to what PBmsTools would send
 	if (config.Alarm < 30 || config.Alarm > 120)
 	{
-		const char* message = "Alarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("Alarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.Protection < 30 || config.Protection > 120)
 	{
-		const char* message = "Protection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("Protection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.ProtectionRelease < 30 || config.ProtectionRelease > 120)
 	{
-		const char* message = "ProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("ProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2609,8 +2514,7 @@ bool PaceBmsV25::ProcessReadConfigurationResponse(const uint8_t busId, const std
 	uint16_t unknown = ReadHexEncodedByte(response, byteOffset);
 	if (unknown != 01)
 	{
-		const char* message = "Unknown payload byte does not match previously observed value";
-		LogWarning(message);
+		LogWarning("Unknown payload byte does not match previously observed value");
 		return false;
 	}
 
@@ -2628,38 +2532,32 @@ bool PaceBmsV25::CreateWriteConfigurationRequest(const uint8_t busId, const Envi
 	// validate values conform to what PBmsTools would send
 	if (config.UnderAlarm < -35 || config.UnderAlarm > 30)
 	{
-		const char* message = "UnderAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("UnderAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.UnderProtection < -35 || config.UnderProtection > 30)
 	{
-		const char* message = "UnderProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("UnderProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.UnderProtectionRelease < -35 || config.UnderProtectionRelease > 30)
 	{
-		const char* message = "UnderProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("UnderProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.OverAlarm < 20 || config.OverAlarm > 100)
 	{
-		const char* message = "OverAlarm is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("OverAlarm is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.OverProtection < 20 || config.OverProtection > 100)
 	{
-		const char* message = "OverProtection is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("OverProtection is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 	if (config.OverProtectionRelease < 20 || config.OverProtectionRelease > 100)
 	{
-		const char* message = "OverProtectionRelease is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("OverProtectionRelease is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 
@@ -2713,8 +2611,7 @@ bool PaceBmsV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8
 	uint16_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
 	if (busIdResponding != busId)
 	{
-		const char* message = "Response from wrong bus Id in payload";
-		LogError(message);
+		LogError("Response from wrong bus Id in payload");
 		return false;
 	}
 
@@ -2727,8 +2624,7 @@ bool PaceBmsV25::CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_
 	// validate values conform to what PBmsTools would send
 	if (current < 5 || current > 150)
 	{
-		const char* message = "current is not in the range that PBmsTools would send (or expect back)";
-		LogError(message);
+		LogError("current is not in the range that PBmsTools would send (or expect back)");
 		return false;
 	}
 

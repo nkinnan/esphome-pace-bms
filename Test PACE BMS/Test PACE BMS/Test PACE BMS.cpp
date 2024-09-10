@@ -1345,9 +1345,6 @@ void BasicTests()
 	// write: ~250046D0F010010E100E740D340AFA21.
 	// resp:  ~250046000000FDAF.
 
-	// todo: everywhere ?? = busid in comments
-	// todo: everywhere readResponse and writeRequest in parameters list
-
 	error.str("");
 	warning.str("");
 	info.str("");

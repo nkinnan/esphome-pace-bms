@@ -25,6 +25,9 @@ class PaceBms : public PollingComponent, public uart::UARTDevice {
   void set_request_throttle(int request_throttle)      { this->request_throttle_ = request_throttle; }
   void set_response_timeout(int response_timeout)      { this->response_timeout_ = response_timeout; }
 
+  // make accessible to sensors
+  int get_protocol_version() { return this->protocol_version_; }
+
   // standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
   void dump_config() override;
   void setup() override;

@@ -137,7 +137,6 @@ private:
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
 	static uint8_t NibbleToHex(const uint8_t nibbleByte);
 
-	// todo: error check input range and log error and/or handle upstream to abort decode
 	// helper for ReadHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
 	static uint8_t HexToNibble(const uint8_t hex);
@@ -711,9 +710,6 @@ public:
 	//                     ??11112222333344 
 	// write: ~250046D0F010010E100E740D340AFA21.
 	// resp:  ~250046000000FDAF.
-
-	// todo: everywhere ?? = busid in comments
-	// todo: everywhere readResponse and writeRequest in parameters list
 
 	static const uint8_t exampleReadCellOverVoltageConfigurationRequestV25[];
 	static const uint8_t exampleReadCellOverVoltageConfigurationResponseV25[];
