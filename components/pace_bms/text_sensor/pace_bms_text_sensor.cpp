@@ -35,21 +35,21 @@ void PaceBmsTextSensor::setup() {
 				if (this->fault_status_sensor_ != nullptr) {
 					this->fault_status_sensor_->publish_state(status_information.faultText);
 				}
-				});
+			});
 		}
 		if (this->hardware_version_sensor_ != nullptr) {
 			this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
 				if (this->hardware_version_sensor_ != nullptr) {
 					this->hardware_version_sensor_->publish_state(hardware_version);
 				}
-				});
+			});
 		}
 		if (this->serial_number_sensor_ != nullptr) {
 			this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
 				if (this->serial_number_sensor_ != nullptr) {
 					this->serial_number_sensor_->publish_state(serial_number);
 				}
-				});
+			});
 		}
 	}
 	else {

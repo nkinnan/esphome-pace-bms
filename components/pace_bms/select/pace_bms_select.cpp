@@ -21,13 +21,13 @@ void PaceBmsSelect::setup() {
 					ESP_LOGV(TAG, "'charge_current_limiter_gear': Publishing state due to update from the hardware: %s", state.c_str());
 					this->charge_current_limiter_gear_select_->publish_state(state);
 				}
-				});
+			});
 		}
 		if (this->charge_current_limiter_gear_select_ != nullptr) {
 			this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 				ESP_LOGD(TAG, "Setting Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
 				this->parent_->set_switch_state_v25((PaceBmsV25::SwitchCommand)value);
-				});
+			});
 		}
 
 		if (this->protocol_can_select_ != nullptr ||
@@ -52,7 +52,7 @@ void PaceBmsSelect::setup() {
 					ESP_LOGV(TAG, "'protocol_type': Publishing state due to update from the hardware: %s", state.c_str());
 					this->protocol_type_select_->publish_state(state);
 				}
-				});
+			});
 		}
 		if (this->protocol_can_select_ != nullptr) {
 			this->protocol_can_select_->add_on_control_callback([this](std::string text, uint8_t value) {
@@ -63,7 +63,7 @@ void PaceBmsSelect::setup() {
 				ESP_LOGD(TAG, "Setting protocol CAN user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.CAN = (PaceBmsV25::ProtocolList_CAN)value;
 				this->parent_->set_protocols_v25(protocols_);
-				});
+			});
 		}
 		if (this->protocol_rs485_select_ != nullptr) {
 			this->protocol_rs485_select_->add_on_control_callback([this](std::string text, uint8_t value) {
@@ -74,7 +74,7 @@ void PaceBmsSelect::setup() {
 				ESP_LOGD(TAG, "Setting protocol RS485 user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.RS485 = (PaceBmsV25::ProtocolList_RS485)value;
 				this->parent_->set_protocols_v25(protocols_);
-				});
+			});
 		}
 		if (this->protocol_type_select_ != nullptr) {
 			this->protocol_type_select_->add_on_control_callback([this](std::string text, uint8_t value) {
@@ -85,7 +85,7 @@ void PaceBmsSelect::setup() {
 				ESP_LOGD(TAG, "Setting protocol Type user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.Type = (PaceBmsV25::ProtocolList_Type)value;
 				this->parent_->set_protocols_v25(protocols_);
-				});
+			});
 		}
 		else {
 			ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());
