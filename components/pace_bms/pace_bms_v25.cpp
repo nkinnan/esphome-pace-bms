@@ -195,9 +195,9 @@ uint16_t PaceBmsV25::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint
 {
 	uint16_t ushort = 0;
 	ushort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
-	ushort |= ((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00);
-	ushort |= ((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0);
-	ushort |= ((HexToNibble(data[dataOffset++]) << 0)  & 0x000F);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 8) & 0x0F00);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 4) & 0x00F0);
+	ushort |= ((HexToNibble(data[dataOffset++]) << 0) & 0x000F);
 	return ushort;
 }
 
@@ -206,9 +206,9 @@ int16_t PaceBmsV25::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint1
 {
 	int16_t sshort = 0;
 	sshort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
-	sshort |= ((HexToNibble(data[dataOffset++]) << 8)  & 0x0F00);
-	sshort |= ((HexToNibble(data[dataOffset++]) << 4)  & 0x00F0);
-	sshort |= ((HexToNibble(data[dataOffset++]) << 0)  & 0x000F);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 8) & 0x0F00);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 4) & 0x00F0);
+	sshort |= ((HexToNibble(data[dataOffset++]) << 0) & 0x000F);
 	return sshort;
 }
 
@@ -223,18 +223,18 @@ void PaceBmsV25::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataO
 void PaceBmsV25::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
 	data[dataOffset++] = NibbleToHex((ushort >> 12) & 0x0F);
-	data[dataOffset++] = NibbleToHex((ushort >> 8)  & 0x0F);
-	data[dataOffset++] = NibbleToHex((ushort >> 4)  & 0x0F);
-	data[dataOffset++] = NibbleToHex((ushort >> 0)  & 0x0F);
+	data[dataOffset++] = NibbleToHex((ushort >> 8) & 0x0F);
+	data[dataOffset++] = NibbleToHex((ushort >> 4) & 0x0F);
+	data[dataOffset++] = NibbleToHex((ushort >> 0) & 0x0F);
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
 void PaceBmsV25::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
 	data[dataOffset++] = NibbleToHex((sshort >> 12) & 0x0F);
-	data[dataOffset++] = NibbleToHex((sshort >> 8)  & 0x0F);
-	data[dataOffset++] = NibbleToHex((sshort >> 4)  & 0x0F);
-	data[dataOffset++] = NibbleToHex((sshort >> 0)  & 0x0F);
+	data[dataOffset++] = NibbleToHex((sshort >> 8) & 0x0F);
+	data[dataOffset++] = NibbleToHex((sshort >> 4) & 0x0F);
+	data[dataOffset++] = NibbleToHex((sshort >> 0) & 0x0F);
 }
 
 // create a standard request to the given busId for the given CID2, filling in the payload (if given)
@@ -889,7 +889,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i+1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
@@ -909,7 +909,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i+1) + " " + DecodeWarningValue(tw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + " " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
@@ -982,7 +982,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	{
 		if ((balanceState & (1 << i)) != 0)
 		{
-			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i+1) + " is balancing; ");
+			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
 		}
 	}
 

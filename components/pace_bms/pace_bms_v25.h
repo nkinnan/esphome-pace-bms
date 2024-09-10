@@ -60,63 +60,63 @@ private:
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
-		CID2_ReadAnalogInformation                                = 0x42,
-		CID2_ReadStatusInformation                                = 0x44,
-		CID2_ReadHardwareVersion                                  = 0xC1,
-		CID2_ReadSerialNumber                                     = 0xC2,
+		CID2_ReadAnalogInformation = 0x42,
+		CID2_ReadStatusInformation = 0x44,
+		CID2_ReadHardwareVersion = 0xC1,
+		CID2_ReadSerialNumber = 0xC2,
 
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are in the "Switch Control" section
-		CID2_WriteSwitchCommand                                   = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
-		CID2_WriteChargeMosfetSwitchCommand                       = 0x9A,
-		CID2_WriteDischargeMosfetSwitchCommand                    = 0x9B,
-		CID2_WriteRebootCommand                                   = 0x9C,
+		CID2_WriteSwitchCommand = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
+		CID2_WriteChargeMosfetSwitchCommand = 0x9A,
+		CID2_WriteDischargeMosfetSwitchCommand = 0x9B,
+		CID2_WriteRebootCommand = 0x9C,
 
 		// "Memory Information" tab of PBmsTools 2.4
-		CID2_ReadDateTime                                         = 0xB1,
-		CID2_WriteDateTime                                        = 0xB2,
+		CID2_ReadDateTime = 0xB1,
+		CID2_WriteDateTime = 0xB2,
 
 		// "Parameter Setting" tab of PBmsTools 2.4
-		CID2_ReadCellOverVoltageConfiguration                     = 0xD1,
-		CID2_WriteCellOverVoltageConfiguration                    = 0xD0,
-		CID2_ReadPackOverVoltageConfiguration                     = 0xD5,
-		CID2_WritePackOverVoltageConfiguration                    = 0xD4,
-		CID2_ReadCellUnderVoltageConfiguration                    = 0xD3,
-		CID2_WriteCellUnderVoltageConfiguration                   = 0xD2,
-		CID2_ReadPackUnderVoltageConfiguration                    = 0xD7,
-		CID2_WritePackUnderVoltageConfiguration                   = 0xD6,
-		CID2_ReadChargeOverCurrentConfiguration                   = 0xD9,
-		CID2_WriteChargeOverCurrentConfiguration                  = 0xD8,
-		CID2_ReadDischargeSlowOverCurrentConfiguration            = 0xDB,
-		CID2_WriteDischargeSlowOverCurrentConfiguration           = 0xDA,
-		CID2_ReadDischargeFastOverCurrentConfiguration            = 0xE3,
-		CID2_WriteDischargeFastOverCurrentConfiguration           = 0xE2,
-		CID2_ReadShortCircuitProtectionConfiguration              = 0xE5,
-		CID2_WriteShortCircuitProtectionConfiguration             = 0xE4,
-		CID2_ReadCellBalancingConfiguration                       = 0xB6,
-		CID2_WriteCellBalancingConfiguration                      = 0xB5,
-		CID2_ReadSleepConfiguration                               = 0xA0,
-		CID2_WriteSleepConfiguration                              = 0xA8,
-		CID2_ReadFullChargeLowChargeConfiguration                 = 0xAF,
-		CID2_WriteFullChargeLowChargeConfiguration                = 0xAE,
-		CID2_ReadChargeAndDischargeOverTemperatureConfiguration   = 0xDD,
-		CID2_WriteChargeAndDischargeOverTemperatureConfiguration  = 0xDC,
-		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration  = 0xDF,
+		CID2_ReadCellOverVoltageConfiguration = 0xD1,
+		CID2_WriteCellOverVoltageConfiguration = 0xD0,
+		CID2_ReadPackOverVoltageConfiguration = 0xD5,
+		CID2_WritePackOverVoltageConfiguration = 0xD4,
+		CID2_ReadCellUnderVoltageConfiguration = 0xD3,
+		CID2_WriteCellUnderVoltageConfiguration = 0xD2,
+		CID2_ReadPackUnderVoltageConfiguration = 0xD7,
+		CID2_WritePackUnderVoltageConfiguration = 0xD6,
+		CID2_ReadChargeOverCurrentConfiguration = 0xD9,
+		CID2_WriteChargeOverCurrentConfiguration = 0xD8,
+		CID2_ReadDischargeSlowOverCurrentConfiguration = 0xDB,
+		CID2_WriteDischargeSlowOverCurrentConfiguration = 0xDA,
+		CID2_ReadDischargeFastOverCurrentConfiguration = 0xE3,
+		CID2_WriteDischargeFastOverCurrentConfiguration = 0xE2,
+		CID2_ReadShortCircuitProtectionConfiguration = 0xE5,
+		CID2_WriteShortCircuitProtectionConfiguration = 0xE4,
+		CID2_ReadCellBalancingConfiguration = 0xB6,
+		CID2_WriteCellBalancingConfiguration = 0xB5,
+		CID2_ReadSleepConfiguration = 0xA0,
+		CID2_WriteSleepConfiguration = 0xA8,
+		CID2_ReadFullChargeLowChargeConfiguration = 0xAF,
+		CID2_WriteFullChargeLowChargeConfiguration = 0xAE,
+		CID2_ReadChargeAndDischargeOverTemperatureConfiguration = 0xDD,
+		CID2_WriteChargeAndDischargeOverTemperatureConfiguration = 0xDC,
+		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
 		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
-		CID2_ReadMosfetOverTemperatureConfiguration               = 0xE1,
-		CID2_WriteMosfetOverTemperatureConfiguration              = 0xE0,
-		CID2_ReadEnvironmentOverUnderTemperatureConfiguration     = 0xE7,
-		CID2_WriteEnvironmentOverUnderTemperatureConfiguration    = 0xE6,
+		CID2_ReadMosfetOverTemperatureConfiguration = 0xE1,
+		CID2_WriteMosfetOverTemperatureConfiguration = 0xE0,
+		CID2_ReadEnvironmentOverUnderTemperatureConfiguration = 0xE7,
+		CID2_WriteEnvironmentOverUnderTemperatureConfiguration = 0xE6,
 
 		// "System Configuration" tab of PBmsTools 2.4
-		CID2_ReadChargeCurrentLimiterStartCurrent                 = 0xED,
-		CID2_WriteChargeCurrentLimiterStartCurrent                = 0xEE,
-		CID2_ReadRemainingCapacity                                = 0xA6,
+		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
+		CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
+		CID2_ReadRemainingCapacity = 0xA6,
 
-		CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
+		CID2_WriteOlderVersionOfSetCommunicationProtocol = 0x99,
 
-		CID2_ReadCommunicationsProtocols                          = 0xEB,
-		CID2_WriteCommunicationsProtocols                         = 0xEC,
+		CID2_ReadCommunicationsProtocols = 0xEB,
+		CID2_WriteCommunicationsProtocols = 0xEC,
 	};
 
 	static std::string FormatReturnCode(const uint8_t returnCode);
@@ -203,7 +203,7 @@ public:
 		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
 		uint8_t  temperatureCount;
 		int16_t  temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
-		int32_t  currentMilliamps; 
+		int32_t  currentMilliamps;
 		uint16_t totalVoltageMillivolts;
 		uint32_t remainingCapacityMilliampHours;
 		uint32_t fullCapacityMilliampHours;
@@ -254,67 +254,67 @@ public:
 	//     StatusInformation.warning_value_discharge_current
 	enum StatusInformation_WarningValues
 	{
-		WV_BelowLowerLimitValue            = 1,
-		WV_AboveUpperLimitValue            = 2,
+		WV_BelowLowerLimitValue = 1,
+		WV_AboveUpperLimitValue = 2,
 		WV_UserDefinedFaultRangeStartValue = 0x80,
-		WV_UserDefinedFaultRangeEndValue   = 0xEF,
-		WV_OtherFaultValue                 = 0xF0,
+		WV_UserDefinedFaultRangeEndValue = 0xEF,
+		WV_OtherFaultValue = 0xF0,
 	};
 
 	// possible flags set in:
 	//     StatusInformation.protection_value1
 	enum StatusInformation_Protection1Flags
 	{
-		P1F_UndefinedProtect1Bit        = (1 << 7),
-		P1F_ShortCircuitProtect1Bit     = (1 << 6),
+		P1F_UndefinedProtect1Bit = (1 << 7),
+		P1F_ShortCircuitProtect1Bit = (1 << 6),
 		P1F_DischargeCurrentProtect1Bit = (1 << 5),
-		P1F_ChargeCurrentProtect1Bit    = (1 << 4),
-		P1F_LowTotalVoltageProtect1Bit  = (1 << 3),
+		P1F_ChargeCurrentProtect1Bit = (1 << 4),
+		P1F_LowTotalVoltageProtect1Bit = (1 << 3),
 		P1F_HighTotalVoltageProtect1Bit = (1 << 2),
-		P1F_LowCellVoltageProtect1Bit   = (1 << 1),
-		P1F_HighCellVoltageProtect1Bit  = (1 << 0),
+		P1F_LowCellVoltageProtect1Bit = (1 << 1),
+		P1F_HighCellVoltageProtect1Bit = (1 << 0),
 	};
 
 	// possible flags set in:
 	//     StatusInformation.protection_value2
 	enum StatusInformation_Protection2Flags
 	{
-		P2F_FullyProtect2Bit                        = (1 << 7),
-		P2F_LowEnvironmentalTemperatureProtect2Bit  = (1 << 6),
+		P2F_FullyProtect2Bit = (1 << 7),
+		P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
 		P2F_HighEnvironmentalTemperatureProtect2Bit = (1 << 5),
-		P2F_HighMosfetTemperatureProtect2Bit        = (1 << 4),
-		P2F_LowDischargeTemperatureProtect2Bit      = (1 << 3),
-		P2F_LowChargeTemperatureProtect2Bit         = (1 << 2),
-		P2F_HighDischargeTemperatureProtect2Bit     = (1 << 1),
-		P2F_HighChargeTemperatureProtect2Bit        = (1 << 0),
+		P2F_HighMosfetTemperatureProtect2Bit = (1 << 4),
+		P2F_LowDischargeTemperatureProtect2Bit = (1 << 3),
+		P2F_LowChargeTemperatureProtect2Bit = (1 << 2),
+		P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
+		P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
 	};
 
 	// possible flags set in:
 	//     StatusInformation.system_value
 	enum StatusInformation_SystemFlags
 	{
-		SF_HeartIndicatorBit                    = (1 << 7),
-		SF_UndefinedStatusBit7                  = (1 << 6),
-		SF_ChargingBit                          = (1 << 5),
+		SF_HeartIndicatorBit = (1 << 7),
+		SF_UndefinedStatusBit7 = (1 << 6),
+		SF_ChargingBit = (1 << 5),
 		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
-		SF_DischargingBit                       = (1 << 3),
-		SF_DischargeMosfetOnBit                 = (1 << 2),
-		SF_ChargeMosfetOnBit                    = (1 << 1),
-		SF_ChargeCurrentLimiterTurnedOffBit     = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
+		SF_DischargingBit = (1 << 3),
+		SF_DischargeMosfetOnBit = (1 << 2),
+		SF_ChargeMosfetOnBit = (1 << 1),
+		SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
 	};
 
 	// possible flags set in:
 	//     StatusInformation.configuration_value
 	enum StatusInformation_ConfigurationFlags
 	{
-		CF_UndefinedConfigurationStatusBit8  = (1 << 7),
-		CF_UndefinedConfigurationStatusBit7  = (1 << 6),
-		CF_LedAlarmEnabledBit                = (1 << 5),
-		CF_ChargeCurrentLimiterEnabledBit    = (1 << 4),
+		CF_UndefinedConfigurationStatusBit8 = (1 << 7),
+		CF_UndefinedConfigurationStatusBit7 = (1 << 6),
+		CF_LedAlarmEnabledBit = (1 << 5),
+		CF_ChargeCurrentLimiterEnabledBit = (1 << 4),
 		CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3),
-		CF_DischargeMosfetTurnedOff          = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
-		CF_ChargeMosfetTurnedOff             = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
-		CF_BuzzerAlarmEnabledBit             = (1 << 0),
+		CF_DischargeMosfetTurnedOff = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
+		CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
+		CF_BuzzerAlarmEnabledBit = (1 << 0),
 	};
 
 	// possible flags set in:
@@ -323,12 +323,12 @@ public:
 	{
 		FF_UndefinedFaultStatusBit8 = (1 << 7),
 		FF_UndefinedFaultStatusBit7 = (1 << 6),
-		FF_SampleBit                = (1 << 5),
-		FF_CellBit                  = (1 << 4),
+		FF_SampleBit = (1 << 5),
+		FF_CellBit = (1 << 4),
 		FF_UndefinedFaultStatusBit4 = (1 << 3),
-		FF_NTCBit                   = (1 << 2),
-		FF_DischargeMosfetBit       = (1 << 1),
-		FF_ChargeMosfetBit          = (1 << 0),
+		FF_NTCBit = (1 << 2),
+		FF_DischargeMosfetBit = (1 << 1),
+		FF_ChargeMosfetBit = (1 << 0),
 	};
 
 	// possible flags set in:
@@ -337,26 +337,26 @@ public:
 	{
 		W1F_UndefinedWarning1Bit8 = (1 << 7),
 		W1F_UndefinedWarning1Bit7 = (1 << 6),
-		W1F_DischargeCurrentBit   = (1 << 5),
-		W1F_ChargeCurrentBit      = (1 << 4),
-		W1F_LowTotalVoltageBit    = (1 << 3),
-		W1F_HighTotalVoltageBit   = (1 << 2),
-		W1F_LowCellVoltageBit     = (1 << 1),
-		W1F_HighCellVoltageBit    = (1 << 0),
+		W1F_DischargeCurrentBit = (1 << 5),
+		W1F_ChargeCurrentBit = (1 << 4),
+		W1F_LowTotalVoltageBit = (1 << 3),
+		W1F_HighTotalVoltageBit = (1 << 2),
+		W1F_LowCellVoltageBit = (1 << 1),
+		W1F_HighCellVoltageBit = (1 << 0),
 	};
 
 	// possible flags set in:
 	//     StatusInformation.warning_value2
 	enum StatusInformation_Warning2Flags
 	{
-		W2F_LowPower                     = (1 << 7),
-		W2F_HighMosfetTemperature        = (1 << 6),
-		W2F_LowEnvironmentalTemperature  = (1 << 5),
+		W2F_LowPower = (1 << 7),
+		W2F_HighMosfetTemperature = (1 << 6),
+		W2F_LowEnvironmentalTemperature = (1 << 5),
 		W2F_HighEnvironmentalTemperature = (1 << 4),
-		W2F_LowDischargeTemperature      = (1 << 3),
-		W2F_LowChargeTemperature         = (1 << 2),
-		W2F_HighDischargeTemperature     = (1 << 1),
-		W2F_HighChargeTemperature        = (1 << 0),
+		W2F_LowDischargeTemperature = (1 << 3),
+		W2F_LowChargeTemperature = (1 << 2),
+		W2F_HighDischargeTemperature = (1 << 1),
+		W2F_HighChargeTemperature = (1 << 0),
 	};
 
 	struct StatusInformation
@@ -436,23 +436,23 @@ public:
 	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber);
 
-// ============================================================================
-// 
-// Main "Realtime Monitoring" tab of PBmsTools 2.4
-// These are in the "Switch Control" section
-// 
-// ============================================================================
+	// ============================================================================
+	// 
+	// Main "Realtime Monitoring" tab of PBmsTools 2.4
+	// These are in the "Switch Control" section
+	// 
+	// ============================================================================
 
-	// ==== Sound Alarm Switch
-	// 1: The "on/off" switch command, see: enum SwitchCommand
-	// open:  ~25004699E0020DFD12.
-	//                     11
-	// resp:  ~25004600C0040D01FCC3.
-	//                     11??
-	// close: ~25004699E0020CFD13.
-	//                     11
-	// resp:  ~25004600C0040C00FCC5.
-	//                     11??
+		// ==== Sound Alarm Switch
+		// 1: The "on/off" switch command, see: enum SwitchCommand
+		// open:  ~25004699E0020DFD12.
+		//                     11
+		// resp:  ~25004600C0040D01FCC3.
+		//                     11??
+		// close: ~25004699E0020CFD13.
+		//                     11
+		// resp:  ~25004600C0040C00FCC5.
+		//                     11??
 
 	static const uint8_t exampleWriteDisableBuzzerSwitchCommandRequestV25[];
 	static const uint8_t exampleWriteDisableBuzzerSwitchCommandResponseV25[];
@@ -594,61 +594,60 @@ public:
 	bool CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
-
 // ============================================================================
 // 
 // "Memory Information" tab of PBmsTools 2.4 
 // 
 // ============================================================================
 
-	// ==== Read Log History
-	// This appears to be a "history" table
-	// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
-	// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
-	// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
-	// I haven't decoded the response yet, but it contains
-	//         Date/Time
-	//         Pack Amps (-in/out)
-	//         Pack Voltage
-	//         Remaing Capacity (Ah)
-	//         Full Capacity (Ah)
-	//         MaxVolt (cell) (mV)
-	//         MinVolt (cell) (mV)
-	//         Alarm Type
-	//         Protect Type
-	//         Fault Type
-	//         Cell Voltage 1-16
-	//         Temperatures 1-6
-	// req:   ~250046A1C004018FFCA7.
-	// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
-	//            the values in this response:  
-	//                2024-2-29 2:00:56 - 1.460	
-	//                55.767	
-	//                103.460	
-	//                103.460	
-	//                3482	
-	//                3456				
-	//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
-	//                20.2	20.3	20.5	20.4	19.9	20.7
-	// resp:  ~250046000000FDAF.
-	//            this means "no more records available"
+		// ==== Read Log History
+		// This appears to be a "history" table
+		// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
+		// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
+		// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
+		// I haven't decoded the response yet, but it contains
+		//         Date/Time
+		//         Pack Amps (-in/out)
+		//         Pack Voltage
+		//         Remaing Capacity (Ah)
+		//         Full Capacity (Ah)
+		//         MaxVolt (cell) (mV)
+		//         MinVolt (cell) (mV)
+		//         Alarm Type
+		//         Protect Type
+		//         Fault Type
+		//         Cell Voltage 1-16
+		//         Temperatures 1-6
+		// req:   ~250046A1C004018FFCA7.
+		// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
+		//            the values in this response:  
+		//                2024-2-29 2:00:56 - 1.460	
+		//                55.767	
+		//                103.460	
+		//                103.460	
+		//                3482	
+		//                3456				
+		//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
+		//                20.2	20.3	20.5	20.4	19.9	20.7
+		// resp:  ~250046000000FDAF.
+		//            this means "no more records available"
 
 
-	// -------- NOT IMPLEMENTED --------
+		// -------- NOT IMPLEMENTED --------
 
 
-	// ==== System Time
-	// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
-	// 2 Month:  read: 08   write: 08
-	// 3 Day:    read: 21   write: 20 
-	// 4 Hour:   read: 05   write: 14
-	// 5 Minute: read: 29   write: 15
-	// 6 Second: read: 31   write: 37
-	// read:  ~250046B10000FD9C.
-	// resp:  ~25004600400C180815051D1FFB10.
-	//                     112233445566
-	// write: ~250046B2400C1808140E0F25FAFC.
-	// resp:  ~250046000000FDAF.
+		// ==== System Time
+		// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
+		// 2 Month:  read: 08   write: 08
+		// 3 Day:    read: 21   write: 20 
+		// 4 Hour:   read: 05   write: 14
+		// 5 Minute: read: 29   write: 15
+		// 6 Second: read: 31   write: 37
+		// read:  ~250046B10000FD9C.
+		// resp:  ~25004600400C180815051D1FFB10.
+		//                     112233445566
+		// write: ~250046B2400C1808140E0F25FAFC.
+		// resp:  ~250046000000FDAF.
 
 	static const uint8_t exampleReadSystemTimeRequestV25[];
 	static const uint8_t exampleReadSystemTimeResponseV25[];
@@ -669,8 +668,6 @@ public:
 	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
 	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
 	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response);
-
-
 
 // ============================================================================
 // 
