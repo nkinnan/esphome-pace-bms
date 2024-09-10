@@ -443,16 +443,16 @@ public:
 	// 
 	// ============================================================================
 
-		// ==== Sound Alarm Switch
-		// 1: The "on/off" switch command, see: enum SwitchCommand
-		// open:  ~25004699E0020DFD12.
-		//                     11
-		// resp:  ~25004600C0040D01FCC3.
-		//                     11??
-		// close: ~25004699E0020CFD13.
-		//                     11
-		// resp:  ~25004600C0040C00FCC5.
-		//                     11??
+	// ==== Sound Alarm Switch
+	// 1: The "on/off" switch command, see: enum SwitchCommand
+	// open:  ~25004699E0020DFD12.
+	//                     11
+	// resp:  ~25004600C0040D01FCC3.
+	//                     11??
+	// close: ~25004699E0020CFD13.
+	//                     11
+	// resp:  ~25004600C0040C00FCC5.
+	//                     11??
 
 	static const uint8_t exampleWriteDisableBuzzerSwitchCommandRequestV25[];
 	static const uint8_t exampleWriteDisableBuzzerSwitchCommandResponseV25[];
