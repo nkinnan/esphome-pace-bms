@@ -124,6 +124,7 @@
     <None Include="..\..\components\pace_bms\datetime\__init__.py">
       <Filter>components\pace_bms\datetime</Filter>
     </None>
+    <None Include="..\..\ESP32-C3-0x25.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

@@ -57,14 +57,18 @@ void PaceBms::dump_config() {
 */
 
 void PaceBms::setup() {
-	if (this->protocol_version_ != 0x25) {
+	if (this->protocol_version_ == 0x25) {
+		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
+		this->pace_bms_v25_ = new PaceBmsV25((PaceBmsV25::CID1)chemistry_, error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
+	}
+	else if (this->protocol_version_ == 0x20) {
+		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
+		this->pace_bms_v20_ = new PaceBmsV20((PaceBmsV20::CID1)chemistry_, cell_count_, temperature_count_, skip_ud2_, skip_soc_dc_, skip_soh_pv_, design_capacity_mah_, skip_status_flags_, error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
+	}
+	else {
 		this->status_set_error();
 		ESP_LOGE(TAG, "Protocol version 0x%02X is not supported", this->protocol_version_);
 		return;
-	}
-	else {
-		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
-		this->pace_bms_v25_ = new PaceBmsV25((PaceBmsV25::CID1)chemistry_, error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
 
 	if (this->flow_control_pin_ != nullptr)
@@ -83,7 +87,8 @@ void PaceBms::setup() {
 */
 
 void PaceBms::update() {
-	if (this->pace_bms_v25_ == nullptr)
+	if (this->pace_bms_v25_ == nullptr &&
+		this->pace_bms_v20_ == nullptr)
 		return;
 
 	// writes are always processed first so no need to check that as well
@@ -91,8 +96,7 @@ void PaceBms::update() {
 		ESP_LOGW(TAG, "Commands still in queue on update(), skipping this refresh cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.");
 	}
 	else {
-		if (this->pace_bms_v25_ != nullptr)
-		{
+		if (this->pace_bms_v25_ != nullptr) {
 			ESP_LOGV(TAG, "Queueing v25 refresh commands");
 
 			if (this->analog_information_callbacks_v25_.size() > 0) {
@@ -243,6 +247,17 @@ void PaceBms::update() {
 				read_queue_.push(item);
 			}
 		}
+		else if (this->pace_bms_v20_ != nullptr) {
+			ESP_LOGV(TAG, "Queueing v20 refresh commands");
+
+			if (this->analog_information_callbacks_v20_.size() > 0) {
+				command_item* item = new command_item;
+				item->description_ = std::string("read analog information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadAnalogInformationRequest(this->address_, request); };
+				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_analog_information_response_v20(response); };
+				read_queue_.push(item);
+			}
+		}
 
 		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
 	}
@@ -254,7 +269,8 @@ void PaceBms::update() {
 */
 
 void PaceBms::loop() {
-	if (this->pace_bms_v25_ == nullptr)
+	if (this->pace_bms_v25_ == nullptr &&
+		this->pace_bms_v20_ == nullptr)
 		return;
 
 	// if there is no request active, throw away any incoming data before proceeding
@@ -792,6 +808,23 @@ void PaceBms::handle_write_system_datetime_response_v25(std::vector<uint8_t>& re
 	}
 }
 
+
+void PaceBms::handle_read_analog_information_response_v20(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsV20::AnalogInformation analog_information;
+	bool result = this->pace_bms_v20_->ProcessReadAnalogInformationResponse(this->address_, response, analog_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->analog_information_callbacks_v20_.size(); i++) {
+		analog_information_callbacks_v20_[i](analog_information);
+	}
+}
+
 /*
 * these are called from from user-settable child sensors to set BMS state
 */
@@ -1061,5 +1094,3 @@ void PaceBms::set_system_datetime_v25(PaceBmsV25::DateTime& dt) {
 
 }  // namespace pace_bms
 }  // namespace esphome
-
-

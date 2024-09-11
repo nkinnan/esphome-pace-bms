@@ -11,11 +11,19 @@ static const char* const TAG = "pace_bms.sensor";
 void PaceBmsSensor::setup() {
 	if (this->parent_->get_protocol_version() == 0x25) {
 		if (request_analog_info_callback_ == true) {
-			this->parent_->register_analog_information_callback_v25([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback(analog_information); });
+			this->parent_->register_analog_information_callback_v25([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback_v25(analog_information); });
 		}
 		if (request_status_info_callback_ == true) {
-			this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback(status_information); });
+			this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
 		}
+	}
+	if (this->parent_->get_protocol_version() == 0x20) {
+		if (request_analog_info_callback_ == true) {
+			this->parent_->register_analog_information_callback_v20([this](PaceBmsV20::AnalogInformation& analog_information) { this->analog_information_callback_v20(analog_information); });
+		}
+		//if (request_status_info_callback_ == true) {
+		//	this->parent_->register_status_information_callback_v20([this](PaceBmsV20::StatusInformation& status_information) { this->status_information_callback_v20(status_information); });
+		//}
 	}
 	else {
 		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());
@@ -60,7 +68,7 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Fault Status Value", this->fault_status_value_sensor_);
 }
 
-void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation& analog_information) {
+void PaceBmsSensor::analog_information_callback_v25(PaceBmsV25::AnalogInformation& analog_information) {
 	if (this->cell_count_sensor_ != nullptr) {
 		this->cell_count_sensor_->publish_state(analog_information.cellCount);
 	}
@@ -118,7 +126,7 @@ void PaceBmsSensor::analog_information_callback(PaceBmsV25::AnalogInformation& a
 	}
 }
 
-void PaceBmsSensor::status_information_callback(PaceBmsV25::StatusInformation& status_information) {
+void PaceBmsSensor::status_information_callback_v25(PaceBmsV25::StatusInformation& status_information) {
 	for (int i = 0; i < 16; i++) {
 		if (this->warning_status_value_cells_sensor_[i] != nullptr) {
 			this->warning_status_value_cells_sensor_[i]->publish_state(status_information.warning_value_cell[i]);
@@ -161,6 +169,64 @@ void PaceBmsSensor::status_information_callback(PaceBmsV25::StatusInformation& s
 	}
 	if (this->fault_status_value_sensor_ != nullptr) {
 		this->fault_status_value_sensor_->publish_state(status_information.fault_value);
+	}
+}
+
+void PaceBmsSensor::analog_information_callback_v20(PaceBmsV20::AnalogInformation& analog_information) {
+	if (this->cell_count_sensor_ != nullptr) {
+		this->cell_count_sensor_->publish_state(analog_information.cellCount);
+	}
+	for (int i = 0; i < 16; i++) {
+		if (this->cell_voltage_sensor_[i] != nullptr) {
+			this->cell_voltage_sensor_[i]->publish_state(analog_information.cellVoltagesMillivolts[i] / 1000.0f);
+		}
+	}
+	if (this->temperature_count_sensor_ != nullptr) {
+		this->temperature_count_sensor_->publish_state(analog_information.temperatureCount);
+	}
+	for (int i = 0; i < 6; i++) {
+		if (this->temperature_sensor_[i] != nullptr) {
+			this->temperature_sensor_[i]->publish_state(analog_information.temperaturesTenthsCelcius[i] / 10.0f);
+		}
+	}
+	if (this->current_sensor_ != nullptr) {
+		this->current_sensor_->publish_state(analog_information.currentMilliamps / 1000.0f);
+	}
+	if (this->total_voltage_sensor_ != nullptr) {
+		this->total_voltage_sensor_->publish_state(analog_information.totalVoltageMillivolts / 1000.0f);
+	}
+	if (this->remaining_capacity_sensor_ != nullptr) {
+		this->remaining_capacity_sensor_->publish_state(analog_information.remainingCapacityMilliampHours / 1000.0f);
+	}
+	if (this->full_capacity_sensor_ != nullptr) {
+		this->full_capacity_sensor_->publish_state(analog_information.fullCapacityMilliampHours / 1000.0f);
+	}
+	if (this->design_capacity_sensor_ != nullptr) {
+		this->design_capacity_sensor_->publish_state(analog_information.designCapacityMilliampHours / 1000.0f);
+	}
+	if (this->cycle_count_sensor_ != nullptr) {
+		this->cycle_count_sensor_->publish_state(analog_information.cycleCount);
+	}
+	if (this->state_of_charge_sensor_ != nullptr) {
+		this->state_of_charge_sensor_->publish_state(analog_information.SoC);
+	}
+	if (this->state_of_health_sensor_ != nullptr) {
+		this->state_of_health_sensor_->publish_state(analog_information.SoH);
+	}
+	if (this->power_sensor_ != nullptr) {
+		this->power_sensor_->publish_state(analog_information.powerWatts);
+	}
+	if (this->min_cell_voltage_sensor_ != nullptr) {
+		this->min_cell_voltage_sensor_->publish_state(analog_information.minCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->max_cell_voltage_sensor_ != nullptr) {
+		this->max_cell_voltage_sensor_->publish_state(analog_information.maxCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->avg_cell_voltage_sensor_ != nullptr) {
+		this->avg_cell_voltage_sensor_->publish_state(analog_information.avgCellVoltageMillivolts / 1000.0f);
+	}
+	if (this->max_cell_differential_sensor_ != nullptr) {
+		this->max_cell_differential_sensor_->publish_state(analog_information.maxCellDifferentialMillivolts / 1000.0f);
 	}
 }
 

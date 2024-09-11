@@ -100,16 +100,10 @@ uint16_t PaceBmsV25::CreateChecksummedLength(const uint16_t cklen)
 	uint16_t len = (cklen & 0x0FFF);
 
 	// bitwise NOT then add 1, mask off any carry (even though we'd shift it out anyway in the next step)
-	uint16_t lcksum = ~len;
+	uint16_t lcksum = (len & 0xF) + ((len >> 4) & 0xF) + ((len >> 8) & 0xF);
+	lcksum = ~lcksum;
 	lcksum++;
-	// these are some WEIRD exceptions I've found that I think are due to firmare bugs
-	if (lcksum == 0xFFF0)
-		lcksum = 0xF;
-	else if (lcksum == 0xFFE6)
-		lcksum = 0x5;
-	// the "documented" thing to do
-	else
-		lcksum = lcksum & 0x000F;
+	lcksum = lcksum & 0x000F;
 
 	// checksum goes in the top nibble, length in the bottom 3 nibbles
 	return (lcksum << 12) | len;
@@ -122,7 +116,8 @@ bool PaceBmsV25::ValidateChecksummedLength(const uint16_t cklen)
 	uint16_t len = (cklen & 0x0FFF);
 
 	// bitwise NOT then add 1, mask off any carry (even though we'd shift it out anyway in the next step)
-	uint16_t lcksum = ~len;
+	uint16_t lcksum = (len & 0xF) + ((len >> 4) & 0xF) + ((len >> 8) & 0xF);
+	lcksum = ~lcksum;
 	lcksum++;
 	lcksum = lcksum & 0x000F;
 
@@ -332,20 +327,17 @@ int16_t PaceBmsV25::ValidateResponseAndGetPayloadLength(const uint8_t busId, con
 	uint16_t cklen = ReadHexEncodedUShort(response, byteOffset);
 	if (!ValidateChecksummedLength(cklen))
 	{
-		// FIRMWARE BUG: I verified this "on the wire", my unit is not setting the length checksum (or setting it incorrectly) on some responses but not others
-		// makes this check useless - guess we just log and move on
-		LogVerbose("Response contains an incorrect payload length checksum, ignoring since this is a known firmware bug");
+		LogError("Response contains an incorrect payload length checksum, ignoring since this is a known firmware bug");
+		return -1;
 	}
 
 	uint16_t payloadLen = LengthFromChecksummedLength(cklen);
 
 	if (payloadLen + 18 < (uint16_t)response.size() && response[response.size() - 1] == '\r')
 	{
-		// FIRMWARE BUG: I verified this "on the wire", my unit is returning an inaccurate payload length on some responses but not others
-		// here we can't ignore and have to actively fix the value for further processing, but at least we can calculate it against the EOI, and that is always present
-		LogVerbose("Response contains an incorrect payload length, fixing up the value by checking against EOI, ignoring since this is a known firmware bug");
-
-		payloadLen = (uint16_t)response.size() - 18;
+		LogError("Response contains an incorrect payload length, fixing up the value by checking against EOI, ignoring since this is a known firmware bug");
+		return -1;
+		//payloadLen = (uint16_t)response.size() - 18;
 	}
 
 	if ((uint16_t)response.size() < payloadLen + 18)
@@ -483,13 +475,13 @@ bool PaceBmsV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 
 	if (byteOffset != payloadLen + 13)
 	{
-		LogError("Length mismatch reading analog information response, this is a code bug in PACE_BMS");
+		LogError("Length mismatch reading analog information response");
 		return false;
 	}
 
 	// calculate some "extras"
 	analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
-	analogInformation.SoH = (analogInformation.fullCapacityMilliampHours / analogInformation.designCapacityMilliampHours) * 100.0f;
+	analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
 	if (analogInformation.SoH > 100)
 	{
 		// many packs have a little bit "extra" capacity to make sure they hit their nameplate value
@@ -1344,7 +1336,7 @@ bool PaceBmsV25::CreateWriteShutdownCommandRequest(const uint8_t busId, std::vec
 	uint16_t payloadOffset = 0;
 	WriteHexEncodedByte(payload, payloadOffset, 0x01);
 
-	CreateRequest(busId, CID2_WriteRebootCommand, payload, request);
+	CreateRequest(busId, CID2_WriteShutdownCommand, payload, request);
 
 	return true;
 }

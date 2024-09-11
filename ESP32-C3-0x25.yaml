@@ -1,6 +1,6 @@
 substitutions:
-  name: "esp01-jk48v100"
-  friendly_name: "ESP-01 - JK48V100 Battery"
+  name: "esp32-c3-supermini-jk48v100"
+  friendly_name: "ESP32-C3-Supermini JK48V100 Battery"
 
 esphome:
   name: ${name}
@@ -11,14 +11,27 @@ esphome:
     name: esphome.web
     version: dev
   libraries:
+    # required to be added prior to ESPAsyncWebServer-esphome
+    - WiFi
+    - FS
+    - Update
+    # huge improvement to event throughput to the on-device web_server dashboard
     - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+    #- ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
 
-esp8266:
-  board: esp01_1m
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+  framework:
+    type: arduino
 
+# Enable logging
 logger:
-  hardware_uart: UART1 # using UART0 for BMS communications
+  hardware_uart: USB_CDC 
+  #level: INFO
   level: DEBUG
+  #level: VERBOSE
+  #level: VERY_VERBOSE
 
 # Enable Home Assistant API
 api:
@@ -33,34 +46,55 @@ wifi:
 
 # To have a "next url" for improv serial
 web_server:
+  # uses an extra 76KB (V3) or 12KB (V2) worth of flash, but avoids referencing external web resources for 
+  #     situations where you won't have internet while accessing the on-device dashboard
   #local: true
+  version: 3
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/nkinnan/esphome-pace-bms
-      ref: "initial_commit"
+      #type: git
+      #url: https://github.com/nkinnan/esphome-pace-bms
+      #ref: "main"
+      type: local
+      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
     refresh: 1s
+    
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome
+      ref: "make_time_dependency_optional"
+      #type: local
+      #path: C:\Users\nkinnan\Documents\git\esphome\esphome\components
+    components: [ datetime ]
+    refresh: 1s
+    
+
+##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
+
+
+debug:
+  update_interval: 1s
 
 
 uart:
     id: uart_0
     baud_rate: 9600
-    tx_pin: GPIO1
-    rx_pin: GPIO3
-    rx_buffer_size: 200
+    tx_pin: GPIO2
+    rx_pin: GPIO1
+
 
 pace_bms:
-  uart_id: uart_0
   id: pace_bms_at_address_1
-  protocol_version: 0x25    # currently the only protocol version supported, others may be added in the future
-  address: 1                # dip switch value
-  flow_control_pin: GPIO0   # required for rs485, should be omitted for rs232
-  update_interval: 5s       # poll frequency
-  request_throttle: 50ms    # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 1000ms  # responses are typically recieved immediately, but I have occasionally seen a sub-second delay
-
+  address: 1
+  chemistry: 0x46
+  protocol_version: 0x25
+  uart_id: uart_0
+  flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
+  update_interval: 5s
+  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
 
 
 sensor:
@@ -89,7 +123,6 @@ sensor:
     update_interval: 1s
     type: seconds
     name: "Uptime"
-
 
 
   - platform: pace_bms

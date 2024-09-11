@@ -22,6 +22,13 @@ public:
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 	void set_address(int address) { this->address_ = address; }
 	void set_chemistry(int chemistry) { this->chemistry_ = chemistry; }
+	void set_cell_count(uint8_t cell_count) { this->cell_count_ = cell_count; }
+	void set_temperature_count(uint8_t temperature_count) { this->temperature_count_ = temperature_count; }
+	void set_skip_ud2(bool skip_ud2) { this->skip_ud2_ = skip_ud2; }
+	void set_skip_soc_dc(bool skip_soc_dc) { this->skip_soc_dc_ = skip_soc_dc; }
+	void set_skip_soh_pv(bool skip_soh_pv) { this->skip_soh_pv_ = skip_soh_pv; }
+	void set_design_capacity_mah(int design_capacity_mah) { this->design_capacity_mah_ = design_capacity_mah; }
+	void set_skip_status_flags(bool skip_status_flags) { this->skip_status_flags_ = skip_status_flags; }
 	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
@@ -64,6 +71,8 @@ public:
 	void register_mosfet_over_temperature_configuration_callback_v25(std::function<void(PaceBmsV25::MosfetOverTemperatureConfiguration&)> callback) { mosfet_over_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
 	void register_environment_over_under_temperature_configuration_callback_v25(std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)> callback) { environment_over_under_temperature_configuration_callbacks_v25_.push_back(std::move(callback)); }
 	void register_system_datetime_callback_v25(std::function<void(PaceBmsV25::DateTime&)> callback) { system_datetime_callbacks_v25_.push_back(std::move(callback)); }
+	
+	void register_analog_information_callback_v20(std::function<void(PaceBmsV20::AnalogInformation&)> callback) { analog_information_callbacks_v20_.push_back(std::move(callback)); }
 
 	// child sensors call these to schedule new values be written out to the hardware
 	void set_switch_state_v25(PaceBmsV25::SwitchCommand state);
@@ -92,6 +101,13 @@ protected:
 	GPIOPin* flow_control_pin_{ nullptr };
 	uint8_t address_{ 0 };
 	uint8_t chemistry_{ 0 };
+	uint8_t cell_count_{ 0 };
+	uint8_t temperature_count_{ 0 };
+	bool skip_ud2_{ false };
+	bool skip_soc_dc_{ true };
+	bool skip_soh_pv_{ true };
+	int design_capacity_mah_{ 0 };
+	bool skip_status_flags_{ false };
 	int protocol_version_{ 0 };
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
@@ -125,6 +141,8 @@ protected:
 	void handle_write_system_datetime_response_v25(std::vector<uint8_t>& response);
 	void handle_write_configuration_response_v25(std::vector<uint8_t>& response);
 
+	void handle_read_analog_information_response_v20(std::vector<uint8_t>& response);
+
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsV25::StatusInformation&)>>                               status_information_callbacks_v25_;
@@ -148,12 +166,15 @@ protected:
 	std::vector<std::function<void(PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration&)>>    environment_over_under_temperature_configuration_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsV25::DateTime&)>>                                        system_datetime_callbacks_v25_;
 
+	std::vector<std::function<void(PaceBmsV20::AnalogInformation&)>>                               analog_information_callbacks_v20_;
+
 	// along with loop() this is the "engine" of BMS communications
 	//     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
 	//     - process_response_frame_ will call next_response_handler_ (which was saved from the command_item popped in 
 	//           send_next_request_frame_) once a response arrives
 	PaceBmsV25* pace_bms_v25_;
-	static const uint8_t max_data_len_ = 200;
+	PaceBmsV20* pace_bms_v20_;
+	static const uint16_t max_data_len_ = 256;
 	uint8_t raw_data_[max_data_len_];
 	uint8_t raw_data_index_{ 0 };
 	uint32_t last_transmit_{ 0 };

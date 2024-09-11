@@ -60,63 +60,63 @@ private:
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
-		CID2_ReadAnalogInformation = 0x42,
-		CID2_ReadStatusInformation = 0x44,
-		CID2_ReadHardwareVersion = 0xC1,
-		CID2_ReadSerialNumber = 0xC2,
+		CID2_ReadAnalogInformation                                = 0x42,
+		CID2_ReadStatusInformation                                = 0x44,
+		CID2_ReadHardwareVersion                                  = 0xC1,
+		CID2_ReadSerialNumber                                     = 0xC2,
 
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are in the "Switch Control" section
-		CID2_WriteSwitchCommand = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
-		CID2_WriteChargeMosfetSwitchCommand = 0x9A,
-		CID2_WriteDischargeMosfetSwitchCommand = 0x9B,
-		CID2_WriteRebootCommand = 0x9C,
+		CID2_WriteSwitchCommand                                   = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
+		CID2_WriteChargeMosfetSwitchCommand                       = 0x9A,
+		CID2_WriteDischargeMosfetSwitchCommand                    = 0x9B,
+		CID2_WriteShutdownCommand                                 = 0x9C,
 
 		// "Memory Information" tab of PBmsTools 2.4
-		CID2_ReadDateTime = 0xB1,
-		CID2_WriteDateTime = 0xB2,
+		CID2_ReadDateTime                                         = 0xB1,
+		CID2_WriteDateTime                                        = 0xB2,
 
 		// "Parameter Setting" tab of PBmsTools 2.4
-		CID2_ReadCellOverVoltageConfiguration = 0xD1,
-		CID2_WriteCellOverVoltageConfiguration = 0xD0,
-		CID2_ReadPackOverVoltageConfiguration = 0xD5,
-		CID2_WritePackOverVoltageConfiguration = 0xD4,
-		CID2_ReadCellUnderVoltageConfiguration = 0xD3,
-		CID2_WriteCellUnderVoltageConfiguration = 0xD2,
-		CID2_ReadPackUnderVoltageConfiguration = 0xD7,
-		CID2_WritePackUnderVoltageConfiguration = 0xD6,
-		CID2_ReadChargeOverCurrentConfiguration = 0xD9,
-		CID2_WriteChargeOverCurrentConfiguration = 0xD8,
-		CID2_ReadDischargeSlowOverCurrentConfiguration = 0xDB,
-		CID2_WriteDischargeSlowOverCurrentConfiguration = 0xDA,
-		CID2_ReadDischargeFastOverCurrentConfiguration = 0xE3,
-		CID2_WriteDischargeFastOverCurrentConfiguration = 0xE2,
-		CID2_ReadShortCircuitProtectionConfiguration = 0xE5,
-		CID2_WriteShortCircuitProtectionConfiguration = 0xE4,
-		CID2_ReadCellBalancingConfiguration = 0xB6,
-		CID2_WriteCellBalancingConfiguration = 0xB5,
-		CID2_ReadSleepConfiguration = 0xA0,
-		CID2_WriteSleepConfiguration = 0xA8,
-		CID2_ReadFullChargeLowChargeConfiguration = 0xAF,
-		CID2_WriteFullChargeLowChargeConfiguration = 0xAE,
-		CID2_ReadChargeAndDischargeOverTemperatureConfiguration = 0xDD,
-		CID2_WriteChargeAndDischargeOverTemperatureConfiguration = 0xDC,
-		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
+		CID2_ReadCellOverVoltageConfiguration                     = 0xD1,
+		CID2_WriteCellOverVoltageConfiguration                    = 0xD0,
+		CID2_ReadPackOverVoltageConfiguration                     = 0xD5,
+		CID2_WritePackOverVoltageConfiguration                    = 0xD4,
+		CID2_ReadCellUnderVoltageConfiguration                    = 0xD3,
+		CID2_WriteCellUnderVoltageConfiguration                   = 0xD2,
+		CID2_ReadPackUnderVoltageConfiguration                    = 0xD7,
+		CID2_WritePackUnderVoltageConfiguration                   = 0xD6,
+		CID2_ReadChargeOverCurrentConfiguration                   = 0xD9,
+		CID2_WriteChargeOverCurrentConfiguration                  = 0xD8,
+		CID2_ReadDischargeSlowOverCurrentConfiguration            = 0xDB,
+		CID2_WriteDischargeSlowOverCurrentConfiguration           = 0xDA,
+		CID2_ReadDischargeFastOverCurrentConfiguration            = 0xE3,
+		CID2_WriteDischargeFastOverCurrentConfiguration           = 0xE2,
+		CID2_ReadShortCircuitProtectionConfiguration              = 0xE5,
+		CID2_WriteShortCircuitProtectionConfiguration             = 0xE4,
+		CID2_ReadCellBalancingConfiguration                       = 0xB6,
+		CID2_WriteCellBalancingConfiguration                      = 0xB5,
+		CID2_ReadSleepConfiguration                               = 0xA0,
+		CID2_WriteSleepConfiguration                              = 0xA8,
+		CID2_ReadFullChargeLowChargeConfiguration                 = 0xAF,
+		CID2_WriteFullChargeLowChargeConfiguration                = 0xAE,
+		CID2_ReadChargeAndDischargeOverTemperatureConfiguration   = 0xDD,
+		CID2_WriteChargeAndDischargeOverTemperatureConfiguration  = 0xDC,
+		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration  = 0xDF,
 		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
-		CID2_ReadMosfetOverTemperatureConfiguration = 0xE1,
-		CID2_WriteMosfetOverTemperatureConfiguration = 0xE0,
-		CID2_ReadEnvironmentOverUnderTemperatureConfiguration = 0xE7,
-		CID2_WriteEnvironmentOverUnderTemperatureConfiguration = 0xE6,
+		CID2_ReadMosfetOverTemperatureConfiguration               = 0xE1,
+		CID2_WriteMosfetOverTemperatureConfiguration              = 0xE0,
+		CID2_ReadEnvironmentOverUnderTemperatureConfiguration     = 0xE7,
+		CID2_WriteEnvironmentOverUnderTemperatureConfiguration    = 0xE6,
 
 		// "System Configuration" tab of PBmsTools 2.4
-		CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
-		CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
-		CID2_ReadRemainingCapacity = 0xA6,
+		CID2_ReadChargeCurrentLimiterStartCurrent                 = 0xED,
+		CID2_WriteChargeCurrentLimiterStartCurrent                = 0xEE,
+		CID2_ReadRemainingCapacity                                = 0xA6,
 
-		CID2_WriteOlderVersionOfSetCommunicationProtocol = 0x99,
+		CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
 
-		CID2_ReadCommunicationsProtocols = 0xEB,
-		CID2_WriteCommunicationsProtocols = 0xEC,
+		CID2_ReadCommunicationsProtocols                          = 0xEB,
+		CID2_WriteCommunicationsProtocols                         = 0xEC,
 	};
 
 	static std::string FormatReturnCode(const uint8_t returnCode);
@@ -209,6 +209,7 @@ public:
 		uint32_t fullCapacityMilliampHours;
 		uint16_t cycleCount;
 		uint32_t designCapacityMilliampHours;
+		// calculated
 		float    SoC; // in percent
 		float    SoH; // in percent
 		float    powerWatts;
@@ -1151,15 +1152,15 @@ public:
 		can_Victron = 0x03,      // 03d Victron
 		can_Schneider = 0x04,    // 04d Schneider / SE / SMA
 		can_LuxPower = 0x05,     // 05d LuxPower
-		can_SoroTec = 0x06,      // 06d SoroTec (SRD)
+		can_SoroTec = 0x06,      // 06d SoroTec / SRD
 		can_SMA = 0x07,          // 07d SMA / Studer
 		can_GoodWe = 0x08,       // 08d GoodWe
 		can_Studer = 0x09,       // 09d Studer
 		can_Sofar = 0x0A,        // 10d Sofar
 		can_Must = 0x0B,         // 11d Must / PV
-		can_Solis = 0x0C,        // 12d Solis / Jinlang
-		can_DIDU = 0x0D,         // 13d DIDU
-		can_Senergy = 0x0E,      // 14d Senergy
+		can_Solis = 0x0C,        // 12d Solis / Jinlang / JL
+		can_DIDU = 0x0D,         // 13d DIDU / TBB
+		can_Senergy = 0x0E,      // 14d Senergy / Aifu
 		can_TBB = 0x0F,          // 15d TBB
 		can_Pylon_V202 = 0x10,   // 16d Pylon_V202
 		can_Growatt_V109 = 0x11, // 17d Growatt_V109
@@ -1181,8 +1182,8 @@ public:
 		rs485_PHOCOS = 0x05,       // 05d PHOCOS
 		rs485_LuxPower = 0x06,     // 06d LuxPower
 		rs485_Solar = 0x07,        // 07d Solar
-		rs485_Lithium = 0x08,      // 08d Lithium
-		rs485_EP = 0x09,           // 09d EP
+		rs485_Lithium = 0x08,      // 08d Lithium / SMARK
+		rs485_EP = 0x09,           // 09d EP / MSL
 		rs485_RTU04 = 0x0A,        // 10d RTU04
 		rs485_LuxPower_V01 = 0x0B, // 11d LuxPower_V01
 		rs485_LuxPower_V03 = 0x0C, // 12d LuxPower_V03
