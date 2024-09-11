@@ -36,18 +36,29 @@ public:
 	typedef void (*LogFuncPtr)(std::string message);
 
 	// takes pointers to the "real" logging functions
-	PaceBmsV20(CID1 batteryChemistry, uint8_t cell_count, uint8_t temperature_count, bool skip_ud2, bool skip_soc_dc, bool skip_soh_pv, int design_capacity_mah, bool skip_status_flags, LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
+	PaceBmsV20(
+		CID1 batteryChemistry, 
+		bool skip_address_payload, uint8_t cell_count_override, uint8_t temperature_count_override, 
+		bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv, int design_capacity_mah_override, 
+		bool skip_status_flags,
+		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 private:
 	// battery chemistry
 	CID1 cid1;
+
 	// config overrides for weird protocol abnormalities
-	uint8_t cell_count;
-	uint8_t temperature_count;
+	bool skip_address_payload;
+	uint8_t cell_count_override;
+	uint8_t temperature_count_override;
+
 	bool skip_ud2;
-	bool skip_soc_dc;
-	bool skip_soh_pv;
-	int design_capacity_mah;
+	bool skip_soc;
+	bool skip_dc;
+	bool skip_soh;
+	bool skip_pv;
+	int design_capacity_mah_override;
+
 	bool skip_status_flags;
 
 	// dependency injection

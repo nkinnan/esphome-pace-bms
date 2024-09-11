@@ -83,25 +83,30 @@ uart:
     baud_rate: 9600
     tx_pin: GPIO2
     rx_pin: GPIO1
+    rx_buffer_size: 256 # this is the default, just being explicit since it's actually exactly what we need
 
 
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
-  chemistry: 0x4A
-  v20_cell_count: 16 # only needed if your BMS lies about how many cells it has in it's responses
-  v20_temperature_count: 6 # only needed if your BMS lies about how many temperatures it has in it's responses (my EG4 LIFEPOWER4 does)
-  v20_skip_ud2: true # needed for my EG4 LIFEPOWER4 battery, it violates spec in a minor way
-  v20_skip_soc_dc: true # seems to be supported on seplos only
-  v20_skip_soh_pv: true # seems to be supported on seplos only
-  v20_design_capacity_mah: 100000 # because of skip_soc_dc, this will manually set dc and allow calculating SoH, ignored if v20_skip_soc_dc is false
-  v20_skip_status_flags: true # needed for my EG4 LIFEPOWER4 battery, I'm not sure WTH is going on with it's status response
   protocol_version: 0x20
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
   request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
+
+  chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
+  v20_skip_address_payload: true # needed for my EG4 LIFEPOWER4 battery, even though it's against spec
+  v20_cell_count_override: 16 # only needed if your BMS lies about how many cells it has in it's responses
+  v20_temperature_count_override: 6 # needed for my EG4 LIFEPOWER4 battery, it lies about how many temperatures it has in it's responses
+  v20_skip_ud2: true # needed for my EG4 LIFEPOWER4 battery, it violates spec 
+  v20_skip_soc: true # seems to be supported on seplos only
+  v20_skip_dc: true # seems to be supported on seplos only
+  v20_skip_soh: true # seems to be supported on seplos only
+  v20_skip_pv: true # seems to be supported on seplos only
+  v20_design_capacity_mah_override: 100000 # because of skip_soc_dc, this will manually set dc and allow calculating SoH, ignored if v20_skip_soc_dc is false
+  v20_skip_status_flags: true # needed for my EG4 LIFEPOWER4 battery, I'm not sure what is going on with it's status response but the supposed location for these flags result in nonsensical values
 
 
 sensor:
@@ -219,58 +224,72 @@ sensor:
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
-    #warning_status_value_cell_01:
-    #  name: "Warning Status Value Cell 01"
-    #warning_status_value_cell_02:
-    #  name: "Warning Status Value Cell 02"
-    #warning_status_value_cell_03:
-    #  name: "Warning Status Value Cell 03"
-    #warning_status_value_cell_04:
-    #  name: "Warning Status Value Cell 04"
-    #warning_status_value_cell_05:
-    #  name: "Warning Status Value Cell 05"
-    #warning_status_value_cell_06:
-    #  name: "Warning Status Value Cell 06"
-    #warning_status_value_cell_07:
-    #  name: "Warning Status Value Cell 07"
-    #warning_status_value_cell_08:
-    #  name: "Warning Status Value Cell 08"
-    #warning_status_value_cell_09:
-    #  name: "Warning Status Value Cell 09"
-    #warning_status_value_cell_10:
-    #  name: "Warning Status Value Cell 10"
-    #warning_status_value_cell_11:
-    #  name: "Warning Status Value Cell 11"
-    #warning_status_value_cell_12:
-    #  name: "Warning Status Value Cell 12"
-    #warning_status_value_cell_13:
-    #  name: "Warning Status Value Cell 13"
-    #warning_status_value_cell_14:
-    #  name: "Warning Status Value Cell 14"
-    #warning_status_value_cell_15:
-    #  name: "Warning Status Value Cell 15"
-    #warning_status_value_cell_16:
-    #  name: "Warning Status Value Cell 16"
-    #
-    #warning_status_value_temperature_01:
-    #  name: "Warning Status Value Temperature 01"
-    #warning_status_value_temperature_02:
-    #  name: "Warning Status Value Temperature 02"
-    #warning_status_value_temperature_03:
-    #  name: "Warning Status Value Temperature 03"
-    #warning_status_value_temperature_04:
-    #  name: "Warning Status Value Temperature 04"
-    #warning_status_value_temperature_05:
-    #  name: "Warning Status Value Temperature 05"
-    #warning_status_value_temperature_06:
-    #  name: "Warning Status Value Temperature 06"
-    #
-    #warning_status_value_charge_current:
-    #  name: "Warning Status Value Charge Current"
-    #warning_status_value_total_voltage:
-    #  name: "Warning Status Value Total Voltage"
-    #warning_status_value_discharge_current:
-    #  name: "Warning Status Value Discharge Current"
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+    
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+    
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+
+    ######## NEW in 0x20
+    # status_value_1:
+    #   name: "Status Value 1"
+    # status_value_2:
+    #   name: "Status Value 2"
+    # status_value_3:
+    #   name: "Status Value 3"
+    # status_value_4:
+    #   name: "Status Value 4"
+    # status_value_5:
+    #   name: "Status Value 5"
+
+    ######## NOT IN 0x20
     #warning_status_value_1:
     #  name: "Warning Status Value 1"
     #warning_status_value_2:
@@ -290,30 +309,30 @@ sensor:
     #  name: "Fault Status Value"
 
 
-#text_sensor:
-#  - platform: pace_bms
-#    pace_bms_id: pace_bms_at_address_1
-#
-#    hardware_version:
-#      name: "Hardware Version"
-#    serial_number:
-#      name: "Serial Number"
-#
-#    # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
-#    warning_status:
-#      name: "Warning Status"
-#    balancing_status:
-#      name: "Balancing Status"
-#    system_status:
-#      name: "System Status"
-#    configuration_status:
-#      name: "Configuration Status"
-#    protection_status:
-#      name: "Protection Status"
-#    fault_status:
-#      name: "Fault Status"
-#
-#
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    # hardware_version:
+    #   name: "Hardware Version"
+    # serial_number:
+    #   name: "Serial Number"
+
+    # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
+    warning_status:
+      name: "Warning Status"
+    # balancing_status:
+    #   name: "Balancing Status"
+    system_status:
+      name: "System Status"
+    configuration_status:
+      name: "Configuration Status"
+    protection_status:
+      name: "Protection Status"
+    fault_status:
+      name: "Fault Status"
+
+
 #switch:
 #  - platform: pace_bms
 #    pace_bms_id: pace_bms_at_address_1

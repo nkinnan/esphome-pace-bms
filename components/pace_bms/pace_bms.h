@@ -14,21 +14,25 @@
 namespace esphome {
 namespace pace_bms {
 
+
 // this class encapsulates an instance of PaceBmsV25 (which handles protocol version 0x25) and injects the logging dependencies into it
 //     in the future, other protocol versions may be supported
 class PaceBms : public PollingComponent, public uart::UARTDevice {
 public:
 	// called by the codegen to set our YAML property values
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
-	void set_address(int address) { this->address_ = address; }
-	void set_chemistry(int chemistry) { this->chemistry_ = chemistry; }
-	void set_cell_count(uint8_t cell_count) { this->cell_count_ = cell_count; }
-	void set_temperature_count(uint8_t temperature_count) { this->temperature_count_ = temperature_count; }
-	void set_skip_ud2(bool skip_ud2) { this->skip_ud2_ = skip_ud2; }
-	void set_skip_soc_dc(bool skip_soc_dc) { this->skip_soc_dc_ = skip_soc_dc; }
-	void set_skip_soh_pv(bool skip_soh_pv) { this->skip_soh_pv_ = skip_soh_pv; }
-	void set_design_capacity_mah(int design_capacity_mah) { this->design_capacity_mah_ = design_capacity_mah; }
-	void set_skip_status_flags(bool skip_status_flags) { this->skip_status_flags_ = skip_status_flags; }
+	void set_address(uint8_t address) { this->address_ = address; }
+	void set_chemistry(uint8_t chemistry) { this->chemistry_ = chemistry; }
+	void set_skip_address_payload(bool skip_address_payload) { this->v20_skip_address_payload_ = skip_address_payload; }
+	void set_cell_count(uint8_t cell_count_override) { this->v20_cell_count_override_ = cell_count_override; }
+	void set_temperature_count(uint8_t temperature_count_override) { this->v20_temperature_count_override_ = temperature_count_override; }
+	void set_skip_ud2(bool skip_ud2) { this->v20_skip_ud2_ = skip_ud2; }
+	void set_skip_soc(bool skip_soc) { this->v20_skip_soc_ = skip_soc; }
+	void set_skip_dc(bool skip_dc) { this->v20_skip_dc_ = skip_dc; }
+	void set_skip_soh(bool skip_soh) { this->v20_skip_soh_ = skip_soh; }
+	void set_skip_pv(bool skip_pv) { this->v20_skip_pv_ = skip_pv; }
+	void set_design_capacity_mah(int design_capacity_mah_override) { this->v20_design_capacity_mah_override_ = design_capacity_mah_override; }
+	void set_skip_status_flags(bool skip_status_flags) { this->v20_skip_status_flags_ = skip_status_flags; }
 	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
@@ -101,13 +105,16 @@ protected:
 	GPIOPin* flow_control_pin_{ nullptr };
 	uint8_t address_{ 0 };
 	uint8_t chemistry_{ 0 };
-	uint8_t cell_count_{ 0 };
-	uint8_t temperature_count_{ 0 };
-	bool skip_ud2_{ false };
-	bool skip_soc_dc_{ true };
-	bool skip_soh_pv_{ true };
-	int design_capacity_mah_{ 0 };
-	bool skip_status_flags_{ false };
+	bool v20_skip_address_payload_{ 0 };
+	uint8_t v20_cell_count_override_{ 0 };
+	uint8_t v20_temperature_count_override_{ 0 };
+	bool v20_skip_ud2_{ false };
+	bool v20_skip_soc_{ true };
+	bool v20_skip_dc_{ true };
+	bool v20_skip_soh_{ true };
+	bool v20_skip_pv_{ true };
+	int v20_design_capacity_mah_override_{ 0 };
+	bool v20_skip_status_flags_{ false };
 	int protocol_version_{ 0 };
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
@@ -174,6 +181,7 @@ protected:
 	//           send_next_request_frame_) once a response arrives
 	PaceBmsV25* pace_bms_v25_;
 	PaceBmsV20* pace_bms_v20_;
+	// this is currently "right sized" as it's only slightly larger than the largest 0x20 response I've seen
 	static const uint16_t max_data_len_ = 256;
 	uint8_t raw_data_[max_data_len_];
 	uint8_t raw_data_index_{ 0 };

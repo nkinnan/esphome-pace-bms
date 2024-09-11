@@ -2,15 +2,26 @@
 #include "pace_bms_v20.h"
 
 // takes pointers to the "real" logging functions
-PaceBmsV20::PaceBmsV20(CID1 batteryChemistry, uint8_t cell_count, uint8_t temperature_count, bool skip_ud2, bool skip_soc_dc, bool skip_soh_pv, int design_capacity_mah, bool skip_status_flags, PaceBmsV20::LogFuncPtr logError, PaceBmsV20::LogFuncPtr logWarning, PaceBmsV20::LogFuncPtr logInfo, PaceBmsV20::LogFuncPtr logDebug, PaceBmsV20::LogFuncPtr logVerbose, PaceBmsV20::LogFuncPtr logVeryVerbose)
+PaceBmsV20::PaceBmsV20(
+	CID1 batteryChemistry, 
+	bool skip_address_payload, uint8_t cell_count_override, uint8_t temperature_count_override, 
+	bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv, int design_capacity_mah_override,
+	bool skip_status_flags, 
+	PaceBmsV20::LogFuncPtr logError, PaceBmsV20::LogFuncPtr logWarning, PaceBmsV20::LogFuncPtr logInfo, PaceBmsV20::LogFuncPtr logDebug, PaceBmsV20::LogFuncPtr logVerbose, PaceBmsV20::LogFuncPtr logVeryVerbose)
 {
 	this->cid1 = batteryChemistry;
-	this->cell_count = cell_count;
-	this->temperature_count = temperature_count;
+
+	this->skip_address_payload = skip_address_payload;
+	this->cell_count_override = cell_count_override;
+	this->temperature_count_override = temperature_count_override;
+
 	this->skip_ud2 = skip_ud2;
-	this->skip_soc_dc = skip_soc_dc;
-	this->skip_soh_pv = skip_soh_pv;
-	this->design_capacity_mah = design_capacity_mah;
+	this->skip_soc = skip_soc;
+	this->skip_dc = skip_dc;
+	this->skip_soh = skip_soh;
+	this->skip_pv = skip_pv;
+	this->design_capacity_mah_override = design_capacity_mah_override;
+
 	this->skip_status_flags = skip_status_flags;
 
 	this->LogErrorPtr = logError;
@@ -398,7 +409,18 @@ const unsigned char PaceBmsV20::exampleReadAnalogInformationResponseV20[] = "~20
 
 bool PaceBmsV20::CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadAnalogInformation, std::vector<uint8_t>(), request);
+	// the payload is the requested busId (could be FF for "get all" when speaking to a set of daisy-chained units but this code doesn't support that)
+	if (!skip_address_payload)
+	{
+		const uint16_t payloadLen = 2;
+		std::vector<uint8_t> payload(payloadLen);
+		uint16_t payloadOffset = 0;
+		WriteHexEncodedByte(payload, payloadOffset, busId);
+
+		CreateRequest(busId, CID2_ReadAnalogInformation, payload, request);
+	}
+	else
+		CreateRequest(busId, CID2_ReadAnalogInformation, std::vector<uint8_t>(), request);
 
 	return true;
 }
@@ -429,9 +451,9 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 
 	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (cell_count != 0)
+	if (cell_count_override != 0)
 		// user set an override in the config
-		analogInformation.cellCount = cell_count;
+		analogInformation.cellCount = cell_count_override;
 	if (analogInformation.cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
@@ -447,9 +469,9 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 
 	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
-	if (temperature_count != 0)
+	if (temperature_count_override != 0)
 		// user set an override in the config
-		analogInformation.temperatureCount = temperature_count;
+		analogInformation.temperatureCount = temperature_count_override;
 	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature readings than are supported, results will be truncated");
@@ -488,38 +510,42 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
 	// this seems to be seplos only? not in pylon doc, not in EG4 response
-	if (!skip_soc_dc)
+	if (!skip_soc)
 	{
 		if (response.size() - 5 < byteOffset + 2)
 			goto end_of_data;
 		analogInformation.SoC = ReadHexEncodedUShort(response, byteOffset) * 0.1f;
+	}
+
+	if (!skip_dc)
+	{
 		if (response.size() - 5 < byteOffset + 2)
 			goto end_of_data;
 		analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 	}
-	else if (design_capacity_mah != 0)
-		// config specifies an override for this value because we couldn't read it
-		analogInformation.designCapacityMilliampHours = design_capacity_mah;
 
 	if (response.size() - 5 < byteOffset + 2)
 		goto end_of_data;
 	analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
 
-	if (!skip_soh_pv)
+	if (!skip_soh)
 	{
 		// this seems to be seplos only? not in pylon doc, not in EG4 response
 		if (response.size() - 5 < byteOffset + 2)
 			goto end_of_data;
 		analogInformation.SoH = ReadHexEncodedUShort(response, byteOffset) * 0.1f;
+	}
 
+	if (!skip_pv)
+	{
 		// this seems to be seplos only? not in pylon doc, not in EG4 response
 		if (response.size() - 5 < byteOffset + 2)
 			goto end_of_data;
 		analogInformation.portVoltage = ReadHexEncodedUShort(response, byteOffset) * 0.1f;
 	}
 
-	//////// reserved 1-4
-	//////byteOffset += 8;
+	//// reserved 1-4
+	//byteOffset += 8;
 
 	if (byteOffset != payloadLen + 13)
 	{
@@ -527,16 +553,20 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 		//return false;
 	}
 
+	// calculate some "extras"
 end_of_data:
-	if (skip_soc_dc) 
+	if (skip_soc) 
 		// we skipped reading SoC so calculate it
 		analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
 
-	if (design_capacity_mah != 0) 
+	if (design_capacity_mah_override != 0)
+		// config specifies an override for this value because either we couldn't read it or it's incorrect
+		analogInformation.designCapacityMilliampHours = design_capacity_mah_override;
+
+	if (skip_soh)
 		// config specifies design capacity override, so use it to calculate SoH
 		analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
 
-	// calculate some "extras"
 	analogInformation.powerWatts = ((float)analogInformation.totalVoltageMillivolts * (float)analogInformation.currentMilliamps) / 1000000.0f;
 	analogInformation.minCellVoltageMillivolts = 65535;
 	analogInformation.maxCellVoltageMillivolts = 0;
@@ -560,7 +590,18 @@ const unsigned char PaceBmsV20::exampleReadStatusInformationResponseV20[] = "~20
 
 bool PaceBmsV20::CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadStatusInformation, std::vector<uint8_t>(), request);
+	// the payload is the requested busId (could be FF for "get all" when speaking to a set of daisy-chained units but this code doesn't support that)
+	if (!skip_address_payload)
+	{
+		const uint16_t payloadLen = 2;
+		std::vector<uint8_t> payload(payloadLen);
+		uint16_t payloadOffset = 0;
+		WriteHexEncodedByte(payload, payloadOffset, busId);
+
+		CreateRequest(busId, CID2_ReadStatusInformation, payload, request);
+	}
+	else
+		CreateRequest(busId, CID2_ReadStatusInformation, std::vector<uint8_t>(), request);
 
 	return true;
 }
@@ -624,9 +665,9 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	// ========================== Warning / Alarm Status ==========================
 	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (cell_count != 0)
+	if (cell_count_override != 0)
 		// user set an override in the config
-		cellCount = cell_count;
+		cellCount = cell_count_override;
 	if (cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell warnings than are supported, results will be truncated");
@@ -647,9 +688,9 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
-	if (temperature_count != 0)
+	if (temperature_count_override != 0)
 		// user set an override in the config
-		tempCount = temperature_count;
+		tempCount = temperature_count_override;
 	if (tempCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");

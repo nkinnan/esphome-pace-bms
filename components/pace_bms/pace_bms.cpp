@@ -59,11 +59,18 @@ void PaceBms::dump_config() {
 void PaceBms::setup() {
 	if (this->protocol_version_ == 0x25) {
 		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
-		this->pace_bms_v25_ = new PaceBmsV25((PaceBmsV25::CID1)chemistry_, error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
+		this->pace_bms_v25_ = new PaceBmsV25(
+			(PaceBmsV25::CID1)chemistry_, 
+			error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
 	else if (this->protocol_version_ == 0x20) {
 		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
-		this->pace_bms_v20_ = new PaceBmsV20((PaceBmsV20::CID1)chemistry_, cell_count_, temperature_count_, skip_ud2_, skip_soc_dc_, skip_soh_pv_, design_capacity_mah_, skip_status_flags_, error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
+		this->pace_bms_v20_ = new PaceBmsV20(
+			(PaceBmsV20::CID1)chemistry_, 
+			v20_skip_address_payload_, v20_cell_count_override_, v20_temperature_count_override_, 
+			v20_skip_ud2_, v20_skip_soc_, v20_skip_dc_, v20_skip_soh_, v20_skip_pv_, v20_design_capacity_mah_override_, 
+			v20_skip_status_flags_, 
+			error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
 	else {
 		this->status_set_error();
