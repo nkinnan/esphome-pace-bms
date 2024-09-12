@@ -1,9 +1,10 @@
-#include "pace_bms_component.h"
-#include "esphome/core/log.h"
 #include <cinttypes>
 #include <iomanip>
 #include <sstream>
 #include <functional>
+
+#include "esphome/core/log.h"
+#include "pace_bms_component.h"
 
 namespace esphome {
 namespace pace_bms {

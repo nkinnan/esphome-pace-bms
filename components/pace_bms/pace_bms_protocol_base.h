@@ -8,8 +8,8 @@
 //#include <optional>
 //using namespace std;
 #include "esphome/core/optional.h"
-//using namespace esphome;
-
+using namespace esphome;
+ 
 /*
 General format of requests/responses:
 -------------------------------------
