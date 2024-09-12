@@ -39,10 +39,10 @@ CONF_RESPONSE_TIMEOUT            = "response_timeout"
 DEFAULT_ADDRESS = 1
 DEFAULT_CHEMISTRY = 0x46
 DEFAULT_SKIP_ADDRESS_PAYLOAD = False
-DEFAULT_ANALOG_CELL_COUNT = 0
-DEFAULT_ANALOG_TEMPERATURE_COUNT = 0
-DEFAULT_STATUS_CELL_COUNT = 0
-DEFAULT_STATUS_TEMPERATURE_COUNT = 0
+#DEFAULT_ANALOG_CELL_COUNT = 0
+#DEFAULT_ANALOG_TEMPERATURE_COUNT = 0
+#DEFAULT_STATUS_CELL_COUNT = 0
+#DEFAULT_STATUS_TEMPERATURE_COUNT = 0
 DEFAULT_SKIP_UD2 = False
 DEFAULT_SKIP_SOC = True
 DEFAULT_SKIP_DC = True
@@ -62,10 +62,10 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
             cv.Optional(CONF_CHEMISTRY, default=DEFAULT_CHEMISTRY): cv.int_range(min=0, max=255),
             cv.Optional(CONF_SKIP_ADDRESS_PAYLOAD, default=DEFAULT_SKIP_ADDRESS_PAYLOAD): cv.boolean,
-            cv.Optional(CONF_ANALOG_CELL_COUNT, default=DEFAULT_ANALOG_CELL_COUNT): cv.int_range(min=0, max=16),
-            cv.Optional(CONF_ANALOG_TEMPERATURE_COUNT, default=DEFAULT_ANALOG_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
-            cv.Optional(CONF_STATUS_CELL_COUNT, default=DEFAULT_STATUS_CELL_COUNT): cv.int_range(min=0, max=16),
-            cv.Optional(CONF_STATUS_TEMPERATURE_COUNT, default=DEFAULT_STATUS_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
+            cv.Optional(CONF_ANALOG_CELL_COUNT): cv.int_range(min=0, max=16),
+            cv.Optional(CONF_ANALOG_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
+            cv.Optional(CONF_STATUS_CELL_COUNT): cv.int_range(min=0, max=16),
+            cv.Optional(CONF_STATUS_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
             cv.Optional(CONF_SKIP_UD2, default=DEFAULT_SKIP_UD2): cv.boolean,
             cv.Optional(CONF_SKIP_SOC, default=DEFAULT_SKIP_SOC): cv.boolean,
             cv.Optional(CONF_SKIP_DC, default=DEFAULT_SKIP_DC): cv.boolean,

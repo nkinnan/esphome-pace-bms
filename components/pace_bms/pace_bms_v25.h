@@ -3,6 +3,11 @@
 #include <string>
 #include <vector>
 
+// uncomment the C++ version if using a C++17 compiler, esphome provides it's own substitute in lieu of that
+//#include <optional>
+#include "esphome/core/optional.h"
+using namespace esphome;
+
 /*
 General format of requests/responses:
 -------------------------------------
@@ -37,9 +42,9 @@ public:
 	// takes pointers to the "real" logging functions
 	PaceBmsV25(
 		CID1 batteryChemistry, 
-		uint8_t analog_cell_count_override, uint8_t analog_temperature_count_override,
+		optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
 		uint32_t design_capacity_mah_override_,
-		uint8_t status_cell_count_override, uint8_t status_temperature_count_override,
+		optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 private:
@@ -47,10 +52,10 @@ private:
 	CID1 cid1;
 
 	// config overrides for weird protocol abnormalities
-	uint8_t analog_cell_count_override;
-	uint8_t analog_temperature_count_override;
-	uint8_t status_cell_count_override;
-	uint8_t status_temperature_count_override;
+	optional<uint8_t> analog_cell_count_override;
+	optional<uint8_t> analog_temperature_count_override;
+	optional<uint8_t> status_cell_count_override;
+	optional<uint8_t> status_temperature_count_override;
 
 	uint32_t design_capacity_mah_override;
 

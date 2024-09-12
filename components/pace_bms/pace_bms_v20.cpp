@@ -5,9 +5,9 @@
 PaceBmsV20::PaceBmsV20(
 	CID1 batteryChemistry, 
 	bool skip_address_payload, 
-	uint8_t analog_cell_count_override, uint8_t analog_temperature_count_override,
+	optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
 	uint32_t design_capacity_mah_override,
-	uint8_t status_cell_count_override, uint8_t status_temperature_count_override,
+	optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
 	bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv,
 	bool skip_status_flags, 
 	PaceBmsV20::LogFuncPtr logError, PaceBmsV20::LogFuncPtr logWarning, PaceBmsV20::LogFuncPtr logInfo, PaceBmsV20::LogFuncPtr logDebug, PaceBmsV20::LogFuncPtr logVerbose, PaceBmsV20::LogFuncPtr logVeryVerbose)
@@ -457,9 +457,9 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 
 	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (analog_cell_count_override != 0)
+	if (analog_cell_count_override.has_value())
 		// user set an override in the config
-		analogInformation.cellCount = analog_cell_count_override;
+		analogInformation.cellCount = analog_cell_count_override.value();
 	if (analogInformation.cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
@@ -475,9 +475,9 @@ bool PaceBmsV20::ProcessReadAnalogInformationResponse(const uint8_t busId, const
 	}
 
 	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
-	if (analog_temperature_count_override != 0)
+	if (analog_temperature_count_override.has_value())
 		// user set an override in the config
-		analogInformation.temperatureCount = analog_temperature_count_override;
+		analogInformation.temperatureCount = analog_temperature_count_override.value();
 	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature readings than are supported, results will be truncated");
@@ -671,9 +671,9 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 
 	// ========================== Warning / Alarm Status ==========================
 	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (status_cell_count_override != 0)
+	if (status_cell_count_override.has_value())
 		// user set an override in the config
-		cellCount = status_cell_count_override;
+		cellCount = status_cell_count_override.value();
 	if (cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell warnings than are supported, results will be truncated");
@@ -694,9 +694,9 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
-	if (status_temperature_count_override != 0)
+	if (status_temperature_count_override.has_value())
 		// user set an override in the config
-		tempCount = status_temperature_count_override;
+		tempCount = status_temperature_count_override.value();
 	if (tempCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");

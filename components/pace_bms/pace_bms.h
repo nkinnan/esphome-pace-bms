@@ -5,6 +5,11 @@
 #include <queue>
 #include <list>
 
+// uncomment the C++ version if using a C++17 compiler, esphome provides it's own substitute in lieu of that
+//#include <optional>
+#include "esphome/core/optional.h"
+using namespace esphome;
+
 #include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
 
@@ -110,10 +115,10 @@ protected:
 
 	bool v20_skip_address_payload_{ 0 };
 
-	uint8_t analog_cell_count_override_{ 0 };
-	uint8_t status_cell_count_override_{ 0 };
-	uint8_t analog_temperature_count_override_{ 0 };
-	uint8_t status_temperature_count_override_{ 0 };
+	optional<uint8_t> analog_cell_count_override_;
+	optional<uint8_t> status_cell_count_override_;
+	optional<uint8_t> analog_temperature_count_override_;
+	optional<uint8_t> status_temperature_count_override_;
 
 	bool v20_skip_ud2_{ false };
 	bool v20_skip_soc_{ true };
