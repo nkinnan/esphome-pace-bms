@@ -746,30 +746,32 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	}
 
 	// ========================== Status 1-5 ==========================
-	// I can't trust these, they don't have valid values for the one pack I have that speaks this protocol, so ignoring for now
-	statusInformation.status1_value = ReadHexEncodedByte(response, byteOffset);
-	if (statusInformation.status1_value != 0)
+	if (!skip_status_flags)
 	{
-	}
+		statusInformation.status1_value = ReadHexEncodedByte(response, byteOffset);
+		if (statusInformation.status1_value != 0)
+		{
+		}
 
-	statusInformation.status2_value = ReadHexEncodedByte(response, byteOffset);
-	if (statusInformation.status2_value != 0)
-	{
-	}
+		statusInformation.status2_value = ReadHexEncodedByte(response, byteOffset);
+		if (statusInformation.status2_value != 0)
+		{
+		}
 
-	statusInformation.status3_value = ReadHexEncodedByte(response, byteOffset);
-	if (statusInformation.status3_value != 0)
-	{
-	}
+		statusInformation.status3_value = ReadHexEncodedByte(response, byteOffset);
+		if (statusInformation.status3_value != 0)
+		{
+		}
 
-	statusInformation.status4_value = ReadHexEncodedByte(response, byteOffset);
-	if (statusInformation.status4_value != 0)
-	{
-	}
+		statusInformation.status4_value = ReadHexEncodedByte(response, byteOffset);
+		if (statusInformation.status4_value != 0)
+		{
+		}
 
-	statusInformation.status5_value = ReadHexEncodedByte(response, byteOffset);
-	if (statusInformation.status5_value != 0)
-	{
+		statusInformation.status5_value = ReadHexEncodedByte(response, byteOffset);
+		if (statusInformation.status5_value != 0)
+		{
+		}
 	}
 
 	// pop off any trailing "; " separator

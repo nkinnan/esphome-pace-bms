@@ -3,8 +3,9 @@
 #include <string>
 #include <vector>
 
-// uncomment the C++ version if using a C++17 compiler, esphome provides it's own substitute in lieu of that
+// uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
 //#include <optional>
+//using namespace std;
 #include "esphome/core/optional.h"
 using namespace esphome;
 
@@ -33,7 +34,7 @@ public:
 	enum CID1 : uint8_t
 	{
 		CID1_LithiumIron = 0x46,
-		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a knock-off, rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
+		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
 	};
 
 	// dependency injection

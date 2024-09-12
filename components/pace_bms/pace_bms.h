@@ -5,8 +5,9 @@
 #include <queue>
 #include <list>
 
-// uncomment the C++ version if using a C++17 compiler, esphome provides it's own substitute in lieu of that
+// uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
 //#include <optional>
+//using namespace std;
 #include "esphome/core/optional.h"
 using namespace esphome;
 
