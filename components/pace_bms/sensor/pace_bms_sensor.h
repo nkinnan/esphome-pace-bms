@@ -1,11 +1,9 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/pace_bms/pace_bms.h"
 #include "esphome/components/sensor/sensor.h"
 
-#include "../pace_bms_v25.h"
-#include "../pace_bms_v20.h"
+#include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -104,11 +102,11 @@ protected:
 	bool request_analog_info_callback_ = false;
 	bool request_status_info_callback_ = false;
 
-	void analog_information_callback_v25(PaceBmsV25::AnalogInformation& analog_information);
-	void status_information_callback_v25(PaceBmsV25::StatusInformation& status_information);
+	void analog_information_callback_v25(PaceBmsProtocolV25::AnalogInformation& analog_information);
+	void status_information_callback_v25(PaceBmsProtocolV25::StatusInformation& status_information);
 
-	void analog_information_callback_v20(PaceBmsV20::AnalogInformation& analog_information);
-	void status_information_callback_v20(PaceBmsV20::StatusInformation& status_information);
+	void analog_information_callback_v20(PaceBmsProtocolV20::AnalogInformation& analog_information);
+	void status_information_callback_v20(PaceBmsProtocolV20::StatusInformation& status_information);
 };
 
 }  // namespace pace_bms

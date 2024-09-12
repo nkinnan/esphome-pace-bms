@@ -14,7 +14,7 @@ static const char* const TAG = "pace_bms.datetime";
 void PaceBmsDatetime::setup() {
 	if (this->parent_->get_protocol_version() == 0x25) {
 		if (this->system_date_and_time_datetime_ != nullptr) {
-			this->parent_->register_system_datetime_callback_v25([this](PaceBmsV25::DateTime& dt) {
+			this->parent_->register_system_datetime_callback_v25([this](PaceBmsProtocolV25::DateTime& dt) {
 				this->system_date_and_time_ = dt;
 				this->system_date_and_time_seen_ = true;
 				ESP_LOGV(TAG, "'bms_date_and_time': Publishing state due to update from the hardware: %04i:%02i:%02i %02i:%02i:%02i", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);

@@ -91,72 +91,72 @@ public:
 protected:
 	pace_bms::PaceBms* parent_;
 
-	PaceBmsV25::CellOverVoltageConfiguration cell_over_voltage_configuration_;
+	PaceBmsProtocolV25::CellOverVoltageConfiguration cell_over_voltage_configuration_;
 	bool cell_over_voltage_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* cell_over_voltage_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_release_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_over_voltage_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::PackOverVoltageConfiguration pack_over_voltage_configuration_;
+	PaceBmsProtocolV25::PackOverVoltageConfiguration pack_over_voltage_configuration_;
 	bool pack_over_voltage_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* pack_over_voltage_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_release_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_over_voltage_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::CellUnderVoltageConfiguration cell_under_voltage_configuration_;
+	PaceBmsProtocolV25::CellUnderVoltageConfiguration cell_under_voltage_configuration_;
 	bool cell_under_voltage_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* cell_under_voltage_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_release_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_under_voltage_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::PackUnderVoltageConfiguration pack_under_voltage_configuration_;
+	PaceBmsProtocolV25::PackUnderVoltageConfiguration pack_under_voltage_configuration_;
 	bool pack_under_voltage_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* pack_under_voltage_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_release_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* pack_under_voltage_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::ChargeOverCurrentConfiguration charge_over_current_configuration_;
+	PaceBmsProtocolV25::ChargeOverCurrentConfiguration charge_over_current_configuration_;
 	bool charge_over_current_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* charge_over_current_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* charge_over_current_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* charge_over_current_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::DischargeOverCurrent1Configuration discharge_over_current1_configuration_;
+	PaceBmsProtocolV25::DischargeOverCurrent1Configuration discharge_over_current1_configuration_;
 	bool discharge_over_current1_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_current1_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_current1_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_current1_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::DischargeOverCurrent2Configuration discharge_over_current2_configuration_;
+	PaceBmsProtocolV25::DischargeOverCurrent2Configuration discharge_over_current2_configuration_;
 	bool discharge_over_current2_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_current2_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_current2_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::ShortCircuitProtectionConfiguration short_circuit_protection_configuration_;
+	PaceBmsProtocolV25::ShortCircuitProtectionConfiguration short_circuit_protection_configuration_;
 	bool short_circuit_protection_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* short_circuit_protection_delay_number_{ nullptr };
 
-	PaceBmsV25::CellBalancingConfiguration cell_balancing_configuration_;
+	PaceBmsProtocolV25::CellBalancingConfiguration cell_balancing_configuration_;
 	bool cell_balancing_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* cell_balancing_threshold_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* cell_balancing_delta_number_{ nullptr };
 
-	PaceBmsV25::SleepConfiguration sleep_configuration_;
+	PaceBmsProtocolV25::SleepConfiguration sleep_configuration_;
 	bool sleep_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* sleep_cell_voltage_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* sleep_delay_number_{ nullptr };
 
-	PaceBmsV25::FullChargeLowChargeConfiguration full_charge_low_charge_configuration_;
+	PaceBmsProtocolV25::FullChargeLowChargeConfiguration full_charge_low_charge_configuration_;
 	bool full_charge_low_charge_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* full_charge_voltage_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* full_charge_amps_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* low_charge_alarm_percent_number_{ nullptr };
 
-	PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration charge_and_discharge_over_temperature_configuration_;
+	PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration charge_and_discharge_over_temperature_configuration_;
 	bool charge_and_discharge_over_temperature_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* charge_over_temperature_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* charge_over_temperature_protection_number_{ nullptr };
@@ -165,7 +165,7 @@ protected:
 	pace_bms::PaceBmsNumberImplementation* discharge_over_temperature_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* discharge_over_temperature_protection_release_number_{ nullptr };
 
-	PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration charge_and_discharge_under_temperature_configuration_;
+	PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration charge_and_discharge_under_temperature_configuration_;
 	bool charge_and_discharge_under_temperature_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* charge_under_temperature_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* charge_under_temperature_protection_number_{ nullptr };
@@ -174,13 +174,13 @@ protected:
 	pace_bms::PaceBmsNumberImplementation* discharge_under_temperature_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* discharge_under_temperature_protection_release_number_{ nullptr };
 
-	PaceBmsV25::MosfetOverTemperatureConfiguration mosfet_over_temperature_configuration_;
+	PaceBmsProtocolV25::MosfetOverTemperatureConfiguration mosfet_over_temperature_configuration_;
 	bool mosfet_over_temperature_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_protection_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* mosfet_over_temperature_protection_release_number_{ nullptr };
 
-	PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration environment_over_under_temperature_configuration_;
+	PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration environment_over_under_temperature_configuration_;
 	bool environment_over_under_temperature_configuration_seen_{ false };
 	pace_bms::PaceBmsNumberImplementation* environment_under_temperature_alarm_number_{ nullptr };
 	pace_bms::PaceBmsNumberImplementation* environment_under_temperature_protection_number_{ nullptr };

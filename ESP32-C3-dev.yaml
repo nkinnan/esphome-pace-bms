@@ -29,9 +29,9 @@ esp32:
 logger:
   hardware_uart: USB_CDC 
   #level: INFO
-  #level: DEBUG
+  level: DEBUG
   #level: VERBOSE
-  level: VERY_VERBOSE
+  #level: VERY_VERBOSE
 
 ##### Enable Home Assistant API
 ####api:
@@ -93,7 +93,7 @@ pace_bms:
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
-  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  request_throttle: 1000ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
   response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
 
   chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
@@ -101,7 +101,7 @@ pace_bms:
   analog_cell_count_override: 16 # only needed if your BMS lies about how many cells it has in it's responses
   analog_temperature_count_override: 6 # needed for my EG4 LIFEPOWER4 battery, it lies about how many temperatures it has in it's responses
   status_cell_count_override: 16 # only needed if your BMS lies about how many cells it has in it's responses
-  status_temperature_count_override: 6 # needed for my EG4 LIFEPOWER4 battery, it lies about how many temperatures it has in it's responses
+  # status_temperature_count_override: 6 # needed for my EG4 LIFEPOWER4 battery, it lies about how many temperatures it has in it's responses
   v20_skip_ud2: true # needed for my EG4 LIFEPOWER4 battery, it violates spec 
   v20_skip_soc: true # seems to be supported on seplos only
   v20_skip_dc: true # seems to be supported on seplos only

@@ -4,7 +4,7 @@
 #include <windows.h>
 #include <iostream>
 #include <sstream>
-#include "..\..\components\pace_bms\pace_bms_v25.h"
+#include "..\..\components\pace_bms\pace_bms_protocol_v25.h"
 
 
 std::ostringstream error;
@@ -52,7 +52,7 @@ void VeryVerboseLogFunc(std::string message)
 
 void BasicTests()
 {
-	PaceBmsV25* paceBms = new PaceBmsV25(PaceBmsV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
+	PaceBmsProtocolV25* paceBms = new PaceBmsProtocolV25(PaceBmsProtocolV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 	std::vector<uint8_t> buffer;
 	bool res;
 
@@ -87,13 +87,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	int exlen = (int)strlen((char*)PaceBmsV25::exampleReadAnalogInformationRequestV25);
+	int exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadAnalogInformationRequestV25);
 	paceBms->CreateReadAnalogInformationRequest(1, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadAnalogInformationRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadAnalogInformationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadAnalogInformationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadAnalogInformationRequest created a different request than the known good example" << std::endl;
 	}
@@ -109,13 +109,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadAnalogInformationResponseV25);
-	PaceBmsV25::AnalogInformation analogInfo;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadAnalogInformationResponseV25);
+	PaceBmsProtocolV25::AnalogInformation analogInfo;
 	res = paceBms->ProcessReadAnalogInformationResponse(
 		1,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadAnalogInformationResponseV25,
-			PaceBmsV25::exampleReadAnalogInformationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadAnalogInformationResponseV25,
+			PaceBmsProtocolV25::exampleReadAnalogInformationResponseV25 + exlen),
 		analogInfo);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -201,13 +201,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadStatusInformationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadStatusInformationRequestV25);
 	paceBms->CreateReadStatusInformationRequest(1, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadStatusInformationRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadStatusInformationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadStatusInformationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadStatusInformationRequest created a different request than the known good example" << std::endl;
 	}
@@ -223,13 +223,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadStatusInformationResponseV25);
-	PaceBmsV25::StatusInformation statusInformation;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadStatusInformationResponseV25);
+	PaceBmsProtocolV25::StatusInformation statusInformation;
 	res = paceBms->ProcessReadStatusInformationResponse(
 		1,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadStatusInformationResponseV25,
-			PaceBmsV25::exampleReadStatusInformationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadStatusInformationResponseV25,
+			PaceBmsProtocolV25::exampleReadStatusInformationResponseV25 + exlen),
 		statusInformation);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -261,13 +261,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadHardwareVersionRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadHardwareVersionRequestV25);
 	paceBms->CreateReadHardwareVersionRequest(1, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadHardwareVersionRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadHardwareVersionRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadHardwareVersionRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadHardwareVersionRequest created a different request than the known good example" << std::endl;
 	}
@@ -283,13 +283,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadHardwareVersionResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadHardwareVersionResponseV25);
 	std::string versionText;
 	res = paceBms->ProcessReadHardwareVersionResponse(
 		1,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadHardwareVersionResponseV25,
-			PaceBmsV25::exampleReadHardwareVersionResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadHardwareVersionResponseV25,
+			PaceBmsProtocolV25::exampleReadHardwareVersionResponseV25 + exlen),
 		versionText);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -321,13 +321,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSerialNumberRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSerialNumberRequestV25);
 	paceBms->CreateReadSerialNumberRequest(1, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadSerialNumberRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadSerialNumberRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadSerialNumberRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadSerialNumberRequest created a different request than the known good example" << std::endl;
 	}
@@ -343,13 +343,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSerialNumberResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSerialNumberResponseV25);
 	std::string serialText;
 	res = paceBms->ProcessReadSerialNumberResponse(
 		1,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadSerialNumberResponseV25,
-			PaceBmsV25::exampleReadSerialNumberResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadSerialNumberResponseV25,
+			PaceBmsProtocolV25::exampleReadSerialNumberResponseV25 + exlen),
 		serialText);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -393,16 +393,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	PaceBmsV25::SwitchCommand command = PaceBmsV25::SC_DisableBuzzer;
+	PaceBmsProtocolV25::SwitchCommand command = PaceBmsProtocolV25::SC_DisableBuzzer;
 	std::string commandAsText = "SC_DisableBuzzer";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -418,13 +418,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteDisableBuzzerSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -445,16 +445,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_EnableBuzzer;
+	command = PaceBmsProtocolV25::SC_EnableBuzzer;
 	commandAsText = "SC_EnableBuzzer";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -470,13 +470,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteEnableBuzzerSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -508,16 +508,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_DisableLedWarning;
+	command = PaceBmsProtocolV25::SC_DisableLedWarning;
 	commandAsText = "SC_DisableLedWarning";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -533,13 +533,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteDisableLedWarningSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -560,16 +560,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_EnableLedWarning;
+	command = PaceBmsProtocolV25::SC_EnableLedWarning;
 	commandAsText = "SC_EnableLedWarning";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -585,13 +585,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteEnableLedWarningSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -623,16 +623,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_DisableChargeCurrentLimiter;
+	command = PaceBmsProtocolV25::SC_DisableChargeCurrentLimiter;
 	commandAsText = "SC_DisableChargeCurrentLimiter";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -648,13 +648,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -675,16 +675,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_EnableChargeCurrentLimiter;
+	command = PaceBmsProtocolV25::SC_EnableChargeCurrentLimiter;
 	commandAsText = "SC_EnableChargeCurrentLimiter";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -700,13 +700,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -739,16 +739,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear;
+	command = PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear;
 	commandAsText = "SC_SetChargeCurrentLimiterCurrentLimitHighGear";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -764,13 +764,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -791,16 +791,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	command = PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear;
+	command = PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear;
 	commandAsText = "SC_SetChargeCurrentLimiterCurrentLimitLowGear";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25);
 	paceBms->CreateWriteSwitchCommandRequest(0, command, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSwitchCommandRequest (" + commandAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -816,13 +816,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteSwitchCommandResponse(
 		0,
 		command,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSwitchCommandResponse (" + commandAsText + ") logged something above verbose" << std::endl;
@@ -854,18 +854,18 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	PaceBmsV25::MosfetType type = PaceBmsV25::MT_Charge;
+	PaceBmsProtocolV25::MosfetType type = PaceBmsProtocolV25::MT_Charge;
 	std::string typeAsText = "MT_Charge";
-	PaceBmsV25::MosfetState state = PaceBmsV25::MS_Open;
+	PaceBmsProtocolV25::MosfetState state = PaceBmsProtocolV25::MS_Open;
 	std::string stateAsText = "MS_Open";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetChargeOpenSwitchCommandRequestV25);
 	paceBms->CreateWriteMosfetSwitchCommandRequest(0, type, state, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteMosfetChargeOpenSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -881,14 +881,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
 		0,
 		type,
 		state,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteMosfetChargeOpenSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteMosfetSwitchCommandResponse (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
@@ -909,18 +909,18 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	type = PaceBmsV25::MT_Charge;
+	type = PaceBmsProtocolV25::MT_Charge;
 	typeAsText = "MT_Charge";
-	state = PaceBmsV25::MS_Close;
+	state = PaceBmsProtocolV25::MS_Close;
 	stateAsText = "MS_Close";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetChargeCloseSwitchCommandRequestV25);
 	paceBms->CreateWriteMosfetSwitchCommandRequest(0, type, state, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteMosfetChargeCloseSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -936,14 +936,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
 		0,
 		type,
 		state,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteMosfetChargeCloseSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteMosfetSwitchCommandResponse (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
@@ -975,18 +975,18 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	type = PaceBmsV25::MT_Discharge;
+	type = PaceBmsProtocolV25::MT_Discharge;
 	typeAsText = "MT_Charge";
-	state = PaceBmsV25::MS_Open;
+	state = PaceBmsProtocolV25::MS_Open;
 	stateAsText = "MS_Open";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25);
 	paceBms->CreateWriteMosfetSwitchCommandRequest(0, type, state, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteMosfetDischargeOpenSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -1002,14 +1002,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
 		0,
 		type,
 		state,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteMosfetDischargeOpenSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteMosfetSwitchCommandResponse (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
@@ -1030,18 +1030,18 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	type = PaceBmsV25::MT_Discharge;
+	type = PaceBmsProtocolV25::MT_Discharge;
 	typeAsText = "MT_Charge";
-	state = PaceBmsV25::MS_Close;
+	state = PaceBmsProtocolV25::MS_Close;
 	stateAsText = "MS_Close";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25);
 	paceBms->CreateWriteMosfetSwitchCommandRequest(0, type, state, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteMosfetDischargeCloseSwitchCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteMosfetSwitchCommandRequest (" + typeAsText + "/" + stateAsText + ") created a different request than the known good example" << std::endl;
 	}
@@ -1057,14 +1057,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25);
 	res = paceBms->ProcessWriteMosfetSwitchCommandResponse(
 		0,
 		type,
 		state,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25,
-			PaceBmsV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteMosfetDischargeCloseSwitchCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteMosfetSwitchCommandResponse (" + typeAsText + "/" + stateAsText + ") logged something above verbose" << std::endl;
@@ -1091,13 +1091,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteRebootCommandRequestV25);
 	paceBms->CreateWriteShutdownCommandRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteRebootCommandRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteRebootCommandRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteRebootCommandRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteRebootCommandRequest created a different request than the known good example" << std::endl;
 	}
@@ -1113,12 +1113,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteRebootCommandResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteRebootCommandResponseV25);
 	res = paceBms->ProcessWriteShutdownCommandResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteRebootCommandResponseV25,
-			PaceBmsV25::exampleWriteRebootCommandResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteRebootCommandResponseV25,
+			PaceBmsProtocolV25::exampleWriteRebootCommandResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteRebootCommandResponse logged something above verbose" << std::endl;
@@ -1195,13 +1195,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSystemTimeRequestV25);
 	paceBms->CreateReadSystemDateTimeRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadSystemTimeRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadSystemTimeRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadSystemTimeRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadSystemTimeRequest created a different request than the known good example" << std::endl;
 	}
@@ -1217,13 +1217,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSystemTimeResponseV25);
-	PaceBmsV25::DateTime dateTime;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSystemTimeResponseV25);
+	PaceBmsProtocolV25::DateTime dateTime;
 	res = paceBms->ProcessReadSystemDateTimeResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadSystemTimeResponseV25,
-			PaceBmsV25::exampleReadSystemTimeResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadSystemTimeResponseV25,
+			PaceBmsProtocolV25::exampleReadSystemTimeResponseV25 + exlen),
 		dateTime);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1251,7 +1251,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSystemTimeRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSystemTimeRequestV25);
 	dateTime.Year = 2024;
 	dateTime.Month = 8;
 	dateTime.Day = 20;
@@ -1263,7 +1263,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteSystemTimeRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteSystemTimeRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteSystemTimeRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteSystemTimeRequest created a different request than the known good example" << std::endl;
 	}
@@ -1279,12 +1279,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSystemTimeResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSystemTimeResponseV25);
 	res = paceBms->ProcessWriteSystemDateTimeResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteSystemTimeResponseV25,
-			PaceBmsV25::exampleWriteSystemTimeResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteSystemTimeResponseV25,
+			PaceBmsProtocolV25::exampleWriteSystemTimeResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteSystemTimeResponse logged something above verbose" << std::endl;
@@ -1352,16 +1352,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	PaceBmsV25::ReadConfigurationType configType = PaceBmsV25::RC_CellOverVoltage;
+	PaceBmsProtocolV25::ReadConfigurationType configType = PaceBmsProtocolV25::RC_CellOverVoltage;
 	std::string configTypeString = "RC_CellOverVoltage";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellOverVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadCellOverVoltageConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1377,13 +1377,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellOverVoltageConfigurationResponseV25);
-	PaceBmsV25::CellOverVoltageConfiguration cellOverVoltageConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationResponseV25);
+	PaceBmsProtocolV25::CellOverVoltageConfiguration cellOverVoltageConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadCellOverVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleReadCellOverVoltageConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationResponseV25 + exlen),
 		cellOverVoltageConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1412,13 +1412,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationRequestV25);
 	cellOverVoltageConfig.AlarmMillivolts = 3600;
 	cellOverVoltageConfig.ProtectionMillivolts = 3700;
 	cellOverVoltageConfig.ProtectionReleaseMillivolts = 3380;
 	cellOverVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, cellOverVoltageConfig, buffer);
-	std::string fixed_exampleWriteCellOverVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25, PaceBmsV25::exampleWriteCellOverVoltageConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWriteCellOverVoltageConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationRequestV25, PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWriteCellOverVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -1444,12 +1444,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellOverVoltageConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteCellOverVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleWriteCellOverVoltageConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1482,16 +1482,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_PackOverVoltage;
+	configType = PaceBmsProtocolV25::RC_PackOverVoltage;
 	configTypeString = "RC_PackOverVoltage";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackOverVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadPackOverVoltageConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1507,13 +1507,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackOverVoltageConfigurationResponseV25);
-	PaceBmsV25::PackOverVoltageConfiguration packOverVoltageConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationResponseV25);
+	PaceBmsProtocolV25::PackOverVoltageConfiguration packOverVoltageConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadPackOverVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleReadPackOverVoltageConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationResponseV25 + exlen),
 		packOverVoltageConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1542,13 +1542,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25);
 	packOverVoltageConfig.AlarmMillivolts = 57610;
 	packOverVoltageConfig.ProtectionMillivolts = 59200;
 	packOverVoltageConfig.ProtectionReleaseMillivolts = 54000;
 	packOverVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, packOverVoltageConfig, buffer);
-	std::string fixed_exampleWritePackOverVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25, PaceBmsV25::exampleWritePackOverVoltageConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWritePackOverVoltageConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25, PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWritePackOverVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -1575,12 +1575,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackOverVoltageConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWritePackOverVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleWritePackOverVoltageConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1613,16 +1613,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_CellUnderVoltage;
+	configType = PaceBmsProtocolV25::RC_CellUnderVoltage;
 	configTypeString = "RC_CellUnderVoltage";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellUnderVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadCellUnderVoltageConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1638,13 +1638,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellUnderVoltageConfigurationResponseV25);
-	PaceBmsV25::CellUnderVoltageConfiguration cellUnderVoltageConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationResponseV25);
+	PaceBmsProtocolV25::CellUnderVoltageConfiguration cellUnderVoltageConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadCellUnderVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleReadCellUnderVoltageConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationResponseV25 + exlen),
 		cellUnderVoltageConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1673,13 +1673,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationRequestV25);
 	cellUnderVoltageConfig.AlarmMillivolts = 2800;
 	cellUnderVoltageConfig.ProtectionMillivolts = 2500;
 	cellUnderVoltageConfig.ProtectionReleaseMillivolts = 2900;
 	cellUnderVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, cellUnderVoltageConfig, buffer);
-	std::string fixed_exampleWriteCellUnderVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25, PaceBmsV25::exampleWriteCellUnderVoltageConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWriteCellUnderVoltageConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationRequestV25, PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWriteCellUnderVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -1705,12 +1705,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellUnderVoltageConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteCellUnderVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleWriteCellUnderVoltageConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1743,16 +1743,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_PackUnderVoltage;
+	configType = PaceBmsProtocolV25::RC_PackUnderVoltage;
 	configTypeString = "RC_PackUnderVoltage";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackUnderVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadPackUnderVoltageConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1768,13 +1768,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadPackUnderVoltageConfigurationResponseV25);
-	PaceBmsV25::PackUnderVoltageConfiguration packUnderVoltageConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationResponseV25);
+	PaceBmsProtocolV25::PackUnderVoltageConfiguration packUnderVoltageConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadPackUnderVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleReadPackUnderVoltageConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationResponseV25 + exlen),
 		packUnderVoltageConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1803,13 +1803,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationRequestV25);
 	packUnderVoltageConfig.AlarmMillivolts = 44800;
 	packUnderVoltageConfig.ProtectionMillivolts = 40000;
 	packUnderVoltageConfig.ProtectionReleaseMillivolts = 46400;
 	packUnderVoltageConfig.ProtectionDelayMilliseconds = 1000;
 	paceBms->CreateWriteConfigurationRequest(0, packUnderVoltageConfig, buffer);
-	std::string fixed_exampleWritePackUnderVoltageConfigurationRequestV25 = std::string(PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25, PaceBmsV25::exampleWritePackUnderVoltageConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWritePackUnderVoltageConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationRequestV25, PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWritePackUnderVoltageConfigurationRequestV25[9] = '0';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -1835,12 +1835,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWritePackUnderVoltageConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWritePackUnderVoltageConfigurationResponseV25,
-			PaceBmsV25::exampleWritePackUnderVoltageConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1875,16 +1875,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_ChargeOverCurrent;
+	configType = PaceBmsProtocolV25::RC_ChargeOverCurrent;
 	configTypeString = "RC_ChargeOverCurrent";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeOverCurrentConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadChargeOverCurrentConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1900,13 +1900,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeOverCurrentConfigurationResponseV25);
-	PaceBmsV25::ChargeOverCurrentConfiguration chargeOverCurrentConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationResponseV25);
+	PaceBmsProtocolV25::ChargeOverCurrentConfiguration chargeOverCurrentConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadChargeOverCurrentConfigurationResponseV25,
-			PaceBmsV25::exampleReadChargeOverCurrentConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationResponseV25 + exlen),
 		chargeOverCurrentConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -1934,7 +1934,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeOverCurrentConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationRequestV25);
 	chargeOverCurrentConfig.AlarmAmperage = 104;
 	chargeOverCurrentConfig.ProtectionAmperage = 110;
 	chargeOverCurrentConfig.ProtectionDelayMilliseconds = 1000;
@@ -1943,7 +1943,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteChargeOverCurrentConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -1959,12 +1959,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeOverCurrentConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteChargeOverCurrentConfigurationResponseV25,
-			PaceBmsV25::exampleWriteChargeOverCurrentConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -1997,16 +1997,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_DischargeOverCurrent1;
+	configType = PaceBmsProtocolV25::RC_DischargeOverCurrent1;
 	configTypeString = "RC_DischargeSlowOverCurrent";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2022,13 +2022,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25);
-	PaceBmsV25::DischargeOverCurrent1Configuration dischargeSlowOverCurrentConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25);
+	PaceBmsProtocolV25::DischargeOverCurrent1Configuration dischargeSlowOverCurrentConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25,
-			PaceBmsV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25 + exlen),
 		dischargeSlowOverCurrentConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2056,7 +2056,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25);
 	dischargeSlowOverCurrentConfig.AlarmAmperage = 105;
 	dischargeSlowOverCurrentConfig.ProtectionAmperage = 110;
 	dischargeSlowOverCurrentConfig.ProtectionDelayMilliseconds = 1000;
@@ -2065,7 +2065,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2081,12 +2081,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25,
-			PaceBmsV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2117,16 +2117,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_DischargeOverCurrent2;
+	configType = PaceBmsProtocolV25::RC_DischargeOverCurrent2;
 	configTypeString = "RC_DischargeFastOverCurrent";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2142,13 +2142,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25);
-	PaceBmsV25::DischargeOverCurrent2Configuration dischargeFastOverCurrentConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25);
+	PaceBmsProtocolV25::DischargeOverCurrent2Configuration dischargeFastOverCurrentConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25,
-			PaceBmsV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25 + exlen),
 		dischargeFastOverCurrentConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2175,7 +2175,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25);
 	dischargeFastOverCurrentConfig.ProtectionAmperage = 150;
 	dischargeFastOverCurrentConfig.ProtectionDelayMilliseconds = 100;
 	paceBms->CreateWriteConfigurationRequest(0, dischargeFastOverCurrentConfig, buffer);
@@ -2183,7 +2183,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2199,12 +2199,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25,
-			PaceBmsV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2233,16 +2233,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_ShortCircuitProtection;
+	configType = PaceBmsProtocolV25::RC_ShortCircuitProtection;
 	configTypeString = "RC_ShortCircuitProtection";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadShortCircuitProtectionConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadShortCircuitProtectionConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2258,13 +2258,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadShortCircuitProtectionConfigurationResponseV25);
-	PaceBmsV25::ShortCircuitProtectionConfiguration shortCircuitProtectionConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationResponseV25);
+	PaceBmsProtocolV25::ShortCircuitProtectionConfiguration shortCircuitProtectionConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadShortCircuitProtectionConfigurationResponseV25,
-			PaceBmsV25::exampleReadShortCircuitProtectionConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationResponseV25 + exlen),
 		shortCircuitProtectionConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2290,14 +2290,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationRequestV25);
 	shortCircuitProtectionConfig.ProtectionDelayMicroseconds = 300;
 	paceBms->CreateWriteConfigurationRequest(0, shortCircuitProtectionConfig, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2313,12 +2313,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationResponseV25,
-			PaceBmsV25::exampleWriteShortCircuitProtectionConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2349,16 +2349,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_CellBalancing;
+	configType = PaceBmsProtocolV25::RC_CellBalancing;
 	configTypeString = "RC_CellBalancing";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellBalancingConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellBalancingConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadCellBalancingConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadCellBalancingConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2374,13 +2374,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadCellBalancingConfigurationResponseV25);
-	PaceBmsV25::CellBalancingConfiguration cellBalancingConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadCellBalancingConfigurationResponseV25);
+	PaceBmsProtocolV25::CellBalancingConfiguration cellBalancingConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadCellBalancingConfigurationResponseV25,
-			PaceBmsV25::exampleReadCellBalancingConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadCellBalancingConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadCellBalancingConfigurationResponseV25 + exlen),
 		cellBalancingConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2407,7 +2407,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellBalancingConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationRequestV25);
 	cellBalancingConfig.ThresholdMillivolts = 3400;
 	cellBalancingConfig.DeltaCellMillivolts = 30;
 	paceBms->CreateWriteConfigurationRequest(0, cellBalancingConfig, buffer);
@@ -2415,7 +2415,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteCellBalancingConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2431,12 +2431,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteCellBalancingConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteCellBalancingConfigurationResponseV25,
-			PaceBmsV25::exampleWriteCellBalancingConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2466,16 +2466,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_Sleep;
+	configType = PaceBmsProtocolV25::RC_Sleep;
 	configTypeString = "RC_Sleep";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSleepConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSleepConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadSleepConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadSleepConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2491,13 +2491,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadSleepConfigurationResponseV25);
-	PaceBmsV25::SleepConfiguration sleepConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadSleepConfigurationResponseV25);
+	PaceBmsProtocolV25::SleepConfiguration sleepConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadSleepConfigurationResponseV25,
-			PaceBmsV25::exampleReadSleepConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadSleepConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadSleepConfigurationResponseV25 + exlen),
 		sleepConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2524,7 +2524,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSleepConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSleepConfigurationRequestV25);
 	sleepConfig.CellMillivolts = 3100;
 	sleepConfig.DelayMinutes = 5;
 	paceBms->CreateWriteConfigurationRequest(0, sleepConfig, buffer);
@@ -2532,7 +2532,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteSleepConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteSleepConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2548,12 +2548,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteSleepConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteSleepConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteSleepConfigurationResponseV25,
-			PaceBmsV25::exampleWriteSleepConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteSleepConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteSleepConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2584,16 +2584,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_FullChargeLowCharge;
+	configType = PaceBmsProtocolV25::RC_FullChargeLowCharge;
 	configTypeString = "RC_FullChargeLowCharge";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadFullChargeLowChargeConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadFullChargeLowChargeConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2609,13 +2609,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadFullChargeLowChargeConfigurationResponseV25);
-	PaceBmsV25::FullChargeLowChargeConfiguration fullChargeLowChargeConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationResponseV25);
+	PaceBmsProtocolV25::FullChargeLowChargeConfiguration fullChargeLowChargeConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadFullChargeLowChargeConfigurationResponseV25,
-			PaceBmsV25::exampleReadFullChargeLowChargeConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationResponseV25 + exlen),
 		fullChargeLowChargeConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2643,7 +2643,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationRequestV25);
 	fullChargeLowChargeConfig.FullChargeMillivolts = 56000;
 	fullChargeLowChargeConfig.FullChargeMilliamps = 2000;
 	fullChargeLowChargeConfig.LowChargeAlarmPercent = 5;
@@ -2652,7 +2652,7 @@ void BasicTests()
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2668,12 +2668,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationResponseV25,
-			PaceBmsV25::exampleWriteFullChargeLowChargeConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2707,16 +2707,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_ChargeAndDischargeOverTemperature;
+	configType = PaceBmsProtocolV25::RC_ChargeAndDischargeOverTemperature;
 	configTypeString = "RC_ChargeAndDischargeOverTemperature";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2732,13 +2732,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25);
-	PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration chargeAndDischargeOverTemperatureConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25);
+	PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration chargeAndDischargeOverTemperatureConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25,
-			PaceBmsV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25 + exlen),
 		chargeAndDischargeOverTemperatureConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2769,7 +2769,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25);
 	chargeAndDischargeOverTemperatureConfig.ChargeAlarm = 51;
 	chargeAndDischargeOverTemperatureConfig.ChargeProtection = 55;
 	chargeAndDischargeOverTemperatureConfig.ChargeProtectionRelease = 50;
@@ -2777,7 +2777,7 @@ void BasicTests()
 	chargeAndDischargeOverTemperatureConfig.DischargeProtection = 60;
 	chargeAndDischargeOverTemperatureConfig.DischargeProtectionRelease = 55;
 	paceBms->CreateWriteConfigurationRequest(0, chargeAndDischargeOverTemperatureConfig, buffer);
-	std::string fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25, PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25, PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[9] = '6';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -2802,12 +2802,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25,
-			PaceBmsV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2841,16 +2841,16 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	configType = PaceBmsV25::RC_ChargeAndDischargeUnderTemperature;
+	configType = PaceBmsProtocolV25::RC_ChargeAndDischargeUnderTemperature;
 	configTypeString = "RC_ChargeAndDischargeUnderTemperature";
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25);
 	paceBms->CreateReadConfigurationRequest(0, configType, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadConfigurationRequest (" + configTypeString + ") created a different request than the known good example" << std::endl;
 	}
@@ -2866,13 +2866,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25);
-	PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration chargeAndDischargeUnderTemperatureConfig;
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25);
+	PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration chargeAndDischargeUnderTemperatureConfig;
 	res = paceBms->ProcessReadConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25,
-			PaceBmsV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25 + exlen),
 		chargeAndDischargeUnderTemperatureConfig);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -2903,7 +2903,7 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25);
 	chargeAndDischargeUnderTemperatureConfig.ChargeAlarm = 0;
 	chargeAndDischargeUnderTemperatureConfig.ChargeProtection = -5;
 	chargeAndDischargeUnderTemperatureConfig.ChargeProtectionRelease = 0;
@@ -2911,7 +2911,7 @@ void BasicTests()
 	chargeAndDischargeUnderTemperatureConfig.DischargeProtection = -20;
 	chargeAndDischargeUnderTemperatureConfig.DischargeProtectionRelease = -15;
 	paceBms->CreateWriteConfigurationRequest(0, chargeAndDischargeUnderTemperatureConfig, buffer);
-	std::string fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 = std::string(PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25, PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 + exlen);
+	std::string fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 = std::string(PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25, PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25 + exlen);
 	//// "on the wire" the length checksum is calculated incorrectly, fix it so it matches what our (correct) code generates
 	//fixed_exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[9] = '6';
 	// "on the wire" the frame checksum is calculated incorrectly as a knock-on effect of the length checksum being wrong, fix it so it matches what our (correct) code generates
@@ -2936,12 +2936,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25);
 	res = paceBms->ProcessWriteConfigurationResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25,
-			PaceBmsV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25,
+			PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteConfigurationResponse (" + configTypeString + ") logged something above verbose" << std::endl;
@@ -2998,13 +2998,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25);
 	paceBms->CreateReadChargeCurrentLimiterStartCurrentRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadChargeCurrentLimiterStartCurrentRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadChargeCurrentLimiterStartCurrentRequest created a different request than the known good example" << std::endl;
 	}
@@ -3020,13 +3020,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25);
 	uint8_t current;
 	res = paceBms->ProcessReadChargeCurrentLimiterStartCurrentResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25,
-			PaceBmsV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25,
+			PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25 + exlen),
 		current);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
@@ -3052,14 +3052,14 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25);
 	current = 100;
 	paceBms->CreateWriteChargeCurrentLimiterStartCurrentRequest(0, current, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateWriteChargeCurrentLimiterStartCurrentRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateWriteChargeCurrentLimiterStartCurrentRequest created a different request than the known good example" << std::endl;
 	}
@@ -3075,12 +3075,12 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25);
 	res = paceBms->ProcessWriteChargeCurrentLimiterStartCurrentResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25,
-			PaceBmsV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25 + exlen));
+			PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25,
+			PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25 + exlen));
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: ProcessWriteChargeCurrentLimiterStartCurrentResponse logged something above verbose" << std::endl;
@@ -3114,13 +3114,13 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadRemainingCapacityRequestV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadRemainingCapacityRequestV25);
 	paceBms->CreateReadRemainingCapacityRequest(0, buffer);
 	if (error.str().length() != 0 || warning.str().length() != 0 || info.str().length() != 0)
 	{
 		std::cout << "FAIL: CreateReadRemainingCapacityRequest logged something above verbose" << std::endl;
 	}
-	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsV25::exampleReadRemainingCapacityRequestV25, exlen))
+	else if (buffer.size() != exlen || 0 != memcmp(buffer.data(), PaceBmsProtocolV25::exampleReadRemainingCapacityRequestV25, exlen))
 	{
 		std::cout << "FAIL: CreateReadRemainingCapacityRequest created a different request than the known good example" << std::endl;
 	}
@@ -3136,15 +3136,15 @@ void BasicTests()
 	verbose.str("");
 	veryVerbose.str("");
 
-	exlen = (int)strlen((char*)PaceBmsV25::exampleReadRemainingCapacityResponseV25);
+	exlen = (int)strlen((char*)PaceBmsProtocolV25::exampleReadRemainingCapacityResponseV25);
 	uint32_t remaining;
 	uint32_t actual;
 	uint32_t design;
 	res = paceBms->ProcessReadRemainingCapacityResponse(
 		0,
 		std::vector<uint8_t>(
-			PaceBmsV25::exampleReadRemainingCapacityResponseV25,
-			PaceBmsV25::exampleReadRemainingCapacityResponseV25 + exlen),
+			PaceBmsProtocolV25::exampleReadRemainingCapacityResponseV25,
+			PaceBmsProtocolV25::exampleReadRemainingCapacityResponseV25 + exlen),
 		remaining,
 		actual,
 		design);
@@ -3229,7 +3229,7 @@ void ComPortTests(int portNum, int rs485_address)
 	SetCommMask(serialHandle, EV_RXCHAR);
 
 
-	PaceBmsV25* paceBms = new PaceBmsV25(PaceBmsV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
+	PaceBmsProtocolV25* paceBms = new PaceBmsProtocolV25(PaceBmsProtocolV25::CID1_LithiumIron, &ErrorLogFunc, &WarningLogFunc, &InfoLogFunc, &DebugLogFunc, &VerboseLogFunc, &VeryVerboseLogFunc);
 
 	/*
 	ZeroMemory(buffer, bufferLen);
@@ -3451,9 +3451,9 @@ void ComPortTests(int portNum, int rs485_address)
 			std::string test_response("~25004600A006131400FD11\r");
 
 			std::vector<uint8_t> vec(test_response.c_str(), test_response.c_str() + test_response.length());
-			uint16_t cs = PaceBmsV25::CalculateRequestOrResponseChecksum(vec);
+			uint16_t cs = PaceBmsProtocolV25::CalculateRequestOrResponseChecksum(vec);
 			uint16_t offset = 19;
-			PaceBmsV25::WriteHexEncodedUShort(vec, offset, cs);
+			PaceBmsProtocolV25::WriteHexEncodedUShort(vec, offset, cs);
 			test_response = std::string(vec.data(), vec.data() + test_response.length());
 
 			printf("write: %s\n", test_response.c_str());

@@ -11,18 +11,18 @@ static const char* const TAG = "pace_bms.sensor";
 void PaceBmsSensor::setup() {
 	if (this->parent_->get_protocol_version() == 0x25) {
 		if (request_analog_info_callback_ == true) {
-			this->parent_->register_analog_information_callback_v25([this](PaceBmsV25::AnalogInformation& analog_information) { this->analog_information_callback_v25(analog_information); });
+			this->parent_->register_analog_information_callback_v25([this](PaceBmsProtocolV25::AnalogInformation& analog_information) { this->analog_information_callback_v25(analog_information); });
 		}
 		if (request_status_info_callback_ == true) {
-			this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
+			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
 		}
 	}
 	if (this->parent_->get_protocol_version() == 0x20) {
 		if (request_analog_info_callback_ == true) {
-			this->parent_->register_analog_information_callback_v20([this](PaceBmsV20::AnalogInformation& analog_information) { this->analog_information_callback_v20(analog_information); });
+			this->parent_->register_analog_information_callback_v20([this](PaceBmsProtocolV20::AnalogInformation& analog_information) { this->analog_information_callback_v20(analog_information); });
 		}
 		if (request_status_info_callback_ == true) {
-			this->parent_->register_status_information_callback_v20([this](PaceBmsV20::StatusInformation& status_information) { this->status_information_callback_v20(status_information); });
+			this->parent_->register_status_information_callback_v20([this](PaceBmsProtocolV20::StatusInformation& status_information) { this->status_information_callback_v20(status_information); });
 		}
 	}
 	else {
@@ -73,7 +73,7 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Status 5 Value", this->status_value5_sensor_);
 }
 
-void PaceBmsSensor::analog_information_callback_v25(PaceBmsV25::AnalogInformation& analog_information) {
+void PaceBmsSensor::analog_information_callback_v25(PaceBmsProtocolV25::AnalogInformation& analog_information) {
 	if (this->cell_count_sensor_ != nullptr) {
 		this->cell_count_sensor_->publish_state(analog_information.cellCount);
 	}
@@ -131,7 +131,7 @@ void PaceBmsSensor::analog_information_callback_v25(PaceBmsV25::AnalogInformatio
 	}
 }
 
-void PaceBmsSensor::status_information_callback_v25(PaceBmsV25::StatusInformation& status_information) {
+void PaceBmsSensor::status_information_callback_v25(PaceBmsProtocolV25::StatusInformation& status_information) {
 	for (int i = 0; i < 16; i++) {
 		if (this->warning_status_value_cells_sensor_[i] != nullptr) {
 			this->warning_status_value_cells_sensor_[i]->publish_state(status_information.warning_value_cell[i]);
@@ -177,7 +177,7 @@ void PaceBmsSensor::status_information_callback_v25(PaceBmsV25::StatusInformatio
 	}
 }
 
-void PaceBmsSensor::analog_information_callback_v20(PaceBmsV20::AnalogInformation& analog_information) {
+void PaceBmsSensor::analog_information_callback_v20(PaceBmsProtocolV20::AnalogInformation& analog_information) {
 	if (this->cell_count_sensor_ != nullptr) {
 		this->cell_count_sensor_->publish_state(analog_information.cellCount);
 	}
@@ -235,7 +235,7 @@ void PaceBmsSensor::analog_information_callback_v20(PaceBmsV20::AnalogInformatio
 	}
 }
 
-void PaceBmsSensor::status_information_callback_v20(PaceBmsV20::StatusInformation& status_information) {
+void PaceBmsSensor::status_information_callback_v20(PaceBmsProtocolV20::StatusInformation& status_information) {
 	for (int i = 0; i < 16; i++) {
 		if (this->warning_status_value_cells_sensor_[i] != nullptr) {
 			this->warning_status_value_cells_sensor_[i]->publish_state(status_information.warning_value_cell[i]);

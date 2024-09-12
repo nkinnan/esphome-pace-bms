@@ -16,7 +16,7 @@ public:
 
 	void add_on_control_callback(std::function<void(const datetime::DateTimeCall&)>&& callback);
 
-	void set_datetime(PaceBmsV25::DateTime& dt);
+	void set_datetime(PaceBmsProtocolV25::DateTime& dt);
 
 protected:
 	void control(const datetime::DateTimeCall& call) override;

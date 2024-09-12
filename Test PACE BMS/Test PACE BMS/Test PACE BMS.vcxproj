@@ -145,10 +145,12 @@
     <ClCompile Include="..\..\components\pace_bms\number\pace_bms_number_implementation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\components\pace_bms\pace_bms.cpp">
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_component.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
-    <ClCompile Include="..\..\components\pace_bms\pace_bms_v20.cpp" />
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_base.cpp" />
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_v20.cpp" />
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_v25.cpp" />
     <ClCompile Include="..\..\components\pace_bms\select\pace_bms_select.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
@@ -168,7 +170,6 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="Test PACE BMS.cpp" />
-    <ClCompile Include="..\..\components\pace_bms\pace_bms_v25.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\components\pace_bms\button\pace_bms_button.h">
@@ -189,11 +190,12 @@
     <ClInclude Include="..\..\components\pace_bms\number\pace_bms_number_implementation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_component.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>
-    <ClInclude Include="..\..\components\pace_bms\pace_bms_v20.h" />
-    <ClInclude Include="..\..\components\pace_bms\pace_bms_v25.h" />
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_base.h" />
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_v20.h" />
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_v25.h" />
     <ClInclude Include="..\..\components\pace_bms\select\pace_bms_select.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </ClInclude>

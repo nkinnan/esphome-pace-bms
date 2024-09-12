@@ -17,7 +17,7 @@ void PaceBmsNumber::setup() {
 			this->cell_over_voltage_protection_number_ != nullptr ||
 			this->cell_over_voltage_protection_release_number_ != nullptr ||
 			this->cell_over_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_cell_over_voltage_configuration_callback_v25([this](PaceBmsV25::CellOverVoltageConfiguration& configuration) {
+			this->parent_->register_cell_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellOverVoltageConfiguration& configuration) {
 				this->cell_over_voltage_configuration_ = configuration;
 				this->cell_over_voltage_configuration_seen_ = true;
 				if (this->cell_over_voltage_alarm_number_ != nullptr) {
@@ -91,7 +91,7 @@ void PaceBmsNumber::setup() {
 			this->pack_over_voltage_protection_number_ != nullptr ||
 			this->pack_over_voltage_protection_release_number_ != nullptr ||
 			this->pack_over_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_pack_over_voltage_configuration_callback_v25([this](PaceBmsV25::PackOverVoltageConfiguration& configuration) {
+			this->parent_->register_pack_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackOverVoltageConfiguration& configuration) {
 				this->pack_over_voltage_configuration_ = configuration;
 				this->pack_over_voltage_configuration_seen_ = true;
 				if (this->pack_over_voltage_alarm_number_ != nullptr) {
@@ -165,7 +165,7 @@ void PaceBmsNumber::setup() {
 			this->cell_under_voltage_protection_number_ != nullptr ||
 			this->cell_under_voltage_protection_release_number_ != nullptr ||
 			this->cell_under_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_cell_under_voltage_configuration_callback_v25([this](PaceBmsV25::CellUnderVoltageConfiguration& configuration) {
+			this->parent_->register_cell_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellUnderVoltageConfiguration& configuration) {
 				this->cell_under_voltage_configuration_ = configuration;
 				this->cell_under_voltage_configuration_seen_ = true;
 				if (this->cell_under_voltage_alarm_number_ != nullptr) {
@@ -239,7 +239,7 @@ void PaceBmsNumber::setup() {
 			this->pack_under_voltage_protection_number_ != nullptr ||
 			this->pack_under_voltage_protection_release_number_ != nullptr ||
 			this->pack_under_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_pack_under_voltage_configuration_callback_v25([this](PaceBmsV25::PackUnderVoltageConfiguration& configuration) {
+			this->parent_->register_pack_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackUnderVoltageConfiguration& configuration) {
 				this->pack_under_voltage_configuration_ = configuration;
 				this->pack_under_voltage_configuration_seen_ = true;
 				if (this->pack_under_voltage_alarm_number_ != nullptr) {
@@ -312,7 +312,7 @@ void PaceBmsNumber::setup() {
 		if (this->charge_over_current_alarm_number_ != nullptr ||
 			this->charge_over_current_protection_number_ != nullptr ||
 			this->charge_over_current_protection_delay_number_ != nullptr) {
-			this->parent_->register_charge_over_current_configuration_callback_v25([this](PaceBmsV25::ChargeOverCurrentConfiguration& configuration) {
+			this->parent_->register_charge_over_current_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeOverCurrentConfiguration& configuration) {
 				this->charge_over_current_configuration_ = configuration;
 				this->charge_over_current_configuration_seen_ = true;
 				if (this->charge_over_current_alarm_number_ != nullptr) {
@@ -369,7 +369,7 @@ void PaceBmsNumber::setup() {
 		if (this->discharge_over_current1_alarm_number_ != nullptr ||
 			this->discharge_over_current1_protection_number_ != nullptr ||
 			this->discharge_over_current1_protection_delay_number_ != nullptr) {
-			this->parent_->register_discharge_over_current1_configuration_callback_v25([this](PaceBmsV25::DischargeOverCurrent1Configuration& configuration) {
+			this->parent_->register_discharge_over_current1_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent1Configuration& configuration) {
 				this->discharge_over_current1_configuration_ = configuration;
 				this->discharge_over_current1_configuration_seen_ = true;
 				if (this->discharge_over_current1_alarm_number_ != nullptr) {
@@ -425,7 +425,7 @@ void PaceBmsNumber::setup() {
 
 		if (this->discharge_over_current2_protection_number_ != nullptr ||
 			this->discharge_over_current2_protection_delay_number_ != nullptr) {
-			this->parent_->register_discharge_over_current2_configuration_callback_v25([this](PaceBmsV25::DischargeOverCurrent2Configuration& configuration) {
+			this->parent_->register_discharge_over_current2_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent2Configuration& configuration) {
 				this->discharge_over_current2_configuration_ = configuration;
 				this->discharge_over_current2_configuration_seen_ = true;
 				if (this->discharge_over_current2_protection_number_ != nullptr) {
@@ -464,7 +464,7 @@ void PaceBmsNumber::setup() {
 		}
 
 		if (this->short_circuit_protection_delay_number_ != nullptr) {
-			this->parent_->register_short_circuit_protection_configuration_callback_v25([this](PaceBmsV25::ShortCircuitProtectionConfiguration& configuration) {
+			this->parent_->register_short_circuit_protection_configuration_callback_v25([this](PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& configuration) {
 
 				this->short_circuit_protection_configuration_ = configuration;
 				this->short_circuit_protection_configuration_seen_ = true;
@@ -489,7 +489,7 @@ void PaceBmsNumber::setup() {
 
 		if (this->cell_balancing_threshold_number_ != nullptr ||
 			this->cell_balancing_delta_number_ != nullptr) {
-			this->parent_->register_cell_balancing_configuration_callback_v25([this](PaceBmsV25::CellBalancingConfiguration& configuration) {
+			this->parent_->register_cell_balancing_configuration_callback_v25([this](PaceBmsProtocolV25::CellBalancingConfiguration& configuration) {
 
 				this->cell_balancing_configuration_ = configuration;
 				this->cell_balancing_configuration_seen_ = true;
@@ -530,7 +530,7 @@ void PaceBmsNumber::setup() {
 
 		if (this->sleep_cell_voltage_number_ != nullptr ||
 			this->sleep_delay_number_ != nullptr) {
-			this->parent_->register_sleep_configuration_callback_v25([this](PaceBmsV25::SleepConfiguration& configuration) {
+			this->parent_->register_sleep_configuration_callback_v25([this](PaceBmsProtocolV25::SleepConfiguration& configuration) {
 				this->sleep_configuration_ = configuration;
 				this->sleep_configuration_seen_ = true;
 				if (this->sleep_cell_voltage_number_ != nullptr) {
@@ -571,7 +571,7 @@ void PaceBmsNumber::setup() {
 		if (this->full_charge_voltage_number_ != nullptr ||
 			this->full_charge_amps_number_ != nullptr ||
 			this->low_charge_alarm_percent_number_ != nullptr) {
-			this->parent_->register_full_charge_low_charge_configuration_callback_v25([this](PaceBmsV25::FullChargeLowChargeConfiguration& configuration) {
+			this->parent_->register_full_charge_low_charge_configuration_callback_v25([this](PaceBmsProtocolV25::FullChargeLowChargeConfiguration& configuration) {
 				this->full_charge_low_charge_configuration_ = configuration;
 				this->full_charge_low_charge_configuration_seen_ = true;
 				if (this->full_charge_voltage_number_ != nullptr) {
@@ -631,7 +631,7 @@ void PaceBmsNumber::setup() {
 			this->discharge_over_temperature_alarm_number_ != nullptr ||
 			this->discharge_over_temperature_protection_number_ != nullptr ||
 			this->discharge_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_charge_and_discharge_over_temperature_configuration_callback_v25([this](PaceBmsV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
+			this->parent_->register_charge_and_discharge_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
 				this->charge_and_discharge_over_temperature_configuration_ = configuration;
 				this->charge_and_discharge_over_temperature_configuration_seen_ = true;
 				if (this->charge_over_temperature_alarm_number_ != nullptr) {
@@ -739,7 +739,7 @@ void PaceBmsNumber::setup() {
 			this->discharge_under_temperature_alarm_number_ != nullptr ||
 			this->discharge_under_temperature_protection_number_ != nullptr ||
 			this->discharge_under_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_charge_and_discharge_under_temperature_configuration_callback_v25([this](PaceBmsV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
+			this->parent_->register_charge_and_discharge_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
 				this->charge_and_discharge_under_temperature_configuration_ = configuration;
 				this->charge_and_discharge_under_temperature_configuration_seen_ = true;
 				if (this->charge_under_temperature_alarm_number_ != nullptr) {
@@ -844,7 +844,7 @@ void PaceBmsNumber::setup() {
 		if (this->mosfet_over_temperature_alarm_number_ != nullptr ||
 			this->mosfet_over_temperature_protection_number_ != nullptr ||
 			this->mosfet_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_mosfet_over_temperature_configuration_callback_v25([this](PaceBmsV25::MosfetOverTemperatureConfiguration& configuration) {
+			this->parent_->register_mosfet_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& configuration) {
 				this->mosfet_over_temperature_configuration_ = configuration;
 				this->mosfet_over_temperature_configuration_seen_ = true;
 				if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
@@ -904,7 +904,7 @@ void PaceBmsNumber::setup() {
 			this->environment_over_temperature_alarm_number_ != nullptr ||
 			this->environment_over_temperature_protection_number_ != nullptr ||
 			this->environment_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_environment_over_under_temperature_configuration_callback_v25([this](PaceBmsV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
+			this->parent_->register_environment_over_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
 				this->environment_over_under_temperature_configuration_ = configuration;
 				this->environment_over_under_temperature_configuration_seen_ = true;
 				if (this->environment_under_temperature_alarm_number_ != nullptr) {

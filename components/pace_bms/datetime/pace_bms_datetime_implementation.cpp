@@ -10,7 +10,7 @@ void PaceBmsDatetimeImplementation::add_on_control_callback(std::function<void(c
 	this->control_callbacks_.add(std::move(callback));
 }
 
-void PaceBmsDatetimeImplementation::set_datetime(PaceBmsV25::DateTime& dt) {
+void PaceBmsDatetimeImplementation::set_datetime(PaceBmsProtocolV25::DateTime& dt) {
 	this->year_ = dt.Year;
 	this->month_ = dt.Month;
 	this->day_ = dt.Day;

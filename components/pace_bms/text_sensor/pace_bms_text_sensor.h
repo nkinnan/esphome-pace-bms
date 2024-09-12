@@ -1,11 +1,9 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/pace_bms/pace_bms.h"
 #include "esphome/components/text_sensor/text_sensor.h"
 
-#include "../pace_bms_v25.h"
-#include "../pace_bms_v20.h"
+#include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
 namespace pace_bms {

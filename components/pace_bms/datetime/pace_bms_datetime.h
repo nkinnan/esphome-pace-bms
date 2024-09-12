@@ -22,7 +22,7 @@ public:
 protected:
 	pace_bms::PaceBms* parent_;
 
-	PaceBmsV25::DateTime system_date_and_time_;
+	PaceBmsProtocolV25::DateTime system_date_and_time_;
 	bool system_date_and_time_seen_{ false };
 	pace_bms::PaceBmsDatetimeImplementation* system_date_and_time_datetime_{ nullptr };
 };

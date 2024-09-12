@@ -11,13 +11,13 @@ static const char* const TAG = "pace_bms.select";
 void PaceBmsSelect::setup() {
 	if (this->parent_->get_protocol_version() == 0x25) {
 		if (this->charge_current_limiter_gear_select_ != nullptr) {
-			this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) {
+			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) {
 				if (this->charge_current_limiter_gear_select_ != nullptr) {
 					std::string state = this->charge_current_limiter_gear_select_->option_from_value(
 						// values stored in init.py but we get them back from the hardware as a status flag rather than a value so have to map here unfortunately
-						(status_information.configuration_value & PaceBmsV25::CF_ChargeCurrentLimiterLowGearSetBit ?
-							PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear :
-							PaceBmsV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear));
+						(status_information.configuration_value & PaceBmsProtocolV25::CF_ChargeCurrentLimiterLowGearSetBit ?
+							PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear :
+							PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear));
 					ESP_LOGV(TAG, "'charge_current_limiter_gear': Publishing state due to update from the hardware: %s", state.c_str());
 					this->charge_current_limiter_gear_select_->publish_state(state);
 				}
@@ -26,14 +26,14 @@ void PaceBmsSelect::setup() {
 		if (this->charge_current_limiter_gear_select_ != nullptr) {
 			this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 				ESP_LOGD(TAG, "Setting Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
-				this->parent_->set_switch_state_v25((PaceBmsV25::SwitchCommand)value);
+				this->parent_->set_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
 			});
 		}
 
 		if (this->protocol_can_select_ != nullptr ||
 			this->protocol_rs485_select_ != nullptr ||
 			this->protocol_type_select_ != nullptr) {
-			this->parent_->register_protocols_callback_v25([this](PaceBmsV25::Protocols& protocols) {
+			this->parent_->register_protocols_callback_v25([this](PaceBmsProtocolV25::Protocols& protocols) {
 				this->protocols_ = protocols;
 				this->protocols_seen_ = true;
 
@@ -61,7 +61,7 @@ void PaceBmsSelect::setup() {
 					return;
 				}
 				ESP_LOGD(TAG, "Setting protocol CAN user selected value '%s' = %02X", text.c_str(), value);
-				protocols_.CAN = (PaceBmsV25::ProtocolList_CAN)value;
+				protocols_.CAN = (PaceBmsProtocolV25::ProtocolList_CAN)value;
 				this->parent_->set_protocols_v25(protocols_);
 			});
 		}
@@ -72,7 +72,7 @@ void PaceBmsSelect::setup() {
 					return;
 				}
 				ESP_LOGD(TAG, "Setting protocol RS485 user selected value '%s' = %02X", text.c_str(), value);
-				protocols_.RS485 = (PaceBmsV25::ProtocolList_RS485)value;
+				protocols_.RS485 = (PaceBmsProtocolV25::ProtocolList_RS485)value;
 				this->parent_->set_protocols_v25(protocols_);
 			});
 		}
@@ -83,7 +83,7 @@ void PaceBmsSelect::setup() {
 					return;
 				}
 				ESP_LOGD(TAG, "Setting protocol Type user selected value '%s' = %02X", text.c_str(), value);
-				protocols_.Type = (PaceBmsV25::ProtocolList_Type)value;
+				protocols_.Type = (PaceBmsProtocolV25::ProtocolList_Type)value;
 				this->parent_->set_protocols_v25(protocols_);
 			});
 		}

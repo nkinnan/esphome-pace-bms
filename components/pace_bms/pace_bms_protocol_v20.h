@@ -1,13 +1,6 @@
 #pragma once
 
-#include <string>
-#include <vector>
-
-// uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
-//#include <optional>
-//using namespace std;
-#include "esphome/core/optional.h"
-using namespace esphome;
+#include "pace_bms_protocol_base.h"
 
 /*
 General format of requests/responses:
@@ -28,191 +21,124 @@ offset LENID+13, 2 bytes,  HexASCII, "FD2E": CHKSUM       - checksum
 offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '\r'
 */
 
-class PaceBmsV25
+class PaceBmsProtocolV20 : public PaceBmsProtocolBase
 {
 public:
 	enum CID1 : uint8_t
 	{
-		CID1_LithiumIron = 0x46,
-		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
+		CID1_LithiumIronEG4 = 0x4A, // undocumented value used by EG4 for lithium iron
+		CID1_LithiumIron = 0x46, // documented as lithium iron
 	};
 
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
 	// takes pointers to the "real" logging functions
-	PaceBmsV25(
-		CID1 batteryChemistry, 
+	PaceBmsProtocolV20(
+		optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
+		bool skip_address_payload, 
 		optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
-		uint32_t design_capacity_mah_override_,
+		bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv, 
+		uint32_t design_capacity_mah_override,
 		optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
-private:
-	// battery chemistry
-	CID1 cid1;
-
+protected:
 	// config overrides for weird protocol abnormalities
-	optional<uint8_t> analog_cell_count_override;
-	optional<uint8_t> analog_temperature_count_override;
-	optional<uint8_t> status_cell_count_override;
-	optional<uint8_t> status_temperature_count_override;
+	bool skip_address_payload;
 
-	uint32_t design_capacity_mah_override;
-
-	// dependency injection
-	LogFuncPtr LogErrorPtr;
-	LogFuncPtr LogWarningPtr;
-	LogFuncPtr LogInfoPtr;
-	LogFuncPtr LogDebugPtr;
-	LogFuncPtr LogVerbosePtr;
-	LogFuncPtr LogVeryVerbosePtr;
-
-	void LogError(std::string message);
-	void LogWarning(std::string message);
-	void LogInfo(std::string message);
-	void LogDebug(std::string message);
-	void LogVerbose(std::string message);
-	void LogVeryVerbose(std::string message);
+	bool skip_ud2;
+	bool skip_soc;
+	bool skip_dc;
+	bool skip_soh;
+	bool skip_pv;
 
 	enum CID2 : uint8_t
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
-		CID2_ReadAnalogInformation                                = 0x42,
-		CID2_ReadStatusInformation                                = 0x44,
-		CID2_ReadHardwareVersion                                  = 0xC1,
-		CID2_ReadSerialNumber                                     = 0xC2,
+		CID2_ReadAnalogInformation = 0x42,
+		CID2_ReadStatusInformation = 0x44,
+		//CID2_ReadHardwareVersion = 0xC1,
+		//CID2_ReadSerialNumber = 0xC2,
 
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are in the "Switch Control" section
-		CID2_WriteSwitchCommand                                   = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
-		CID2_WriteChargeMosfetSwitchCommand                       = 0x9A,
-		CID2_WriteDischargeMosfetSwitchCommand                    = 0x9B,
-		CID2_WriteShutdownCommand                                 = 0x9C,
+		//CID2_WriteSwitchCommand = 0x99, // depending on payload, encompases "Sound Alarm", "LED Alarm", "Charge Limiter", and "Charge Limiter Gear" (which is actually on the "System Configuration" page but logically is grouped with these and uses the same CID2)
+		//CID2_WriteChargeMosfetSwitchCommand = 0x9A,
+		//CID2_WriteDischargeMosfetSwitchCommand = 0x9B,
+		//CID2_WriteShutdownCommand = 0x9C,
 
 		// "Memory Information" tab of PBmsTools 2.4
-		CID2_ReadDateTime                                         = 0xB1,
-		CID2_WriteDateTime                                        = 0xB2,
+		//CID2_ReadDateTime = 0xB1,
+		//CID2_WriteDateTime = 0xB2,
 
 		// "Parameter Setting" tab of PBmsTools 2.4
-		CID2_ReadCellOverVoltageConfiguration                     = 0xD1,
-		CID2_WriteCellOverVoltageConfiguration                    = 0xD0,
-		CID2_ReadPackOverVoltageConfiguration                     = 0xD5,
-		CID2_WritePackOverVoltageConfiguration                    = 0xD4,
-		CID2_ReadCellUnderVoltageConfiguration                    = 0xD3,
-		CID2_WriteCellUnderVoltageConfiguration                   = 0xD2,
-		CID2_ReadPackUnderVoltageConfiguration                    = 0xD7,
-		CID2_WritePackUnderVoltageConfiguration                   = 0xD6,
-		CID2_ReadChargeOverCurrentConfiguration                   = 0xD9,
-		CID2_WriteChargeOverCurrentConfiguration                  = 0xD8,
-		CID2_ReadDischargeSlowOverCurrentConfiguration            = 0xDB,
-		CID2_WriteDischargeSlowOverCurrentConfiguration           = 0xDA,
-		CID2_ReadDischargeFastOverCurrentConfiguration            = 0xE3,
-		CID2_WriteDischargeFastOverCurrentConfiguration           = 0xE2,
-		CID2_ReadShortCircuitProtectionConfiguration              = 0xE5,
-		CID2_WriteShortCircuitProtectionConfiguration             = 0xE4,
-		CID2_ReadCellBalancingConfiguration                       = 0xB6,
-		CID2_WriteCellBalancingConfiguration                      = 0xB5,
-		CID2_ReadSleepConfiguration                               = 0xA0,
-		CID2_WriteSleepConfiguration                              = 0xA8,
-		CID2_ReadFullChargeLowChargeConfiguration                 = 0xAF,
-		CID2_WriteFullChargeLowChargeConfiguration                = 0xAE,
-		CID2_ReadChargeAndDischargeOverTemperatureConfiguration   = 0xDD,
-		CID2_WriteChargeAndDischargeOverTemperatureConfiguration  = 0xDC,
-		CID2_ReadChargeAndDischargeUnderTemperatureConfiguration  = 0xDF,
-		CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
-		CID2_ReadMosfetOverTemperatureConfiguration               = 0xE1,
-		CID2_WriteMosfetOverTemperatureConfiguration              = 0xE0,
-		CID2_ReadEnvironmentOverUnderTemperatureConfiguration     = 0xE7,
-		CID2_WriteEnvironmentOverUnderTemperatureConfiguration    = 0xE6,
+		//CID2_ReadCellOverVoltageConfiguration = 0xD1,
+		//CID2_WriteCellOverVoltageConfiguration = 0xD0,
+		//CID2_ReadPackOverVoltageConfiguration = 0xD5,
+		//CID2_WritePackOverVoltageConfiguration = 0xD4,
+		//CID2_ReadCellUnderVoltageConfiguration = 0xD3,
+		//CID2_WriteCellUnderVoltageConfiguration = 0xD2,
+		//CID2_ReadPackUnderVoltageConfiguration = 0xD7,
+		//CID2_WritePackUnderVoltageConfiguration = 0xD6,
+		//CID2_ReadChargeOverCurrentConfiguration = 0xD9,
+		//CID2_WriteChargeOverCurrentConfiguration = 0xD8,
+		//CID2_ReadDischargeSlowOverCurrentConfiguration = 0xDB,
+		//CID2_WriteDischargeSlowOverCurrentConfiguration = 0xDA,
+		//CID2_ReadDischargeFastOverCurrentConfiguration = 0xE3,
+		//CID2_WriteDischargeFastOverCurrentConfiguration = 0xE2,
+		//CID2_ReadShortCircuitProtectionConfiguration = 0xE5,
+		//CID2_WriteShortCircuitProtectionConfiguration = 0xE4,
+		//CID2_ReadCellBalancingConfiguration = 0xB6,
+		//CID2_WriteCellBalancingConfiguration = 0xB5,
+		//CID2_ReadSleepConfiguration = 0xA0,
+		//CID2_WriteSleepConfiguration = 0xA8,
+		//CID2_ReadFullChargeLowChargeConfiguration = 0xAF,
+		//CID2_WriteFullChargeLowChargeConfiguration = 0xAE,
+		//CID2_ReadChargeAndDischargeOverTemperatureConfiguration = 0xDD,
+		//CID2_WriteChargeAndDischargeOverTemperatureConfiguration = 0xDC,
+		//CID2_ReadChargeAndDischargeUnderTemperatureConfiguration = 0xDF,
+		//CID2_WriteChargeAndDischargeUnderTemperatureConfiguration = 0xDE,
+		//CID2_ReadMosfetOverTemperatureConfiguration = 0xE1,
+		//CID2_WriteMosfetOverTemperatureConfiguration = 0xE0,
+		//CID2_ReadEnvironmentOverUnderTemperatureConfiguration = 0xE7,
+		//CID2_WriteEnvironmentOverUnderTemperatureConfiguration = 0xE6,
 
 		// "System Configuration" tab of PBmsTools 2.4
-		CID2_ReadChargeCurrentLimiterStartCurrent                 = 0xED,
-		CID2_WriteChargeCurrentLimiterStartCurrent                = 0xEE,
-		CID2_ReadRemainingCapacity                                = 0xA6,
+		//CID2_ReadChargeCurrentLimiterStartCurrent = 0xED,
+		//CID2_WriteChargeCurrentLimiterStartCurrent = 0xEE,
+		//CID2_ReadRemainingCapacity = 0xA6,
 
-		CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
+		//CID2_WriteOlderVersionOfSetCommunicationProtocol = 0x99,
 
-		CID2_ReadCommunicationsProtocols                          = 0xEB,
-		CID2_WriteCommunicationsProtocols                         = 0xEC,
+		//CID2_ReadCommunicationsProtocols = 0xEB,
+		//CID2_WriteCommunicationsProtocols = 0xEC,
 	};
-
-	static std::string FormatReturnCode(const uint8_t returnCode);
-
-	// Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
-	static uint16_t CreateChecksummedLength(const uint16_t cklen);
-
-	// Checks if the checksum nibble in a "checksummed length" is valid
-	static bool ValidateChecksummedLength(const uint16_t cklen);
-
-	// Length is just the lower 12 bits of the checksummed length 
-	static uint16_t LengthFromChecksummedLength(const uint16_t cklen);
-
-	// Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
-	static uint16_t CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data);
-
-	// helper for WriteHexEncoded----
-	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	static uint8_t NibbleToHex(const uint8_t nibbleByte);
-
-	// helper for ReadHexEncoded----
-	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	static uint8_t HexToNibble(const uint8_t hex);
-
-	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	static uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
-
-	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	static uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
-
-	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	static int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
-
-	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-	static void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
-
-	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-	static void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
-
-	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-	static void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
-
-	// create a standard request to the given busId for the given CID2, filling in the payload (if given)
-	void CreateRequest(const uint8_t busId, const CID2 cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
-
-	// validate all fields in the response except the payload data: SOI marker, header values, checksum, EOI marker
-	// returns the detected payload length (payload always starts at offset 13), or -1 for error
-	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, const std::vector<uint8_t> response);
 
 public:
 
-// ============================================================================
-// 
-// Main "Realtime Monitoring" tab of PBmsTools 2.4
-// These are the commands sent in a loop to fill out the display
-// 
-// ============================================================================
-
 	// ==== Read Analog Information
+	// x unknown value, this might be "up to 16 packs supported"
 	// 0 Responding Bus Id
 	// 1 Cell Count (this example has 16 cells)
-	// 2 Cell Voltage (repeated Cell Count times) - stored as v * 1000, so 56 is 56000
-	// 3 Temperature Count (this example has 6 temperatures)
+	// 2 Cell Voltage (repeated Cell Count times) - stored as v * 1000, so 3.365 is 3365
+	// 3 Temperature Count (this example has 6 temperatures but IS LYING and reports only 4)
 	// 4 Temperature (repeated Temperature Count times) - stored as (value * 10) + 2730, to decode (value - 2730) / 10.0 = value
 	// 5 Current - stored as value * 100
-	// 6 Total Voltage - stored as value * 1000
+	// 6 Total Voltage - stored as value * 100
 	// 7 Remaining Capacity - stored as value * 100
-	// 8 [Constant] = 03
 	// 9 Full Capacity - stored as value * 100
 	// 0 Cycle Count
-	// 1 Design Capacity - stored as value * 100
-	// req:   ~25014642E00201FD30.
-	// resp:  ~25014600F07A0001100CC70CC80CC70CC70CC70CC50CC60CC70CC70CC60CC70CC60CC60CC70CC60CC7060B9B0B990B990B990BB30BBCFF1FCCCD12D303286A008C2710E1E4.
-	//                     00001122222222222222222222222222222222222222222222222222222222222222223344444444444444444444444455556666777788999900001111
+	// x the rest of this payload is unknown, it's not documented
+	// ------1 Design Capacity - stored as value * 100
+	// req:   ~20014A420000FDA2.
+	// resp:  ~20014A00A0CA1001100D2F0D2C0D2C0D2D0D2D0D2F0D2F0D2F0D2C0D2D0D2D0D2F0D300D2C0D300D2C040B9B0BA50B9B0B9B0BB90BAF029D151521A9268400540F005700620D300D2C00040BA50B9B000ADAC0000A54550005D473000570A600000680000004CA56897E24D1A5.
+	//                     xx001122222222222222222222222222222222222222222222222222222222222222223344444444444444444444444455556666777799990000
+	//        
 
-	static const uint8_t exampleReadAnalogInformationRequestV25[];
-	static const uint8_t exampleReadAnalogInformationResponseV25[];
+	static const uint8_t exampleReadAnalogInformationRequestV20[];
+	static const uint8_t exampleReadAnalogInformationResponseV20[];
 
 	static const uint8_t MAX_CELL_COUNT = 16;
 	static const uint8_t MAX_TEMP_COUNT = 6;
@@ -228,9 +154,10 @@ public:
 		uint32_t fullCapacityMilliampHours;
 		uint16_t cycleCount;
 		uint32_t designCapacityMilliampHours;
+		float    SoH;
+		uint16_t portVoltage; // not sure what this represents, seems to be seplos only
 		// calculated
 		float    SoC; // in percent
-		float    SoH; // in percent
 		float    powerWatts;
 		uint16_t minCellVoltageMillivolts;
 		uint16_t maxCellVoltageMillivolts;
@@ -242,29 +169,26 @@ public:
 	bool ProcessReadAnalogInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation);
 
 	// ==== Read Status Information
+	// x unknown value, this might be "up to 16 packs supported"
 	// 0 Responding Bus Id
 	// 1 Cell Count (this example has 16 cells)
 	// 2 Cell Warning (repeated Cell Count times) see: DecodeWarningValue / enum WarningValue
-	// 3 Temperature Count (this example has 6 temperatures)
+	// 3 Temperature Count (this example has 6 temperatures but IS LYING and reports only 4)
 	// 4 Temperature Warning (repeated Temperature Count times) see: DecodeWarningValue / enum WarningValue
 	// 5 Charge Current Warning see: DecodeWarningValue / enum WarningValue
 	// 6 Total Voltage Warning see: DecodeWarningValue / enum WarningValue
 	// 7 Discharge Current Warning see: DecodeWarningValue / enum WarningValue
-	// 8 Protection Status 1 see: DecodeProtectionStatus1Value / enum ProtectionStatus1Flags
-	// 9 Protection Status 2 see: DecodeProtectionStatus2Value / enum ProtectionStatus2Flags
-	// 0 System Status see: DecodeSystemStatusValue
-	// 1 Configuration Status see: DecodeConfigurationStatusValue
-	// 2 Fault Status see: DecodeFaultStatusValue
-	// 3 Balance Status (high byte) set bits indicate those cells are balancing
-	// 4 Balance Status (low byte) set bits indicate those cells are balancing
-	// 5 Warning Status 1 see: DecodeWarningStatus1Value
-	// 6 Warning Status 2 see: DecodeWarningStatus2Value
-	// req:   ~25014644E00201FD2E.
-	// resp:  ~25014600004C000110000000000000000000000000000000000600000000000000000000000E000000000000EF3A.
-	//                     0000112222222222222222222222222222222233444444444444556677889900112233445566
+	// 8 Status 1 see: enum Status1
+	// 9 Status 2 see: enum Status2
+	// 0 Status 3 see: enum Status3
+	// 1 Status 4 see: enum Status4
+	// 2 Status 5 see: enum Status5
+	// req:   ~20014A440000FDA0.
+	// resp:  ~20014A007054100110000000000000000000000000000000000400000000000000000900000000000003020000000000EDC3.
+	//                     xx001122222222222222222222222222222222334444444444445566778899001122
 
-	static const uint8_t exampleReadStatusInformationRequestV25[];
-	static const uint8_t exampleReadStatusInformationResponseV25[];
+	static const uint8_t exampleReadStatusInformationRequestV20[];
+	static const uint8_t exampleReadStatusInformationResponseV20[];
 
 	// possible values in:
 	//     StatusInformation.warning_value_cell[index]
@@ -274,109 +198,72 @@ public:
 	//     StatusInformation.warning_value_discharge_current
 	enum StatusInformation_WarningValues
 	{
+		WV_Normal = 0,
 		WV_BelowLowerLimitValue = 1,
 		WV_AboveUpperLimitValue = 2,
-		WV_UserDefinedFaultRangeStartValue = 0x80,
-		WV_UserDefinedFaultRangeEndValue = 0xEF,
 		WV_OtherFaultValue = 0xF0,
 	};
 
-	// possible flags set in:
-	//     StatusInformation.protection_value1
-	enum StatusInformation_Protection1Flags
+	enum StatusInformation_Status1
 	{
-		P1F_UndefinedProtect1Bit = (1 << 7),
-		P1F_ShortCircuitProtect1Bit = (1 << 6),
-		P1F_DischargeCurrentProtect1Bit = (1 << 5),
-		P1F_ChargeCurrentProtect1Bit = (1 << 4),
-		P1F_LowTotalVoltageProtect1Bit = (1 << 3),
-		P1F_HighTotalVoltageProtect1Bit = (1 << 2),
-		P1F_LowCellVoltageProtect1Bit = (1 << 1),
-		P1F_HighCellVoltageProtect1Bit = (1 << 0),
+		S1_PackUnderVoltage = (1 << 7),
+		S1_ChargeTemperatureProtection = (1 << 6),
+		S1_DischargeTemperatureProtection = (1 << 5),
+		S1_DischargeOverCurrent = (1 << 4),
+		S1_UndefinedStatus1Bit4 = (1 << 3),
+		S1_ChargeOverCurrent = (1 << 2),
+		S1_CellUnderVoltage = (1 << 1),
+		S1_PackOverVoltage = (1 << 0),
 	};
 
-	// possible flags set in:
-	//     StatusInformation.protection_value2
-	enum StatusInformation_Protection2Flags
+	enum StatusInformation_Status2
 	{
-		P2F_FullyProtect2Bit = (1 << 7),
-		P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
-		P2F_HighEnvironmentalTemperatureProtect2Bit = (1 << 5),
-		P2F_HighMosfetTemperatureProtect2Bit = (1 << 4),
-		P2F_LowDischargeTemperatureProtect2Bit = (1 << 3),
-		P2F_LowChargeTemperatureProtect2Bit = (1 << 2),
-		P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
-		P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
+		S2_UndefinedStatus2Bit8 = (1 << 7),
+		S2_UndefinedStatus2Bit7 = (1 << 6),
+		S2_UndefinedStatus2Bit6 = (1 << 5),
+		S2_UndefinedStatus2Bit5 = (1 << 4),
+		S2_UsingBatteryPower = (1 << 3),
+		S2_DischargeMosfetOn = (1 << 2),
+		S2_ChargeMosfetOn = (1 << 1),
+		S2_PrechargeMosfetOn = (1 << 0),
 	};
 
-	// possible flags set in:
-	//     StatusInformation.system_value
-	enum StatusInformation_SystemFlags
+	enum StatusInformation_Status3
 	{
-		SF_HeartIndicatorBit = (1 << 7),
-		SF_UndefinedStatusBit7 = (1 << 6),
-		SF_ChargingBit = (1 << 5),
-		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
-		SF_DischargingBit = (1 << 3),
-		SF_DischargeMosfetOnBit = (1 << 2),
-		SF_ChargeMosfetOnBit = (1 << 1),
-		SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
+		S3_Charging = (1 << 7),
+		S3_Discharging = (1 << 6),
+		S3_HeaterOn = (1 << 5),
+		S3_UndefinedStatus3Bit5 = (1 << 4),
+		S3_FullyCharged = (1 << 3),
+		S3_UndefinedStatus3Bit3 = (1 << 2),
+		S3_UndefinedStatus3Bit2 = (1 << 1),
+		S3_Buzzer = (1 << 0),
 	};
 
-	// possible flags set in:
-	//     StatusInformation.configuration_value
-	enum StatusInformation_ConfigurationFlags
+	// voltage > 4.2 or < 1.0
+	enum StatusInformation_Status4
 	{
-		CF_UndefinedConfigurationStatusBit8 = (1 << 7),
-		CF_UndefinedConfigurationStatusBit7 = (1 << 6),
-		CF_LedAlarmEnabledBit = (1 << 5),
-		CF_ChargeCurrentLimiterEnabledBit = (1 << 4),
-		CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3),
-		CF_DischargeMosfetTurnedOff = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
-		CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
-		CF_BuzzerAlarmEnabledBit = (1 << 0),
+		S4_Cell08Fault = (1 << 7),
+		S4_Cell07Fault = (1 << 6),
+		S4_Cell06Fault = (1 << 5),
+		S4_Cell05Fault = (1 << 4),
+		S4_Cell04Fault = (1 << 3),
+		S4_Cell03Fault = (1 << 2),
+		S4_Cell02Fault = (1 << 1),
+		S4_Cell01Fault = (1 << 0),
 	};
 
-	// possible flags set in:
-	//     StatusInformation.fault_value
-	enum StatusInformation_FaultFlags
+	// voltage > 4.2 or < 1.0
+	enum StatusInformation_Status5
 	{
-		FF_UndefinedFaultStatusBit8 = (1 << 7),
-		FF_UndefinedFaultStatusBit7 = (1 << 6),
-		FF_SampleBit = (1 << 5),
-		FF_CellBit = (1 << 4),
-		FF_UndefinedFaultStatusBit4 = (1 << 3),
-		FF_NTCBit = (1 << 2),
-		FF_DischargeMosfetBit = (1 << 1),
-		FF_ChargeMosfetBit = (1 << 0),
-	};
-
-	// possible flags set in:
-	//     StatusInformation.warning_value1
-	enum StatusInformation_Warning1Flags
-	{
-		W1F_UndefinedWarning1Bit8 = (1 << 7),
-		W1F_UndefinedWarning1Bit7 = (1 << 6),
-		W1F_DischargeCurrentBit = (1 << 5),
-		W1F_ChargeCurrentBit = (1 << 4),
-		W1F_LowTotalVoltageBit = (1 << 3),
-		W1F_HighTotalVoltageBit = (1 << 2),
-		W1F_LowCellVoltageBit = (1 << 1),
-		W1F_HighCellVoltageBit = (1 << 0),
-	};
-
-	// possible flags set in:
-	//     StatusInformation.warning_value2
-	enum StatusInformation_Warning2Flags
-	{
-		W2F_LowPower = (1 << 7),
-		W2F_HighMosfetTemperature = (1 << 6),
-		W2F_LowEnvironmentalTemperature = (1 << 5),
-		W2F_HighEnvironmentalTemperature = (1 << 4),
-		W2F_LowDischargeTemperature = (1 << 3),
-		W2F_LowChargeTemperature = (1 << 2),
-		W2F_HighDischargeTemperature = (1 << 1),
-		W2F_HighChargeTemperature = (1 << 0),
+		S5_Cell16Fault = (1 << 7),
+		S5_Cell15Fault = (1 << 6),
+		S5_Cell14Fault = (1 << 5),
+		S5_Cell13Fault = (1 << 4),
+		S5_Cell12Fault = (1 << 3),
+		S5_Cell11Fault = (1 << 2),
+		S5_Cell10Fault = (1 << 1),
+		S5_Cell09Fault = (1 << 0),
 	};
 
 	struct StatusInformation
@@ -387,59 +274,54 @@ public:
 		uint8_t     warning_value_charge_current;       // DecodeWarningValue / enum StatusInformation_WarningValues
 		uint8_t     warning_value_total_voltage;        // DecodeWarningValue / enum StatusInformation_WarningValues
 		uint8_t     warning_value_discharge_current;    // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value1;                     // DecodeWarningStatus1Value / enum StatusInformation_Warning1Flags
-		uint8_t     warning_value2;                     // DecodeWarningStatus2Value / enum StatusInformation_Warning2Flags
-		std::string balancingText;
-		uint16_t    balancing_value;                    // one bit per cell, lowest bit = cell 1
+
+		uint8_t     status1_value;
+		uint8_t     status2_value;
+		uint8_t     status3_value;
+		uint8_t     status4_value;
+		uint8_t     status5_value;
+
+		//std::string balancingText;
 		std::string systemText;
-		uint8_t     system_value;                       // DecodeStatusValue / enum StatusInformation_SystemFlags
 		std::string configurationText;
-		uint8_t     configuration_value;                // DecodeConfigurationStatusValue / enum StatusInformation_ConfigurationFlags
 		std::string protectionText;
-		uint8_t     protection_value1;                  // DecodeProtectionStatus1Value / enum StatusInformation_Protection1Flags
-		uint8_t     protection_value2;                  // DecodeProtectionStatus2Value / enum StatusInformation_Protection2Flags
 		std::string faultText;
-		uint8_t     fault_value;                        // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
 	};
 
 	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
 
-private:
+protected:
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningValue(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeProtectionStatus1Value(const uint8_t val);
+	const std::string DecodeStatus1Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeProtectionStatus2Value(const uint8_t val);
+	const std::string DecodeStatus2Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeStatusValue(const uint8_t val);
+	const std::string DecodeStatus3Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeConfigurationStatusValue(const uint8_t val);
+	const std::string DecodeStatus4Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeFaultStatusValue(const uint8_t val);
-
-	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningStatus1Value(const uint8_t val);
-
-	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningStatus2Value(const uint8_t val);
+	const std::string DecodeStatus5Value(const uint8_t val);
 
 public:
 	bool ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation);
 
+
+	/*
 	// ==== Read Hardware Version
 	// 1 Hardware Version string (may be ' ' padded at the end), the length header value will tell you how long it is, should be 20 'actual character' bytes (40 ASCII hex chars)
 	// req:   ~250146C10000FD9A.
 	// resp:  ~25014600602850313653313030412D313831322D312E30302000F58E.
 	//                     1111111111111111111111111111111111111111
 
-	static const uint8_t exampleReadHardwareVersionRequestV25[];
-	static const uint8_t exampleReadHardwareVersionResponseV25[];
+	static const uint8_t exampleReadHardwareVersionRequestV20[];
+	static const uint8_t exampleReadHardwareVersionResponseV20[];
 
 	bool CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadHardwareVersionResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& hardwareVersion);
@@ -450,8 +332,8 @@ public:
 	// resp:  ~25014600B05031383132313031333830333039442020202020202020202020202020202020202020202020202020EE0F.
 	//                     11111111111111111111111111111111111111111111111111111111111111111111111111111111
 
-	static const uint8_t exampleReadSerialNumberRequestV25[];
-	static const uint8_t exampleReadSerialNumberResponseV25[];
+	static const uint8_t exampleReadSerialNumberRequestV20[];
+	static const uint8_t exampleReadSerialNumberResponseV20[];
 
 	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSerialNumberResponse(const uint8_t busId, const std::vector<uint8_t>& response, std::string& serialNumber);
@@ -474,10 +356,10 @@ public:
 	// resp:  ~25004600C0040C00FCC5.
 	//                     11??
 
-	static const uint8_t exampleWriteDisableBuzzerSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteDisableBuzzerSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteEnableBuzzerSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteEnableBuzzerSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteDisableBuzzerSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteDisableBuzzerSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteEnableBuzzerSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteEnableBuzzerSwitchCommandResponseV20[];
 
 	// ==== LED Alarm Switch
 	// 1: The "on/off" switch command, see: enum SwitchCommand
@@ -490,10 +372,10 @@ public:
 	// resp:  ~25004600C0040722FCCD.
 	//                     11??
 
-	static const uint8_t exampleWriteDisableLedWarningSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteDisableLedWarningSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteEnableLedWarningSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteEnableLedWarningSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteDisableLedWarningSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteDisableLedWarningSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteEnableLedWarningSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteEnableLedWarningSwitchCommandResponseV20[];
 
 	// ==== Charge Current Limiter Switch
 	// 1: The "on/off" switch command, see: enum SwitchCommand
@@ -506,10 +388,10 @@ public:
 	// resp:  ~25004600C0040B32FCC1.
 	//                     11??
 
-	static const uint8_t exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV20[];
 
 	// note: this is actually in the "System Configuration" section of PBmsTools 2.4 but logically belongs here and uses the same CID2 as the other switch commands
 	// ==== Charge Current Limiter Current Limit Gear Switch
@@ -523,10 +405,10 @@ public:
 	// resp:  ~25004600C0040830FCCD.
 	//                     11??
 
-	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV20[];
 
 	// note: use caution as there are lot of different brands using the PACE BMS and some may have custom firmware with different commands!
 	enum SwitchCommand : uint8_t
@@ -563,10 +445,10 @@ public:
 	// resp:  ~25004600E00224FD32.
 	//                     ??
 
-	static const uint8_t exampleWriteMosfetChargeOpenSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteMosfetChargeOpenSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteMosfetChargeCloseSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteMosfetChargeCloseSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteMosfetChargeOpenSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteMosfetChargeOpenSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteMosfetChargeCloseSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteMosfetChargeCloseSwitchCommandResponseV20[];
 
 	// ==== Discharge MOSFET Switch
 	// note: I have seen the BMS enforce that at least one of Charge MOSFET or Discharge MOSFET must always be on, 
@@ -582,10 +464,10 @@ public:
 	// resp:  ~25004609E00204FD2B.
 	//                     ??
 
-	static const uint8_t exampleWriteMosfetDischargeOpenSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteMosfetDischargeOpenSwitchCommandResponseV25[];
-	static const uint8_t exampleWriteMosfetDischargeCloseSwitchCommandRequestV25[];
-	static const uint8_t exampleWriteMosfetDischargeCloseSwitchCommandResponseV25[];
+	static const uint8_t exampleWriteMosfetDischargeOpenSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteMosfetDischargeOpenSwitchCommandResponseV20[];
+	static const uint8_t exampleWriteMosfetDischargeCloseSwitchCommandRequestV20[];
+	static const uint8_t exampleWriteMosfetDischargeCloseSwitchCommandResponseV20[];
 
 	enum MosfetType : uint8_t
 	{
@@ -608,71 +490,71 @@ public:
 	//                     xx
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleWriteRebootCommandRequestV25[];
-	static const uint8_t exampleWriteRebootCommandResponseV25[];
+	static const uint8_t exampleWriteRebootCommandRequestV20[];
+	static const uint8_t exampleWriteRebootCommandResponseV20[];
 
 	bool CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
-// ============================================================================
-// 
-// "Memory Information" tab of PBmsTools 2.4 
-// 
-// ============================================================================
+	// ============================================================================
+	// 
+	// "Memory Information" tab of PBmsTools 2.4 
+	// 
+	// ============================================================================
 
-		// ==== Read Log History
-		// This appears to be a "history" table
-		// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
-		// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
-		// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
-		// I haven't decoded the response yet, but it contains
-		//         Date/Time
-		//         Pack Amps (-in/out)
-		//         Pack Voltage
-		//         Remaing Capacity (Ah)
-		//         Full Capacity (Ah)
-		//         MaxVolt (cell) (mV)
-		//         MinVolt (cell) (mV)
-		//         Alarm Type
-		//         Protect Type
-		//         Fault Type
-		//         Cell Voltage 1-16
-		//         Temperatures 1-6
-		// req:   ~250046A1C004018FFCA7.
-		// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
-		//            the values in this response:  
-		//                2024-2-29 2:00:56 - 1.460	
-		//                55.767	
-		//                103.460	
-		//                103.460	
-		//                3482	
-		//                3456				
-		//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
-		//                20.2	20.3	20.5	20.4	19.9	20.7
-		// resp:  ~250046000000FDAF.
-		//            this means "no more records available"
-
-
-		// -------- NOT IMPLEMENTED --------
+			// ==== Read Log History
+			// This appears to be a "history" table
+			// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
+			// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
+			// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
+			// I haven't decoded the response yet, but it contains
+			//         Date/Time
+			//         Pack Amps (-in/out)
+			//         Pack Voltage
+			//         Remaing Capacity (Ah)
+			//         Full Capacity (Ah)
+			//         MaxVolt (cell) (mV)
+			//         MinVolt (cell) (mV)
+			//         Alarm Type
+			//         Protect Type
+			//         Fault Type
+			//         Cell Voltage 1-16
+			//         Temperatures 1-6
+			// req:   ~250046A1C004018FFCA7.
+			// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
+			//            the values in this response:  
+			//                2024-2-29 2:00:56 - 1.460	
+			//                55.767	
+			//                103.460	
+			//                103.460	
+			//                3482	
+			//                3456				
+			//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
+			//                20.2	20.3	20.5	20.4	19.9	20.7
+			// resp:  ~250046000000FDAF.
+			//            this means "no more records available"
 
 
-		// ==== System Time
-		// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
-		// 2 Month:  read: 08   write: 08
-		// 3 Day:    read: 21   write: 20 
-		// 4 Hour:   read: 05   write: 14
-		// 5 Minute: read: 29   write: 15
-		// 6 Second: read: 31   write: 37
-		// read:  ~250046B10000FD9C.
-		// resp:  ~25004600400C180815051D1FFB10.
-		//                     112233445566
-		// write: ~250046B2400C1808140E0F25FAFC.
-		// resp:  ~250046000000FDAF.
+			// -------- NOT IMPLEMENTED --------
 
-	static const uint8_t exampleReadSystemTimeRequestV25[];
-	static const uint8_t exampleReadSystemTimeResponseV25[];
-	static const uint8_t exampleWriteSystemTimeRequestV25[];
-	static const uint8_t exampleWriteSystemTimeResponseV25[];
+
+			// ==== System Time
+			// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
+			// 2 Month:  read: 08   write: 08
+			// 3 Day:    read: 21   write: 20 
+			// 4 Hour:   read: 05   write: 14
+			// 5 Minute: read: 29   write: 15
+			// 6 Second: read: 31   write: 37
+			// read:  ~250046B10000FD9C.
+			// resp:  ~25004600400C180815051D1FFB10.
+			//                     112233445566
+			// write: ~250046B2400C1808140E0F25FAFC.
+			// resp:  ~250046000000FDAF.
+
+	static const uint8_t exampleReadSystemTimeRequestV20[];
+	static const uint8_t exampleReadSystemTimeResponseV20[];
+	static const uint8_t exampleWriteSystemTimeRequestV20[];
+	static const uint8_t exampleWriteSystemTimeResponseV20[];
 
 	struct DateTime
 	{
@@ -689,11 +571,11 @@ public:
 	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
 	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
-// ============================================================================
-// 
-// "Parameter Setting" tab of PBmsTools 2.4
-// 
-// ============================================================================
+	// ============================================================================
+	// 
+	// "Parameter Setting" tab of PBmsTools 2.4
+	// 
+	// ============================================================================
 
 	enum ReadConfigurationType {
 		RC_CellOverVoltage = CID2_ReadCellOverVoltageConfiguration,
@@ -728,10 +610,10 @@ public:
 	// write: ~250046D0F010010E100E740D340AFA21.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadCellOverVoltageConfigurationRequestV25[];
-	static const uint8_t exampleReadCellOverVoltageConfigurationResponseV25[];
-	static const uint8_t exampleWriteCellOverVoltageConfigurationRequestV25[];
-	static const uint8_t exampleWriteCellOverVoltageConfigurationResponseV25[];
+	static const uint8_t exampleReadCellOverVoltageConfigurationRequestV20[];
+	static const uint8_t exampleReadCellOverVoltageConfigurationResponseV20[];
+	static const uint8_t exampleWriteCellOverVoltageConfigurationRequestV20[];
+	static const uint8_t exampleWriteCellOverVoltageConfigurationResponseV20[];
 
 	struct CellOverVoltageConfiguration
 	{
@@ -755,10 +637,10 @@ public:
 	// write: ~250046D4F01001E10AE740D2F00AF9FB.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadPackOverVoltageConfigurationRequestV25[];
-	static const uint8_t exampleReadPackOverVoltageConfigurationResponseV25[];
-	static const uint8_t exampleWritePackOverVoltageConfigurationRequestV25[];
-	static const uint8_t exampleWritePackOverVoltageConfigurationResponseV25[];
+	static const uint8_t exampleReadPackOverVoltageConfigurationRequestV20[];
+	static const uint8_t exampleReadPackOverVoltageConfigurationResponseV20[];
+	static const uint8_t exampleWritePackOverVoltageConfigurationRequestV20[];
+	static const uint8_t exampleWritePackOverVoltageConfigurationResponseV20[];
 
 	struct PackOverVoltageConfiguration
 	{
@@ -782,10 +664,10 @@ public:
 	// write: ~250046D2F010010AF009C40B540AFA0E.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadCellUnderVoltageConfigurationRequestV25[];
-	static const uint8_t exampleReadCellUnderVoltageConfigurationResponseV25[];
-	static const uint8_t exampleWriteCellUnderVoltageConfigurationRequestV25[];
-	static const uint8_t exampleWriteCellUnderVoltageConfigurationResponseV25[];
+	static const uint8_t exampleReadCellUnderVoltageConfigurationRequestV20[];
+	static const uint8_t exampleReadCellUnderVoltageConfigurationResponseV20[];
+	static const uint8_t exampleWriteCellUnderVoltageConfigurationRequestV20[];
+	static const uint8_t exampleWriteCellUnderVoltageConfigurationResponseV20[];
 
 	struct CellUnderVoltageConfiguration
 	{
@@ -809,10 +691,10 @@ public:
 	// write: ~250046D6F01001AF009C40B5400AFA0A.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadPackUnderVoltageConfigurationRequestV25[];
-	static const uint8_t exampleReadPackUnderVoltageConfigurationResponseV25[];
-	static const uint8_t exampleWritePackUnderVoltageConfigurationRequestV25[];
-	static const uint8_t exampleWritePackUnderVoltageConfigurationResponseV25[];
+	static const uint8_t exampleReadPackUnderVoltageConfigurationRequestV20[];
+	static const uint8_t exampleReadPackUnderVoltageConfigurationResponseV20[];
+	static const uint8_t exampleWritePackUnderVoltageConfigurationRequestV20[];
+	static const uint8_t exampleWritePackUnderVoltageConfigurationResponseV20[];
 
 	struct PackUnderVoltageConfiguration
 	{
@@ -835,10 +717,10 @@ public:
 	// write: ~250046D8400C010068006E0AFB01.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadChargeOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleReadChargeOverCurrentConfigurationResponseV25[];
-	static const uint8_t exampleWriteChargeOverCurrentConfigurationRequestV25[];
-	static const uint8_t exampleWriteChargeOverCurrentConfigurationResponseV25[];
+	static const uint8_t exampleReadChargeOverCurrentConfigurationRequestV20[];
+	static const uint8_t exampleReadChargeOverCurrentConfigurationResponseV20[];
+	static const uint8_t exampleWriteChargeOverCurrentConfigurationRequestV20[];
+	static const uint8_t exampleWriteChargeOverCurrentConfigurationResponseV20[];
 
 	struct ChargeOverCurrentConfiguration
 	{
@@ -861,10 +743,10 @@ public:
 	// write: ~250046DA400C010069006E0AFAF7.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationRequestV25[];
-	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationResponseV25[];
-	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationRequestV25[];
-	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationResponseV25[];
+	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationRequestV20[];
+	static const uint8_t exampleReadDishargeOverCurrent1ConfigurationResponseV20[];
+	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationRequestV20[];
+	static const uint8_t exampleWriteDishargeOverCurrent1ConfigurationResponseV20[];
 
 	struct DischargeOverCurrent1Configuration
 	{
@@ -886,10 +768,10 @@ public:
 	// write: ~250046E2A006009604FC4E.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationRequestV25[];
-	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationResponseV25[];
-	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationRequestV25[];
-	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationResponseV25[];
+	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationRequestV20[];
+	static const uint8_t exampleReadDishargeOverCurrent2ConfigurationResponseV20[];
+	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationRequestV20[];
+	static const uint8_t exampleWriteDishargeOverCurrent2ConfigurationResponseV20[];
 
 	struct DischargeOverCurrent2Configuration
 	{
@@ -908,10 +790,10 @@ public:
 	// write: ~250046E4E0020CFD0C.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadShortCircuitProtectionConfigurationRequestV25[];
-	static const uint8_t exampleReadShortCircuitProtectionConfigurationResponseV25[];
-	static const uint8_t exampleWriteShortCircuitProtectionConfigurationRequestV25[];
-	static const uint8_t exampleWriteShortCircuitProtectionConfigurationResponseV25[];
+	static const uint8_t exampleReadShortCircuitProtectionConfigurationRequestV20[];
+	static const uint8_t exampleReadShortCircuitProtectionConfigurationResponseV20[];
+	static const uint8_t exampleWriteShortCircuitProtectionConfigurationRequestV20[];
+	static const uint8_t exampleWriteShortCircuitProtectionConfigurationResponseV20[];
 
 	struct ShortCircuitProtectionConfiguration
 	{
@@ -930,10 +812,10 @@ public:
 	// write: ~250046B580080D48001EFBD2.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadCellBalancingConfigurationRequestV25[];
-	static const uint8_t exampleReadCellBalancingConfigurationResponseV25[];
-	static const uint8_t exampleWriteCellBalancingConfigurationRequestV25[];
-	static const uint8_t exampleWriteCellBalancingConfigurationResponseV25[];
+	static const uint8_t exampleReadCellBalancingConfigurationRequestV20[];
+	static const uint8_t exampleReadCellBalancingConfigurationResponseV20[];
+	static const uint8_t exampleWriteCellBalancingConfigurationRequestV20[];
+	static const uint8_t exampleWriteCellBalancingConfigurationResponseV20[];
 
 	struct CellBalancingConfiguration
 	{
@@ -953,10 +835,10 @@ public:
 	// write: ~250046A880080C1C0005FBDA.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadSleepConfigurationRequestV25[];
-	static const uint8_t exampleReadSleepConfigurationResponseV25[];
-	static const uint8_t exampleWriteSleepConfigurationRequestV25[];
-	static const uint8_t exampleWriteSleepConfigurationResponseV25[];
+	static const uint8_t exampleReadSleepConfigurationRequestV20[];
+	static const uint8_t exampleReadSleepConfigurationResponseV20[];
+	static const uint8_t exampleWriteSleepConfigurationRequestV20[];
+	static const uint8_t exampleWriteSleepConfigurationResponseV20[];
 
 	struct SleepConfiguration
 	{
@@ -977,10 +859,10 @@ public:
 	// write: ~250046AE600ADAC007D005FB3A.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadFullChargeLowChargeConfigurationRequestV25[];
-	static const uint8_t exampleReadFullChargeLowChargeConfigurationResponseV25[];
-	static const uint8_t exampleWriteFullChargeLowChargeConfigurationRequestV25[];
-	static const uint8_t exampleWriteFullChargeLowChargeConfigurationResponseV25[];
+	static const uint8_t exampleReadFullChargeLowChargeConfigurationRequestV20[];
+	static const uint8_t exampleReadFullChargeLowChargeConfigurationResponseV20[];
+	static const uint8_t exampleWriteFullChargeLowChargeConfigurationRequestV20[];
+	static const uint8_t exampleWriteFullChargeLowChargeConfigurationResponseV20[];
 
 	struct FullChargeLowChargeConfiguration
 	{
@@ -1005,10 +887,10 @@ public:
 	// write: ~250046DC501A010CA80CD00C9E0CDA0D020CD0F797.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25[];
-	static const uint8_t exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV20[];
+	static const uint8_t exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV20[];
 
 	struct ChargeAndDischargeOverTemperatureConfiguration
 	{
@@ -1036,10 +918,10 @@ public:
 	// write: ~250046DE501A010AAA0A780AAA0A1409E20A14F7BC.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25[];
-	static const uint8_t exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV20[];
+	static const uint8_t exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV20[];
 
 	struct ChargeAndDischargeUnderTemperatureConfiguration
 	{
@@ -1064,10 +946,10 @@ public:
 	// write: ~250046E0200E010E2E0EF60DFCFA48.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadMosfetOverTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleReadMosfetOverTemperatureConfigurationResponseV25[];
-	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleReadMosfetOverTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleReadMosfetOverTemperatureConfigurationResponseV20[];
+	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleWriteMosfetOverTemperatureConfigurationResponseV20[];
 
 	struct MosfetOverTemperatureConfiguration
 	{
@@ -1092,10 +974,10 @@ public:
 	// write: ~250046E6501A0109E209B009E20D340D660D34F7EB.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationResponseV25[];
-	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationRequestV25[];
-	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationResponseV25[];
+	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleReadEnvironmentOverUnderTemperatureConfigurationResponseV20[];
+	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationRequestV20[];
+	static const uint8_t exampleWriteEnvironmentOverUnderTemperatureConfigurationResponseV20[];
 
 	struct EnvironmentOverUnderTemperatureConfiguration
 	{
@@ -1110,11 +992,11 @@ public:
 	bool ProcessReadConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const EnvironmentOverUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
-// ============================================================================
-// 
-// "System Configuration" tab of PBmsTools 2.4
-// 
-// ============================================================================
+	// ============================================================================
+	// 
+	// "System Configuration" tab of PBmsTools 2.4
+	// 
+	// ============================================================================
 
 	// note: "Charge Current Limiter Current Limit Gear Switch" is in this page in PBmsTools but I moved it to the SwitchCommand section above because it uses the same CID2 and fits in nicely with that code
 
@@ -1128,10 +1010,10 @@ public:
 	// write: ~250046EEC0040064FCA4.
 	// resp:  ~250046000000FDAF.
 
-	static const uint8_t exampleReadChargeCurrentLimiterStartCurrentRequestV25[];
-	static const uint8_t exampleReadChargeCurrentLimiterStartCurrentResponseV25[];
-	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentRequestV25[];
-	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentResponseV25[];
+	static const uint8_t exampleReadChargeCurrentLimiterStartCurrentRequestV20[];
+	static const uint8_t exampleReadChargeCurrentLimiterStartCurrentResponseV20[];
+	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentRequestV20[];
+	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentResponseV20[];
 
 	bool CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint8_t& current);
@@ -1146,144 +1028,17 @@ public:
 	// resp:  ~25004600400C183C286A2710FB0E.
 	//                     111122223333
 
-	static const uint8_t exampleReadRemainingCapacityRequestV25[];
-	static const uint8_t exampleReadRemainingCapacityResponseV25[];
+	static const uint8_t exampleReadRemainingCapacityRequestV20[];
+	static const uint8_t exampleReadRemainingCapacityResponseV20[];
 
 	bool CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, const std::vector<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
 
-	// ==== Protocol
-	// 1 - CAN protocol, see enum, this example is "AFORE"
-	// 2 - RS485 protocol, see enum, this example is "RONGKE"
-	// 3 - "Type", see enum, not sure what this means exactly, I'd go with "Auto" which is in this example
-	// read:  ~250046EB0000FD88.
-	// resp:  ~25004600A006131400FC6F.
-	//                     112233
-	// write: ~250046ECA006131400FC47.
-	// resp:  ~250046000000FDAF.
 
-	enum ProtocolList_CAN : uint8_t
-	{
-		can_empty = 0xFF,        // 255d <blank entry> I believe this means "turned off"
-		can_Pace = 0x00,         // 00d PACE
-		can_Pylon = 0x01,        // 01d Pylon / DeYe / CHNT Power / LiVolTek / Megarevo / SunSynk / SunGrow / Sol-Ark / SolarEdge
-		can_Growatt = 0x02,      // 02d Growatt / Sacolar
-		can_Victron = 0x03,      // 03d Victron
-		can_Schneider = 0x04,    // 04d Schneider / SE / SMA
-		can_LuxPower = 0x05,     // 05d LuxPower
-		can_SoroTec = 0x06,      // 06d SoroTec / SRD
-		can_SMA = 0x07,          // 07d SMA / Studer
-		can_GoodWe = 0x08,       // 08d GoodWe
-		can_Studer = 0x09,       // 09d Studer
-		can_Sofar = 0x0A,        // 10d Sofar
-		can_Must = 0x0B,         // 11d Must / PV
-		can_Solis = 0x0C,        // 12d Solis / Jinlang / JL
-		can_DIDU = 0x0D,         // 13d DIDU / TBB
-		can_Senergy = 0x0E,      // 14d Senergy / Aifu
-		can_TBB = 0x0F,          // 15d TBB
-		can_Pylon_V202 = 0x10,   // 16d Pylon_V202
-		can_Growatt_V109 = 0x11, // 17d Growatt_V109
-		can_Must_V202 = 0x12,    // 18d Must_V202
-		can_Afore = 0x13,        // 19d Afore
-		can_INVT = 0x14,         // 20d INVT / YWT
-		can_FUJI = 0x15,         // 21d FUJI
-		can_Sofar_V21003 = 0x16, // 22d Sofar_V21003
-	};
-
-	enum ProtocolList_RS485 : uint8_t
-	{
-		rs485_empty = 0xFF,        // 255d <blank entry> I believe this means "turned off"
-		rs485_PaceModbus = 0x00,   // 00d Pace Modbus
-		rs485_Pylon = 0x01,        // 01d Pylon / DeYe / Bentterson
-		rs485_Growatt = 0x02,      // 02d Growatt
-		rs485_Voltronic = 0x03,    // 03d Voltronic / EA Sun Power / MPP Solar
-		rs485_Schneider = 0x04,    // 04d Schneider / SE
-		rs485_PHOCOS = 0x05,       // 05d PHOCOS
-		rs485_LuxPower = 0x06,     // 06d LuxPower
-		rs485_Solar = 0x07,        // 07d Solar
-		rs485_Lithium = 0x08,      // 08d Lithium / SMARK
-		rs485_EP = 0x09,           // 09d EP / MSL
-		rs485_RTU04 = 0x0A,        // 10d RTU04
-		rs485_LuxPower_V01 = 0x0B, // 11d LuxPower_V01
-		rs485_LuxPower_V03 = 0x0C, // 12d LuxPower_V03
-		rs485_SRNE = 0x0D,         // 13d SRNE / WOW
-		rs485_LEOCH = 0x0E,        // 14d LEOCH
-		rs485_Pylon_F = 0x0F,      // 15d Pylon_F
-		rs485_Afore = 0x10,        // 16d Afore
-		rs485_UPS_AGXN = 0x11,     // 17d UPS_AGXN
-		rs485_Orex_Sunpolo = 0x12, // 18d Orex_Sunpolo
-		rs485_XIONGTAO = 0x13,     // 19d XIONGTAO
-		rs485_RONGKE = 0x14,       // 20d RONGKE
-		rs485_XINRUI = 0x15,       // 21d XINRUI
-		rs485_ELTEK = 0x16,        // 22d ELTEK
-		rs485_GT = 0x17,           // 23d GT
-		rs485_Leoch_V106 = 0x18,   // 24d Leoch_V106
-	};
-
-	enum ProtocolList_Type : uint8_t
-	{
-		empty = 0xFF, // 255d <blank entry>
-		Auto = 0x00, // 00d Auto
-		Manual = 0x01, // 01d Manual
-	};
-
-	static const uint8_t exampleReadProtocolsRequestV25[];
-	static const uint8_t exampleReadProtocolsResponseV25[];
-	static const uint8_t exampleWriteProtocolsRequestV25[];
-	static const uint8_t exampleWriteProtocolsResponseV25[];
-
-	struct Protocols
-	{
-		ProtocolList_CAN   CAN;
-		ProtocolList_RS485 RS485;
-		ProtocolList_Type  Type;
-	};
-
-	bool CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response, Protocols& protocols);
-	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
-	bool ProcessWriteProtocolsResponse(const uint8_t busId, const std::vector<uint8_t>& response);
-
-
-	// There are many other settings in "System Configuration" that can be written and/or calibrated here, 
-	// none of which I am exposing because it would be a Very Bad Idea to mess with them
-
-
-	/*
-	* SOK Protocol Edit (pbms tools)
-	-------------------------------
-	note:  unable to get responses since my BMS ignores this command BUT faking responses via Pace BMS Emulator cases
-			   the software to say "OK" when I send a response identical to that which works on the "new" protocol set
-
-	It's unclear if these commands would only work on rs232 but that's my guess.
-
-	There does not appear to be a "get current inverter protocol" command for this older method
-
-	set paceic (unclear if CAN/485)
-	req: ~25004699E0020EFD11.
-					  xx
-
-	x = protocol to set
-		0E = paceic 0x25
-		0F = Pylon (DeYe) CAN
-		10 = Growatt CAN
-		13 = Pylon 485
-		12 = Growatt 485
-		11 = LuxPower 485
+	static const uint8_t exampleReadProtocolsRequestV20[];
+	static const uint8_t exampleReadProtocolsResponseV20[];
+	static const uint8_t exampleWriteProtocolsRequestV20[];
+	static const uint8_t exampleWriteProtocolsResponseV20[];
 	*/
-
-	/*
-	enum OldStyleProtocolList
-	{
-		old_paceic = 0x0E,
-		old_CAN_Pylon = 0x0F,
-		old_CAN_Growatt = 0x10,
-		old_Pylon = 0x13,
-		old_Growatt = 0x12,
-		old_LuxPower = 0x11,
-	};
-	*/
-
-	// -------- NOT IMPLEMENTED --------
 };
 

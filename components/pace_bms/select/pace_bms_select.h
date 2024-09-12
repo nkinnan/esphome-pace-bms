@@ -28,7 +28,7 @@ protected:
 
 	pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
 
-	PaceBmsV25::Protocols protocols_;
+	PaceBmsProtocolV25::Protocols protocols_;
 	bool protocols_seen_ = false;
 	pace_bms::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
 	pace_bms::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };

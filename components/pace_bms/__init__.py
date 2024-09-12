@@ -19,6 +19,7 @@ PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
 # "this" for pace_bms_sensor/text_sensor/switch/etc. to get parent from
 CONF_PACE_BMS_ID = "pace_bms_id"
 
+CONF_PROTOCOL_VERSION_OVERRIDE   = "protocol_version_override"
 CONF_CHEMISTRY                   = "chemistry"
 CONF_SKIP_ADDRESS_PAYLOAD        = "v20_skip_address_payload"
 CONF_ANALOG_CELL_COUNT           = "analog_cell_count_override"
@@ -59,6 +60,7 @@ CONFIG_SCHEMA = (
             cv.GenerateID(): cv.declare_id(PaceBms),
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
             cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
+            cv.Optional(CONF_PROTOCOL_VERSION_OVERRIDE): cv.int_range(min=0, max=255),
             cv.Optional(CONF_CHEMISTRY, default=DEFAULT_CHEMISTRY): cv.int_range(min=0, max=255),
             cv.Optional(CONF_SKIP_ADDRESS_PAYLOAD, default=DEFAULT_SKIP_ADDRESS_PAYLOAD): cv.boolean,
             cv.Optional(CONF_ANALOG_CELL_COUNT): cv.int_range(min=0, max=16),
@@ -95,6 +97,8 @@ async def to_code(config):
         cg.add(var.set_flow_control_pin(pin))
     if CONF_ADDRESS in config:
         cg.add(var.set_address(config[CONF_ADDRESS]))
+    if CONF_PROTOCOL_VERSION_OVERRIDE in config:
+        cg.add(var.set_protocol_version_override(config[CONF_PROTOCOL_VERSION_OVERRIDE]))
     if CONF_CHEMISTRY in config:
         cg.add(var.set_chemistry(config[CONF_CHEMISTRY]))
     if CONF_SKIP_ADDRESS_PAYLOAD in config:

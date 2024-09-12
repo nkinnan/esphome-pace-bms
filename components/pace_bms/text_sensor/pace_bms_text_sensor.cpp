@@ -16,7 +16,7 @@ void PaceBmsTextSensor::setup() {
 			this->configuration_status_sensor_ != nullptr ||
 			this->protection_status_sensor_ != nullptr ||
 			this->fault_status_sensor_ != nullptr) {
-			this->parent_->register_status_information_callback_v25([this](PaceBmsV25::StatusInformation& status_information) {
+			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) {
 				if (this->warning_status_sensor_ != nullptr) {
 					this->warning_status_sensor_->publish_state(status_information.warningText);
 				}
@@ -59,7 +59,7 @@ void PaceBmsTextSensor::setup() {
 			this->configuration_status_sensor_ != nullptr ||
 			this->protection_status_sensor_ != nullptr ||
 			this->fault_status_sensor_ != nullptr) {
-			this->parent_->register_status_information_callback_v20([this](PaceBmsV20::StatusInformation& status_information) {
+			this->parent_->register_status_information_callback_v20([this](PaceBmsProtocolV20::StatusInformation& status_information) {
 				if (this->warning_status_sensor_ != nullptr) {
 					this->warning_status_sensor_->publish_state(status_information.warningText);
 				}
