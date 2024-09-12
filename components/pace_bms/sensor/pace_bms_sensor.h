@@ -48,6 +48,12 @@ public:
 	void set_protection_status_value_2_sensor(sensor::Sensor* sens) { protection_status_value_2_sensor_ = sens;              request_status_info_callback_ = true; }
 	void set_fault_status_value_sensor(sensor::Sensor* sens) { fault_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
 
+	void set_status_value1_sensor(sensor::Sensor* sens) { status_value1_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status_value2_sensor(sensor::Sensor* sens) { status_value2_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status_value3_sensor(sensor::Sensor* sens) { status_value3_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status_value4_sensor(sensor::Sensor* sens) { status_value4_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status_value5_sensor(sensor::Sensor* sens) { status_value5_sensor_ = sens;                     request_status_info_callback_ = true; }
+
 	void setup() override;
 	float get_setup_priority() const override { return setup_priority::DATA; };
 	void dump_config() override;
@@ -89,6 +95,12 @@ protected:
 	sensor::Sensor* protection_status_value_2_sensor_{ nullptr };
 	sensor::Sensor* fault_status_value_sensor_{ nullptr };
 
+	sensor::Sensor* status_value1_sensor_{ nullptr };
+	sensor::Sensor* status_value2_sensor_{ nullptr };
+	sensor::Sensor* status_value3_sensor_{ nullptr };
+	sensor::Sensor* status_value4_sensor_{ nullptr };
+	sensor::Sensor* status_value5_sensor_{ nullptr };
+
 	bool request_analog_info_callback_ = false;
 	bool request_status_info_callback_ = false;
 
@@ -96,7 +108,7 @@ protected:
 	void status_information_callback_v25(PaceBmsV25::StatusInformation& status_information);
 
 	void analog_information_callback_v20(PaceBmsV20::AnalogInformation& analog_information);
-	//void status_information_callback_v25(PaceBmsV25::StatusInformation& status_information);
+	void status_information_callback_v20(PaceBmsV20::StatusInformation& status_information);
 };
 
 }  // namespace pace_bms

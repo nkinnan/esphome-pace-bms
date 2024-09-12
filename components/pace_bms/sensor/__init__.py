@@ -152,6 +152,12 @@ CONF_PROTECTION_STATUS_VALUE_1  = "protection_status_value_1"
 CONF_PROTECTION_STATUS_VALUE_2  = "protection_status_value_2"
 CONF_FAULT_STATUS_VALUE         = "fault_status_value"
 
+CONF_STATUS_VALUE_1                 = "status_value_1"
+CONF_STATUS_VALUE_2                 = "status_value_2"
+CONF_STATUS_VALUE_3                 = "status_value_3"
+CONF_STATUS_VALUE_4                 = "status_value_4"
+CONF_STATUS_VALUE_5                 = "status_value_5"
+
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
@@ -581,6 +587,37 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+
+        cv.Optional(CONF_STATUS_VALUE_1): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS_VALUE_2): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS_VALUE_3): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS_VALUE_4): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS_VALUE_5): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
@@ -719,3 +756,19 @@ async def to_code(config):
     if fault_status_value := config.get(CONF_FAULT_STATUS_VALUE):
         sens = await sensor.new_sensor(fault_status_value)
         cg.add(var.set_fault_status_value_sensor(sens))
+
+    if status_value_1 := config.get(CONF_STATUS_VALUE_1):
+        sens = await sensor.new_sensor(status_value_1)
+        cg.add(var.set_status_value1_sensor(sens))
+    if status_value_2 := config.get(CONF_STATUS_VALUE_2):
+        sens = await sensor.new_sensor(status_value_2)
+        cg.add(var.set_status_value2_sensor(sens))
+    if status_value_3 := config.get(CONF_STATUS_VALUE_3):
+        sens = await sensor.new_sensor(status_value_3)
+        cg.add(var.set_status_value3_sensor(sens))
+    if status_value_4 := config.get(CONF_STATUS_VALUE_4):
+        sens = await sensor.new_sensor(status_value_4)
+        cg.add(var.set_status_value4_sensor(sens))
+    if status_value_5 := config.get(CONF_STATUS_VALUE_5):
+        sens = await sensor.new_sensor(status_value_5)
+        cg.add(var.set_status_value5_sensor(sens))

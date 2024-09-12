@@ -45,10 +45,9 @@ public:
 		CID1 batteryChemistry, 
 		bool skip_address_payload, 
 		optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
+		bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv, 
 		uint32_t design_capacity_mah_override,
 		optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
-		bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv, 
-		bool skip_status_flags,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 private:
@@ -69,8 +68,6 @@ private:
 	bool skip_soh;
 	bool skip_pv;
 	uint32_t design_capacity_mah_override;
-
-	bool skip_status_flags;
 
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
@@ -363,10 +360,10 @@ public:
 		uint8_t     status5_value;
 
 		//std::string balancingText;
-		//std::string systemText;
-		//std::string configurationText;
-		//std::string protectionText;
-		//std::string faultText;
+		std::string systemText;
+		std::string configurationText;
+		std::string protectionText;
+		std::string faultText;
 	};
 
 	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
@@ -374,6 +371,21 @@ public:
 private:
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningValue(const uint8_t val);
+
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeStatus1Value(const uint8_t val);
+
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeStatus2Value(const uint8_t val);
+
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeStatus3Value(const uint8_t val);
+
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeStatus4Value(const uint8_t val);
+
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeStatus5Value(const uint8_t val);
 
 public:
 	bool ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation);

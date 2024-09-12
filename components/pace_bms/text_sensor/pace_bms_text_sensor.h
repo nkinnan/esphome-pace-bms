@@ -5,6 +5,7 @@
 #include "esphome/components/text_sensor/text_sensor.h"
 
 #include "../pace_bms_v25.h"
+#include "../pace_bms_v20.h"
 
 namespace esphome {
 namespace pace_bms {

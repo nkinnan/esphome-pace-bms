@@ -97,7 +97,7 @@ pace_bms:
   response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
 
   chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
-  v20_skip_address_payload: true # needed for my EG4 LIFEPOWER4 battery, even though it's against spec
+  v20_skip_address_payload: true # needed for my EG4 LIFEPOWER4 battery, it violates spec
   analog_cell_count_override: 16 # only needed if your BMS lies about how many cells it has in it's responses
   analog_temperature_count_override: 6 # needed for my EG4 LIFEPOWER4 battery, it lies about how many temperatures it has in it's responses
   status_cell_count_override: 16 # only needed if your BMS lies about how many cells it has in it's responses
@@ -108,7 +108,6 @@ pace_bms:
   v20_skip_soh: true # seems to be supported on seplos only
   v20_skip_pv: true # seems to be supported on seplos only
   design_capacity_mah_override: 100000 # because of skip_soc_dc, this will manually set dc and allow calculating SoH, ignored if v20_skip_soc_dc is false
-  v20_skip_status_flags: true # needed for my EG4 LIFEPOWER4 battery, I'm not sure what is going on with it's status response but the supposed location for these flags result in nonsensical values
 
 
 sensor:
@@ -279,18 +278,6 @@ sensor:
     warning_status_value_discharge_current:
       name: "Warning Status Value Discharge Current"
 
-    ######## NEW in 0x20
-    # status_value_1:
-    #   name: "Status Value 1"
-    # status_value_2:
-    #   name: "Status Value 2"
-    # status_value_3:
-    #   name: "Status Value 3"
-    # status_value_4:
-    #   name: "Status Value 4"
-    # status_value_5:
-    #   name: "Status Value 5"
-
     ######## NOT IN 0x20
     #warning_status_value_1:
     #  name: "Warning Status Value 1"
@@ -309,6 +296,18 @@ sensor:
     #  name: "Protection Status Value 2"
     #fault_status_value:
     #  name: "Fault Status Value"
+
+    ######## NEW in 0x20
+    status_value_1:
+      name: "Status Value 1"
+    status_value_2:
+      name: "Status Value 2"
+    status_value_3:
+      name: "Status Value 3"
+    status_value_4:
+      name: "Status Value 4"
+    status_value_5:
+      name: "Status Value 5"
 
 
 text_sensor:

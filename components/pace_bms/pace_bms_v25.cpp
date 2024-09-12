@@ -927,7 +927,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + " " + DecodeWarningValue(tw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
@@ -935,7 +935,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (chargeCurrentWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Charge current ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
 	}
 
 	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
@@ -943,7 +943,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (totalVoltageWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Total voltage ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
 	}
 
 	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
@@ -951,7 +951,7 @@ bool PaceBmsV25::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (dischargeCurrentWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Discharge current ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
 	}
 
 	// ========================== Protection Status ==========================

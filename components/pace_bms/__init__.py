@@ -49,7 +49,6 @@ DEFAULT_SKIP_DC = True
 DEFAULT_SKIP_SOH = True
 DEFAULT_SKIP_PV = True
 DEFAULT_DESIGN_CAPACITY_MAH = 0
-DEFAULT_SKIP_STATUS_FLAGS = False
 DEFAULT_PROTOCOL_VERSION = 0x25
 DEFAULT_REQUEST_THROTTLE = "50ms"
 DEFAULT_RESPONSE_TIMEOUT = "200ms"
@@ -72,7 +71,6 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_SKIP_SOH, default=DEFAULT_SKIP_SOH): cv.boolean,
             cv.Optional(CONF_SKIP_PV, default=DEFAULT_SKIP_PV): cv.boolean,
             cv.Optional(CONF_DESIGN_CAPACITY_MAH, default=DEFAULT_DESIGN_CAPACITY_MAH): cv.int_range(min=0, max=1000000),
-            cv.Optional(CONF_SKIP_STATUS_FLAGS, default=DEFAULT_SKIP_STATUS_FLAGS): cv.boolean,
             cv.Optional(CONF_PROTOCOL_VERSION, default=DEFAULT_PROTOCOL_VERSION): cv.int_range(min=0x20, max=0x25),
             cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
             cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
@@ -121,8 +119,6 @@ async def to_code(config):
         cg.add(var.set_skip_pv(config[CONF_SKIP_PV]))
     if CONF_DESIGN_CAPACITY_MAH in config:
         cg.add(var.set_design_capacity_mah(config[CONF_DESIGN_CAPACITY_MAH]))
-    if CONF_SKIP_STATUS_FLAGS in config:
-        cg.add(var.set_skip_status_flags(config[CONF_SKIP_STATUS_FLAGS]))
     if CONF_PROTOCOL_VERSION in config:
         cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
     if CONF_REQUEST_THROTTLE in config:

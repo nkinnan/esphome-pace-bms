@@ -21,9 +21,9 @@ void PaceBmsSensor::setup() {
 		if (request_analog_info_callback_ == true) {
 			this->parent_->register_analog_information_callback_v20([this](PaceBmsV20::AnalogInformation& analog_information) { this->analog_information_callback_v20(analog_information); });
 		}
-		//if (request_status_info_callback_ == true) {
-		//	this->parent_->register_status_information_callback_v20([this](PaceBmsV20::StatusInformation& status_information) { this->status_information_callback_v20(status_information); });
-		//}
+		if (request_status_info_callback_ == true) {
+			this->parent_->register_status_information_callback_v20([this](PaceBmsV20::StatusInformation& status_information) { this->status_information_callback_v20(status_information); });
+		}
 	}
 	else {
 		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());
@@ -66,6 +66,11 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Protection Status Value 1", this->protection_status_value_1_sensor_);
 	LOG_SENSOR("  ", "Protection Status Value 2", this->protection_status_value_2_sensor_);
 	LOG_SENSOR("  ", "Fault Status Value", this->fault_status_value_sensor_);
+	LOG_SENSOR("  ", "Status 1 Value", this->status_value1_sensor_);
+	LOG_SENSOR("  ", "Status 2 Value", this->status_value2_sensor_);
+	LOG_SENSOR("  ", "Status 3 Value", this->status_value3_sensor_);
+	LOG_SENSOR("  ", "Status 4 Value", this->status_value4_sensor_);
+	LOG_SENSOR("  ", "Status 5 Value", this->status_value5_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback_v25(PaceBmsV25::AnalogInformation& analog_information) {
@@ -227,6 +232,43 @@ void PaceBmsSensor::analog_information_callback_v20(PaceBmsV20::AnalogInformatio
 	}
 	if (this->max_cell_differential_sensor_ != nullptr) {
 		this->max_cell_differential_sensor_->publish_state(analog_information.maxCellDifferentialMillivolts / 1000.0f);
+	}
+}
+
+void PaceBmsSensor::status_information_callback_v20(PaceBmsV20::StatusInformation& status_information) {
+	for (int i = 0; i < 16; i++) {
+		if (this->warning_status_value_cells_sensor_[i] != nullptr) {
+			this->warning_status_value_cells_sensor_[i]->publish_state(status_information.warning_value_cell[i]);
+		}
+	}
+	for (int i = 0; i < 6; i++) {
+		if (this->warning_status_value_temps_sensor_[i] != nullptr) {
+			this->warning_status_value_temps_sensor_[i]->publish_state(status_information.warning_value_temp[i]);
+		}
+	}
+	if (this->warning_status_value_charge_current_sensor_ != nullptr) {
+		this->warning_status_value_charge_current_sensor_->publish_state(status_information.warning_value_charge_current);
+	}
+	if (this->warning_status_value_total_voltage_sensor_ != nullptr) {
+		this->warning_status_value_total_voltage_sensor_->publish_state(status_information.warning_value_total_voltage);
+	}
+	if (this->warning_status_value_discharge_current_sensor_ != nullptr) {
+		this->warning_status_value_discharge_current_sensor_->publish_state(status_information.warning_value_discharge_current);
+	}
+	if (this->status_value1_sensor_ != nullptr) {
+		this->status_value1_sensor_->publish_state(status_information.status1_value);
+	}
+	if (this->status_value2_sensor_ != nullptr) {
+		this->status_value2_sensor_->publish_state(status_information.status2_value);
+	}
+	if (this->status_value3_sensor_ != nullptr) {
+		this->status_value3_sensor_->publish_state(status_information.status3_value);
+	}
+	if (this->status_value4_sensor_ != nullptr) {
+		this->status_value4_sensor_->publish_state(status_information.status4_value);
+	}
+	if (this->status_value5_sensor_ != nullptr) {
+		this->status_value5_sensor_->publish_state(status_information.status5_value);
 	}
 }
 

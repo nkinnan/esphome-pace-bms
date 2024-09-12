@@ -6,10 +6,9 @@ PaceBmsV20::PaceBmsV20(
 	CID1 batteryChemistry, 
 	bool skip_address_payload, 
 	optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
+	bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv,
 	uint32_t design_capacity_mah_override,
 	optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
-	bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv,
-	bool skip_status_flags, 
 	PaceBmsV20::LogFuncPtr logError, PaceBmsV20::LogFuncPtr logWarning, PaceBmsV20::LogFuncPtr logInfo, PaceBmsV20::LogFuncPtr logDebug, PaceBmsV20::LogFuncPtr logVerbose, PaceBmsV20::LogFuncPtr logVeryVerbose)
 {
 	this->cid1 = batteryChemistry;
@@ -27,8 +26,6 @@ PaceBmsV20::PaceBmsV20(
 	this->skip_soh = skip_soh;
 	this->skip_pv = skip_pv;
 	this->design_capacity_mah_override = design_capacity_mah_override;
-
-	this->skip_status_flags = skip_status_flags;
 
 	this->LogErrorPtr = logError;
 	this->LogWarningPtr = logWarning;
@@ -570,8 +567,15 @@ end_of_data:
 		analogInformation.designCapacityMilliampHours = design_capacity_mah_override;
 
 	if (skip_soh)
+	{
 		// config specifies design capacity override, so use it to calculate SoH
 		analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
+		if (analogInformation.SoH > 100)
+		{
+			// many packs have a little bit "extra" capacity to make sure they hit their nameplate value
+			analogInformation.SoH = 100;
+		}
+	}
 
 	analogInformation.powerWatts = ((float)analogInformation.totalVoltageMillivolts * (float)analogInformation.currentMilliamps) / 1000000.0f;
 	analogInformation.minCellVoltageMillivolts = 65535;
@@ -635,15 +639,215 @@ const std::string PaceBmsV20::DecodeWarningValue(const uint8_t val)
 
 	return std::string("Unknown Fault Value");
 }
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsV20::DecodeStatus1Value(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & S1_PackUnderVoltage) != 0)
+	{
+		str.append("Pack Under Voltage; ");
+	}
+	if ((val & S1_ChargeTemperatureProtection) != 0)
+	{
+		str.append("Charge Temperature Protection; ");
+	}
+	if ((val & S1_DischargeTemperatureProtection) != 0)
+	{
+		str.append("Discharge Temperature Protection; ");
+	}
+	if ((val & S1_DischargeOverCurrent) != 0)
+	{
+		str.append("Discharge Over Current; ");
+	}
+	if ((val & S1_UndefinedStatus1Bit4) != 0)
+	{
+		str.append("Undefined Status1 Bit4; ");
+	}
+	if ((val & S1_ChargeOverCurrent) != 0)
+	{
+		str.append("Charge Over Current; ");
+	}
+	if ((val & S1_CellUnderVoltage) != 0)
+	{
+		str.append("Cell Under Voltage; ");
+	}
+	if ((val & S1_PackOverVoltage) != 0)
+	{
+		str.append("Pack Over Voltage; ");
+	}
+
+	return str;
+}
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsV20::DecodeStatus2Value(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & S2_UndefinedStatus2Bit8) != 0)
+	{
+		str.append("Undefined Status2 Bit8; ");
+	}
+	if ((val & S2_UndefinedStatus2Bit7) != 0)
+	{
+		str.append("Undefined Status2 Bit7; ");
+	}
+	if ((val & S2_UndefinedStatus2Bit6) != 0)
+	{
+		str.append("Undefined Status2 Bit6; ");
+	}
+	if ((val & S2_UndefinedStatus2Bit5) != 0)
+	{
+		str.append("Undefined Status2 Bit5; ");
+	}
+	if ((val & S2_UsingBatteryPower) != 0)
+	{
+		str.append("Using Battery Power; ");
+	}
+	if ((val & S2_DischargeMosfetOn) != 0)
+	{
+		str.append("Discharge Mosfet On; ");
+	}
+	if ((val & S2_ChargeMosfetOn) != 0)
+	{
+		str.append("Charge Mosfet On; ");
+	}
+	if ((val & S2_PrechargeMosfetOn) != 0)
+	{
+		str.append("Precharge Mosfet On; ");
+	}
+
+	return str;
+}
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsV20::DecodeStatus3Value(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & S3_Charging) != 0)
+	{
+		str.append("Charging; ");
+	}
+	if ((val & S3_Discharging) != 0)
+	{
+		str.append("Discharging; ");
+	}
+	if ((val & S3_HeaterOn) != 0)
+	{
+		str.append("Heater On; ");
+	}
+	if ((val & S3_UndefinedStatus3Bit5) != 0)
+	{
+		str.append("Undefined Status3 Bit5; ");
+	}
+	if ((val & S3_FullyCharged) != 0)
+	{
+		str.append("Fully Charged; ");
+	}
+	if ((val & S3_UndefinedStatus3Bit3) != 0)
+	{
+		str.append("Undefined Status3 Bit3; ");
+	}
+	if ((val & S3_UndefinedStatus3Bit2) != 0)
+	{
+		str.append("Undefined Status3 Bit2; ");
+	}
+	if ((val & S3_Buzzer) != 0)
+	{
+		str.append("Buzzer; ");
+	}
+
+	return str;
+}
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsV20::DecodeStatus4Value(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & S4_Cell08Fault) != 0)
+	{
+		str.append("Cell 08 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell07Fault) != 0)
+	{
+		str.append("Cell 07 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell06Fault) != 0)
+	{
+		str.append("Cell 06 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell05Fault) != 0)
+	{
+		str.append("Cell 05 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell04Fault) != 0)
+	{
+		str.append("Cell 04 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell03Fault) != 0)
+	{
+		str.append("Cell 03 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell02Fault) != 0)
+	{
+		str.append("Cell 02 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S4_Cell01Fault) != 0)
+	{
+		str.append("Cell 01 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+
+	return str;
+}
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsV20::DecodeStatus5Value(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & S5_Cell16Fault) != 0)
+	{
+		str.append("Cell 16 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell15Fault) != 0)
+	{
+		str.append("Cell 15 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell14Fault) != 0)
+	{
+		str.append("Cell 14 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell13Fault) != 0)
+	{
+		str.append("Cell 13 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell12Fault) != 0)
+	{
+		str.append("Cell 12 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell11Fault) != 0)
+	{
+		str.append("Cell 11 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell10Fault) != 0)
+	{
+		str.append("Cell 10 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+	if ((val & S5_Cell09Fault) != 0)
+	{
+		str.append("Cell 09 Fault (cell > 4.2v or cell < 1.0v); ");
+	}
+
+	return str;
+}
 
 bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
 {
 	statusInformation.warningText.clear();
 	//statusInformation.balancingText.clear();
-	//statusInformation.systemText.clear();
-	//statusInformation.configurationText.clear();
-	//statusInformation.protectionText.clear();
-	//statusInformation.faultText.clear();
+	statusInformation.systemText.clear();
+	statusInformation.configurationText.clear();
+	statusInformation.protectionText.clear();
+	statusInformation.faultText.clear();
 
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, response);
 	if (payloadLen == -1)
@@ -701,11 +905,6 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	{
 		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");
 	}
-	// BUG: my pack reports temperature count 4 but then sends 6 temperatures, going to hard-code 6 since Pace BMSes seem to always have 6 temp sensors anyway
-	if (tempCount == 4)
-	{
-		tempCount = 6;
-	}
 	for (int i = 0; i < tempCount; i++)
 	{
 		uint8_t tw = ReadHexEncodedByte(response, byteOffset);
@@ -718,7 +917,7 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 			continue;
 
 		// below/above limit
-		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + " " + DecodeWarningValue(tw) + std::string("; "));
+		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw) + std::string("; "));
 	}
 
 	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
@@ -726,7 +925,7 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (chargeCurrentWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Charge current ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
 	}
 
 	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
@@ -734,7 +933,7 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (totalVoltageWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Total voltage ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
 	}
 
 	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
@@ -742,36 +941,38 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	if (dischargeCurrentWarn != 0)
 	{
 		// below/above limit
-		statusInformation.warningText.append(std::string("Discharge current ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
+		statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
 	}
 
-	// ========================== Status 1-5 ==========================
-	if (!skip_status_flags)
+	// ========================== Status 1-5 Flags ==========================
+	statusInformation.status1_value = ReadHexEncodedByte(response, byteOffset);
+	if (statusInformation.status1_value != 0)
 	{
-		statusInformation.status1_value = ReadHexEncodedByte(response, byteOffset);
-		if (statusInformation.status1_value != 0)
-		{
-		}
+		statusInformation.protectionText.append(DecodeStatus1Value(statusInformation.status1_value));
+	}
 
-		statusInformation.status2_value = ReadHexEncodedByte(response, byteOffset);
-		if (statusInformation.status2_value != 0)
-		{
-		}
+	statusInformation.status2_value = ReadHexEncodedByte(response, byteOffset);
+	if (statusInformation.status2_value != 0)
+	{
+		statusInformation.configurationText.append(DecodeStatus2Value(statusInformation.status2_value));
+	}
 
-		statusInformation.status3_value = ReadHexEncodedByte(response, byteOffset);
-		if (statusInformation.status3_value != 0)
-		{
-		}
+	statusInformation.status3_value = ReadHexEncodedByte(response, byteOffset);
+	if (statusInformation.status3_value != 0)
+	{
+		statusInformation.systemText.append(DecodeStatus3Value(statusInformation.status3_value));
+	}
 
-		statusInformation.status4_value = ReadHexEncodedByte(response, byteOffset);
-		if (statusInformation.status4_value != 0)
-		{
-		}
+	statusInformation.status4_value = ReadHexEncodedByte(response, byteOffset);
+	if (statusInformation.status4_value != 0)
+	{
+		statusInformation.faultText.append(DecodeStatus4Value(statusInformation.status4_value));
+	}
 
-		statusInformation.status5_value = ReadHexEncodedByte(response, byteOffset);
-		if (statusInformation.status5_value != 0)
-		{
-		}
+	statusInformation.status5_value = ReadHexEncodedByte(response, byteOffset);
+	if (statusInformation.status5_value != 0)
+	{
+		statusInformation.faultText.append(DecodeStatus5Value(statusInformation.status5_value));
 	}
 
 	// pop off any trailing "; " separator
@@ -785,26 +986,26 @@ bool PaceBmsV20::ProcessReadStatusInformationResponse(const uint8_t busId, const
 	//	statusInformation.balancingText.pop_back();
 	//	statusInformation.balancingText.pop_back();
 	//}
-	//if (statusInformation.systemText.length() > 2)
-	//{
-	//	statusInformation.systemText.pop_back();
-	//	statusInformation.systemText.pop_back();
-	//}
-	//if (statusInformation.configurationText.length() > 2)
-	//{
-	//	statusInformation.configurationText.pop_back();
-	//	statusInformation.configurationText.pop_back();
-	//}
-	//if (statusInformation.protectionText.length() > 2)
-	//{
-	//	statusInformation.protectionText.pop_back();
-	//	statusInformation.protectionText.pop_back();
-	//}
-	//if (statusInformation.faultText.length() > 2)
-	//{
-	//	statusInformation.faultText.pop_back();
-	//	statusInformation.faultText.pop_back();
-	//}
+	if (statusInformation.systemText.length() > 2)
+	{
+		statusInformation.systemText.pop_back();
+		statusInformation.systemText.pop_back();
+	}
+	if (statusInformation.configurationText.length() > 2)
+	{
+		statusInformation.configurationText.pop_back();
+		statusInformation.configurationText.pop_back();
+	}
+	if (statusInformation.protectionText.length() > 2)
+	{
+		statusInformation.protectionText.pop_back();
+		statusInformation.protectionText.pop_back();
+	}
+	if (statusInformation.faultText.length() > 2)
+	{
+		statusInformation.faultText.pop_back();
+		statusInformation.faultText.pop_back();
+	}
 
 	return true;
 }

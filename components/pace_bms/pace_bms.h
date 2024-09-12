@@ -40,7 +40,6 @@ public:
 	void set_skip_soh(bool skip_soh) { this->v20_skip_soh_ = skip_soh; }
 	void set_skip_pv(bool skip_pv) { this->v20_skip_pv_ = skip_pv; }
 	void set_design_capacity_mah(uint32_t design_capacity_mah_override) { this->design_capacity_mah_override_ = design_capacity_mah_override; }
-	void set_skip_status_flags(bool skip_status_flags) { this->v20_skip_status_flags_ = skip_status_flags; }
 	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
@@ -85,6 +84,7 @@ public:
 	void register_system_datetime_callback_v25(std::function<void(PaceBmsV25::DateTime&)> callback) { system_datetime_callbacks_v25_.push_back(std::move(callback)); }
 	
 	void register_analog_information_callback_v20(std::function<void(PaceBmsV20::AnalogInformation&)> callback) { analog_information_callbacks_v20_.push_back(std::move(callback)); }
+	void register_status_information_callback_v20(std::function<void(PaceBmsV20::StatusInformation&)> callback) { status_information_callbacks_v20_.push_back(std::move(callback)); }
 
 	// child sensors call these to schedule new values be written out to the hardware
 	void set_switch_state_v25(PaceBmsV25::SwitchCommand state);
@@ -129,8 +129,6 @@ protected:
 
 	uint32_t design_capacity_mah_override_{ 0 };
 
-	bool v20_skip_status_flags_{ false };
-
 	int protocol_version_{ 0 };
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
@@ -165,6 +163,7 @@ protected:
 	void handle_write_configuration_response_v25(std::vector<uint8_t>& response);
 
 	void handle_read_analog_information_response_v20(std::vector<uint8_t>& response);
+	void handle_read_status_information_response_v20(std::vector<uint8_t>& response);
 
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
@@ -190,6 +189,7 @@ protected:
 	std::vector<std::function<void(PaceBmsV25::DateTime&)>>                                        system_datetime_callbacks_v25_;
 
 	std::vector<std::function<void(PaceBmsV20::AnalogInformation&)>>                               analog_information_callbacks_v20_;
+	std::vector<std::function<void(PaceBmsV20::StatusInformation&)>>                               status_information_callbacks_v20_;
 
 	// along with loop() this is the "engine" of BMS communications
 	//     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS

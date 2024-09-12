@@ -70,11 +70,11 @@ void PaceBms::setup() {
 		// the protocol en/decoder PaceBmsV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
 		this->pace_bms_v20_ = new PaceBmsV20(
 			(PaceBmsV20::CID1)chemistry_, 
+			v20_skip_address_payload_,
 			analog_cell_count_override_, analog_temperature_count_override_,
-			v20_skip_address_payload_, v20_skip_ud2_, v20_skip_soc_, v20_skip_dc_, v20_skip_soh_, v20_skip_pv_, 
+			v20_skip_ud2_, v20_skip_soc_, v20_skip_dc_, v20_skip_soh_, v20_skip_pv_, 
 			design_capacity_mah_override_, 
 			status_cell_count_override_, status_temperature_count_override_, 
-			v20_skip_status_flags_,
 			error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
 	else {
@@ -267,6 +267,13 @@ void PaceBms::update() {
 				item->description_ = std::string("read analog information");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadAnalogInformationRequest(this->address_, request); };
 				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_analog_information_response_v20(response); };
+				read_queue_.push(item);
+			}
+			if (this->status_information_callbacks_v20_.size() > 0) {
+				command_item* item = new command_item;
+				item->description_ = std::string("read status information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadStatusInformationRequest(this->address_, request); };
+				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_status_information_response_v20(response); };
 				read_queue_.push(item);
 			}
 		}
@@ -834,6 +841,22 @@ void PaceBms::handle_read_analog_information_response_v20(std::vector<uint8_t>& 
 	// dispatch to any child components that registered for a callback with us
 	for (int i = 0; i < this->analog_information_callbacks_v20_.size(); i++) {
 		analog_information_callbacks_v20_[i](analog_information);
+	}
+}
+
+void PaceBms::handle_read_status_information_response_v20(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsV20::StatusInformation status_information;
+	bool result = this->pace_bms_v20_->ProcessReadStatusInformationResponse(this->address_, response, status_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' request", this->last_request_description.c_str());
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->status_information_callbacks_v20_.size(); i++) {
+		status_information_callbacks_v20_[i](status_information);
 	}
 }
 
