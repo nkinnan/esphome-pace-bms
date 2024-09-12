@@ -19,26 +19,30 @@ PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
 # "this" for pace_bms_sensor/text_sensor/switch/etc. to get parent from
 CONF_PACE_BMS_ID = "pace_bms_id"
 
-CONF_CHEMISTRY            = "chemistry"
-CONF_SKIP_ADDRESS_PAYLOAD = "v20_skip_address_payload"
-CONF_CELL_COUNT           = "v20_cell_count_override"
-CONF_TEMPERATURE_COUNT    = "v20_temperature_count_override"
-CONF_SKIP_UD2             = "v20_skip_ud2"
-CONF_SKIP_SOC             = "v20_skip_soc"
-CONF_SKIP_DC              = "v20_skip_dc"
-CONF_SKIP_SOH             = "v20_skip_soh"
-CONF_SKIP_PV              = "v20_skip_pv"
-CONF_DESIGN_CAPACITY_MAH  = "v20_design_capacity_mah_override"
-CONF_SKIP_STATUS_FLAGS    = "v20_skip_status_flags"
-CONF_PROTOCOL_VERSION     = "protocol_version"
-CONF_REQUEST_THROTTLE     = "request_throttle"
-CONF_RESPONSE_TIMEOUT     = "response_timeout"
+CONF_CHEMISTRY                   = "chemistry"
+CONF_SKIP_ADDRESS_PAYLOAD        = "v20_skip_address_payload"
+CONF_ANALOG_CELL_COUNT           = "analog_cell_count_override"
+CONF_ANALOG_TEMPERATURE_COUNT    = "analog_temperature_count_override"
+CONF_STATUS_CELL_COUNT           = "status_cell_count_override"
+CONF_STATUS_TEMPERATURE_COUNT    = "status_temperature_count_override"
+CONF_SKIP_UD2                    = "v20_skip_ud2"
+CONF_SKIP_SOC                    = "v20_skip_soc"
+CONF_SKIP_DC                     = "v20_skip_dc"
+CONF_SKIP_SOH                    = "v20_skip_soh"
+CONF_SKIP_PV                     = "v20_skip_pv"
+CONF_DESIGN_CAPACITY_MAH         = "design_capacity_mah_override"
+CONF_SKIP_STATUS_FLAGS           = "v20_skip_status_flags"
+CONF_PROTOCOL_VERSION            = "protocol_version"
+CONF_REQUEST_THROTTLE            = "request_throttle"
+CONF_RESPONSE_TIMEOUT            = "response_timeout"
 
 DEFAULT_ADDRESS = 1
 DEFAULT_CHEMISTRY = 0x46
 DEFAULT_SKIP_ADDRESS_PAYLOAD = False
-DEFAULT_CELL_COUNT = 0
-DEFAULT_TEMPERATURE_COUNT = 0
+DEFAULT_ANALOG_CELL_COUNT = 0
+DEFAULT_ANALOG_TEMPERATURE_COUNT = 0
+DEFAULT_STATUS_CELL_COUNT = 0
+DEFAULT_STATUS_TEMPERATURE_COUNT = 0
 DEFAULT_SKIP_UD2 = False
 DEFAULT_SKIP_SOC = True
 DEFAULT_SKIP_DC = True
@@ -58,8 +62,10 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
             cv.Optional(CONF_CHEMISTRY, default=DEFAULT_CHEMISTRY): cv.int_range(min=0, max=255),
             cv.Optional(CONF_SKIP_ADDRESS_PAYLOAD, default=DEFAULT_SKIP_ADDRESS_PAYLOAD): cv.boolean,
-            cv.Optional(CONF_CELL_COUNT, default=DEFAULT_CELL_COUNT): cv.int_range(min=0, max=16),
-            cv.Optional(CONF_TEMPERATURE_COUNT, default=DEFAULT_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
+            cv.Optional(CONF_ANALOG_CELL_COUNT, default=DEFAULT_ANALOG_CELL_COUNT): cv.int_range(min=0, max=16),
+            cv.Optional(CONF_ANALOG_TEMPERATURE_COUNT, default=DEFAULT_ANALOG_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
+            cv.Optional(CONF_STATUS_CELL_COUNT, default=DEFAULT_STATUS_CELL_COUNT): cv.int_range(min=0, max=16),
+            cv.Optional(CONF_STATUS_TEMPERATURE_COUNT, default=DEFAULT_STATUS_TEMPERATURE_COUNT): cv.int_range(min=0, max=6),
             cv.Optional(CONF_SKIP_UD2, default=DEFAULT_SKIP_UD2): cv.boolean,
             cv.Optional(CONF_SKIP_SOC, default=DEFAULT_SKIP_SOC): cv.boolean,
             cv.Optional(CONF_SKIP_DC, default=DEFAULT_SKIP_DC): cv.boolean,
@@ -95,10 +101,14 @@ async def to_code(config):
         cg.add(var.set_chemistry(config[CONF_CHEMISTRY]))
     if CONF_SKIP_ADDRESS_PAYLOAD in config:
         cg.add(var.set_skip_address_payload(config[CONF_SKIP_ADDRESS_PAYLOAD]))
-    if CONF_CELL_COUNT in config:
-        cg.add(var.set_cell_count(config[CONF_CELL_COUNT]))
-    if CONF_TEMPERATURE_COUNT in config:
-        cg.add(var.set_temperature_count(config[CONF_TEMPERATURE_COUNT]))
+    if CONF_ANALOG_CELL_COUNT in config:
+        cg.add(var.set_analog_cell_count(config[CONF_ANALOG_CELL_COUNT]))
+    if CONF_ANALOG_TEMPERATURE_COUNT in config:
+        cg.add(var.set_analog_temperature_count(config[CONF_ANALOG_TEMPERATURE_COUNT]))
+    if CONF_STATUS_CELL_COUNT in config:
+        cg.add(var.set_status_cell_count(config[CONF_STATUS_CELL_COUNT]))
+    if CONF_STATUS_TEMPERATURE_COUNT in config:
+        cg.add(var.set_status_temperature_count(config[CONF_STATUS_TEMPERATURE_COUNT]))
     if CONF_SKIP_UD2 in config:
         cg.add(var.set_skip_ud2(config[CONF_SKIP_UD2]))
     if CONF_SKIP_SOC in config:

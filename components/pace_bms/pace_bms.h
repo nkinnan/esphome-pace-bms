@@ -24,14 +24,16 @@ public:
 	void set_address(uint8_t address) { this->address_ = address; }
 	void set_chemistry(uint8_t chemistry) { this->chemistry_ = chemistry; }
 	void set_skip_address_payload(bool skip_address_payload) { this->v20_skip_address_payload_ = skip_address_payload; }
-	void set_cell_count(uint8_t cell_count_override) { this->v20_cell_count_override_ = cell_count_override; }
-	void set_temperature_count(uint8_t temperature_count_override) { this->v20_temperature_count_override_ = temperature_count_override; }
+	void set_analog_cell_count(uint8_t analog_cell_count_override) { this->analog_cell_count_override_ = analog_cell_count_override; }
+	void set_analog_temperature_count(uint8_t analog_temperature_count_override) { this->analog_temperature_count_override_ = analog_temperature_count_override; }
+	void set_status_cell_count(uint8_t status_cell_count_override) { this->status_cell_count_override_ = status_cell_count_override; }
+	void set_status_temperature_count(uint8_t status_temperature_count_override) { this->status_temperature_count_override_ = status_temperature_count_override; }
 	void set_skip_ud2(bool skip_ud2) { this->v20_skip_ud2_ = skip_ud2; }
 	void set_skip_soc(bool skip_soc) { this->v20_skip_soc_ = skip_soc; }
 	void set_skip_dc(bool skip_dc) { this->v20_skip_dc_ = skip_dc; }
 	void set_skip_soh(bool skip_soh) { this->v20_skip_soh_ = skip_soh; }
 	void set_skip_pv(bool skip_pv) { this->v20_skip_pv_ = skip_pv; }
-	void set_design_capacity_mah(int design_capacity_mah_override) { this->v20_design_capacity_mah_override_ = design_capacity_mah_override; }
+	void set_design_capacity_mah(uint32_t design_capacity_mah_override) { this->design_capacity_mah_override_ = design_capacity_mah_override; }
 	void set_skip_status_flags(bool skip_status_flags) { this->v20_skip_status_flags_ = skip_status_flags; }
 	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
@@ -105,16 +107,24 @@ protected:
 	GPIOPin* flow_control_pin_{ nullptr };
 	uint8_t address_{ 0 };
 	uint8_t chemistry_{ 0 };
+
 	bool v20_skip_address_payload_{ 0 };
-	uint8_t v20_cell_count_override_{ 0 };
-	uint8_t v20_temperature_count_override_{ 0 };
+
+	uint8_t analog_cell_count_override_{ 0 };
+	uint8_t status_cell_count_override_{ 0 };
+	uint8_t analog_temperature_count_override_{ 0 };
+	uint8_t status_temperature_count_override_{ 0 };
+
 	bool v20_skip_ud2_{ false };
 	bool v20_skip_soc_{ true };
 	bool v20_skip_dc_{ true };
 	bool v20_skip_soh_{ true };
 	bool v20_skip_pv_{ true };
-	int v20_design_capacity_mah_override_{ 0 };
+
+	uint32_t design_capacity_mah_override_{ 0 };
+
 	bool v20_skip_status_flags_{ false };
+
 	int protocol_version_{ 0 };
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
