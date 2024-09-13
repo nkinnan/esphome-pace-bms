@@ -43,6 +43,8 @@ ota:
 wifi:
   # Set up a wifi access point
   ap: {}
+  # # don't scan first, would be a problem if you have multiple APs (BSSIDs) but I only have one
+  # fast_connect: true
 
 # To have a "next url" for improv serial
 web_server:

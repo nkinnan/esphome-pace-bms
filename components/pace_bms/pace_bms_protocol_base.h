@@ -6,10 +6,10 @@
 
 // uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
 //#include <optional>
-//using namespace std;
+//#define OPTIONAL_NS std
 #include "esphome/core/optional.h"
-using namespace esphome;
- 
+#define OPTIONAL_NS esphome
+
 /*
 General format of requests/responses:
 -------------------------------------
@@ -37,14 +37,14 @@ public:
 
 protected:
 	uint8_t protocol_version;
-	optional<uint8_t> protocol_version_override;
+	OPTIONAL_NS::optional<uint8_t> protocol_version_override;
 	// battery chemistry
 	uint8_t cid1;
 
-	optional<uint8_t> analog_cell_count_override;
-	optional<uint8_t> analog_temperature_count_override;
-	optional<uint8_t> status_cell_count_override;
-	optional<uint8_t> status_temperature_count_override;
+	OPTIONAL_NS::optional<uint8_t> analog_cell_count_override;
+	OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override;
+	OPTIONAL_NS::optional<uint8_t> status_cell_count_override;
+	OPTIONAL_NS::optional<uint8_t> status_temperature_count_override;
 
 	uint32_t design_capacity_mah_override;
 

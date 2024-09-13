@@ -10,6 +10,8 @@ esphome:
   project:
     name: esphome.web
     version: dev
+  libraries:
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 
 esp8266:
   board: esp01_1m
@@ -23,15 +25,19 @@ ota:
 
 wifi:
   ap: {}
+  # # don't scan first, would be a problem if you have multiple APs (BSSIDs) but I only have one
+  # fast_connect: true
 
 web_server:
   version: 3
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/nkinnan/esphome-pace-bms
-      ref: "initial_commit"
+      #type: git
+      #url: https://github.com/nkinnan/esphome-pace-bms
+      #ref: "main"
+      type: local
+      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
     refresh: 1s
 

@@ -3,12 +3,12 @@
 
 // takes pointers to the "real" logging functions
 PaceBmsProtocolV20::PaceBmsProtocolV20(
-	optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
+	OPTIONAL_NS::optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
 	bool skip_address_payload, 
-	optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
+	OPTIONAL_NS::optional<uint8_t> analog_cell_count_override, OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override,
 	bool skip_ud2, bool skip_soc, bool skip_dc, bool skip_soh, bool skip_pv,
 	uint32_t design_capacity_mah_override,
-	optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
+	OPTIONAL_NS::optional<uint8_t> status_cell_count_override, OPTIONAL_NS::optional<uint8_t> status_temperature_count_override,
 	PaceBmsProtocolV20::LogFuncPtr logError, PaceBmsProtocolV20::LogFuncPtr logWarning, PaceBmsProtocolV20::LogFuncPtr logInfo, PaceBmsProtocolV20::LogFuncPtr logDebug, PaceBmsProtocolV20::LogFuncPtr logVerbose, PaceBmsProtocolV20::LogFuncPtr logVeryVerbose)
 {
 	this->protocol_version = 0x20;

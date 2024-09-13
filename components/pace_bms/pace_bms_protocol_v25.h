@@ -35,10 +35,10 @@ public:
 
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV25(
-		optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
-		optional<uint8_t> analog_cell_count_override, optional<uint8_t> analog_temperature_count_override,
+		OPTIONAL_NS::optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
+		OPTIONAL_NS::optional<uint8_t> analog_cell_count_override, OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override,
 		uint32_t design_capacity_mah_override_,
-		optional<uint8_t> status_cell_count_override, optional<uint8_t> status_temperature_count_override,
+		OPTIONAL_NS::optional<uint8_t> status_cell_count_override, OPTIONAL_NS::optional<uint8_t> status_temperature_count_override,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 protected:
