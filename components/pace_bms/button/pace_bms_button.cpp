@@ -11,7 +11,15 @@ void PaceBmsButton::setup() {
 		if (this->shutdown_button_ != nullptr) {
 			this->shutdown_button_->add_on_press_callback([this]() {
 				ESP_LOGD(TAG, "Sending shutdown");
-				this->parent_->send_shutdown_v25();
+				this->parent_->write_shutdown_v25();
+			});
+		}
+	}
+	else if (this->parent_->get_protocol_version() == 0x20) {
+		if (this->shutdown_button_ != nullptr) {
+			this->shutdown_button_->add_on_press_callback([this]() {
+				ESP_LOGD(TAG, "Sending shutdown");
+				this->parent_->write_shutdown_v20();
 			});
 		}
 	}

@@ -1,7 +1,8 @@
-#include "pace_bms_sensor.h"
+#include <functional>
+
 #include "esphome/core/log.h"
 
-#include <functional>
+#include "pace_bms_sensor.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -66,11 +67,11 @@ void PaceBmsSensor::dump_config() {
 	LOG_SENSOR("  ", "Protection Status Value 1", this->protection_status_value_1_sensor_);
 	LOG_SENSOR("  ", "Protection Status Value 2", this->protection_status_value_2_sensor_);
 	LOG_SENSOR("  ", "Fault Status Value", this->fault_status_value_sensor_);
-	LOG_SENSOR("  ", "Status 1 Value", this->status_value1_sensor_);
-	LOG_SENSOR("  ", "Status 2 Value", this->status_value2_sensor_);
-	LOG_SENSOR("  ", "Status 3 Value", this->status_value3_sensor_);
-	LOG_SENSOR("  ", "Status 4 Value", this->status_value4_sensor_);
-	LOG_SENSOR("  ", "Status 5 Value", this->status_value5_sensor_);
+	LOG_SENSOR("  ", "Status 1 Value", this->status1_value_sensor_);
+	LOG_SENSOR("  ", "Status 2 Value", this->status2_value_sensor_);
+	LOG_SENSOR("  ", "Status 3 Value", this->status3_value_sensor_);
+	LOG_SENSOR("  ", "Status 4 Value", this->status4_value_sensor_);
+	LOG_SENSOR("  ", "Status 5 Value", this->status5_value_sensor_);
 }
 
 void PaceBmsSensor::analog_information_callback_v25(PaceBmsProtocolV25::AnalogInformation& analog_information) {
@@ -255,20 +256,81 @@ void PaceBmsSensor::status_information_callback_v20(PaceBmsProtocolV20::StatusIn
 	if (this->warning_status_value_discharge_current_sensor_ != nullptr) {
 		this->warning_status_value_discharge_current_sensor_->publish_state(status_information.warning_value_discharge_current);
 	}
-	if (this->status_value1_sensor_ != nullptr) {
-		this->status_value1_sensor_->publish_state(status_information.status1_value);
+
+	if (this->balancing_status_value_sensor_ != nullptr) {
+		this->balancing_status_value_sensor_->publish_state(status_information.balancing_value);
 	}
-	if (this->status_value2_sensor_ != nullptr) {
-		this->status_value2_sensor_->publish_state(status_information.status2_value);
+	if (this->system_status_value_sensor_ != nullptr) {
+		this->system_status_value_sensor_->publish_state(status_information.system_value);
 	}
-	if (this->status_value3_sensor_ != nullptr) {
-		this->status_value3_sensor_->publish_state(status_information.status3_value);
+
+	// PYLON
+	if (this->status1_value_sensor_ != nullptr) {
+		this->status1_value_sensor_->publish_state(status_information.status1_value);
 	}
-	if (this->status_value4_sensor_ != nullptr) {
-		this->status_value4_sensor_->publish_state(status_information.status4_value);
+	if (this->status2_value_sensor_ != nullptr) {
+		this->status2_value_sensor_->publish_state(status_information.status2_value);
 	}
-	if (this->status_value5_sensor_ != nullptr) {
-		this->status_value5_sensor_->publish_state(status_information.status5_value);
+	if (this->status3_value_sensor_ != nullptr) {
+		this->status3_value_sensor_->publish_state(status_information.status3_value);
+	}
+	if (this->status4_value_sensor_ != nullptr) {
+		this->status4_value_sensor_->publish_state(status_information.status4_value);
+	}
+	if (this->status5_value_sensor_ != nullptr) {
+		this->status5_value_sensor_->publish_state(status_information.status5_value);
+	}
+
+	// SEPLOS
+	if (this->warning1_status_value_sensor_ != nullptr) {
+		this->warning1_status_value_sensor_->publish_state(status_information.warning1_value);
+	}
+	if (this->warning2_status_value_sensor_ != nullptr) {
+		this->warning2_status_value_sensor_->publish_state(status_information.warning2_value);
+	}
+	if (this->warning3_status_value_sensor_ != nullptr) {
+		this->warning3_status_value_sensor_->publish_state(status_information.warning3_value);
+	}
+	if (this->warning4_status_value_sensor_ != nullptr) {
+		this->warning4_status_value_sensor_->publish_state(status_information.warning4_value);
+	}
+	if (this->warning5_status_value_sensor_ != nullptr) {
+		this->warning5_status_value_sensor_->publish_state(status_information.warning5_value);
+	}
+	if (this->warning6_status_value_sensor_ != nullptr) {
+		this->warning6_status_value_sensor_->publish_state(status_information.warning6_value);
+	}
+	if (this->power_status_value_sensor_ != nullptr) {
+		this->power_status_value_sensor_->publish_state(status_information.power_value);
+	}
+	if (this->disconnection_status_value_sensor_ != nullptr) {
+		this->disconnection_status_value_sensor_->publish_state(status_information.disconnection_value);
+	}
+	if (this->warning7_status_value_sensor_ != nullptr) {
+		this->warning7_status_value_sensor_->publish_state(status_information.warning7_value);
+	}
+	if (this->warning8_status_value_sensor_ != nullptr) {
+		this->warning8_status_value_sensor_->publish_state(status_information.warning8_value);
+	}
+
+	// EG4
+	if (this->balance_event_value_sensor_ != nullptr) {
+		this->balance_event_value_sensor_->publish_state(status_information.balance_event_value);
+	}
+	if (this->voltage_event_value_sensor_ != nullptr) {
+		this->voltage_event_value_sensor_->publish_state(status_information.voltage_event_value);
+	}
+	if (this->temperature_event_value_sensor_ != nullptr) {
+		this->temperature_event_value_sensor_->publish_state(status_information.temperature_event_value);
+	}
+	if (this->current_event_value_sensor_ != nullptr) {
+		this->current_event_value_sensor_->publish_state(status_information.current_event_value);
+	}
+	if (this->remaining_capacity_value_sensor_ != nullptr) {
+		this->remaining_capacity_value_sensor_->publish_state(status_information.remaining_capacity_value);
+	}
+	if (this->fet_status_value_sensor_ != nullptr) {
+		this->fet_status_value_sensor_->publish_state(status_information.fet_status_value);
 	}
 }
 

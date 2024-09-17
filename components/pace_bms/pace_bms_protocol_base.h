@@ -35,18 +35,33 @@ public:
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
+	PaceBmsProtocolBase(uint8_t protocol_version, OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> battery_chemistry,
+		                LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose)
+	{
+		this->protocol_version = protocol_version;
+		this->protocol_variant = protocol_variant;
+		this->protocol_version_override = protocol_version_override;
+		if (battery_chemistry.has_value())
+			this->cid1 = battery_chemistry.value();
+		else
+			this->cid1 = 0x46;
+
+		this->LogErrorPtr = logError;
+		this->LogWarningPtr = logWarning;
+		this->LogInfoPtr = logInfo;
+		this->LogDebugPtr = logDebug;
+		this->LogVerbosePtr = logVerbose;
+		this->LogVeryVerbosePtr = logVeryVerbose;
+	}
+
 protected:
 	uint8_t protocol_version;
+	OPTIONAL_NS::optional<std::string> protocol_variant;
 	OPTIONAL_NS::optional<uint8_t> protocol_version_override;
 	// battery chemistry
 	uint8_t cid1;
 
-	OPTIONAL_NS::optional<uint8_t> analog_cell_count_override;
-	OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override;
-	OPTIONAL_NS::optional<uint8_t> status_cell_count_override;
-	OPTIONAL_NS::optional<uint8_t> status_temperature_count_override;
-
-	uint32_t design_capacity_mah_override;
+	OPTIONAL_NS::optional<std::string> detected_variant;
 
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
@@ -84,22 +99,25 @@ protected:
 	static uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	static uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	static uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	static int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+
+	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
+	uint32_t ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-	static void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
+	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
 
 	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-	static void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
+	void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
 
 	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-	static void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
+	void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
 
 	std::string FormatReturnCode(const uint8_t returnCode);
 

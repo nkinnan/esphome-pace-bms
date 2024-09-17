@@ -46,11 +46,29 @@ public:
 	void set_protection_status_value_2_sensor(sensor::Sensor* sens) { protection_status_value_2_sensor_ = sens;              request_status_info_callback_ = true; }
 	void set_fault_status_value_sensor(sensor::Sensor* sens) { fault_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
 
-	void set_status_value1_sensor(sensor::Sensor* sens) { status_value1_sensor_ = sens;                     request_status_info_callback_ = true; }
-	void set_status_value2_sensor(sensor::Sensor* sens) { status_value2_sensor_ = sens;                     request_status_info_callback_ = true; }
-	void set_status_value3_sensor(sensor::Sensor* sens) { status_value3_sensor_ = sens;                     request_status_info_callback_ = true; }
-	void set_status_value4_sensor(sensor::Sensor* sens) { status_value4_sensor_ = sens;                     request_status_info_callback_ = true; }
-	void set_status_value5_sensor(sensor::Sensor* sens) { status_value5_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status1_value_sensor(sensor::Sensor* sens) { status1_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status2_value_sensor(sensor::Sensor* sens) { status2_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status3_value_sensor(sensor::Sensor* sens) { status3_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status4_value_sensor(sensor::Sensor* sens) { status4_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_status5_value_sensor(sensor::Sensor* sens) { status5_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+
+	void set_warning1_status_value_sensor(sensor::Sensor* sens) { warning1_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning2_status_value_sensor(sensor::Sensor* sens) { warning2_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning3_status_value_sensor(sensor::Sensor* sens) { warning3_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning4_status_value_sensor(sensor::Sensor* sens) { warning4_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning5_status_value_sensor(sensor::Sensor* sens) { warning5_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning6_status_value_sensor(sensor::Sensor* sens) { warning6_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_power_status_value_sensor(sensor::Sensor* sens) { power_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_disconnection_status_value_sensor(sensor::Sensor* sens) { disconnection_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning7_status_value_sensor(sensor::Sensor* sens) { warning7_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_warning8_status_value_sensor(sensor::Sensor* sens) { warning8_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+
+	void set_balance_event_value_sensor(sensor::Sensor* sens)      { balance_event_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_voltage_event_value_sensor(sensor::Sensor* sens)      { voltage_event_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_temperature_event_value_sensor(sensor::Sensor* sens)  { temperature_event_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_current_event_value_sensor(sensor::Sensor* sens)      { current_event_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_remaining_capacity_value_sensor(sensor::Sensor* sens) { remaining_capacity_value_sensor_ = sens;                     request_status_info_callback_ = true; }
+	void set_fet_status_value_sensor(sensor::Sensor* sens)         { fet_status_value_sensor_ = sens;                     request_status_info_callback_ = true; }
 
 	void setup() override;
 	float get_setup_priority() const override { return setup_priority::DATA; };
@@ -93,11 +111,29 @@ protected:
 	sensor::Sensor* protection_status_value_2_sensor_{ nullptr };
 	sensor::Sensor* fault_status_value_sensor_{ nullptr };
 
-	sensor::Sensor* status_value1_sensor_{ nullptr };
-	sensor::Sensor* status_value2_sensor_{ nullptr };
-	sensor::Sensor* status_value3_sensor_{ nullptr };
-	sensor::Sensor* status_value4_sensor_{ nullptr };
-	sensor::Sensor* status_value5_sensor_{ nullptr };
+	sensor::Sensor* status1_value_sensor_{ nullptr };
+	sensor::Sensor* status2_value_sensor_{ nullptr };
+	sensor::Sensor* status3_value_sensor_{ nullptr };
+	sensor::Sensor* status4_value_sensor_{ nullptr };
+	sensor::Sensor* status5_value_sensor_{ nullptr };
+
+	sensor::Sensor* warning1_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning2_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning3_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning4_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning5_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning6_status_value_sensor_{ nullptr };
+	sensor::Sensor* power_status_value_sensor_{ nullptr };
+	sensor::Sensor* disconnection_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning7_status_value_sensor_{ nullptr };
+	sensor::Sensor* warning8_status_value_sensor_{ nullptr };
+
+	sensor::Sensor* balance_event_value_sensor_{ nullptr };
+	sensor::Sensor* voltage_event_value_sensor_{ nullptr };
+	sensor::Sensor* temperature_event_value_sensor_{ nullptr };
+	sensor::Sensor* current_event_value_sensor_{ nullptr };
+	sensor::Sensor* remaining_capacity_value_sensor_{ nullptr };
+	sensor::Sensor* fet_status_value_sensor_{ nullptr };
 
 	bool request_analog_info_callback_ = false;
 	bool request_status_info_callback_ = false;

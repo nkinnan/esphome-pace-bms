@@ -1,7 +1,8 @@
-#include "pace_bms_datetime.h"
 #include "esphome/core/log.h"
 
 #include <functional>
+
+#include "pace_bms_datetime.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -35,7 +36,7 @@ void PaceBmsDatetime::setup() {
 				this->system_date_and_time_.Hour = value.get_hour().value();
 				this->system_date_and_time_.Minute = value.get_minute().value();
 				this->system_date_and_time_.Second = value.get_second().value();
-				this->parent_->set_system_datetime_v25(this->system_date_and_time_);
+				this->parent_->write_system_datetime_v25(this->system_date_and_time_);
 			});
 		}
 	}

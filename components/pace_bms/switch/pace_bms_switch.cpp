@@ -1,7 +1,8 @@
-#include "pace_bms_switch.h"
+#include <functional>
+
 #include "esphome/core/log.h"
 
-#include <functional>
+#include "pace_bms_switch.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -45,27 +46,27 @@ void PaceBmsSwitch::setup() {
 		}
 		if (this->buzzer_alarm_switch_ != nullptr) {
 			this->buzzer_alarm_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->set_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableBuzzer : PaceBmsProtocolV25::SC_DisableBuzzer);
+				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableBuzzer : PaceBmsProtocolV25::SC_DisableBuzzer);
 			});
 		}
 		if (this->led_alarm_switch_ != nullptr) {
 			this->led_alarm_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->set_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableLedWarning : PaceBmsProtocolV25::SC_DisableLedWarning);
+				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableLedWarning : PaceBmsProtocolV25::SC_DisableLedWarning);
 			});
 		}
 		if (this->charge_current_limiter_switch_ != nullptr) {
 			this->charge_current_limiter_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->set_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableChargeCurrentLimiter : PaceBmsProtocolV25::SC_DisableChargeCurrentLimiter);
+				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableChargeCurrentLimiter : PaceBmsProtocolV25::SC_DisableChargeCurrentLimiter);
 			});
 		}
 		if (this->charge_mosfet_switch_ != nullptr) {
 			this->charge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->set_mosfet_state_v25(PaceBmsProtocolV25::MT_Charge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
+				this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Charge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
 			});
 		}
 		if (this->discharge_mosfet_switch_ != nullptr) {
 			this->discharge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->set_mosfet_state_v25(PaceBmsProtocolV25::MT_Discharge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
+				this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Discharge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
 			});
 		}
 	}

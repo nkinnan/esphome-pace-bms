@@ -22,20 +22,10 @@ public:
 	// called by the codegen to set our YAML property values
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 	void set_address(uint8_t address) { this->address_ = address; }
+	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
+	void set_protocol_variant(std::string protocol_variant) { this->protocol_variant_ = protocol_variant; }
 	void set_protocol_version_override(uint8_t protocol_version_override) { this->protocol_version_override_ = protocol_version_override; }
 	void set_chemistry(uint8_t chemistry) { this->chemistry_ = chemistry; }
-	void set_skip_address_payload(bool skip_address_payload) { this->v20_skip_address_payload_ = skip_address_payload; }
-	void set_analog_cell_count(uint8_t analog_cell_count_override) { this->analog_cell_count_override_ = analog_cell_count_override; }
-	void set_analog_temperature_count(uint8_t analog_temperature_count_override) { this->analog_temperature_count_override_ = analog_temperature_count_override; }
-	void set_status_cell_count(uint8_t status_cell_count_override) { this->status_cell_count_override_ = status_cell_count_override; }
-	void set_status_temperature_count(uint8_t status_temperature_count_override) { this->status_temperature_count_override_ = status_temperature_count_override; }
-	void set_skip_ud2(bool skip_ud2) { this->v20_skip_ud2_ = skip_ud2; }
-	void set_skip_soc(bool skip_soc) { this->v20_skip_soc_ = skip_soc; }
-	void set_skip_dc(bool skip_dc) { this->v20_skip_dc_ = skip_dc; }
-	void set_skip_soh(bool skip_soh) { this->v20_skip_soh_ = skip_soh; }
-	void set_skip_pv(bool skip_pv) { this->v20_skip_pv_ = skip_pv; }
-	void set_design_capacity_mah(uint32_t design_capacity_mah_override) { this->design_capacity_mah_override_ = design_capacity_mah_override; }
-	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 
@@ -80,52 +70,46 @@ public:
 	
 	void register_analog_information_callback_v20(std::function<void(PaceBmsProtocolV20::AnalogInformation&)> callback) { analog_information_callbacks_v20_.push_back(std::move(callback)); }
 	void register_status_information_callback_v20(std::function<void(PaceBmsProtocolV20::StatusInformation&)> callback) { status_information_callbacks_v20_.push_back(std::move(callback)); }
+	void register_hardware_version_callback_v20(std::function<void(std::string&)> callback) { hardware_version_callbacks_v20_.push_back(std::move(callback)); }
+	void register_serial_number_callback_v20(std::function<void(std::string&) > callback) { serial_number_callbacks_v20_.push_back(std::move(callback)); }
 
 	// child sensors call these to schedule new values be written out to the hardware
-	void set_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state);
-	void set_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state);
-	void send_shutdown_v25();
-	void set_protocols_v25(PaceBmsProtocolV25::Protocols& protocols);
-	void set_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config);
-	void set_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config);
-	void set_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config);
-	void set_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config);
-	void set_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config);
-	void set_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config);
-	void set_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config);
-	void set_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config);
-	void set_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config);
-	void set_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config);
-	void set_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config);
-	void set_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config);
-	void set_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
-	void set_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config);
-	void set_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config);
-	void set_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt);
+	void write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state);
+	void write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state);
+	void write_shutdown_v25();
+	void write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols);
+	void write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config);
+	void write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config);
+	void write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config);
+	void write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config);
+	void write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config);
+	void write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config);
+	void write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config);
+	void write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config);
+	void write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config);
+	void write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config);
+	void write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config);
+	void write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config);
+	void write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
+	void write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config);
+	void write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config);
+	void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt);
+
+	void write_shutdown_v20();
+
 
 protected:
 	// config values set in YAML
 	GPIOPin* flow_control_pin_{ nullptr };
 	uint8_t address_{ 0 };
-	optional<uint8_t> protocol_version_override_;
-	uint8_t chemistry_{ 0 };
 
-	bool v20_skip_address_payload_{ 0 };
-
-	optional<uint8_t> analog_cell_count_override_;
-	optional<uint8_t> status_cell_count_override_;
-	optional<uint8_t> analog_temperature_count_override_;
-	optional<uint8_t> status_temperature_count_override_;
-
-	bool v20_skip_ud2_{ false };
-	bool v20_skip_soc_{ true };
-	bool v20_skip_dc_{ true };
-	bool v20_skip_soh_{ true };
-	bool v20_skip_pv_{ true };
+	int protocol_version_{ 0 };
+	OPTIONAL_NS::optional<std::string> protocol_variant_;
+	OPTIONAL_NS::optional<uint8_t> protocol_version_override_;
+	OPTIONAL_NS::optional<uint8_t> chemistry_;
 
 	uint32_t design_capacity_mah_override_{ 0 };
 
-	int protocol_version_{ 0 };
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
 
@@ -160,6 +144,9 @@ protected:
 
 	void handle_read_analog_information_response_v20(std::vector<uint8_t>& response);
 	void handle_read_status_information_response_v20(std::vector<uint8_t>& response);
+	void handle_read_hardware_version_response_v20(std::vector<uint8_t>& response);
+	void handle_read_serial_number_response_v20(std::vector<uint8_t>& response);
+	void handle_write_shutdown_command_response_v20(std::vector<uint8_t>& response);
 
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
@@ -186,6 +173,8 @@ protected:
 
 	std::vector<std::function<void(PaceBmsProtocolV20::AnalogInformation&)>>                               analog_information_callbacks_v20_;
 	std::vector<std::function<void(PaceBmsProtocolV20::StatusInformation&)>>                               status_information_callbacks_v20_;
+	std::vector<std::function<void(std::string&)>>                                                 hardware_version_callbacks_v20_;
+	std::vector<std::function<void(std::string&)>>                                                 serial_number_callbacks_v20_;
 
 	// along with loop() this is the "engine" of BMS communications
 	//     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS

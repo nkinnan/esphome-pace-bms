@@ -1,8 +1,9 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/pace_bms/pace_bms.h"
 #include "esphome/components/button/button.h"
+
+#include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
 namespace pace_bms {

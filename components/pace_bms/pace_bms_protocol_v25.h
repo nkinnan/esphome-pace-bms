@@ -35,14 +35,10 @@ public:
 
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV25(
-		OPTIONAL_NS::optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
-		OPTIONAL_NS::optional<uint8_t> analog_cell_count_override, OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override,
-		uint32_t design_capacity_mah_override_,
-		OPTIONAL_NS::optional<uint8_t> status_cell_count_override, OPTIONAL_NS::optional<uint8_t> status_temperature_count_override,
+		OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> batteryChemistry,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 protected:
-
 	enum CID2 : uint8_t
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
@@ -139,24 +135,24 @@ public:
 	static const uint8_t MAX_TEMP_COUNT = 6;
 	struct AnalogInformation
 	{
-		uint8_t  cellCount;
-		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT];
-		uint8_t  temperatureCount;
-		int16_t  temperaturesTenthsCelcius[MAX_TEMP_COUNT]; // first 4 are Cell readings, then MOSFET then Environment
-		int32_t  currentMilliamps;
-		uint16_t totalVoltageMillivolts;
-		uint32_t remainingCapacityMilliampHours;
-		uint32_t fullCapacityMilliampHours;
-		uint16_t cycleCount;
-		uint32_t designCapacityMilliampHours;
+		uint8_t  cellCount{ 0 };
+		uint16_t cellVoltagesMillivolts[MAX_CELL_COUNT]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		uint8_t  temperatureCount{ 0 };
+		int16_t  temperaturesTenthsCelcius[MAX_TEMP_COUNT]{ 0, 0, 0, 0, 0, 0 }; // first 4 are Cell readings, then MOSFET then Environment
+		int32_t  currentMilliamps{ 0 };
+		uint16_t totalVoltageMillivolts{ 0 };
+		uint32_t remainingCapacityMilliampHours{ 0 };
+		uint32_t fullCapacityMilliampHours{ 0 };
+		uint16_t cycleCount{ 0 };
+		uint32_t designCapacityMilliampHours{ 0 };
 		// calculated
-		float    SoC; // in percent
-		float    SoH; // in percent
-		float    powerWatts;
-		uint16_t minCellVoltageMillivolts;
-		uint16_t maxCellVoltageMillivolts;
-		uint16_t avgCellVoltageMillivolts;
-		uint16_t maxCellDifferentialMillivolts;
+		float    SoC{ 0 }; // in percent
+		float    SoH{ 0 }; // in percent
+		float    powerWatts{ 0 };
+		uint16_t minCellVoltageMillivolts{ 0 };
+		uint16_t maxCellVoltageMillivolts{ 0 };
+		uint16_t avgCellVoltageMillivolts{ 0 };
+		uint16_t maxCellDifferentialMillivolts{ 0 };
 	};
 
 	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
@@ -302,25 +298,25 @@ public:
 
 	struct StatusInformation
 	{
-		std::string warningText;
-		uint8_t     warning_value_cell[MAX_CELL_COUNT]; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_temp[MAX_TEMP_COUNT]; // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_charge_current;       // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_total_voltage;        // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value_discharge_current;    // DecodeWarningValue / enum StatusInformation_WarningValues
-		uint8_t     warning_value1;                     // DecodeWarningStatus1Value / enum StatusInformation_Warning1Flags
-		uint8_t     warning_value2;                     // DecodeWarningStatus2Value / enum StatusInformation_Warning2Flags
-		std::string balancingText;
-		uint16_t    balancing_value;                    // one bit per cell, lowest bit = cell 1
-		std::string systemText;
-		uint8_t     system_value;                       // DecodeStatusValue / enum StatusInformation_SystemFlags
-		std::string configurationText;
-		uint8_t     configuration_value;                // DecodeConfigurationStatusValue / enum StatusInformation_ConfigurationFlags
-		std::string protectionText;
-		uint8_t     protection_value1;                  // DecodeProtectionStatus1Value / enum StatusInformation_Protection1Flags
-		uint8_t     protection_value2;                  // DecodeProtectionStatus2Value / enum StatusInformation_Protection2Flags
-		std::string faultText;
-		uint8_t     fault_value;                        // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
+		std::string warningText{ "" };
+		uint8_t     warning_value_cell[MAX_CELL_COUNT]{ 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 }; // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_temp[MAX_TEMP_COUNT]{ 0, 0, 0, 0, 0, 0 }; // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_charge_current{ 0 };       // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_total_voltage{ 0 };        // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value_discharge_current{ 0 };    // DecodeWarningValue / enum StatusInformation_WarningValues
+		uint8_t     warning_value1{ 0 };                     // DecodeWarningStatus1Value / enum StatusInformation_Warning1Flags
+		uint8_t     warning_value2{ 0 };                     // DecodeWarningStatus2Value / enum StatusInformation_Warning2Flags
+		std::string balancingText{ "" };
+		uint16_t    balancing_value{ 0 };                    // one bit per cell, lowest bit = cell 1
+		std::string systemText{ "" };
+		uint8_t     system_value{ 0 };                       // DecodeStatusValue / enum StatusInformation_SystemFlags
+		std::string configurationText{ "" };
+		uint8_t     configuration_value{ 0 };                // DecodeConfigurationStatusValue / enum StatusInformation_ConfigurationFlags
+		std::string protectionText{ "" };
+		uint8_t     protection_value1{ 0 };                  // DecodeProtectionStatus1Value / enum StatusInformation_Protection1Flags
+		uint8_t     protection_value2{ 0 };                  // DecodeProtectionStatus2Value / enum StatusInformation_Protection2Flags
+		std::string faultText{ "" };
+		uint8_t     fault_value{ 0 };                        // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
 	};
 
 	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);

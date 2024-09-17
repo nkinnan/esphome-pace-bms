@@ -1,7 +1,5 @@
 #pragma once
 
-#define REQUIRES_TIME_FALSE
-
 #include "esphome/core/component.h"
 #include "esphome/components/datetime/datetime_entity.h"
 

@@ -130,6 +130,11 @@ uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex)
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
 uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
+	if (data.size() - dataOffset < 2)
+	{
+		LogError("Attempt to read past end of array");
+		return 0;
+	}
 	uint8_t byte = 0;
 	byte |= (HexToNibble(data[dataOffset++]) << 4) & 0xF0;
 	byte |= (HexToNibble(data[dataOffset++]) << 0) & 0x0F;
@@ -139,6 +144,11 @@ uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::vector<uint8_t>& data
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
 uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
+	if (data.size() - dataOffset < 4)
+	{
+		LogError("Attempt to read past end of array");
+		return 0;
+	}
 	uint16_t ushort = 0;
 	ushort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
 	ushort |= ((HexToNibble(data[dataOffset++]) << 8) & 0x0F00);
@@ -150,6 +160,11 @@ uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::vector<uint8_t>& d
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
 int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
+	if (data.size() - dataOffset < 4)
+	{
+		LogError("Attempt to read past end of array");
+		return 0;
+	}
 	int16_t sshort = 0;
 	sshort |= ((HexToNibble(data[dataOffset++]) << 12) & 0xF000);
 	sshort |= ((HexToNibble(data[dataOffset++]) << 8) & 0x0F00);
@@ -158,9 +173,34 @@ int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::vector<uint8_t>& da
 	return sshort;
 }
 
+// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
+uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset)
+{
+	if (data.size() - dataOffset < 8)
+	{
+		LogError("Attempt to read past end of array");
+		return 0;
+	}
+	uint32_t ulong = 0;
+	ulong |= ((HexToNibble(data[dataOffset++]) << 28) & 0xF0000000);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 24) & 0x0F000000);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 20) & 0x00F00000);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 16) & 0x000F0000);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 12) & 0x0000F000);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 8)  & 0x00000F00);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 4)  & 0x000000F0);
+	ulong |= ((HexToNibble(data[dataOffset++]) << 0)  & 0x0000000F);
+	return ulong;
+}
+
 // encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
 void PaceBmsProtocolBase::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
 {
+	if (data.size() - dataOffset < 2)
+	{
+		LogError("Attempt to write past end of array");
+		return;
+	}
 	data[dataOffset++] = NibbleToHex((byte >> 4) & 0x0F);
 	data[dataOffset++] = NibbleToHex((byte >> 0) & 0x0F);
 }
@@ -168,6 +208,11 @@ void PaceBmsProtocolBase::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
 void PaceBmsProtocolBase::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
+	if (data.size() - dataOffset < 4)
+	{
+		LogError("Attempt to write past end of array");
+		return;
+	}
 	data[dataOffset++] = NibbleToHex((ushort >> 12) & 0x0F);
 	data[dataOffset++] = NibbleToHex((ushort >> 8) & 0x0F);
 	data[dataOffset++] = NibbleToHex((ushort >> 4) & 0x0F);
@@ -177,6 +222,11 @@ void PaceBmsProtocolBase::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
 void PaceBmsProtocolBase::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
+	if (data.size() - dataOffset < 4)
+	{
+		LogError("Attempt to write past end of array");
+		return;
+	}
 	data[dataOffset++] = NibbleToHex((sshort >> 12) & 0x0F);
 	data[dataOffset++] = NibbleToHex((sshort >> 8) & 0x0F);
 	data[dataOffset++] = NibbleToHex((sshort >> 4) & 0x0F);
@@ -187,35 +237,52 @@ std::string PaceBmsProtocolBase::FormatReturnCode(const uint8_t returnCode)
 {
 	switch (returnCode)
 	{
-	case 0:
+	case 0x00:
 		return std::string("OK");
 		break;
-	case 1:
+	case 0x01:
 		return std::string("Version Error");
 		break;
-	case 2:
+	case 0x02:
 		return std::string("CKSUM Error (full request checksum)");
 		break;
-	case 3:
+	case 0x03:
 		return std::string("LCKSUM Error (checksum of embedded payload length value)");
 		break;
-	case 4:
+	case 0x04:
 		return std::string("CID2 Undefined (unknown command)");
 		break;
-	case 5:
+	case 0x05:
 		return std::string("Command Format Error");
 		break;
-	case 6:
+	case 0x06:
 		return std::string("Invalid Data");
 		break;
-	case 9:
+	case 0x07:
+		return std::string("No Data (historical record)");
+		break;
+	case 0x09:
 		return std::string("Operation or Write Error");
 		break;
+	// todo: double check if this is hex or not
 	case 90:
 		return std::string("ADR Error");
 		break;
+	// todo: double check if this is hex or not
 	case 91:
 		return std::string("Communication Error");
+		break;
+	case 0xE1:
+		return std::string("CID1 Error (battery chemistry)");
+		break;
+	case 0xE2:
+		return std::string("Command Execution Failed");
+		break;
+	case 0xE3:
+		return std::string("Equipment Failure");
+		break;
+	case 0xE4:
+		return std::string("Invalid Permission");
 		break;
 	default:
 		return std::string("Undocumented Response Error Code");

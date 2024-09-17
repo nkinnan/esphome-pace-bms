@@ -1,7 +1,8 @@
-#include "pace_bms_text_sensor.h"
+#include <functional>
+
 #include "esphome/core/log.h"
 
-#include <functional>
+#include "pace_bms_text_sensor.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -54,7 +55,7 @@ void PaceBmsTextSensor::setup() {
 	}
 	else if (this->parent_->get_protocol_version() == 0x20) {
 		if (this->warning_status_sensor_ != nullptr ||
-			//this->balancing_status_sensor_ != nullptr ||
+			this->balancing_status_sensor_ != nullptr ||
 			this->system_status_sensor_ != nullptr ||
 			this->configuration_status_sensor_ != nullptr ||
 			this->protection_status_sensor_ != nullptr ||
@@ -63,9 +64,9 @@ void PaceBmsTextSensor::setup() {
 				if (this->warning_status_sensor_ != nullptr) {
 					this->warning_status_sensor_->publish_state(status_information.warningText);
 				}
-				//if (this->balancing_status_sensor_ != nullptr) {
-				//	this->balancing_status_sensor_->publish_state(status_information.balancingText);
-				//}
+				if (this->balancing_status_sensor_ != nullptr) {
+					this->balancing_status_sensor_->publish_state(status_information.balancingText);
+				}
 				if (this->system_status_sensor_ != nullptr) {
 					this->system_status_sensor_->publish_state(status_information.systemText);
 				}
@@ -78,22 +79,22 @@ void PaceBmsTextSensor::setup() {
 				if (this->fault_status_sensor_ != nullptr) {
 					this->fault_status_sensor_->publish_state(status_information.faultText);
 				}
-				});
+			});
 		}
-		//if (this->hardware_version_sensor_ != nullptr) {
-		//	this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
-		//		if (this->hardware_version_sensor_ != nullptr) {
-		//			this->hardware_version_sensor_->publish_state(hardware_version);
-		//		}
-		//		});
-		//}
-		//if (this->serial_number_sensor_ != nullptr) {
-		//	this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
-		//		if (this->serial_number_sensor_ != nullptr) {
-		//			this->serial_number_sensor_->publish_state(serial_number);
-		//		}
-		//		});
-		//}
+		if (this->hardware_version_sensor_ != nullptr) {
+			this->parent_->register_hardware_version_callback_v20([this](std::string& hardware_version) {
+				if (this->hardware_version_sensor_ != nullptr) {
+					this->hardware_version_sensor_->publish_state(hardware_version);
+				}
+			});
+		}
+		if (this->serial_number_sensor_ != nullptr) {
+			this->parent_->register_serial_number_callback_v20([this](std::string& serial_number) {
+				if (this->serial_number_sensor_ != nullptr) {
+					this->serial_number_sensor_->publish_state(serial_number);
+				}
+			});
+		}
 	}
 	else {
 		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());

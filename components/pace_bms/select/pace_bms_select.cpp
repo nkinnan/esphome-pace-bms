@@ -1,7 +1,8 @@
-#include "pace_bms_select.h"
+#include <functional>
+
 #include "esphome/core/log.h"
 
-#include <functional>
+#include "pace_bms_select.h"
 
 namespace esphome {
 namespace pace_bms {
@@ -26,7 +27,7 @@ void PaceBmsSelect::setup() {
 		if (this->charge_current_limiter_gear_select_ != nullptr) {
 			this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
 				ESP_LOGD(TAG, "Setting Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
-				this->parent_->set_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
+				this->parent_->write_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
 			});
 		}
 
@@ -62,7 +63,7 @@ void PaceBmsSelect::setup() {
 				}
 				ESP_LOGD(TAG, "Setting protocol CAN user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.CAN = (PaceBmsProtocolV25::ProtocolList_CAN)value;
-				this->parent_->set_protocols_v25(protocols_);
+				this->parent_->write_protocols_v25(protocols_);
 			});
 		}
 		if (this->protocol_rs485_select_ != nullptr) {
@@ -73,7 +74,7 @@ void PaceBmsSelect::setup() {
 				}
 				ESP_LOGD(TAG, "Setting protocol RS485 user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.RS485 = (PaceBmsProtocolV25::ProtocolList_RS485)value;
-				this->parent_->set_protocols_v25(protocols_);
+				this->parent_->write_protocols_v25(protocols_);
 			});
 		}
 		if (this->protocol_type_select_ != nullptr) {
@@ -84,7 +85,7 @@ void PaceBmsSelect::setup() {
 				}
 				ESP_LOGD(TAG, "Setting protocol Type user selected value '%s' = %02X", text.c_str(), value);
 				protocols_.Type = (PaceBmsProtocolV25::ProtocolList_Type)value;
-				this->parent_->set_protocols_v25(protocols_);
+				this->parent_->write_protocols_v25(protocols_);
 			});
 		}
 		else {

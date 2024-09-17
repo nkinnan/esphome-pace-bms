@@ -3,27 +3,12 @@
 
 // takes pointers to the "real" logging functions
 PaceBmsProtocolV25::PaceBmsProtocolV25(
-	OPTIONAL_NS::optional<uint8_t> protocol_version_override, CID1 batteryChemistry,
-	OPTIONAL_NS::optional<uint8_t> analog_cell_count_override, OPTIONAL_NS::optional<uint8_t> analog_temperature_count_override,
-	uint32_t design_capacity_mah_override,
-	OPTIONAL_NS::optional<uint8_t> status_cell_count_override, OPTIONAL_NS::optional<uint8_t> status_temperature_count_override,
-	PaceBmsProtocolV25::LogFuncPtr logError, PaceBmsProtocolV25::LogFuncPtr logWarning, PaceBmsProtocolV25::LogFuncPtr logInfo, PaceBmsProtocolV25::LogFuncPtr logDebug, PaceBmsProtocolV25::LogFuncPtr logVerbose, PaceBmsProtocolV25::LogFuncPtr logVeryVerbose)
+		OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> batteryChemistry,
+		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose) :
+	PaceBmsProtocolBase(
+		0x25, protocol_variant, protocol_version_override, batteryChemistry,
+		logError, logWarning, logInfo, logDebug, logVerbose, logVeryVerbose)
 {
-	this->protocol_version = 0x25;
-	this->protocol_version_override = protocol_version_override;
-	this->cid1 = batteryChemistry;
-
-	this->analog_cell_count_override = analog_cell_count_override;
-	this->analog_temperature_count_override = analog_temperature_count_override;
-	this->status_cell_count_override = status_cell_count_override;
-	this->status_temperature_count_override = status_temperature_count_override;
-
-	this->LogErrorPtr = logError;
-	this->LogWarningPtr = logWarning;
-	this->LogInfoPtr = logInfo;
-	this->LogDebugPtr = logDebug;
-	this->LogVerbosePtr = logVerbose;
-	this->LogVeryVerbosePtr = logVeryVerbose;
 }
 
 // ============================================================================
@@ -77,9 +62,6 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	}
 
 	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (analog_cell_count_override.has_value())
-		// user set an override in the config
-		analogInformation.cellCount = analog_cell_count_override.value();
 	if (analogInformation.cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
@@ -95,9 +77,6 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	}
 
 	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
-	if (analog_temperature_count_override.has_value())
-		// user set an override in the config
-		analogInformation.temperatureCount = analog_temperature_count_override.value();
 	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature readings than are supported, results will be truncated");
@@ -121,7 +100,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	uint8_t P3 = ReadHexEncodedByte(response, byteOffset);
 	if (P3 != 3)
 	{
-		LogWarning("Response contains a constant with an unexpected value");
+		LogWarning("Response contains a constant with an unexpected value, this may be an incorrect protocol variant");
 		//return false;
 	}
 
@@ -133,15 +112,11 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 	if (byteOffset != payloadLen + 13)
 	{
-		LogError("Length mismatch reading analog information response");
+		LogError("Length mismatch reading analog information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off");
 		return false;
 	}
 
 	// calculate some "extras"
-	if (design_capacity_mah_override != 0)
-		// config specifies an override for this value because either we couldn't read it or it's incorrect
-		analogInformation.designCapacityMilliampHours = design_capacity_mah_override;
-
 	analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
 	analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
 	if (analogInformation.SoH > 100)
@@ -529,9 +504,6 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 
 	// ========================== Warning / Alarm Status ==========================
 	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (status_cell_count_override.has_value())
-		// user set an override in the config
-		cellCount = status_cell_count_override.value();
 	if (cellCount > MAX_CELL_COUNT)
 	{
 		LogWarning("Response contains more cell warnings than are supported, results will be truncated");
@@ -552,9 +524,6 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	}
 
 	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
-	if (status_temperature_count_override.has_value())
-		// user set an override in the config
-		tempCount = status_temperature_count_override.value();
 	if (tempCount > MAX_TEMP_COUNT)
 	{
 		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");
@@ -667,7 +636,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 
 	if (byteOffset != payloadLen + 13)
 	{
-		LogError("Length mismatch reading warning information response, this is a code bug in PACE_BMS");
+		LogError("Length mismatch reading status information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off");
 		return false;
 	}
 
