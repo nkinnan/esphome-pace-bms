@@ -176,11 +176,38 @@ It is difficult to find good consistent documentation on protocol version 20.  A
 
 What Battery Packs are Supported?
 - 
+As far as I know, many/most.  Any not listed should simply require a small tweak to the configuration.  
 
+However I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration tweaks required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
+
+For help figuring out how to do those configuration tweaks to get your battery pack working, see [here](FIXME)
+
+**Known working protocol version 20 battery packs:**
+- **EG4 LIFEPOWER4**
+  - hardware versions: 
+	  - QTHN 0d[3][6]
+	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
+  - required config: 
+	  - `protocol_commandset: 0x20`
+	  - `protocol_variant: "EG4"`
+	  - `battery_chemistry: 0x4A`
+  - notes:
+	  - The BMS is a bit slow, so don't reduce the timeouts too much. I have found the following settings prevent lockup from querying it too quickly:
+		  -   `request_throttle: 200ms`
+		  -   `response_timeout: 2000ms`
+
+
+**Known working protocol version 25 battery packs:**
+- **Jakiper JK48V100**
+  - hardware versions: 
+	  - FIXME
+	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
+  - required config: 
+	  - `protocol_commandset: 0x25`
 
 What ESPs are Supported?
 - 
-
+Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  If you have a very pin-constrained board such as the ESP-01 it's still possible if you redirect serial logs to the second UART.  An example config for that is included below.
 
 How do I wire my ESP to the RS485/RS232 port?
 - 
