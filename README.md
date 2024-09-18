@@ -1,3 +1,6 @@
+
+esphome-pace-bms
+-
 This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount battery packs manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).
 
 Example PACE BMS board:
@@ -13,36 +16,36 @@ I strongly encourage you to read through this entire document, but here are some
 - [I'm having a problem using this component](fixme)
 - [I want to talk to a battery that isn't listed](fixme)
 
-Paceic protocol version 20:
+Paceic Protocol Version 20
 -
   This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
  - **EG4**
  - **PYLON**
  - **SEPLOS**
 
-Different manufacturers will have different BMS management software (it will not be PBmsTools) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
+Different manufacturers will have different BMS management software (it will not be PbmsTools) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
 There is a high likelyhood that one of these protocol variants will work for battery packs speaking protocol version 20 which are branded by a different manufacturer than those listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
-Paceic protocol version 25: 
+Paceic Protocol Version 25
 -
-This seems more standardized, with an official protocol specification from PACE itself.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
+This version seems more standardized, with an official protocol specification from PACE itself.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
 These BMSes speaking paceic version 25 will invariably use PbmsTools for their BMS management software (or a rebadged version of it) which looks like this:
 
 ![PbmsTools Screenshot](images/PbmsTools.jpg)
 
-The exact look isn't important, just the tabs and general layout will look like this.  This is PbmsTools regardless of any specific brand badging and indicates your BMS supports protocol version 25.
+The exact look isn't important, just the tabs and general layout will look like this.  This is PbmsTools regardless of any specific brand badging and indicates that your BMS supports protocol version 25.
 
 These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
-Supported Values/Status (read only):
+Supported Values/Status (read only)
 -
 - All "Analog Information"
 	- **Cell Count**
@@ -77,13 +80,15 @@ Supported Values/Status (read only):
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
-Supported Configuration (read / write):
+Supported Configuration (read / write)
 -
 - **System Date and Time** - Allows access to the BMS internal real-time clock 
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
-Supported Configuration (read / write) version 25 ONLY:
+Supported Configuration (read / write) - Version 25 ONLY
 -
+It is difficult to find good consistent documentation on protocol version 20.  All the references I have are incomplete.  For version 25 I was able to sniff the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own  which speaks version 20 is sending some very strange non-paceic commands for most of the configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
+
 - Toggles (switches) that turn various features on/off
 	- **Buzzer Alarm**
 	- **LED Alarm**
@@ -164,6 +169,40 @@ Supported Configuration (read / write) version 25 ONLY:
 	- **Environment Under Temperature Alarm** (°C)
 	- **Environment Under Temperature Protection** (°C)
 	- **Environment Under Temperature Protection Release** (°C)
+
+What Battery Packs are Supported?
+- 
+
+
+What ESPs are Supported?
+- 
+
+
+How do I wire my ESP to the RS485/RS232 port?
+- 
+
+
+
+Example ESPHome configuration YAML
+- 
+
+
+
+I'm having a problem using this component
+- 
+
+
+I want to talk to a battery that isn't listed
+- 
+
+
+Each Configuration Entry in Excruciating Detail
+- 
+
+
+Decoding the Status Values (but you probably don't want to)
+- 
+
 
 
 
