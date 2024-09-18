@@ -95,8 +95,8 @@ pace_bms:
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
-  request_throttle: 500ms # 0x20 class BMSes will timeout if queried too quickly, this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 5000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value, and 0x20 class BMSes are a lot slower
+  request_throttle: 200ms # 0x20 class BMSes will timeout if queried too quickly, this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  response_timeout: 2000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value, and 0x20 class BMSes are a lot slower
 
   protocol_commandset: 0x20
   protocol_variant: "EG4"
