@@ -11,52 +11,35 @@ esphome:
     name: esphome.web
     version: dev
   libraries:
-    # huge improvement to event throughput to the on-device web_server dashboard
     - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 
 esp8266:
   board: esp01_1m
 
-
-
-# Enable logging
 logger:
-  hardware_uart: UART1 # using UART0 for BMS communications
-  #level: INFO
-  #level: DEBUG
+  hardware_uart: UART1 
   level: VERBOSE
-  #level: VERY_VERBOSE
 
-# Enable Home Assistant API
-api:
-
-# Allow Over-The-Air updates
 ota:
 - platform: esphome
 
 wifi:
-  # Set up a wifi access point
   ap: {}
+  # # don't scan first, would be a problem if you have multiple APs (BSSIDs) but I only have one
+  # fast_connect: true
 
-# To have a "next url" for improv serial
 web_server:
-  # uses an extra 76KB (V3) or 12KB (V2) worth of flash, but avoids referencing external web resources for 
-  #     situations where you won't have internet while accessing the on-device dashboard
-  #local: true
   version: 3
 
 external_components:
   - source:
-      type: git
-      url: https://github.com/nkinnan/esphome-pace-bms
-      ref: "initial_commit"
+      #type: git
+      #url: https://github.com/nkinnan/esphome-pace-bms
+      #ref: "main"
+      type: local
+      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
     components: [ pace_bms ]
     refresh: 1s
-
-
-debug:
-  update_interval: 1s
-
 
 uart:
     id: uart_0
@@ -64,150 +47,12 @@ uart:
     tx_pin: GPIO1
     rx_pin: GPIO3
 
-
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
   protocol_version: 0x25
   uart_id: uart_0
-  flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
+  flow_control_pin: GPIO0 
   update_interval: 5s
-  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
-
-
-sensor:
-  - platform: debug
-    free:
-      name: "Heap Free"
-      unit_of_measurement: kB
-      accuracy_decimals: 3
-      filters:
-        - multiply: 0.001
-#    block:
-#      name: "Heap Max Block"
-#      unit_of_measurement: kB
-#      accuracy_decimals: 3
-#      filters:
-#        - multiply: 0.001
-#    fragmentation:
-#      name: "Heap Fragmentation"
-    loop_time:
-      name: "Loop Time"
-# ESP-32 only
-#    psram:
-#      name: "Free PSRAM"
-
-  - platform: uptime
-    update_interval: 1s
-    type: seconds
-    name: "Uptime"
-
-
-
-
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-#    total_voltage:
-#      name: "Total Voltage"
-#    current:
-#      name: "Current"
-    power:
-      name: "Power"
-#    state_of_charge:
-#      name: "State of Charge"
-
-
-text_sensor:
-#  - platform: debug
-#    device:
-#      name: "Device Info"
-#    reset_reason:
-#      name: "Reset Reason"
-
-
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-#    hardware_version:
-#      name: "Hardware Version"
-#    serial_number:
-#      name: "Serial Number"
-
-#    warning_status:
-#      name: "Warning Status"
-#    balancing_status:
-#      name: "Balancing Status"
-#    protection_status:
-#      name: "Protection Status"
-#    fault_status:
-#      name: "Fault Status"
-
-    configuration_status:
-      name: "Configuration Status"
-    system_status:
-      name: "System Status"
-
-
-switch:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    buzzer_alarm:
-      name: "Buzzer Alarm"
-    led_alarm:
-      name: "Led Alarm"
-    charge_current_limiter:
-      name: "Charge Current Limiter"
-    charge_mosfet:
-      name: "Charge Mosfet"
-    discharge_mosfet:
-      name: "Discharge Mosfet"
-
-
-select:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    charge_current_limiter_gear:
-      name: "Charge Current Limiter Gear"
-
-    #protocol_can:
-    #  name: "Protocol (CAN)"
-    #protocol_rs485:
-    #  name: "Protocol (RS485)"
-    #protocol_type:
-    #  name: "Protocol (Type)"
-
-button:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   shutdown:
-     name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
-  
-number:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   discharge_over_current2_protection:
-     name: "Discharge Over Current 2 Protection" 
-     mode: BOX
-   discharge_over_current2_protection_delay:
-     name: "Discharge Over Current 2 Protection Delay" 
-     mode: BOX
-
-   short_circuit_protection_delay:
-     name: "Short Circuit Protection Delay (Milliseconds)" 
-     mode: BOX
-
-
-
-
-
-
-
-
-
-
+  request_throttle: 50ms 
+  response_timeout: 1000ms 

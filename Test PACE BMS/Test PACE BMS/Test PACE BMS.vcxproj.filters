@@ -2,12 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="Test PACE BMS.cpp" />
-    <ClCompile Include="..\..\components\pace_bms\pace_bms.cpp">
-      <Filter>components\pace_bms</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\components\pace_bms\pace_bms_v25.cpp">
-      <Filter>components\pace_bms</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\components\pace_bms\select\pace_bms_select.cpp">
       <Filter>components\pace_bms\select</Filter>
     </ClCompile>
@@ -44,14 +38,20 @@
     <ClCompile Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.cpp">
       <Filter>components\pace_bms\datetime</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_base.cpp">
+      <Filter>components\pace_bms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_v20.cpp">
+      <Filter>components\pace_bms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_protocol_v25.cpp">
+      <Filter>components\pace_bms</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\components\pace_bms\pace_bms_component.cpp">
+      <Filter>components\pace_bms</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\components\pace_bms\pace_bms.h">
-      <Filter>components\pace_bms</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\components\pace_bms\pace_bms_v25.h">
-      <Filter>components\pace_bms</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\components\pace_bms\select\pace_bms_select.h">
       <Filter>components\pace_bms\select</Filter>
     </ClInclude>
@@ -88,6 +88,18 @@
     <ClInclude Include="..\..\components\pace_bms\datetime\pace_bms_datetime_implementation.h">
       <Filter>components\pace_bms\datetime</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_base.h">
+      <Filter>components\pace_bms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_v20.h">
+      <Filter>components\pace_bms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_protocol_v25.h">
+      <Filter>components\pace_bms</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\components\pace_bms\pace_bms_component.h">
+      <Filter>components\pace_bms</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\components\pace_bms\__init__.py">
@@ -118,6 +130,7 @@
     <None Include="..\..\components\pace_bms\datetime\__init__.py">
       <Filter>components\pace_bms\datetime</Filter>
     </None>
+    <None Include="..\..\ESP32-C3-0x25.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

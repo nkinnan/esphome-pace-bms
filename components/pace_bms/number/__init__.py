@@ -404,24 +404,6 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_CONFIG,
         ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),        
         
-         cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_ALARM): number.number_schema(
-            PaceBmsNumberImplementation,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            unit_of_measurement=UNIT_CELSIUS,
-            entity_category=ENTITY_CATEGORY_CONFIG,
-        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),
-        cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_PROTECTION): number.number_schema(
-            PaceBmsNumberImplementation,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            unit_of_measurement=UNIT_CELSIUS,
-            entity_category=ENTITY_CATEGORY_CONFIG,
-        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),
-        cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_PROTECTION_RELEASE): number.number_schema(
-            PaceBmsNumberImplementation,
-            device_class=DEVICE_CLASS_TEMPERATURE,
-            unit_of_measurement=UNIT_CELSIUS,
-            entity_category=ENTITY_CATEGORY_CONFIG,
-        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),        
          cv.Optional(CONF_ENVIRONMENT_OVER_TEMPERATURE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_TEMPERATURE,
@@ -435,6 +417,24 @@ CONFIG_SCHEMA = cv.Schema(
             entity_category=ENTITY_CATEGORY_CONFIG,
         ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),
         cv.Optional(CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION_RELEASE): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),        
+         cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_ALARM): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),
+        cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_PROTECTION): number.number_schema(
+            PaceBmsNumberImplementation,
+            device_class=DEVICE_CLASS_TEMPERATURE,
+            unit_of_measurement=UNIT_CELSIUS,
+            entity_category=ENTITY_CATEGORY_CONFIG,
+        ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),
+        cv.Optional(CONF_ENVIRONMENT_UNDER_TEMPERATURE_PROTECTION_RELEASE): number.number_schema(
             PaceBmsNumberImplementation,
             device_class=DEVICE_CLASS_TEMPERATURE,
             unit_of_measurement=UNIT_CELSIUS,

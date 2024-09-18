@@ -1,0 +1,483 @@
+substitutions:
+  name: "esp32-c3-supermini-jk48v100"
+  friendly_name: "ESP32-C3-Supermini JK48V100 Battery"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+  libraries:
+    # required to be added prior to ESPAsyncWebServer-esphome
+    - WiFi
+    - FS
+    - Update
+    # huge improvement to event throughput to the on-device web_server dashboard
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+    #- ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
+
+esp32:
+  board: esp32-c3-devkitm-1
+  variant: esp32c3
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  hardware_uart: USB_CDC 
+  #level: INFO
+  level: DEBUG
+  #level: VERBOSE
+  #level: VERY_VERBOSE
+
+# Enable Home Assistant API
+api:
+
+# Allow Over-The-Air updates
+ota:
+- platform: esphome
+
+wifi:
+  # Set up a wifi access point
+  ap: {}
+
+# To have a "next url" for improv serial
+web_server:
+  # uses an extra 76KB (V3) or 12KB (V2) worth of flash, but avoids referencing external web resources for 
+  #     situations where you won't have internet while accessing the on-device dashboard
+  #local: true
+  version: 3
+
+external_components:
+  - source:
+      #type: git
+      #url: https://github.com/nkinnan/esphome-pace-bms
+      #ref: "main"
+      type: local
+      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
+    components: [ pace_bms ]
+    refresh: 1s
+    
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome
+      ref: "make_time_dependency_optional"
+      #type: local
+      #path: C:\Users\nkinnan\Documents\git\esphome\esphome\components
+    components: [ datetime ]
+    refresh: 1s
+    
+
+##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
+
+
+debug:
+  update_interval: 1s
+
+
+uart:
+    id: uart_0
+    baud_rate: 9600
+    tx_pin: GPIO2
+    rx_pin: GPIO1
+
+
+pace_bms:
+  id: pace_bms_at_address_1
+  address: 1
+  chemistry: 0x46
+  protocol_version: 0x25
+  uart_id: uart_0
+  flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
+  update_interval: 5s
+  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  response_timeout: 1000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
+
+
+sensor:
+  - platform: debug
+    free:
+      name: "Heap Free"
+      unit_of_measurement: kB
+      accuracy_decimals: 3
+      filters:
+        - multiply: 0.001
+#    block:
+#      name: "Heap Max Block"
+#      unit_of_measurement: kB
+#      accuracy_decimals: 3
+#      filters:
+#        - multiply: 0.001
+#    fragmentation:
+#      name: "Heap Fragmentation"
+    loop_time:
+      name: "Loop Time"
+# ESP-32 only
+#    psram:
+#      name: "Free PSRAM"
+
+  - platform: uptime
+    update_interval: 1s
+    type: seconds
+    name: "Uptime"
+
+
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    cell_count:
+      name: "Cell Count"
+
+    cell_voltage_01:
+      name: "Cell Voltage 01"
+    cell_voltage_02:
+      name: "Cell Voltage 02"
+    cell_voltage_03:
+      name: "Cell Voltage 03"
+    cell_voltage_04:
+      name: "Cell Voltage 04"
+    cell_voltage_05:
+      name: "Cell Voltage 05"
+    cell_voltage_06:
+      name: "Cell Voltage 06"
+    cell_voltage_07:
+      name: "Cell Voltage 07"
+    cell_voltage_08:
+      name: "Cell Voltage 08" 
+    cell_voltage_09:
+      name: "Cell Voltage 09"
+    cell_voltage_10:
+      name: "Cell Voltage 10"
+    cell_voltage_11:
+      name: "Cell Voltage 11"
+    cell_voltage_12:
+      name: "Cell Voltage 12"
+    cell_voltage_13:
+      name: "Cell Voltage 13"
+    cell_voltage_14:
+      name: "Cell Voltage 14"
+    cell_voltage_15:
+      name: "Cell Voltage 15"
+    cell_voltage_16:
+      name: "Cell Voltage 16"
+
+    temperature_count:
+      name: "Temperature Count"
+
+    temperature_01:
+      name: "Cell Temperature 1"
+    temperature_02:
+      name: "Cell Temperature 2"
+    temperature_03:
+      name: "Cell Temperature 3"
+    temperature_04:
+      name: "Cell Temperature 4"
+    temperature_05:
+      name: "MOSFET Temperature"
+    temperature_06:
+      name: "Environment Temperature"
+
+    total_voltage:
+      name: "Total Voltage"
+    current:
+      name: "Current"
+    power:
+      name: "Power"
+
+    remaining_capacity:
+      name: "Remaining Capacity"
+    full_capacity:
+      name: "Full Capacity"
+    design_capacity:
+      name: "Design Capacity"
+
+    cycle_count:
+      name: "Cycle Count"
+    state_of_charge:
+      name: "State of Charge"
+    state_of_health:
+      name: "State of Health"
+
+    min_cell_voltage:
+      name: "Min Cell Voltage"
+    max_cell_voltage:
+      name: "Max Cell Voltage"
+    avg_cell_voltage:
+      name: "Avg Cell Voltage"
+    max_cell_differential:
+      name: "Max Cell Differential"
+
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    #warning_status_value_cell_01:
+    #  name: "Warning Status Value Cell 01"
+    #warning_status_value_cell_02:
+    #  name: "Warning Status Value Cell 02"
+    #warning_status_value_cell_03:
+    #  name: "Warning Status Value Cell 03"
+    #warning_status_value_cell_04:
+    #  name: "Warning Status Value Cell 04"
+    #warning_status_value_cell_05:
+    #  name: "Warning Status Value Cell 05"
+    #warning_status_value_cell_06:
+    #  name: "Warning Status Value Cell 06"
+    #warning_status_value_cell_07:
+    #  name: "Warning Status Value Cell 07"
+    #warning_status_value_cell_08:
+    #  name: "Warning Status Value Cell 08"
+    #warning_status_value_cell_09:
+    #  name: "Warning Status Value Cell 09"
+    #warning_status_value_cell_10:
+    #  name: "Warning Status Value Cell 10"
+    #warning_status_value_cell_11:
+    #  name: "Warning Status Value Cell 11"
+    #warning_status_value_cell_12:
+    #  name: "Warning Status Value Cell 12"
+    #warning_status_value_cell_13:
+    #  name: "Warning Status Value Cell 13"
+    #warning_status_value_cell_14:
+    #  name: "Warning Status Value Cell 14"
+    #warning_status_value_cell_15:
+    #  name: "Warning Status Value Cell 15"
+    #warning_status_value_cell_16:
+    #  name: "Warning Status Value Cell 16"
+    #
+    #warning_status_value_temperature_01:
+    #  name: "Warning Status Value Temperature 01"
+    #warning_status_value_temperature_02:
+    #  name: "Warning Status Value Temperature 02"
+    #warning_status_value_temperature_03:
+    #  name: "Warning Status Value Temperature 03"
+    #warning_status_value_temperature_04:
+    #  name: "Warning Status Value Temperature 04"
+    #warning_status_value_temperature_05:
+    #  name: "Warning Status Value Temperature 05"
+    #warning_status_value_temperature_06:
+    #  name: "Warning Status Value Temperature 06"
+    #
+    #warning_status_value_charge_current:
+    #  name: "Warning Status Value Charge Current"
+    #warning_status_value_total_voltage:
+    #  name: "Warning Status Value Total Voltage"
+    #warning_status_value_discharge_current:
+    #  name: "Warning Status Value Discharge Current"
+    #warning_status_value_1:
+    #  name: "Warning Status Value 1"
+    #warning_status_value_2:
+    #  name: "Warning Status Value 2"
+    #
+    #balancing_status_value:
+    #  name: "Balancing Status Value"
+    #system_status_value:
+    #  name: "System Status Value"
+    #configuration_status_value:
+    #  name: "Configuration Status Value"
+    #protection_status_value_1:
+    #  name: "Protection Status Value 1"
+    #protection_status_value_2:
+    #  name: "Protection Status Value 2"
+    #fault_status_value:
+    #  name: "Fault Status Value"
+
+
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    hardware_version:
+      name: "Hardware Version"
+    serial_number:
+      name: "Serial Number"
+
+    # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
+    warning_status:
+      name: "Warning Status"
+    balancing_status:
+      name: "Balancing Status"
+    system_status:
+      name: "System Status"
+    configuration_status:
+      name: "Configuration Status"
+    protection_status:
+      name: "Protection Status"
+    fault_status:
+      name: "Fault Status"
+
+
+switch:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    buzzer_alarm:
+      name: "Buzzer Alarm"
+    led_alarm:
+      name: "Led Alarm"
+    charge_current_limiter:
+      name: "Charge Current Limiter"
+    charge_mosfet:
+      name: "Charge Mosfet"
+    discharge_mosfet:
+      name: "Discharge Mosfet"
+
+
+select:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    charge_current_limiter_gear:
+      name: "Charge Current Limiter Gear"
+
+    #protocol_can:
+    #  name: "Protocol (CAN)"
+    #protocol_rs485:
+    #  name: "Protocol (RS485)"
+    #protocol_type:
+    #  name: "Protocol (Type)"
+
+
+button:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    shutdown:
+      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
+
+
+number:
+
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    cell_over_voltage_alarm:
+      name: "Cell Over Voltage Alarm" 
+    cell_over_voltage_protection:
+      name: "Cell Over Voltage Protection" 
+    cell_over_voltage_protection_release:
+      name: "Cell Over Voltage Protection Release" 
+    cell_over_voltage_protection_delay:
+      name: "Cell Over Voltage Protection Delay" 
+
+    pack_over_voltage_alarm:
+      name: "Pack Over Voltage Alarm" 
+    pack_over_voltage_protection:
+      name: "Pack Over Voltage Protection" 
+    pack_over_voltage_protection_release:
+      name: "Pack Over Voltage Protection Release" 
+    pack_over_voltage_protection_delay:
+      name: "Pack Over Voltage Protection Delay" 
+
+    cell_under_voltage_alarm:
+      name: "Cell Under Voltage Alarm" 
+    cell_under_voltage_protection:
+      name: "Cell Under Voltage Protection" 
+    cell_under_voltage_protection_release:
+      name: "Cell Under Voltage Protection Release" 
+    cell_under_voltage_protection_delay:
+      name: "Cell Under Voltage Protection Delay" 
+
+    pack_under_voltage_alarm:
+      name: "Pack Under Voltage Alarm" 
+    pack_under_voltage_protection:
+      name: "Pack Under Voltage Protection" 
+    pack_under_voltage_protection_release:
+      name: "Pack Under Voltage Protection Release" 
+    pack_under_voltage_protection_delay:
+      name: "Pack Under Voltage Protection Delay" 
+
+    charge_over_current_alarm:
+      name: "Charge Over Current Alarm" 
+    charge_over_current_protection:
+      name: "Charge Over Current Protection" 
+    charge_over_current_protection_delay:
+      name: "Charge Over Current Protection Delay" 
+
+    discharge_over_current1_alarm:
+      name: "Discharge Over Current 1 Alarm" 
+    discharge_over_current1_protection:
+      name: "Discharge Over Current 1 Protection" 
+    discharge_over_current1_protection_delay:
+      name: "Discharge Over Current 1 Protection Delay" 
+
+    discharge_over_current2_protection:
+      name: "Discharge Over Current 2 Protection" 
+    discharge_over_current2_protection_delay:
+      name: "Discharge Over Current 2 Protection Delay" 
+
+    short_circuit_protection_delay:
+      name: "Short Circuit Protection Delay (Milliseconds)" 
+
+    cell_balancing_threshold:
+      name: "Cell Balancing Threshold"
+    cell_balancing_delta:
+      name: "Cell Balancing Delta"
+
+    sleep_cell_voltage:
+      name: "Sleep Cell Voltage"
+    sleep_delay:
+      name: "Sleep Delay"
+
+    full_charge_voltage:
+      name: "Full Charge Voltage"
+    full_charge_amps:
+      name: "Full Charge Amps"
+    low_charge_alarm_percent:
+      name: "Low Charge Alarm"
+
+    charge_over_temperature_alarm:
+      name: "Charge Over Temperature Alarm"
+    charge_over_temperature_protection:
+      name: "Charge Over Temperature Protection"
+    charge_over_temperature_protection_release:
+      name: "Charge Over Temperature Protection Release"
+
+    discharge_over_temperature_alarm:
+      name: "Discharge Over Temperature Alarm"
+    discharge_over_temperature_protection:
+      name: "Discharge Over Temperature Protection"
+    discharge_over_temperature_protection_release:
+      name: "Discharge Over Temperature Protection Release"
+
+    charge_under_temperature_alarm:
+      name: "Charge Under Temperature Alarm"
+    charge_under_temperature_protection:
+      name: "Charge Under Temperature Protection"
+    charge_under_temperature_protection_release:
+      name: "Charge Under Temperature Protection Release"
+
+    discharge_under_temperature_alarm:
+      name: "Discharge Under Temperature Alarm"
+    discharge_under_temperature_protection:
+      name: "Discharge Under Temperature Protection"
+    discharge_under_temperature_protection_release:
+      name: "Discharge Under Temperature Protection Release"
+
+    mosfet_over_temperature_alarm:
+      name: "Mosfet Over Temperature Alarm"
+    mosfet_over_temperature_protection:
+      name: "Mosfet Over Temperature Protection"
+    mosfet_over_temperature_protection_release:
+      name: "Mosfet Over Temperature Protection Release"
+
+    environment_under_temperature_alarm:
+      name: "Environment Under Temperature Alarm"
+    environment_under_temperature_protection:
+      name: "Environment Under Temperature Protection"
+    environment_under_temperature_protection_release:
+      name: "Environment Under Temperature Protection Release"
+    environment_over_temperature_alarm:
+      name: "Environment Over Temperature Alarm"
+    environment_over_temperature_protection:
+      name: "Environment Over Temperature Protection"
+    environment_over_temperature_protection_release:
+      name: "Environment Over Temperature Protection Release"
+
+
+datetime:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    system_date_and_time:
+      name: "System Date and Time"

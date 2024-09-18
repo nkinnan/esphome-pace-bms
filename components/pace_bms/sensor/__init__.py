@@ -142,15 +142,44 @@ CONF_WARNING_STATUS_VALUE_TEMPS = [
 CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT    = "warning_status_value_charge_current"
 CONF_WARNING_STATUS_VALUE_TOTAL_VOLTAGE     = "warning_status_value_total_voltage"
 CONF_WARNING_STATUS_VALUE_DISCHARGE_CURRENT = "warning_status_value_discharge_current"
+
+# 0x25
 CONF_WARNING_STATUS_VALUE_1                 = "warning_status_value_1"
 CONF_WARNING_STATUS_VALUE_2                 = "warning_status_value_2"
-
 CONF_BALANCING_STATUS_VALUE     = "balancing_status_value"
 CONF_SYSTEM_STATUS_VALUE        = "system_status_value"
 CONF_CONFIGURATION_STATUS_VALUE = "configuration_status_value"
 CONF_PROTECTION_STATUS_VALUE_1  = "protection_status_value_1"
 CONF_PROTECTION_STATUS_VALUE_2  = "protection_status_value_2"
 CONF_FAULT_STATUS_VALUE         = "fault_status_value"
+
+######## NEW in 0x20 PYLON variant
+CONF_STATUS1_VALUE                 = "status1_value"
+CONF_STATUS2_VALUE                 = "status2_value"
+CONF_STATUS3_VALUE                 = "status3_value"
+CONF_STATUS4_VALUE                 = "status4_value"
+CONF_STATUS5_VALUE                 = "status5_value"
+
+######## NEW in 0x20 SEPLOS variant
+CONF_WARNING1_STATUS_VALUE      = "warning1_status_value"
+CONF_WARNING2_STATUS_VALUE      = "warning2_status_value"
+CONF_WARNING3_STATUS_VALUE      = "warning3_status_value"
+CONF_WARNING4_STATUS_VALUE      = "warning4_status_value"
+CONF_WARNING5_STATUS_VALUE      = "warning5_status_value"
+CONF_WARNING6_STATUS_VALUE      = "warning6_status_value"
+CONF_POWER_STATUS_VALUE         = "power_status_value"
+CONF_DISCONNECTION_STATUS_VALUE = "disconnection_status_value"
+CONF_WARNING7_STATUS_VALUE      = "warning7_status_value"
+CONF_WARNING8_STATUS_VALUE      = "warning8_status_value"
+
+######## NEW in 0x20 EG4 variant
+CONF_BALANCE_EVENT_VALUE      = "balance_event_value"
+CONF_VOLTAGE_EVENT_VALUE      = "voltage_event_value"
+CONF_TEMPERATURE_EVENT_VALUE  = "temperature_event_value"
+CONF_CURRENT_EVENT_VALUE      = "current_event_value"
+CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
+CONF_FET_STATUS_VALUE         = "fet_status_value"
+
 
 CONFIG_SCHEMA = cv.Schema(
     {
@@ -581,9 +610,138 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
+
+        cv.Optional(CONF_STATUS1_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS2_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS3_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS4_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_STATUS5_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        cv.Optional(CONF_WARNING1_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING2_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING3_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING4_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING5_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING6_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_POWER_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_DISCONNECTION_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING7_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_WARNING8_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
+        cv.Optional(CONF_BALANCE_EVENT_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_VOLTAGE_EVENT_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_TEMPERATURE_EVENT_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_CURRENT_EVENT_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_REMAINING_CAPACITY_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_FET_STATUS_VALUE): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+
     }
 )
-
 
 async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
@@ -719,3 +877,69 @@ async def to_code(config):
     if fault_status_value := config.get(CONF_FAULT_STATUS_VALUE):
         sens = await sensor.new_sensor(fault_status_value)
         cg.add(var.set_fault_status_value_sensor(sens))
+
+    if status1_value := config.get(CONF_STATUS1_VALUE):
+        sens = await sensor.new_sensor(status1_value)
+        cg.add(var.set_status1_value_sensor(sens))
+    if status2_value := config.get(CONF_STATUS2_VALUE):
+        sens = await sensor.new_sensor(status2_value)
+        cg.add(var.set_status2_value_sensor(sens))
+    if status3_value := config.get(CONF_STATUS3_VALUE):
+        sens = await sensor.new_sensor(status3_value)
+        cg.add(var.set_status3_value_sensor(sens))
+    if status4_value := config.get(CONF_STATUS4_VALUE):
+        sens = await sensor.new_sensor(status4_value)
+        cg.add(var.set_status4_value_sensor(sens))
+    if status5_value := config.get(CONF_STATUS5_VALUE):
+        sens = await sensor.new_sensor(status5_value)
+        cg.add(var.set_status5_value_sensor(sens))
+
+    if warning1_status_value := config.get(CONF_WARNING1_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning1_status_value)
+        cg.add(var.set_warning1_status_value_sensor(sens))
+    if warning2_status_value := config.get(CONF_WARNING2_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning2_status_value)
+        cg.add(var.set_warning2_status_value_sensor(sens))
+    if warning3_status_value := config.get(CONF_WARNING3_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning3_status_value)
+        cg.add(var.set_warning3_status_value_sensor(sens))
+    if warning4_status_value := config.get(CONF_WARNING4_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning4_status_value)
+        cg.add(var.set_warning4_status_value_sensor(sens))
+    if warning5_status_value := config.get(CONF_WARNING5_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning5_status_value)
+        cg.add(var.set_warning5_status_value_sensor(sens))
+    if warning6_status_value := config.get(CONF_WARNING6_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning6_status_value)
+        cg.add(var.set_warning6_status_value_sensor(sens))
+    if power_status_value := config.get(CONF_POWER_STATUS_VALUE):
+        sens = await sensor.new_sensor(power_status_value)
+        cg.add(var.set_power_status_value_sensor(sens))
+    if disconnection_status_value := config.get(CONF_DISCONNECTION_STATUS_VALUE):
+        sens = await sensor.new_sensor(disconnection_status_value)
+        cg.add(var.set_disconnection_status_value_sensor(sens))
+    if warning7_status_value := config.get(CONF_WARNING7_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning7_status_value)
+        cg.add(var.set_warning7_status_value_sensor(sens))
+    if warning8_status_value := config.get(CONF_WARNING8_STATUS_VALUE):
+        sens = await sensor.new_sensor(warning8_status_value)
+        cg.add(var.set_warning8_status_value_sensor(sens))
+
+    if balance_event_value := config.get(CONF_BALANCE_EVENT_VALUE):
+        sens = await sensor.new_sensor(balance_event_value)
+        cg.add(var.set_balance_event_value_sensor(sens))
+    if voltage_event_value := config.get(CONF_VOLTAGE_EVENT_VALUE):
+        sens = await sensor.new_sensor(voltage_event_value)
+        cg.add(var.set_voltage_event_value_sensor(sens))
+    if temperature_event_value := config.get(CONF_TEMPERATURE_EVENT_VALUE):
+        sens = await sensor.new_sensor(temperature_event_value)
+        cg.add(var.set_temperature_event_value_sensor(sens))
+    if current_event_value := config.get(CONF_CURRENT_EVENT_VALUE):
+        sens = await sensor.new_sensor(current_event_value)
+        cg.add(var.set_current_event_value_sensor(sens))
+    if remaining_capacity_value := config.get(CONF_REMAINING_CAPACITY_VALUE):
+        sens = await sensor.new_sensor(remaining_capacity_value)
+        cg.add(var.set_remaining_capacity_value_sensor(sens))
+    if fet_status_value := config.get(CONF_FET_STATUS_VALUE):
+        sens = await sensor.new_sensor(fet_status_value)
+        cg.add(var.set_fet_status_value_sensor(sens))
