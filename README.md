@@ -1,8 +1,8 @@
 This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount battery packs manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).
 
 Example PACE BMS board:
-![Example PACE BMS board (front)](images/example-board-front.jpg)
-![Example PACE BMS board (back)](images/example-board-back.jpg)
+![Example PACE BMS board (front)](images/example-board-front.png)
+![Example PACE BMS board (back)](images/example-board-back.png)
 
 The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.
 
