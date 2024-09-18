@@ -207,9 +207,19 @@ For help figuring out how to do those configuration tweaks to get your battery p
 
 What ESPs are Supported?
 - 
-Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  If you have a very pin-constrained board such as the ESP-01 it's still possible if you redirect serial logs to the second UART.  An example config for that is included below.
+Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  
 
-How do I wire my ESP to the RS485/RS232 port?
+Any board which gives you access to a UART (both RX and TX) is fine, but you will need a converter chip for RS485 or RS232 signal levels.  Some boards may have that built-in.  
+
+RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins.  RS232 will require only the UART RX and TX.
+
+If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example config for that is included below in the YAML section.
+
+How do I wire my ESP to the RS485 port?
+- 
+
+
+How do I wire my ESP to the RS232 port?
 - 
 
 
