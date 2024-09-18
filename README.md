@@ -45,6 +45,10 @@ These BMSes will typically have two RS485 ports (looks like an ethernet socket) 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
+Paceic MODBUS Protocol
+-
+Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus)
+
 Supported Values/Status (read only)
 -
 - All "Analog Information"
