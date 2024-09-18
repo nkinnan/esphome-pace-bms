@@ -40,7 +40,7 @@ The exact look isn't important, just the tabs and general layout will look like 
 These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
 Example protocol version 25 BMS front-panel:
-![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.jpg)
+![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
 Supported Values/Status (read only):
 -
