@@ -16,29 +16,31 @@ I strongly encourage you to read through this entire document, but here are some
 Paceic protocol version 20:
 -
   This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
- - EG4
- - PYLON
- - SEPLOS
+ - **EG4**
+ - **PYLON**
+ - **SEPLOS**
 
 Different manufacturers will have different BMS management software (it will not be PBmsTools) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
 There is a high likelyhood that one of these protocol variants will work for battery packs speaking protocol version 20 which are branded by a different manufacturer than those listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
-Example protocol version 20 BMS front-panels:
-![FIXME (pic)](fixme_url)
+Example protocol version 20 BMS front-panel:
+![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
 Paceic protocol version 25: 
 -
 This seems more standardized, with an official protocol specification from PACE itself.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
-These BMSes speaking paceic version 25 will invariably use PBmsTools for their BMS management software (or a rebadged version of it) which looks like this:
+These BMSes speaking paceic version 25 will invariably use PbmsTools for their BMS management software (or a rebadged version of it) which looks like this:
 
-![FIXME (pic)](fixme_url)
+![PbmsTools Screenshot](images/PbmsTools.jpg)
 
-They will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
+The exact look isn't important, just the tabs and general layout will look like this.  This is PbmsTools regardless of any specific brand badging and indicates your BMS supports protocol version 25.
 
-Example protocol version 20 BMS front-panels:
-![FIXME (pic)](fixme_url)
+These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
+
+Example protocol version 25 BMS front-panel:
+![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.jpg)
 
 Supported Values/Status (read only):
 -
