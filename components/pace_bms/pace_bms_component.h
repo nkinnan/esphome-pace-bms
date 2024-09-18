@@ -22,15 +22,16 @@ public:
 	// called by the codegen to set our YAML property values
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 	void set_address(uint8_t address) { this->address_ = address; }
-	void set_protocol_version(int protocol_version) { this->protocol_version_ = protocol_version; }
+	void set_protocol_commandset(int protocol_commandset) { this->protocol_commandset_ = protocol_commandset; }
 	void set_protocol_variant(std::string protocol_variant) { this->protocol_variant_ = protocol_variant; }
-	void set_protocol_version_override(uint8_t protocol_version_override) { this->protocol_version_override_ = protocol_version_override; }
+	void set_protocol_version(uint8_t protocol_version_override) { this->protocol_version_ = protocol_version_override; }
 	void set_chemistry(uint8_t chemistry) { this->chemistry_ = chemistry; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 
 	// make accessible to sensors
-	int get_protocol_version() { return this->protocol_version_; }
+	int get_protocol_commandset() { return this->protocol_commandset_; }
+	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
 
 	// standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
 	void dump_config() override;
@@ -72,6 +73,7 @@ public:
 	void register_status_information_callback_v20(std::function<void(PaceBmsProtocolV20::StatusInformation&)> callback) { status_information_callbacks_v20_.push_back(std::move(callback)); }
 	void register_hardware_version_callback_v20(std::function<void(std::string&)> callback) { hardware_version_callbacks_v20_.push_back(std::move(callback)); }
 	void register_serial_number_callback_v20(std::function<void(std::string&) > callback) { serial_number_callbacks_v20_.push_back(std::move(callback)); }
+	void register_system_datetime_callback_v20(std::function<void(PaceBmsProtocolV20::DateTime&)> callback) { system_datetime_callbacks_v20_.push_back(std::move(callback)); }
 
 	// child sensors call these to schedule new values be written out to the hardware
 	void write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state);
@@ -96,6 +98,7 @@ public:
 	void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt);
 
 	void write_shutdown_v20();
+	void write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt);
 
 
 protected:
@@ -103,12 +106,10 @@ protected:
 	GPIOPin* flow_control_pin_{ nullptr };
 	uint8_t address_{ 0 };
 
-	int protocol_version_{ 0 };
+	int protocol_commandset_{ 0 };
 	OPTIONAL_NS::optional<std::string> protocol_variant_;
-	OPTIONAL_NS::optional<uint8_t> protocol_version_override_;
+	OPTIONAL_NS::optional<uint8_t> protocol_version_;
 	OPTIONAL_NS::optional<uint8_t> chemistry_;
-
-	uint32_t design_capacity_mah_override_{ 0 };
 
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
@@ -147,6 +148,8 @@ protected:
 	void handle_read_hardware_version_response_v20(std::vector<uint8_t>& response);
 	void handle_read_serial_number_response_v20(std::vector<uint8_t>& response);
 	void handle_write_shutdown_command_response_v20(std::vector<uint8_t>& response);
+	void handle_read_system_datetime_response_v20(std::vector<uint8_t>& response);
+	void handle_write_system_datetime_response_v20(std::vector<uint8_t>& response);
 
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
@@ -175,6 +178,7 @@ protected:
 	std::vector<std::function<void(PaceBmsProtocolV20::StatusInformation&)>>                               status_information_callbacks_v20_;
 	std::vector<std::function<void(std::string&)>>                                                 hardware_version_callbacks_v20_;
 	std::vector<std::function<void(std::string&)>>                                                 serial_number_callbacks_v20_;
+	std::vector<std::function<void(PaceBmsProtocolV20::DateTime&)>>                                        system_datetime_callbacks_v20_;
 
 	// along with loop() this is the "engine" of BMS communications
 	//     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
@@ -211,6 +215,7 @@ protected:
 	//         see section: "along with loop() this is the "engine" of BMS communications" for how this works
 	// commands generated as a result of user interaction are pushed to the write queue which has priority over the read queue
 	// the read queue is filled each update() with only the commands necessary to refresh child components that have been declared in the yaml config and requested a callback for the information
+	std::queue<std::function<void()>> sensor_update_queue_;
 	std::queue<command_item*> read_queue_;
 	std::list<command_item*> write_queue_;
 	std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;

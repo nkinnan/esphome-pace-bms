@@ -47,7 +47,7 @@ void PaceBms::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms:");
 	LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
 	ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-	ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_);
+	ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_commandset_);
 	ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
 	ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
 	this->check_uart_settings(9600);
@@ -58,21 +58,21 @@ void PaceBms::dump_config() {
 */
 
 void PaceBms::setup() {
-	if (this->protocol_version_ == 0x25) {
+	if (this->protocol_commandset_ == 0x25) {
 		// the protocol en/decoder PaceBmsProtocolV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
 		this->pace_bms_v25_ = new PaceBmsProtocolV25(
-			protocol_variant_, protocol_version_override_, chemistry_,
+			protocol_variant_, protocol_version_, chemistry_,
 			error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
-	else if (this->protocol_version_ == 0x20) {
+	else if (this->protocol_commandset_ == 0x20) {
 		// the protocol en/decoder PaceBmsProtocolV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
 		this->pace_bms_v20_ = new PaceBmsProtocolV20(
-			protocol_variant_, protocol_version_override_, chemistry_,
+			protocol_variant_, protocol_version_, chemistry_,
 			error_log_func, warning_log_func, info_log_func, debug_log_func, verbose_log_func, very_verbose_log_func);
 	}
 	else {
 		this->status_set_error();
-		ESP_LOGE(TAG, "Protocol version 0x%02X is not supported", this->protocol_version_);
+		ESP_LOGE(TAG, "Protocol version 0x%02X is not supported", this->protocol_commandset_);
 		return;
 	}
 
@@ -283,6 +283,13 @@ void PaceBms::update() {
 				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_serial_number_response_v20(response); };
 				read_queue_.push(item);
 			}
+			if (this->system_datetime_callbacks_v20_.size() > 0) {
+				command_item* item = new command_item;
+				item->description_ = std::string("read system date/time");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadSystemDateTimeRequest(this->address_, request); };
+				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_system_datetime_response_v20(response); };
+				read_queue_.push(item);
+			}
 		}
 
 		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
@@ -297,6 +304,17 @@ void PaceBms::update() {
 void PaceBms::loop() {
 	if (this->pace_bms_v25_ == nullptr &&
 		this->pace_bms_v20_ == nullptr)
+		return;
+
+	// update a single sensor per loop, this is still 60 updates/second but prevents excessive loop times
+	if (this->sensor_update_queue_.size() != 0)
+	{
+		std::function<void()> sensor_update_method = this->sensor_update_queue_.front();
+		this->sensor_update_queue_.pop();
+		sensor_update_method();
+	}
+	// don't continue while sensor publishes are pending
+	if (this->sensor_update_queue_.size() != 0)
 		return;
 
 	// if there is no request active, throw away any incoming data before proceeding
@@ -909,6 +927,31 @@ void PaceBms::handle_write_shutdown_command_response_v20(std::vector<uint8_t>& r
 	}
 }
 
+void PaceBms::handle_read_system_datetime_response_v20(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsProtocolV20::DateTime dt;
+	bool result = this->pace_bms_v20_->ProcessReadSystemDateTimeResponse(this->address_, response, dt);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->system_datetime_callbacks_v20_.size(); i++) {
+		system_datetime_callbacks_v20_[i](dt);
+	}
+}
+
+void PaceBms::handle_write_system_datetime_response_v20(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	bool result = this->pace_bms_v20_->ProcessWriteSystemDateTimeResponse(this->address_, response);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+}
+
 /*
 * these are called from from user-settable child sensors to set BMS state
 */
@@ -1184,6 +1227,17 @@ void PaceBms::write_shutdown_v20() {
 	ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
 	item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateWriteShutdownCommandRequest(this->address_, request); };
 	item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_write_shutdown_command_response_v20(response); };
+	write_queue_push_back_with_deduplication(item);
+	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+}
+
+void PaceBms::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) {
+	command_item* item = new command_item;
+
+	item->description_ = std::string("write system date/time");
+	ESP_LOGV(TAG, "Queueing write command '%s'", item->description_.c_str());
+	item->create_request_frame_ = [this, dt](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateWriteSystemDateTimeRequest(this->address_, dt, request); };
+	item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_write_system_datetime_response_v20(response); };
 	write_queue_push_back_with_deduplication(item);
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }

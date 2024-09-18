@@ -591,16 +591,6 @@ public:
 	static const uint8_t exampleWriteSystemTimeRequestV25[];
 	static const uint8_t exampleWriteSystemTimeResponseV25[];
 
-	struct DateTime
-	{
-		uint16_t Year;
-		uint8_t Month;
-		uint8_t Day;
-		uint8_t Hour;
-		uint8_t Minute;
-		uint8_t Second;
-	};
-
 	bool CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
 	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);

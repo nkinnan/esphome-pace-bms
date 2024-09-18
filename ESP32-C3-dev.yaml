@@ -28,8 +28,8 @@ esp32:
 # Enable logging
 logger:
   hardware_uart: USB_CDC 
-  level: INFO
-  #level: DEBUG
+  #level: INFO
+  level: DEBUG
   #level: VERBOSE
   #level: VERY_VERBOSE
 
@@ -95,13 +95,13 @@ pace_bms:
   uart_id: uart_0
   flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
   update_interval: 5s
-  request_throttle: 50ms # this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 3000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value
+  request_throttle: 500ms # 0x20 class BMSes will timeout if queried too quickly, this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
+  response_timeout: 5000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value, and 0x20 class BMSes are a lot slower
 
-  protocol_version: 0x20
+  protocol_commandset: 0x20
   protocol_variant: "EG4"
-  #protocol_version_override: 0x21 # if your battery wants to be "special"
-  chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
+  #protocol_version: 0x20 # if your battery wants to be "special"
+  battery_chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
 
 
 sensor:
@@ -540,11 +540,11 @@ button:
 #      name: "Environment Over Temperature Protection"
 #    environment_over_temperature_protection_release:
 #      name: "Environment Over Temperature Protection Release"
-#
-#
-#datetime:
-#  - platform: pace_bms
-#    pace_bms_id: pace_bms_at_address_1
-#
-#    system_date_and_time:
-#      name: "System Date and Time"
+
+
+datetime:
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   system_date_and_time:
+     name: "System Date and Time"

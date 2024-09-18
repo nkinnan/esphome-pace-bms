@@ -35,12 +35,12 @@ public:
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
-	PaceBmsProtocolBase(uint8_t protocol_version, OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> battery_chemistry,
+	PaceBmsProtocolBase(uint8_t protocol_commandset, OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version, OPTIONAL_NS::optional<uint8_t> battery_chemistry,
 		                LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose)
 	{
-		this->protocol_version = protocol_version;
+		this->protocol_commandset = protocol_commandset;
 		this->protocol_variant = protocol_variant;
-		this->protocol_version_override = protocol_version_override;
+		this->protocol_version = protocol_version;
 		if (battery_chemistry.has_value())
 			this->cid1 = battery_chemistry.value();
 		else
@@ -54,10 +54,20 @@ public:
 		this->LogVeryVerbosePtr = logVeryVerbose;
 	}
 
+	struct DateTime
+	{
+		uint16_t Year;
+		uint8_t Month;
+		uint8_t Day;
+		uint8_t Hour;
+		uint8_t Minute;
+		uint8_t Second;
+	};
+
 protected:
-	uint8_t protocol_version;
+	uint8_t protocol_commandset;
 	OPTIONAL_NS::optional<std::string> protocol_variant;
-	OPTIONAL_NS::optional<uint8_t> protocol_version_override;
+	OPTIONAL_NS::optional<uint8_t> protocol_version;
 	// battery chemistry
 	uint8_t cid1;
 
@@ -92,11 +102,11 @@ protected:
 
 	// helper for WriteHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	static uint8_t NibbleToHex(const uint8_t nibbleByte);
+	uint8_t NibbleToHex(const uint8_t nibbleByte);
 
 	// helper for ReadHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	static uint8_t HexToNibble(const uint8_t hex);
+	uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
 	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);

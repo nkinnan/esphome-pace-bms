@@ -10,7 +10,7 @@ namespace pace_bms {
 static const char* const TAG = "pace_bms.select";
 
 void PaceBmsSelect::setup() {
-	if (this->parent_->get_protocol_version() == 0x25) {
+	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (this->charge_current_limiter_gear_select_ != nullptr) {
 			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) {
 				if (this->charge_current_limiter_gear_select_ != nullptr) {
@@ -20,7 +20,7 @@ void PaceBmsSelect::setup() {
 							PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitHighGear :
 							PaceBmsProtocolV25::SC_SetChargeCurrentLimiterCurrentLimitLowGear));
 					ESP_LOGV(TAG, "'charge_current_limiter_gear': Publishing state due to update from the hardware: %s", state.c_str());
-					this->charge_current_limiter_gear_select_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_current_limiter_gear_select_->publish_state(value); });
 				}
 			});
 		}
@@ -41,17 +41,17 @@ void PaceBmsSelect::setup() {
 				if (this->protocol_can_select_ != nullptr) {
 					std::string state = this->protocol_can_select_->option_from_value(protocols.CAN);
 					ESP_LOGV(TAG, "'protocol_can': Publishing state due to update from the hardware: %s", state.c_str());
-					this->protocol_can_select_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->protocol_can_select_->publish_state(value); });
 				}
 				if (this->protocol_rs485_select_ != nullptr) {
 					std::string state = this->protocol_rs485_select_->option_from_value(protocols.RS485);
 					ESP_LOGV(TAG, "'protocol_rs485': Publishing state due to update from the hardware: %s", state.c_str());
-					this->protocol_rs485_select_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->protocol_rs485_select_->publish_state(value); });
 				}
 				if (this->protocol_type_select_ != nullptr) {
 					std::string state = this->protocol_type_select_->option_from_value(protocols.Type);
 					ESP_LOGV(TAG, "'protocol_type': Publishing state due to update from the hardware: %s", state.c_str());
-					this->protocol_type_select_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->protocol_type_select_->publish_state(value); });
 				}
 			});
 		}
@@ -89,7 +89,7 @@ void PaceBmsSelect::setup() {
 			});
 		}
 		else {
-			ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());
+			ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_commandset());
 		}
 	}
 }

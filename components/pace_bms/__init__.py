@@ -20,10 +20,10 @@ PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
 CONF_PACE_BMS_ID = "pace_bms_id"
 
 
-CONF_PROTOCOL_VERSION            = "protocol_version"
+CONF_PROTOCOL_COMMANDSET         = "protocol_commandset"
 CONF_PROTOCOL_VARIANT            = "protocol_variant"
-CONF_PROTOCOL_VERSION_OVERRIDE   = "protocol_version_override"
-CONF_CHEMISTRY                   = "chemistry"
+CONF_PROTOCOL_VERSION            = "protocol_version"
+CONF_CHEMISTRY                   = "battery_chemistry"
 
 CONF_REQUEST_THROTTLE            = "request_throttle"
 CONF_RESPONSE_TIMEOUT            = "response_timeout"
@@ -32,9 +32,9 @@ CONF_RESPONSE_TIMEOUT            = "response_timeout"
 #DEFAULT_FLOW_CONTROL_PIN = 
 DEFAULT_ADDRESS = 1
 
-DEFAULT_PROTOCOL_VERSION = 0x25
+DEFAULT_PROTOCOL_COMMANDSET = 0x25
 #DEFAULT_PROTOCOL_VARIANT = 
-#DEFAULT_PROTOCOL_VERSION_OVERRIDE = 
+#DEFAULT_PROTOCOL_VERSION = 
 #DEFAULT_CHEMISTRY = 
 
 DEFAULT_REQUEST_THROTTLE = "50ms"
@@ -49,9 +49,9 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
             cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
 
-            cv.Optional(CONF_PROTOCOL_VERSION, default=DEFAULT_PROTOCOL_VERSION): cv.int_range(min=0x20, max=0x25),
+            cv.Optional(CONF_PROTOCOL_COMMANDSET, default=DEFAULT_PROTOCOL_COMMANDSET): cv.int_range(min=0x20, max=0x25),
             cv.Optional(CONF_PROTOCOL_VARIANT): cv.string_strict,
-            cv.Optional(CONF_PROTOCOL_VERSION_OVERRIDE): cv.int_range(min=0, max=255),
+            cv.Optional(CONF_PROTOCOL_VERSION): cv.int_range(min=0, max=255),
             cv.Optional(CONF_CHEMISTRY): cv.int_range(min=0, max=255),
 
             cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
@@ -77,12 +77,12 @@ async def to_code(config):
         cg.add(var.set_flow_control_pin(pin))
     if CONF_ADDRESS in config:
         cg.add(var.set_address(config[CONF_ADDRESS]))
-    if CONF_PROTOCOL_VERSION in config:
-        cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
+    if CONF_PROTOCOL_COMMANDSET in config:
+        cg.add(var.set_protocol_commandset(config[CONF_PROTOCOL_COMMANDSET]))
     if CONF_PROTOCOL_VARIANT in config:
         cg.add(var.set_protocol_variant(config[CONF_PROTOCOL_VARIANT]))
-    if CONF_PROTOCOL_VERSION_OVERRIDE in config:
-        cg.add(var.set_protocol_version_override(config[CONF_PROTOCOL_VERSION_OVERRIDE]))
+    if CONF_PROTOCOL_VERSION in config:
+        cg.add(var.set_protocol_version(config[CONF_PROTOCOL_VERSION]))
     if CONF_CHEMISTRY in config:
         cg.add(var.set_chemistry(config[CONF_CHEMISTRY]))
     if CONF_REQUEST_THROTTLE in config:

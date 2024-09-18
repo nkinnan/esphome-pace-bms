@@ -3,7 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/datetime/datetime_entity.h"
 
-#include "../pace_bms_v25.h"
+#include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
 namespace pace_bms {

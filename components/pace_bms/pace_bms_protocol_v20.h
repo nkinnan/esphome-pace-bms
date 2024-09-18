@@ -41,6 +41,10 @@ public:
 protected:
 	enum CID2 : uint8_t
 	{
+		// helps to figure out how to address an unknown pack
+		CID2_ReadProtocolVersion = 0x4F,
+		CID2_ReadPackQuantity = 0x90,
+
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
 		CID2_ReadAnalogInformation = 0x42,
@@ -56,8 +60,8 @@ protected:
 		CID2_WriteShutdownCommand = 0x95,
 
 		// "Memory Information" tab of PBmsTools 2.4
-		//CID2_ReadDateTime = 0xB1,
-		//CID2_WriteDateTime = 0xB2,
+		CID2_ReadDateTime = 0x4D,
+		CID2_WriteDateTime = 0x4E,
 
 		// "Parameter Setting" tab of PBmsTools 2.4
 		//CID2_ReadCellOverVoltageConfiguration = 0xD1,
@@ -791,21 +795,11 @@ public:
 			//                     112233445566
 			// write: ~250046B2400C1808140E0F25FAFC.
 			// resp:  ~250046000000FDAF.
-
+*/
 	static const uint8_t exampleReadSystemTimeRequestV20[];
 	static const uint8_t exampleReadSystemTimeResponseV20[];
 	static const uint8_t exampleWriteSystemTimeRequestV20[];
 	static const uint8_t exampleWriteSystemTimeResponseV20[];
-
-	struct DateTime
-	{
-		uint16_t Year;
-		uint8_t Month;
-		uint8_t Day;
-		uint8_t Hour;
-		uint8_t Minute;
-		uint8_t Second;
-	};
 
 	bool CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
 	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, const std::vector<uint8_t>& response, DateTime& dateTime);
@@ -817,7 +811,7 @@ public:
 	// "Parameter Setting" tab of PBmsTools 2.4
 	// 
 	// ============================================================================
-
+/*
 	enum ReadConfigurationType {
 		RC_CellOverVoltage = CID2_ReadCellOverVoltageConfiguration,
 		RC_PackOverVoltage = CID2_ReadPackOverVoltageConfiguration,

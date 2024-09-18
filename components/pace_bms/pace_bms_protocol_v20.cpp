@@ -2220,17 +2220,17 @@ bool PaceBmsProtocolV20::ProcessWriteShutdownCommandResponse(const uint8_t busId
 
 	return true;
 }
-/*
+
 // ============================================================================
 // 
 // "Memory Information" tab of PBmsTools 2.4 
 // 
 // ============================================================================
 
-const unsigned char PaceBmsProtocolV20::exampleReadSystemTimeRequestV20[] = "~250046B10000FD9C\r";
-const unsigned char PaceBmsProtocolV20::exampleReadSystemTimeResponseV20[] = "~25004600400C180815051D1FFB10\r";
-const unsigned char PaceBmsProtocolV20::exampleWriteSystemTimeRequestV20[] = "~250046B2400C1808140E0F25FAFC\r";
-const unsigned char PaceBmsProtocolV20::exampleWriteSystemTimeResponseV20[] = "~250046000000FDAF\r";
+const unsigned char PaceBmsProtocolV20::exampleReadSystemTimeRequestV20[]   = "~20014A4D0000FD90\r";
+const unsigned char PaceBmsProtocolV20::exampleReadSystemTimeResponseV20[]  = "~20014A00200E07E809110B3B1FFA84\r";
+const unsigned char PaceBmsProtocolV20::exampleWriteSystemTimeRequestV20[]  = "~20014A4E200E07E809110C0402FA90\r";
+const unsigned char PaceBmsProtocolV20::exampleWriteSystemTimeResponseV20[] = "~20014A000000FDA8\r";
 
 bool PaceBmsProtocolV20::CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
@@ -2249,7 +2249,7 @@ bool PaceBmsProtocolV20::ProcessReadSystemDateTimeResponse(const uint8_t busId, 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	dateTime.Year = ReadHexEncodedByte(response, byteOffset) + 2000;
+	dateTime.Year = ReadHexEncodedUShort(response, byteOffset);
 	dateTime.Month = ReadHexEncodedByte(response, byteOffset);
 	dateTime.Day = ReadHexEncodedByte(response, byteOffset);
 	dateTime.Hour = ReadHexEncodedByte(response, byteOffset);
@@ -2260,10 +2260,10 @@ bool PaceBmsProtocolV20::ProcessReadSystemDateTimeResponse(const uint8_t busId, 
 }
 bool PaceBmsProtocolV20::CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request)
 {
-	const uint16_t payloadLen = 12;
+	const uint16_t payloadLen = 14;
 	std::vector<uint8_t> payload(payloadLen);
 	uint16_t payloadOffset = 0;
-	WriteHexEncodedByte(payload, payloadOffset, dateTime.Year - 2000);
+	WriteHexEncodedUShort(payload, payloadOffset, dateTime.Year);
 	WriteHexEncodedByte(payload, payloadOffset, dateTime.Month);
 	WriteHexEncodedByte(payload, payloadOffset, dateTime.Day);
 	WriteHexEncodedByte(payload, payloadOffset, dateTime.Hour);
@@ -2292,7 +2292,7 @@ bool PaceBmsProtocolV20::ProcessWriteSystemDateTimeResponse(const uint8_t busId,
 
 	return true;
 }
-
+/*
 // ============================================================================
 // 
 // "Parameter Setting" tab of PBmsTools 2.4 with DIP set to address 00 

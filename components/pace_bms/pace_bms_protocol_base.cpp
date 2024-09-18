@@ -105,26 +105,33 @@ uint16_t PaceBmsProtocolBase::CalculateRequestOrResponseChecksum(const std::vect
 }
 
 // helper for WriteHexEncoded----
-// Works with ASCII encoding, not portable, but that's what the protocol uses
 uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte)
 {
+	if ((nibbleByte & 0xF0) != 0)
+		LogError("Nibble Byte has high nibble bits set");
+
 	uint8_t nibble = nibbleByte & 0x0F;
 
 	if (nibble < 10)
 		return nibble + '0';  // Return a character from '0' to '9'
 	else
-		return nibble + 'A' - 10;  // Return a character from 'A' to 'F'
+		return nibble - 10 + 'A';  // Return a character from 'A' to 'F'
 }
 
-// todo: error check input range and log error and/or handle upstream to abort decode
 // helper for ReadHexEncoded----
-// Works with ASCII encoding, not portable, but that's what the protocol uses
 uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex)
 {
-	if (hex < 65)
+	if ((hex >= '0' && hex <= '9'))
 		return hex - '0';  // Return a value from 0 to 9
+	else if ((hex >= 'A' && hex <= 'F'))
+		return hex - 'A' + 10;  // Return a value from 10 to 15
+	else if ((hex >= 'a' && hex <= 'f'))
+		return hex - 'a' + 10;  // Return a value from 10 to 15
 	else
-		return hex + 10 - 'A';  // Return a value from 10 to 15
+	{
+		LogError("Hexidecimal value outside of convertable range");
+		return -1;
+	}
 }
 
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
@@ -264,12 +271,10 @@ std::string PaceBmsProtocolBase::FormatReturnCode(const uint8_t returnCode)
 	case 0x09:
 		return std::string("Operation or Write Error");
 		break;
-	// todo: double check if this is hex or not
-	case 90:
+	case 0x90:
 		return std::string("ADR Error");
 		break;
-	// todo: double check if this is hex or not
-	case 91:
+	case 0x91:
 		return std::string("Communication Error");
 		break;
 	case 0xE1:
@@ -302,9 +307,9 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 	// SOI marker
 	request[byteOffset++] = '~';
 
-	uint8_t target_ver = this->protocol_version;
-	if (this->protocol_version_override.has_value())
-		target_ver = this->protocol_version_override.value();
+	uint8_t target_ver = this->protocol_commandset;
+	if (this->protocol_version.has_value())
+		target_ver = this->protocol_version.value();
 	WriteHexEncodedByte(request, byteOffset, target_ver);
 
 	// busId
@@ -357,9 +362,9 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	}
 
 	uint8_t ver = ReadHexEncodedByte(response, byteOffset);
-	uint8_t target_ver = this->protocol_version;
-	if (this->protocol_version_override.has_value())
-		target_ver = this->protocol_version_override.value();
+	uint8_t target_ver = this->protocol_commandset;
+	if (this->protocol_version.has_value())
+		target_ver = this->protocol_version.value();
 	if (ver != target_ver)
 	{
 		LogError("Response has wrong version number");

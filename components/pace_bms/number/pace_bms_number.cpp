@@ -13,7 +13,7 @@ static const char* const TAG = "pace_bms.number";
 * wire up all the lambda callbacks
 */
 void PaceBmsNumber::setup() {
-	if (this->parent_->get_protocol_version() == 0x25) {
+	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (this->cell_over_voltage_alarm_number_ != nullptr ||
 			this->cell_over_voltage_protection_number_ != nullptr ||
 			this->cell_over_voltage_protection_release_number_ != nullptr ||
@@ -24,22 +24,22 @@ void PaceBmsNumber::setup() {
 				if (this->cell_over_voltage_alarm_number_ != nullptr) {
 					float state = configuration.AlarmMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->cell_over_voltage_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_alarm_number_->publish_state(value); });
 				}
 				if (this->cell_over_voltage_protection_number_ != nullptr) {
 					float state = configuration.ProtectionMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->cell_over_voltage_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_number_->publish_state(value); });
 				}
 				if (this->cell_over_voltage_protection_release_number_ != nullptr) {
 					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->cell_over_voltage_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_release_number_->publish_state(value); });
 				}
 				if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'cell_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->cell_over_voltage_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -98,22 +98,22 @@ void PaceBmsNumber::setup() {
 				if (this->pack_over_voltage_alarm_number_ != nullptr) {
 					float state = configuration.AlarmMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->pack_over_voltage_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_alarm_number_->publish_state(value); });
 				}
 				if (this->pack_over_voltage_protection_number_ != nullptr) {
 					float state = configuration.ProtectionMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->pack_over_voltage_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_number_->publish_state(value); });
 				}
 				if (this->pack_over_voltage_protection_release_number_ != nullptr) {
 					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->pack_over_voltage_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_release_number_->publish_state(value); });
 				}
 				if (this->pack_over_voltage_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'pack_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->pack_over_voltage_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -172,22 +172,22 @@ void PaceBmsNumber::setup() {
 				if (this->cell_under_voltage_alarm_number_ != nullptr) {
 					float state = configuration.AlarmMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->cell_under_voltage_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_alarm_number_->publish_state(value); });
 				}
 				if (this->cell_under_voltage_protection_number_ != nullptr) {
 					float state = configuration.ProtectionMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->cell_under_voltage_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_number_->publish_state(value); });
 				}
 				if (this->cell_under_voltage_protection_release_number_ != nullptr) {
 					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->cell_under_voltage_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_release_number_->publish_state(value); });
 				}
 				if (this->cell_under_voltage_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'cell_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->cell_under_voltage_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -246,22 +246,22 @@ void PaceBmsNumber::setup() {
 				if (this->pack_under_voltage_alarm_number_ != nullptr) {
 					float state = configuration.AlarmMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->pack_under_voltage_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_alarm_number_->publish_state(value); });
 				}
 				if (this->pack_under_voltage_protection_number_ != nullptr) {
 					float state = configuration.ProtectionMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->pack_under_voltage_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_number_->publish_state(value); });
 				}
 				if (this->pack_under_voltage_protection_release_number_ != nullptr) {
 					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'pack_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->pack_under_voltage_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_release_number_->publish_state(value); });
 				}
 				if (this->pack_under_voltage_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'pack_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->pack_under_voltage_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -319,17 +319,17 @@ void PaceBmsNumber::setup() {
 				if (this->charge_over_current_alarm_number_ != nullptr) {
 					float state = configuration.AlarmAmperage;
 					ESP_LOGV(TAG, "'charge_over_current_alarm': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_current_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_alarm_number_->publish_state(value); });
 				}
 				if (this->charge_over_current_protection_number_ != nullptr) {
 					float state = configuration.ProtectionAmperage;
 					ESP_LOGV(TAG, "'charge_over_current_protection': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_current_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_number_->publish_state(value); });
 				}
 				if (this->charge_over_current_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'charge_over_current_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_current_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -376,17 +376,17 @@ void PaceBmsNumber::setup() {
 				if (this->discharge_over_current1_alarm_number_ != nullptr) {
 					float state = configuration.AlarmAmperage;
 					ESP_LOGV(TAG, "'discharge_over_current1_alarm': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_current1_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_alarm_number_->publish_state(value); });
 				}
 				if (this->discharge_over_current1_protection_number_ != nullptr) {
 					float state = configuration.ProtectionAmperage;
 					ESP_LOGV(TAG, "'discharge_over_current1_protection': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_current1_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_number_->publish_state(value); });
 				}
 				if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'discharge_over_current1_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_current1_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -432,12 +432,12 @@ void PaceBmsNumber::setup() {
 				if (this->discharge_over_current2_protection_number_ != nullptr) {
 					float state = configuration.ProtectionAmperage;
 					ESP_LOGV(TAG, "'discharge_over_current2_protection': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_current2_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_number_->publish_state(value); });
 				}
 				if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
 					ESP_LOGV(TAG, "'discharge_over_current2_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_current2_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -472,7 +472,7 @@ void PaceBmsNumber::setup() {
 				if (this->short_circuit_protection_delay_number_ != nullptr) {
 					float state = configuration.ProtectionDelayMicroseconds / 1000.0f;
 					ESP_LOGV(TAG, "'short_circuit_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->short_circuit_protection_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->short_circuit_protection_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -497,12 +497,12 @@ void PaceBmsNumber::setup() {
 				if (this->cell_balancing_threshold_number_ != nullptr) {
 					float state = configuration.ThresholdMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_balancing_threshold': Publishing state due to update from the hardware: %f", state);
-					this->cell_balancing_threshold_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_threshold_number_->publish_state(value); });
 				}
 				if (this->cell_balancing_delta_number_ != nullptr) {
 					float state = configuration.DeltaCellMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'cell_balancing_delta': Publishing state due to update from the hardware: %f", state);
-					this->cell_balancing_delta_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_delta_number_->publish_state(value); });
 				}
 			});
 		}
@@ -537,12 +537,12 @@ void PaceBmsNumber::setup() {
 				if (this->sleep_cell_voltage_number_ != nullptr) {
 					float state = configuration.CellMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'sleep_cell_voltage': Publishing state due to update from the hardware: %f", state);
-					this->sleep_cell_voltage_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->sleep_cell_voltage_number_->publish_state(value); });
 				}
 				if (this->sleep_delay_number_ != nullptr) {
 					float state = configuration.DelayMinutes;
 					ESP_LOGV(TAG, "'sleep_delay': Publishing state due to update from the hardware: %f", state);
-					this->sleep_delay_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->sleep_delay_number_->publish_state(value); });
 				}
 			});
 		}
@@ -578,17 +578,17 @@ void PaceBmsNumber::setup() {
 				if (this->full_charge_voltage_number_ != nullptr) {
 					float state = configuration.FullChargeMillivolts / 1000.0f;
 					ESP_LOGV(TAG, "'full_charge_voltage': Publishing state due to update from the hardware: %f", state);
-					this->full_charge_voltage_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_voltage_number_->publish_state(value); });
 				}
 				if (this->full_charge_amps_number_ != nullptr) {
 					float state = configuration.FullChargeMilliamps / 1000.0f;
 					ESP_LOGV(TAG, "'full_charge_amps': Publishing state due to update from the hardware: %f", state);
-					this->full_charge_amps_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_amps_number_->publish_state(value); });
 				}
 				if (this->low_charge_alarm_percent_number_ != nullptr) {
 					float state = configuration.LowChargeAlarmPercent;
 					ESP_LOGV(TAG, "'low_charge_alarm_percent': Publishing state due to update from the hardware: %f", state);
-					this->low_charge_alarm_percent_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->low_charge_alarm_percent_number_->publish_state(value); });
 				}
 			});
 		}
@@ -638,32 +638,32 @@ void PaceBmsNumber::setup() {
 				if (this->charge_over_temperature_alarm_number_ != nullptr) {
 					float state = configuration.ChargeAlarm;
 					ESP_LOGV(TAG, "'charge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->charge_over_temperature_protection_number_ != nullptr) {
 					float state = configuration.ChargeProtection;
 					ESP_LOGV(TAG, "'charge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->charge_over_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.ChargeProtectionRelease;
 					ESP_LOGV(TAG, "'charge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->charge_over_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_release_number_->publish_state(value); });
 				}
 				if (this->discharge_over_temperature_alarm_number_ != nullptr) {
 					float state = configuration.DischargeAlarm;
 					ESP_LOGV(TAG, "'discharge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->discharge_over_temperature_protection_number_ != nullptr) {
 					float state = configuration.DischargeProtection;
 					ESP_LOGV(TAG, "'discharge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->discharge_over_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.DischargeProtectionRelease;
 					ESP_LOGV(TAG, "'discharge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->discharge_over_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_release_number_->publish_state(value); });
 				}
 			});
 		}
@@ -746,32 +746,32 @@ void PaceBmsNumber::setup() {
 				if (this->charge_under_temperature_alarm_number_ != nullptr) {
 					float state = configuration.ChargeAlarm;
 					ESP_LOGV(TAG, "'charge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->charge_under_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->charge_under_temperature_protection_number_ != nullptr) {
 					float state = configuration.ChargeProtection;
 					ESP_LOGV(TAG, "'charge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->charge_under_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->charge_under_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.ChargeProtectionRelease;
 					ESP_LOGV(TAG, "'charge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->charge_under_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_release_number_->publish_state(value); });
 				}
 				if (this->discharge_under_temperature_alarm_number_ != nullptr) {
 					float state = configuration.DischargeAlarm;
 					ESP_LOGV(TAG, "'discharge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->discharge_under_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->discharge_under_temperature_protection_number_ != nullptr) {
 					float state = configuration.DischargeProtection;
 					ESP_LOGV(TAG, "'discharge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->discharge_under_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.DischargeProtectionRelease;
 					ESP_LOGV(TAG, "'discharge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->discharge_under_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_release_number_->publish_state(value); });
 				}
 			});
 		}
@@ -851,17 +851,17 @@ void PaceBmsNumber::setup() {
 				if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
 					float state = configuration.Alarm;
 					ESP_LOGV(TAG, "'mosfet_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->mosfet_over_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->mosfet_over_temperature_protection_number_ != nullptr) {
 					float state = configuration.Protection;
 					ESP_LOGV(TAG, "'mosfet_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->mosfet_over_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.ProtectionRelease;
 					ESP_LOGV(TAG, "'mosfet_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->mosfet_over_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_release_number_->publish_state(value); });
 				}
 			});
 		}
@@ -911,32 +911,32 @@ void PaceBmsNumber::setup() {
 				if (this->environment_under_temperature_alarm_number_ != nullptr) {
 					float state = configuration.UnderAlarm;
 					ESP_LOGV(TAG, "'environment_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->environment_under_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->environment_under_temperature_protection_number_ != nullptr) {
 					float state = configuration.UnderProtection;
 					ESP_LOGV(TAG, "'environment_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->environment_under_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->environment_under_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.UnderProtectionRelease;
 					ESP_LOGV(TAG, "'environment_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->environment_under_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_release_number_->publish_state(value); });
 				}
 				if (this->environment_over_temperature_alarm_number_ != nullptr) {
 					float state = configuration.OverAlarm;
 					ESP_LOGV(TAG, "'environment_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->environment_over_temperature_alarm_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_alarm_number_->publish_state(value); });
 				}
 				if (this->environment_over_temperature_protection_number_ != nullptr) {
 					float state = configuration.OverProtection;
 					ESP_LOGV(TAG, "'environment_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->environment_over_temperature_protection_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_number_->publish_state(value); });
 				}
 				if (this->environment_over_temperature_protection_release_number_ != nullptr) {
 					float state = configuration.OverProtectionRelease;
 					ESP_LOGV(TAG, "'environment_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->environment_over_temperature_protection_release_number_->publish_state(state);
+					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_release_number_->publish_state(value); });
 				}
 			});
 		}
@@ -1008,7 +1008,7 @@ void PaceBmsNumber::setup() {
 		}
 	}
 	else {
-		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_version());
+		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_commandset());
 	}
 }
 
