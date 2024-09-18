@@ -203,12 +203,12 @@ sensor:
     design_capacity:
       name: "Design Capacity"
 
-    cycle_count:
-      name: "Cycle Count"
     state_of_charge:
       name: "State of Charge"
     state_of_health:
       name: "State of Health"
+    cycle_count:
+      name: "Cycle Count"
 
     min_cell_voltage:
       name: "Min Cell Voltage"
@@ -362,17 +362,31 @@ text_sensor:
     # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
     warning_status:
       name: "Warning Status"
-    balancing_status:
-      name: "Balancing Status"
-    system_status:
-      name: "System Status"
-    configuration_status:
-      name: "Configuration Status"
     protection_status:
       name: "Protection Status"
     fault_status:
       name: "Fault Status"
+    system_status:
+      name: "System Status"
+    configuration_status:
+      name: "Configuration Status"
+    balancing_status:
+      name: "Balancing Status"
 
+
+datetime:
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   system_date_and_time:
+     name: "System Date and Time"
+
+button:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    shutdown:
+      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
 
 #switch:
 #  - platform: pace_bms
@@ -403,16 +417,8 @@ text_sensor:
 #    #  name: "Protocol (RS485)"
 #    #protocol_type:
 #    #  name: "Protocol (Type)"
-
-
-button:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    shutdown:
-      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
-
-
+#
+#
 #number:
 #
 #  - platform: pace_bms
@@ -528,12 +534,6 @@ button:
 #    mosfet_over_temperature_protection_release:
 #      name: "Mosfet Over Temperature Protection Release"
 #
-#    environment_under_temperature_alarm:
-#      name: "Environment Under Temperature Alarm"
-#    environment_under_temperature_protection:
-#      name: "Environment Under Temperature Protection"
-#    environment_under_temperature_protection_release:
-#      name: "Environment Under Temperature Protection Release"
 #    environment_over_temperature_alarm:
 #      name: "Environment Over Temperature Alarm"
 #    environment_over_temperature_protection:
@@ -541,10 +541,10 @@ button:
 #    environment_over_temperature_protection_release:
 #      name: "Environment Over Temperature Protection Release"
 
+#    environment_under_temperature_alarm:
+#      name: "Environment Under Temperature Alarm"
+#    environment_under_temperature_protection:
+#      name: "Environment Under Temperature Protection"
+#    environment_under_temperature_protection_release:
+#      name: "Environment Under Temperature Protection Release"
 
-datetime:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   system_date_and_time:
-     name: "System Date and Time"

@@ -41,9 +41,9 @@ public:
 protected:
 	enum CID2 : uint8_t
 	{
-		// helps to figure out how to address an unknown pack
-		CID2_ReadProtocolVersion = 0x4F,
-		CID2_ReadPackQuantity = 0x90,
+		//// helps to figure out how to address an unknown pack
+		//CID2_ReadProtocolVersion = 0x4F,
+		//CID2_ReadPackQuantity = 0x90,
 
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
