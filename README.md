@@ -308,11 +308,11 @@ Next, lets configure the UART and pace_bms component to speak with your BMS.
 
 ```yaml
 uart:
-    id: uart_0
-    baud_rate: 9600 
-    tx_pin: GPIO2
-    rx_pin: GPIO1
-    rx_buffer_size: 256
+  id: uart_0
+  baud_rate: 9600 
+  tx_pin: GPIO2
+  rx_pin: GPIO1
+  rx_buffer_size: 256
 ```
 * **baud_rate:** The most common value for baud_rate is 9600, but some BMSes are reported to use 19200 as well.  You should know what this value is from previously communicating with the BMS using the manufacturer's recommended software.
 * **tx_pin / rx_pin:** Self-explanatory, see previous sections on wiring your ESP to the RS232 or RS485 port. 
