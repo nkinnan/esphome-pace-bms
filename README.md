@@ -27,7 +27,7 @@ Paceic Protocol Version 20
 
 Different manufacturers will have different BMS management software (it will not be PbmsTools) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
-There is a high likelyhood that one of these protocol variants will work for battery packs speaking protocol version 20 which are branded by a different manufacturer than those listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
+There is a high likelihood that one of these protocol variants will work for battery packs speaking protocol version 20 which are branded by a different manufacturer than the three listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
@@ -49,7 +49,7 @@ Example protocol version 25 BMS front-panel:
 
 Pace MODBUS Protocol
 -
-Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since ESPHome supports MODBUS already, and documentation is available, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
+Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome supports MODBUS already, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
 
 Supported Values/Status (read only)
 -
@@ -92,7 +92,7 @@ Supported Configuration (read / write)
 
 Supported Configuration (read / write) - **Version 25 ONLY**
 -
-It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to sniff the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
+It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
 
 - Toggles (switches) that turn various features on/off
 	- **Buzzer Alarm**
@@ -224,7 +224,7 @@ You will need a converter chip.  I have had success with the MAX485.  It's desig
 
 ![MAX485 Breakout Board](images/max485.jpg)
 
-This example breakout separates out the flow control pins **DE** and **R̅E̅**, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
+This example breakout board separates out the flow control pins **DE** and **R̅E̅**, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
 
 Connect the breakout board to the **ESP**:
 * **DI** (driver input) **->** ESP UART **TX** 
@@ -254,7 +254,7 @@ Connect the breakout board to the **BMS**:
 * RS232 **TXD** -> pin / blade **4** 
 * RS232 **GND** -> pin / blade **5** 
 
-**DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the wire colors aren't always standard.  **Use the pin/blade numbering** from the diagram for wiring the proper connections.  
+**DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between the two ends of an extension cord.  Plus the wire colors aren't always standard.  **Use the pin/blade numbering** from the diagram for wiring the proper connections.  
 
 Note that pin/blade **1 and 6 are usually left blank** but **STILL COUNT** for numbering!  
 
@@ -274,7 +274,37 @@ A full ESPHome configuration will consist of thee parts:
 
 I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
-First, lets configure the UART and pace_bms component to speak with your BMS.
+If using an 8266 you will need to add this to your esphome config section.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
+
+```
+esphome:
+  libraries:
+    # huge improvement to event throughput to the on-device web_server dashboard
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield```
+```
+
+Before anything else, you will need to tell ESPHome where to find this component.  Add the following lines to your YAML:
+
+```
+external_components:
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome-pace-bms
+      ref: "main"
+    components: [ pace_bms ]
+    refresh: 1s
+    
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome
+      ref: "make_time_dependency_optional"
+    components: [ datetime ]
+    refresh: 1s
+```
+
+The second source section is needed to work around a design bug in the ESPHome DateTime component, it will be removed / become unnecessary once [the PR](https://github.com/esphome/esphome/pull/7425) to fix that goes through.
+
+Next, lets configure the UART and pace_bms component to speak with your BMS.
 
 ```yaml
 uart:
@@ -471,7 +501,7 @@ select:
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
-    # setting the protocol is only possible on some version 25 BMSes but not all
+    # setting the protocol is possible on some version 25 BMSes but not all
     protocol_can:
       name: "Protocol (CAN)"
     protocol_rs485:
