@@ -220,6 +220,7 @@ If using an 8266, you will need to redirect serial logs to the second UART (whic
 How do I wire my ESP to the RS485 port?
 - 
 You will need a converter chip.  I have had success with the MAX485.  It's designed for 5v but I've had no issues using it at 3.3v with an ESP.  [Here](https://www.amazon.com/gp/product/B00NIOLNAG) is an example breakout board for the MAX485 chip.  You may be able to find ESP boards with such a chip already integrated.
+
 ![MAX485 Breakout Board](images/max485.jpg)
 
 This example breakout separates out the flow control pins **DE** and **R̅E̅**, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
@@ -240,6 +241,7 @@ Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 How do I wire my ESP to the RS232 port?
 - 
 You will need a converter chip.  I have had success with the SP232.  It's compatible with the ESP 3.3v power and signaling levels.  [Here](https://www.amazon.com/gp/product/B091TN2ZPY) is an example breakout board for the SP232 chip.  You may be able to find ESP boards with such a chip already integrated.
+
 ![SP232 Breakout Board](images/sp232.jpg)
 
 Connect the breakout board to the **ESP**:
@@ -249,7 +251,7 @@ Connect the breakout board to the **ESP**:
 Connect the breakout board to the **BMS**:
 * RS232 **TXD** -> pin / blade **?** (???)
 * RS232 **RXD** -> pin / blade **?** (???)
-* RS232 **GND** -> pin / blade **?** (???) (make sure you don't create a ground loop through the ESP power supply - if you don't know what that is, maybe use RS485 instead)
+* RS232 **GND** -> pin / blade **?** (???) (make sure you don't create a ground loop through the ESP power supply - if you don't know what that means, maybe use RS485 instead)
 
 **DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the colors aren't always standard.  Use the pin/blade numbering for wiring the proper connections.
 
@@ -258,8 +260,43 @@ Connect the breakout board to the **BMS**:
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
 Example ESPHome configuration YAML
-- 
+-
+A full ESPHome configuration will consist of thee parts:
 
+1. The basic stuff like board type, wifi credentials, api or mqtt configuration, web_server if used, and so on. 
+2. Configuration of the UART and the pace_bms component to speak with your battery pack.
+3. Exposing the values / status / configuration that you want accessible via the web_server dashboard, homeassistant, or mqtt.
+
+I won't go over 1 since that will be specific to your setup.  
+
+First lets configure the UART and pace_bms component.
+
+```yaml
+uart:
+    id: uart_0
+    baud_rate: 9600 
+    tx_pin: GPIO2
+    rx_pin: GPIO1
+    rx_buffer_size: 256
+
+pace_bms:
+  id: pace_bms_at_address_1
+  address: 1
+  uart_id: uart_0
+  flow_control_pin: GPIO0 
+  update_interval: 5s
+  request_throttle: 200ms 
+  response_timeout: 2000ms 
+
+  protocol_commandset: 0x20
+  protocol_variant: "EG4"
+  protocol_version: 0x20 
+  battery_chemistry: 0x4A 
+```
+
+Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly 
+
+Example 1: 
 
 
 I'm having a problem using this component
@@ -285,11 +322,11 @@ Miscellaneous Notes
 
 Helping Out
 - 
-- I would like to make additions to the known supported battery packs section.  If you have a pack that works, please share!
+- I would like to make additions to the [known supported battery packs](fixme) section.  If you have a pack that works, please share!
 
 - If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
 
-- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change though.  You can also file an issue but I may not have time to follow up on it.
+- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant.  You can also file an issue but I may not have time to follow up on it.
 
 - And of course, if you appreciate the work that went into this, you can always [buy me a coffee](https://www.buymeacoffee.com/nkinnan) :)
 
