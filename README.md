@@ -40,7 +40,7 @@ These BMSes speaking paceic version 25 will invariably use PbmsTools for their B
 
 ![PbmsTools Screenshot](images/PbmsTools.jpg)
 
-The exact look isn't important, just the tabs and general layout will look like this.  This is PbmsTools regardless of any specific brand badging and indicates that your BMS supports protocol version 25.
+The exact look isn't important, just that the tabs and general layout looks like this.  This is PbmsTools regardless of any specific brand badging and indicates that your BMS supports protocol version 25.
 
 These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
@@ -74,14 +74,14 @@ Supported Values/Status (read only)
 	- **Maximum Cell Voltage** (V)
 	- **Average Cell Voltage** (V)
 	- **Max Cell Differential** (V) - difference between minimum and maximum cell voltage
-- All "Status Information" information decoded to human-readable text format
+- All "Status Information" decoded to human-readable text format
 	- **Warning Text** - A list of any warnings reported by the BMS
 	- **Protection Text** - If the BMS has protected itself or the batteries, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
 	- **Fault Text** - A list of any faults reported by the BMS
 	- **System Text** - Current system status such as "Charging"
 	- **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
-	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them and they vary by protocol version and variant.
+	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
@@ -92,7 +92,7 @@ Supported Configuration (read / write)
 
 Supported Configuration (read / write) - **Version 25 ONLY**
 -
-It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
+It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
 
 - Toggles (switches) that turn various features on/off
 	- **Buzzer Alarm**
@@ -127,11 +127,11 @@ It is difficult to find good documentation on either of these protocols.  All th
 	- **Pack Under Voltage Protection Release** (V)
 	- **Pack Under Voltage Delay** (seconds)
   - Discharge Over Current 1
-	- **Discharge Over Current 1 Alarm** (V)
-	- **Discharge Over Current 1 Protection** (V)
+	- **Discharge Over Current 1 Alarm** (A)
+	- **Discharge Over Current 1 Protection** (A)
 	- **Discharge Over Current 1 Delay** (seconds)
   - Discharge Over Current 2
-	- **Discharge Over Current 2 Protection** (V)
+	- **Discharge Over Current 2 Protection** (A)
 	- **Discharge Over Current 2 Delay** (seconds)
   - Discharge Short Circuit
 	- **Discharge Short Circuit Protection Delay** (milliseconds)
@@ -343,7 +343,7 @@ pace_bms:
 
 
 
-Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, but I will provide a complete example which you can pare down to only what you want to see.
+Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, I will provide a complete example which you can pare down to only what you want to see.
 
 Example 1: All read-only values, available on all protocol versions and variants
 ```yaml
@@ -702,7 +702,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```
 
-If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.  But keep an eye on the logs for errors and warnings.
+If you had to guess which commandset like this, you can figure out if it is "truly" 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.  But keep an eye on the logs for errors and warnings.
 
 ```yaml
 text_sensor:
