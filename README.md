@@ -51,7 +51,7 @@ Pace MODBUS Protocol
 -
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome supports MODBUS already, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
 
-Supported Values/Status (read only)
+Supported BMS Values/Status (read only)
 -
 - All "Analog Information"
 	- **Cell Count**
@@ -85,12 +85,12 @@ Supported Values/Status (read only)
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
-Supported Configuration (read / write)
+Supported BMS Configuration (read / write)
 -
 - **System Date and Time** - Allows access to the BMS internal real-time clock 
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
-Supported Configuration (read / write) - **Version 25 ONLY**
+Supported BMS Configuration (read / write) - **Version 25 ONLY**
 -
 It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
 
@@ -334,7 +334,7 @@ pace_bms:
 ```
 * **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using a push-pin to depress the recessed reset button.  The most common address values are 0 and 1, unless your battery packs are daisy chained, which is not currently supported by this component.
 * **uart_id:** The ID of the UART you configured.  This component currently requires one UART per BMS, though I'm considering a design change that would allow it to read "daisy chained" BMSes in the future.
-* **flow_control_pin:** If using RS232 this setting should be omitted.  If using RS485, this is required to be set as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.
+* **flow_control_pin:** If using RS232 this setting should be omitted.  If using RS485, this is required to be set, as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.
 * **update_interval:** How often to query the BMS and publish whatever updated values are read back.  What queries are sent to the BMS is determined by what values you have requested to be published in the rest of your configuration.
 * **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
