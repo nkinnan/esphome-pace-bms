@@ -222,7 +222,7 @@ How do I wire my ESP to the RS485 port?
 You will need a converter chip.  I have had success with the MAX485.  It's designed for 5v but I've had no issues using it at 3.3v with an ESP.  [Here](https://www.amazon.com/gp/product/B00NIOLNAG) is an example breakout board for the MAX485 chip.  You may be able to find ESP boards with such a chip already integrated.
 ![MAX485 Breakout Board](images/max485.jpg)
 
-This breakout separates out the flow control pins DE and NOT-RE, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
+This example breakout separates out the flow control pins **DE** and **R̅E̅**, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
 
 Connect the breakout board to the **ESP**:
 * **DI** (driver input) **->** ESP UART **TX** 
