@@ -10,7 +10,7 @@ Example PACE BMS board:
 The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.
 
 I strongly encourage you to read through this entire document, but here are some Quick Links:
-- [What batteries are supported?](fixme)
+- [What Battery Packs are supported?](fixme)
 - [I just want an ESPHome config](fixme)
 - [How do I wire my ESP to the RS485/RS232 port?](fixme)
 - [I'm having a problem using this component](fixme)
@@ -185,7 +185,7 @@ For help figuring out how to do those configuration tweaks to get your battery p
 **Known working protocol version 20 battery packs:**
 - **EG4 LIFEPOWER4**
   - hardware versions: 
-	  - QTHN 0d[3][6]
+	  - **QTHN 0d[3][6]**
 	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
   - required config: 
 	  - `protocol_commandset: 0x20`
@@ -200,7 +200,7 @@ For help figuring out how to do those configuration tweaks to get your battery p
 **Known working protocol version 25 battery packs:**
 - **Jakiper JK48V100**
   - hardware versions: 
-	  - FIXME
+	  - **FIXME**
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required config: 
 	  - `protocol_commandset: 0x25`
@@ -267,7 +267,7 @@ A full ESPHome configuration will consist of thee parts:
 2. Configuration of the UART and the pace_bms component to speak with your battery pack.
 3. Exposing the values / status / configuration that you want accessible via the web_server dashboard, homeassistant, or mqtt.
 
-I won't go over 1 since that will be specific to your setup.  
+I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
 First lets configure the UART and pace_bms component.
 
@@ -316,9 +316,9 @@ Decoding the Status Values (but you probably don't want to)
 
 Miscellaneous Notes
 - 
-- My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.
+- My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.  It's currently a bit of a mishmash until I can refactor over to ESPHome's style completely.
 
-- Huge shout-out to https://github.com/syssi/ who implemented an initial decode and compiled documentation, and who shared his time on Discord, without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
+- Huge shout-out to https://github.com/syssi/esphome-seplos-bms who implemented an initial decode and compiled some documentation, and who shared a bit of his time on Discord, without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
 
 Helping Out
 - 
