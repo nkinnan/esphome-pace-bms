@@ -257,7 +257,7 @@ Connect the breakout board to the **BMS**:
 
 **DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the wire colors aren't always standard.  **Use the pin/blade numbering** from the diagram for wiring the proper connections.  
 
-Note that pin/blade **1 and 6 are usually left blank** but **STILL COUNT** for numbering!.  
+Note that pin/blade **1 and 6 are usually left blank** but **STILL COUNT** for numbering!  
 
 If cutting up a telephone extension cord, make sure it's "**dual line**" / has four wires and not just two.
 
@@ -472,7 +472,7 @@ select:
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
-    # setting the protocol is only possible on some version 25 BMSes
+    # setting the protocol is only possible on some version 25 BMSes but not all
     protocol_can:
       name: "Protocol (CAN)"
     protocol_rs485:
@@ -640,7 +640,7 @@ Now, going back to the requests you snooped over the COM port
 ```
 ~25xx46xxxxxxxx\r
 ```
-The first number, the 20 or the 25 at the beginning (it may be a different number, more on that in a moment) is the protocol version your BMS is speaking.  The second number is your battery chemistry.  Put both of them into your config YAML (you can skip battery_chemistry if it was 46 as expected since that is the default value):
+The first number, the 20 or the 25 at the beginning (it may be a different number, more on that in a moment) is the protocol version your BMS is speaking.  The second number (after two x's) is your battery chemistry.  Put both of them into your config YAML (you can skip battery_chemistry if it was 46 as expected since that is the default value):
  
 
 ```yaml
@@ -657,7 +657,7 @@ pace_bms:
 
 If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
-If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25 but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.
+If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25, but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.
 
 ```yaml
 pace_bms:
@@ -725,12 +725,13 @@ pace_bms:
   protocol_variant: "EG4"
 ```
 If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you the most "correct" data: 
-    * PYLON
-    * SEPLOS
-    * EG4
-The problem areas are going to be the last of the analog values such as State of Charge and State of Health, and all of the status values.  If those don't make sense, it's the wrong protocol variant.  
+* PYLON
+* SEPLOS
+* EG4
 
-If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me with a protocol spec doc by googling that information yourself.  I might be able to implement the new variant for you.
+The problem areas are going to be the last of the analog values such as Cycle Count, State of Charge and State of Health, and all of the status values.  If those don't make sense, it's the wrong protocol variant.  
+
+If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
 
 I'm having a problem using this component
 - 
