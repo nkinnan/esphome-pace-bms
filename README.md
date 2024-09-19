@@ -1,13 +1,15 @@
 
 esphome-pace-bms
 -
-This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).
+This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
+
+If you are a developer, the protocol implementation is fully portable with a clean interface in C++ with no dependencies on ESPHome or any other libraries (it does require C++17 support due to use of `std::optional`, though that could be removed easily).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
 
 Example PACE BMS board:
 ![Example PACE BMS board (front)](images/example-board-front.png)
 ![Example PACE BMS board (back)](images/example-board-back.png)
 
-The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.
+The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers (usually) either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.
 
 I strongly encourage you to read through this entire document, but here are some Quick Links:
 - [What Battery Packs are supported?](fixme)
@@ -282,7 +284,11 @@ uart:
     tx_pin: GPIO2
     rx_pin: GPIO1
     rx_buffer_size: 256
-
+```
+* **baud_rate:** The most common value for baud_rate is 9600, but some BMSes are reported to use 19200 as well.  You should know what this value is from previously communicating with the BMS using the manufacturer's recommended software.
+* **tx_pin / rx_pin:** Self-explanatory, see previous sections on wiring your ESP to the RS232 or RS485 port. 
+* **rx_buffer_size:** A minimum size of 256 is required for this component to function reliably.
+```yaml
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
@@ -297,8 +303,18 @@ pace_bms:
   protocol_version: 0x20 
   battery_chemistry: 0x4A 
 ```
+* **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value set with the DIP switches you'll need to reset the BMS for the new setting to take effect.  Either by flipping the breaker, or using a push-pin to depress the recessed reset button.
+* **uart_id:** The ID of the UART you configured.  This component currently requires one UART per BMS, though I'm considering a design change that would allow it to read "daisy chained" BMSes.
+* **flow_control_pin:** If using RS232 this setting should be omitted.  If using RS485, this is required to be set as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.
+* **update_interval:** How often to query the BMS and publish whatever updated values are read back.  What queries are sent to the BMS is determined by what values you have requested in the rest of your configuration.
+* **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
+* **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
+* **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
+   - Consider these as a set.  Use values from the known supported list, or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
 
-Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly 
+
+
+Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, but I will provide a complete example which you can pare down to only what you want to see.
 
 Example 1: 
 
@@ -310,7 +326,7 @@ Before proceeding through this section, please read the entire rest of this docu
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
-The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (they may be programmed to speak different protocols).
+The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (they may be programmed to speak different protocols).  
 
 Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this:
 
@@ -348,7 +364,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```  
 
-If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.
+If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25 but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.
 
@@ -366,7 +382,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```
 
-If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.
+If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.  But keep an eye on the logs for errors and warnings.
 
 ```yaml
 text_sensor:
@@ -379,7 +395,7 @@ text_sensor:
       name: "Serial Number"
 ```
 
-Once again, if your "true" commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  
+Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 However, if it is 0x20 then you also need to figure out which "variant" of protocol version 20 it is.  Start by putting this into your config:
 
@@ -429,7 +445,7 @@ I'm having a problem using this component
 - 
 Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
 
-If you still have an issue, or are seeing some "strange data", you can create an issue report.  Support will be best-effort, no guarantees.
+If you still have an issue, or are seeing some "strange data" or log output, you can create an issue report. 
 
 Each Configuration Entry in Excruciating Detail
 - 
@@ -442,7 +458,7 @@ Miscellaneous Notes
 - 
 - My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.  It's currently a bit of a mishmash until I can refactor over to ESPHome's style completely.
 
-- Huge shout-out to https://github.com/syssi/esphome-seplos-bms who implemented an initial decode and compiled some documentation, and who shared a bit of his time on Discord, without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
+- Huge shout-out to https://github.com/syssi/esphome-seplos-bms who implemented an initial basic decode letting me know this was possible, and also compiled some documentation which was immensely useful.  Without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
 
 Helping Out
 - 
@@ -450,7 +466,7 @@ Helping Out
 
 - If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
 
-- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant.  You can also file an issue but I may not have time to follow up on it.
+- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant. 
 
 - And of course, if you appreciate the work that went into this, you can always [buy me a coffee](https://www.buymeacoffee.com/nkinnan) :)
 
