@@ -245,15 +245,19 @@ You will need a converter chip.  I have had success with the SP232.  It's compat
 ![SP232 Breakout Board](images/sp232.jpg)
 
 Connect the breakout board to the **ESP**:
-* TTL **TXD** **->** ESP UART **RX** 
 * TTL **RXD** **->** ESP UART **TX**
+* TTL **TXD** **->** ESP UART **RX** 
 
 Connect the breakout board to the **BMS**:
-* RS232 **TXD** -> pin / blade **?** (???)
-* RS232 **RXD** -> pin / blade **?** (???)
-* RS232 **GND** -> pin / blade **?** (???) (make sure you don't create a ground loop through the ESP power supply - if you don't know what that means, maybe use RS485 instead)
+* RS232 **RXD** -> pin / blade **3** 
+* RS232 **TXD** -> pin / blade **4** 
+* RS232 **GND** -> pin / blade **5** 
 
-**DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the colors aren't always standard.  Use the pin/blade numbering for wiring the proper connections.
+**DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the wire colors aren't always standard.  **Use the pin/blade numbering** from the diagram for wiring the proper connections.  
+
+Note that pin/blade **1 and 6 are usually left blank**.  
+
+If cutting up a telephone extension cord, make sure it's "**dual line**" / has four wires and not just two.
 
 ![RJ-11 Socket and Connector with Pin Numbers and Color Codes](images/rj11.png)
 
