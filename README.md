@@ -1,7 +1,7 @@
 
 esphome-pace-bms
 -
-This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount battery packs manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).
+This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).
 
 Example PACE BMS board:
 ![Example PACE BMS board (front)](images/example-board-front.png)
@@ -89,9 +89,9 @@ Supported Configuration (read / write)
 - **System Date and Time** - Allows access to the BMS internal real-time clock 
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
-Supported Configuration (read / write) - Version 25 ONLY
+Supported Configuration (read / write) - **Version 25 ONLY**
 -
-It is difficult to find good consistent documentation on protocol version 20.  All the references I have are incomplete.  For version 25 I was able to sniff the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own  which speaks version 20 is sending some very strange non-paceic commands for most of the configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
+It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to sniff the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking version 25.
 
 - Toggles (switches) that turn various features on/off
 	- **Buzzer Alarm**
@@ -178,7 +178,7 @@ What Battery Packs are Supported?
 - 
 As far as I know, many/most.  Any not listed should simply require a small tweak to the configuration.  
 
-However I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration tweaks required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
+However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration tweaks required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
 
 For help figuring out how to do those configuration tweaks to get your battery pack working, see [here](FIXME)
 
@@ -209,7 +209,9 @@ What ESPs are Supported?
 - 
 Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  
 
-Any board which gives you access to a UART (both RX and TX) is fine, but you will need a converter chip for RS485 or RS232 signal levels.  You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 port.  Some boards may have that converter chip built-in, or you can use a breakout board.  
+Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is not recommended.  
+
+You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 port, a converter chip for RS485 or RS232 signal levels is required.  Some boards may have such a converter chip built-in, or you can use a breakout board.  
 
 RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins.  RS232 will require only the UART RX and TX.
 
@@ -218,7 +220,7 @@ If using an 8266, you will need to redirect serial logs to the second UART (whic
 How do I wire my ESP to the RS485 port?
 - 
 You will need a converter chip.  I have had success with the MAX485.  It's designed for 5v but I've had no issues using it at 3.3v with an ESP.  [Here](https://www.amazon.com/gp/product/B00NIOLNAG) is an example breakout board for the MAX485 chip.  You may be able to find ESP boards with such a chip already integrated.
-![MAX485 Breakout Board](images/max485.png)
+![MAX485 Breakout Board](images/max485.jpg)
 
 This breakout separates out the flow control pins DE and NOT-RE, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
 
