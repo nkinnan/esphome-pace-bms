@@ -82,7 +82,6 @@ Supported Values/Status (read only)
 	- **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
 	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them and they vary by protocol version and variant.
-(READ/WRITE)
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
