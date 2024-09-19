@@ -255,7 +255,7 @@ Connect the breakout board to the **BMS**:
 
 **DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the wire colors aren't always standard.  **Use the pin/blade numbering** from the diagram for wiring the proper connections.  
 
-Note that pin/blade **1 and 6 are usually left blank**.  
+Note that pin/blade **1 and 6 are usually left blank** but **STILL COUNT** for numbering!.  
 
 If cutting up a telephone extension cord, make sure it's "**dual line**" / has four wires and not just two.
 
@@ -303,13 +303,127 @@ Next, lets go over making things available to the web_server dashboard, homeassi
 Example 1: 
 
 
-I'm having a problem using this component
-- 
-
 
 I want to talk to a battery that isn't listed
 - 
+If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
+The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (they may be programmed to speak different protocols).
+
+Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this:
+
+```~25xx46xxxxxxxx\r```
+or
+```~20xx46xxxxxxxx\r```
+
+The x's will be hexidecimal values.  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
+
+We need at least one and as many as four configuration values to speak with the BMS successfully:
+1) **`protocol_commandset`** - The **actual** protocol version being used, this determines what commands can be sent to the BMS.
+2) **`protocol_version`** - The "claimed version" of the protocol - some BMSes lie about what protocol version they are speaking.  This is the value sent over the wire in the frame header, but which commands are sent is still determined by `protocol_commandset`
+3) **`protocol_variant`** - For protocol commandset 20 only, the "variant" of the protocol this BMS is using.  This determines how some of the BMS responses (to the same command) are interpreted and can be one of (currently) three supported values:
+    * PYLON
+    * SEPLOS
+    * EG4
+4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who again hate consistency will use a different value (or actually legitimately have a different chemistry).
+
+Now, going back to the requests you snooped over the COM port
+```
+~25xx46xxxxxxxx\r
+```
+The first number, the 20 or the 25 at the beginning (it may be a different number, more on that in a moment) is the protocol version your BMS is speaking.  The second number is your battery chemistry.  Put both of them into your config YAML (you can skip battery_chemistry if it was 46 as expected since that is the default value):
+ 
+
+```yaml
+pace_bms:
+  protocol_commandset: 0x20
+  battery_chemistry: 0x4A # only if not 46
+```
+or
+```yaml
+pace_bms:
+  protocol_commandset: 0x25
+  battery_chemistry: 0x4A # only if not 46
+```  
+
+If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.
+
+If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25 but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw.
+
+```yaml
+pace_bms:
+  protocol_commandset: 0x20
+  protocol_version: 0x42 # the BMS is lying, so lie right back
+  battery_chemistry: 0x4A # only if not 46
+```
+or
+```yaml
+pace_bms:
+  protocol_commandset: 0x25
+  protocol_version: 0x42 # the BMS is lying, so lie right back
+  battery_chemistry: 0x4A # only if not 46
+```
+
+If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these, you have probably picked the correct commandset value.
+
+```yaml
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    hardware_version:
+      name: "Hardware Version"
+    serial_number:
+      name: "Serial Number"
+```
+
+Once again, if your "true" commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  
+
+However, if it is 0x20 then you also need to figure out which "variant" of protocol version 20 it is.  Start by putting this into your config:
+
+```yaml
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+    
+    cell_count:
+      name: "Cell Count"
+
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    system_status:
+      name: "System Status"
+```
+
+This will cause both the "analog information" and "status  information" requests to be sent to the BMS, the results of which contain telltales which pace_bms will sniff out to determine which version 20 protocol variant your BMS is speaking.  
+
+You should see lines like this in the logs, they will be highlighted **green**:  
+
+```[20:08:57][I][pace_bms_protocol:028]: Detected protocol variant: EG4```
+
+Alternatively you may see lines like this instead, highlighted in **yellow**:
+
+```[20:08:57][I][pace_bms_protocol:028]: Protocol variant not configured, unable to auto-detect, defaulting to EG4```
+
+If you got the line highlighted in green, add that to your config and you're done.
+```yaml
+pace_bms:
+  protocol_commandset: 0x20
+  protocol_version: 0x42 # the BMS is lying, so lie right back
+  battery_chemistry: 0x4A # only if not 46
+  protocol_variant: "EG4"
+```
+If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you the most "correct" data.  The problem areas are going to be the last of the analog values such as State of Charge and State of Health, and all of the status values.  If those don't make sense, it's the wrong protocol variant.  
+
+If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request).  Even better if you can provide me with a protocol spec doc.  I might be able to implement the new variant for you.
+
+I'm having a problem using this component
+- 
+Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
+
+If you still have an issue, or are seeing some "strange data", you can create an issue report.  Support will be best-effort, no guarantees.
 
 Each Configuration Entry in Excruciating Detail
 - 
