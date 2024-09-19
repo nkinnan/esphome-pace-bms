@@ -232,6 +232,7 @@ Connect the breakout board to the **ESP**:
 Connect the breakout board to the **BMS**:
 * **A** aka **D+** -> pin / blade **7** (white with a brown stripe if using ethernet cabling)
 * **B** aka **D-** -> pin / blade **8** (solid brown if using ethernet cabling)
+
 ![RJ-45 Socket and Connector with Pin Numbers and Color Codes](images/rj45.png)
 
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
@@ -251,6 +252,7 @@ Connect the breakout board to the **BMS**:
 * RS232 **GND** -> pin / blade **?** (???) (make sure you don't create a ground loop through the ESP power supply - if you don't know what that is, maybe use RS485 instead)
 
 **DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the colors aren't always standard.  Use the pin/blade numbering for wiring the proper connections.
+
 ![RJ-11 Socket and Connector with Pin Numbers and Color Codes](images/rj11.png)
 
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
