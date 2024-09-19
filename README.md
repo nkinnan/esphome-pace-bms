@@ -45,7 +45,7 @@ These BMSes will typically have two RS485 ports (looks like an ethernet socket) 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
-Paceic MODBUS Protocol
+Pace MODBUS Protocol
 -
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus)
 
@@ -209,7 +209,7 @@ What ESPs are Supported?
 - 
 Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  
 
-Any board which gives you access to a UART (both RX and TX) is fine, but you will need a converter chip for RS485 or RS232 signal levels.  Some boards may have that built-in.  
+Any board which gives you access to a UART (both RX and TX) is fine, but you will need a converter chip for RS485 or RS232 signal levels.  You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 port.  Some boards may have that converter chip built-in, or you can use a breakout board.  
 
 RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins.  RS232 will require only the UART RX and TX.
 
@@ -217,12 +217,41 @@ If using an 8266, you will need to redirect serial logs to the second UART (whic
 
 How do I wire my ESP to the RS485 port?
 - 
+You will need a converter chip.  I have had success with the MAX485.  It's designed for 5v but I've had no issues using it at 3.3v with an ESP.  [Here](https://www.amazon.com/gp/product/B00NIOLNAG) is an example breakout board for the MAX485 chip.  You may be able to find ESP boards with such a chip already integrated.
+![MAX485 Breakout Board](images/max485.png)
 
+This breakout separates out the flow control pins DE and NOT-RE, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
+
+Connect the breakout board to the **ESP**:
+* **DI** (driver input) **->** ESP UART **TX** 
+* **RO** (receiver output) **->** ESP UART **RX**
+* **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) -> any ESP **GPIO**, from here out referred to as "the **Flow Control** pin"
+
+Connect the breakout board to the **BMS**:
+* **A** aka **D+** -> pin / blade **7** (white with a brown stripe if using ethernet cabling)
+* **B** aka **D-** -> pin / blade **8** (solid brown if using ethernet cabling)
+![RJ-45 Socket and Connector with Pin Numbers and Color Codes](images/rj45.png)
+
+Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
 How do I wire my ESP to the RS232 port?
 - 
+You will need a converter chip.  I have had success with the SP232.  It's compatible with the ESP 3.3v power and signaling levels.  [Here](https://www.amazon.com/gp/product/B091TN2ZPY) is an example breakout board for the SP232 chip.  You may be able to find ESP boards with such a chip already integrated.
+![SP232 Breakout Board](images/sp232.jpg)
 
+Connect the breakout board to the **ESP**:
+* TTL **TXD** **->** ESP UART **RX** 
+* TTL **RXD** **->** ESP UART **TX**
 
+Connect the breakout board to the **BMS**:
+* RS232 **TXD** -> pin / blade **?** (???)
+* RS232 **RXD** -> pin / blade **?** (???)
+* RS232 **GND** -> pin / blade **?** (???) (make sure you don't create a ground loop through the ESP power supply - if you don't know what that is, maybe use RS485 instead)
+
+**DON'T TRUST THE COLOR CODES** in this diagram, telephone cables are "straight through" and colors will be "mirrored" between two ends of an extension cord.  Plus the colors aren't always standard.  Use the pin/blade numbering for wiring the proper connections.
+![RJ-11 Socket and Connector with Pin Numbers and Color Codes](images/rj11.png)
+
+Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
 Example ESPHome configuration YAML
 - 
@@ -244,7 +273,21 @@ Each Configuration Entry in Excruciating Detail
 Decoding the Status Values (but you probably don't want to)
 - 
 
+Miscellaneous Notes
+- 
+- My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.
 
+- Huge shout-out to https://github.com/syssi/ who implemented an initial decode and compiled documentation, and who shared his time on Discord, without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
+
+Helping Out
+- 
+- I would like to make additions to the known supported battery packs section.  If you have a pack that works, please share!
+
+- If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
+
+- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change though.  You can also file an issue but I may not have time to follow up on it.
+
+- And of course, if you appreciate the work that went into this, you can always [buy me a coffee](https://www.buymeacoffee.com/nkinnan) :)
 
 
 
