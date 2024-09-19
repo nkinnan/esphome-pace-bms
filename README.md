@@ -306,6 +306,8 @@ Example 1:
 
 I want to talk to a battery that isn't listed
 - 
+Before proceeding through this section, please read the entire rest of this document first!  It assumes some familiarity and does not repeat steps like configuring the UART, but simply provides a guide on how to determine the specific protocol your BMS is speaking.
+
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
 The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (they may be programmed to speak different protocols).
@@ -320,12 +322,12 @@ The x's will be hexidecimal values.  The \r may or may not be visible, it might 
 
 We need at least one and as many as four configuration values to speak with the BMS successfully:
 1) **`protocol_commandset`** - The **actual** protocol version being used, this determines what commands can be sent to the BMS.
-2) **`protocol_version`** - The "claimed version" of the protocol - some BMSes lie about what protocol version they are speaking.  This is the value sent over the wire in the frame header, but which commands are sent is still determined by `protocol_commandset`
-3) **`protocol_variant`** - For protocol commandset 20 only, the "variant" of the protocol this BMS is using.  This determines how some of the BMS responses (to the same command) are interpreted and can be one of (currently) three supported values:
+2) **`protocol_version`** - The "claimed version" of the protocol - some BMSes lie about what protocol version they are speaking.  This is the value sent over the wire in the frame header, but which commands can be sent is still determined by `protocol_commandset`
+3) **`protocol_variant`** - For protocol commandset 20 only, the "variant" of the protocol this BMS is using.  This determines how some of the BMS responses (to the same command) are interpreted, and can be one of (currently) three supported values:
     * PYLON
     * SEPLOS
     * EG4
-4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who again hate consistency will use a different value (or actually legitimately have a different chemistry).
+4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who again hate compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
 Now, going back to the requests you snooped over the COM port
 ```
@@ -348,7 +350,7 @@ pace_bms:
 
 If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.
 
-If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25 but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw.
+If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25 but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.
 
 ```yaml
 pace_bms:
@@ -364,7 +366,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```
 
-If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these, you have probably picked the correct commandset value.
+If you had to guess which commandset like this, you can figure out if it is "truly" the 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.
 
 ```yaml
 text_sensor:
@@ -415,9 +417,13 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
   protocol_variant: "EG4"
 ```
-If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you the most "correct" data.  The problem areas are going to be the last of the analog values such as State of Charge and State of Health, and all of the status values.  If those don't make sense, it's the wrong protocol variant.  
+If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you the most "correct" data: 
+    * PYLON
+    * SEPLOS
+    * EG4
+The problem areas are going to be the last of the analog values such as State of Charge and State of Health, and all of the status values.  If those don't make sense, it's the wrong protocol variant.  
 
-If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request).  Even better if you can provide me with a protocol spec doc.  I might be able to implement the new variant for you.
+If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me with a protocol spec doc by googling that information yourself.  I might be able to implement the new variant for you.
 
 I'm having a problem using this component
 - 
