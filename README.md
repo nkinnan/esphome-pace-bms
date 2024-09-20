@@ -814,7 +814,7 @@ If you still have an issue, or are seeing some "strange data" or log output, you
 
 
 
-# Decoding the Status Values (but you probably don't want to)
+# Decoding the Status Values (but you probably don't want to - just use the text values I patiently decoded for you)
 
 
 # Miscellaneous Notes
