@@ -818,18 +818,249 @@ If you still have an issue, or are seeing some "strange data" or log output, you
 
 No seriously, just use the text values I painstakingly decoded for you :)
 
-Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so lets go over them one by one.
+Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so I did expose them.  Lets go over them one by one.
 
-Paceic Version 25 Status Values
+This is going to be rather tedious, so I'll "cheat" a bit by sharing some raw enums.
+
+Paceic Version 25 RAW Status Values
 -
 
-Paceic Version 20, PYLON variant
+First, the full set of YAML config entries:
+```
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+    
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+    
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+    warning_status_value_1:
+      name: "Warning Status Value 1"
+    warning_status_value_2:
+      name: "Warning Status Value 2"
+    
+    balancing_status_value:
+      name: "Balancing Status Value"
+    system_status_value:
+      name: "System Status Value"
+    configuration_status_value:
+      name: "Configuration Status Value"
+    protection_status_value_1:
+      name: "Protection Status Value 1"
+    protection_status_value_2:
+      name: "Protection Status Value 2"
+    fault_status_value:
+      name: "Fault Status Value"
+```
+
+The entries:
+- `warning_status_value_cell_01` through `warning_status_value_cell_16`
+- `warning_status_value_temperature_01` through `warning_status_value_temperature_06`
+- `warning_status_value_charge_current`
+- `warning_status_value_total_voltage`
+- `warning_status_value_discharge_current`
+
+All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+
+```
+	enum StatusInformation_WarningValues
+	{
+		WV_Normal = 0,
+		WV_BelowLowerLimitValue = 1,
+		WV_AboveUpperLimitValue = 2,
+		WV_OtherFaultValue = 0xF0,
+	};
+```
+
+
+The entries:
+- `warning_status_value_1`
+- `warning_status_value_2`
+
+Contain bitflags.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+
+```
+	enum StatusInformation_Warning1Flags
+	{
+		W1F_UndefinedWarning1Bit8 = (1 << 7),
+		W1F_UndefinedWarning1Bit7 = (1 << 6),
+		W1F_DischargeCurrentBit = (1 << 5),
+		W1F_ChargeCurrentBit = (1 << 4),
+		W1F_LowTotalVoltageBit = (1 << 3),
+		W1F_HighTotalVoltageBit = (1 << 2),
+		W1F_LowCellVoltageBit = (1 << 1),
+		W1F_HighCellVoltageBit = (1 << 0),
+	};
+	enum StatusInformation_Warning2Flags
+	{
+		W2F_LowPower = (1 << 7),
+		W2F_HighMosfetTemperature = (1 << 6),
+		W2F_LowEnvironmentalTemperature = (1 << 5),
+		W2F_HighEnvironmentalTemperature = (1 << 4),
+		W2F_LowDischargeTemperature = (1 << 3),
+		W2F_LowChargeTemperature = (1 << 2),
+		W2F_HighDischargeTemperature = (1 << 1),
+		W2F_HighChargeTemperature = (1 << 0),
+	};
+```
+
+The entry:
+- `balancing_status_value`
+
+Contains bitflags.  It is 16 bits wide.  One for each cell.  If the bit is set, it indicates that cell is currently balancing.  Cell 1 is the least significant bit.
+
+The entry:
+- `system_status_value`
+
+Contains bitflags.  These flags indicate the current status of the BMS.  Possible values:
+
+```
+	enum StatusInformation_SystemFlags
+	{
+		SF_HeartIndicatorBit = (1 << 7),
+		SF_UndefinedStatusBit7 = (1 << 6),
+		SF_ChargingBit = (1 << 5),
+		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
+		SF_DischargingBit = (1 << 3),
+		SF_DischargeMosfetOnBit = (1 << 2),
+		SF_ChargeMosfetOnBit = (1 << 1),
+		SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
+	};
+```
+
+
+The entry:
+- `configuration_status_value`
+
+Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
+
+```
+	enum StatusInformation_ConfigurationFlags
+	{
+		CF_UndefinedConfigurationStatusBit8 = (1 << 7),
+		CF_UndefinedConfigurationStatusBit7 = (1 << 6),
+		CF_LedAlarmEnabledBit = (1 << 5),
+		CF_ChargeCurrentLimiterEnabledBit = (1 << 4),
+		CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3), // if not set, mode is High Gear
+		CF_DischargeMosfetTurnedOff = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared, but it might also be an error
+		CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared, but it might also be an error
+		CF_BuzzerAlarmEnabledBit = (1 << 0),
+	};
+```
+
+
+The entry:
+- `protection_status_value_1` and `protection_status_value_2`
+
+Contain bitflags.  These flags indicate that action is being taken by the BMS to protect itself.  Possible values:
+
+```
+	enum StatusInformation_Protection1Flags
+	{
+		P1F_UndefinedProtect1Bit = (1 << 7),
+		P1F_ShortCircuitProtect1Bit = (1 << 6),
+		P1F_DischargeCurrentProtect1Bit = (1 << 5),
+		P1F_ChargeCurrentProtect1Bit = (1 << 4),
+		P1F_LowTotalVoltageProtect1Bit = (1 << 3),
+		P1F_HighTotalVoltageProtect1Bit = (1 << 2),
+		P1F_LowCellVoltageProtect1Bit = (1 << 1),
+		P1F_HighCellVoltageProtect1Bit = (1 << 0),
+	};
+	enum StatusInformation_Protection2Flags
+	{
+		P2F_FullyProtect2Bit = (1 << 7),
+		P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
+		P2F_HighEnvironmentalTemperatureProtect2Bit = (1 << 5),
+		P2F_HighMosfetTemperatureProtect2Bit = (1 << 4),
+		P2F_LowDischargeTemperatureProtect2Bit = (1 << 3),
+		P2F_LowChargeTemperatureProtect2Bit = (1 << 2),
+		P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
+		P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
+	};
+```
+
+
+The entry:
+- `fault_status_value`
+
+Contains bitflags.  These flags indicate the BMS is faulted, a more serious condition than a protection being enabled.  Possible values:
+
+```
+	enum StatusInformation_FaultFlags
+	{
+		FF_UndefinedFaultStatusBit8 = (1 << 7),
+		FF_UndefinedFaultStatusBit7 = (1 << 6),
+		FF_SampleBit = (1 << 5),
+		FF_CellBit = (1 << 4),
+		FF_UndefinedFaultStatusBit4 = (1 << 3),
+		FF_NTCBit = (1 << 2),
+		FF_DischargeMosfetBit = (1 << 1),
+		FF_ChargeMosfetBit = (1 << 0),
+	};
+```
+
+
+
+
+
+Paceic Version 20 RAW Status Values, PYLON variant
 -
 
-Paceic Version 20, SEPLOS variant
+Paceic Version 20 RAW Status Values, SEPLOS variant
 -
 
-Paceic Version 20, EG4 variant
+Paceic Version 20 RAW Status Values, EG4 variant
 -
 
 # Miscellaneous Notes
