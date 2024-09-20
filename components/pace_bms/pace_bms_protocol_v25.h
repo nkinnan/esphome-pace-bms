@@ -2,25 +2,6 @@
 
 #include "pace_bms_protocol_base.h"
 
-/*
-General format of requests/responses:
--------------------------------------
-note: HexASCII means this is the hex value of a byte or bytes in the form of ASCII hexidecimal characters, so 1 logical byte = 2 HexASCII in the actual stream
-	  presumably this is to make the protocol "human readable" but I actually just find it offputting
--------------------------------------
-offset 0,        1 byte,   binary    0x7E:   SOI          - start of information '~'
-offset 1,        1 byte,   HexASCII, "25":   VER          - protocol version 2.5
-offset 3,        1 byte,   HexASCII, "01":   ADR          - device address 0-15
-offset 5,        1 bytes,  HexASCII, "46":   CID1         - device identification code / device type description, "46" means "Lithium Iron"
-offset 7,        1 bytes   HexASCII, "42":   CID2         - control indication code / data or action description, "42" means "analog pack information"
-								*response:   RTN
-offset 9,        2 bytes   HexASCII, "E002": CKLEN        - length of bytes (includes LEN and LCHKSUM)
-offset 13, LENID bytes,    HexASCII, "01":   COMMAND_INFO - command information / control data information
-							   response:     DATA_INFO    - response data information
-offset LENID+13, 2 bytes,  HexASCII, "FD2E": CHKSUM       - checksum
-offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '\r'
-*/
-
 class PaceBmsProtocolV25 : public PaceBmsProtocolBase
 {
 public:
@@ -96,7 +77,9 @@ protected:
 		CID2_WriteChargeCurrentLimiterStartCurrent                = 0xEE,
 		CID2_ReadRemainingCapacity                                = 0xA6,
 
-		CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
+		// I found this in one version of PbmsTools but it seems to be manufacturer specific and I didn't implement it since it 
+		// would be confusing alongside the "standard" read/write protocols implementation
+		//CID2_WriteOlderVersionOfSetCommunicationProtocol          = 0x99,
 
 		CID2_ReadCommunicationsProtocols                          = 0xEB,
 		CID2_WriteCommunicationsProtocols                         = 0xEC,
@@ -537,54 +520,54 @@ public:
 // 
 // ============================================================================
 
-		// ==== Read Log History
-		// This appears to be a "history" table
-		// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
-		// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
-		// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
-		// I haven't decoded the response yet, but it contains
-		//         Date/Time
-		//         Pack Amps (-in/out)
-		//         Pack Voltage
-		//         Remaing Capacity (Ah)
-		//         Full Capacity (Ah)
-		//         MaxVolt (cell) (mV)
-		//         MinVolt (cell) (mV)
-		//         Alarm Type
-		//         Protect Type
-		//         Fault Type
-		//         Cell Voltage 1-16
-		//         Temperatures 1-6
-		// req:   ~250046A1C004018FFCA7.
-		// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
-		//            the values in this response:  
-		//                2024-2-29 2:00:56 - 1.460	
-		//                55.767	
-		//                103.460	
-		//                103.460	
-		//                3482	
-		//                3456				
-		//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
-		//                20.2	20.3	20.5	20.4	19.9	20.7
-		// resp:  ~250046000000FDAF.
-		//            this means "no more records available"
+	// ==== Read Log History
+	// This appears to be a "history" table
+	// I'm not sure what prompts the battery to create a "history record" entry - the number of entries per day varies from 2-6 at a glance and there is sometimes a week or two missing between records
+	// My battery contained 400 records (and it's been on for over a year continuous, so I believe this is the limit)
+	// The last 4 (ASCII hex digits) request payload digits are a "count up" starting at 0000 and ending at 0x0190 = 400 dec, record index is zero-based with newest first (lowest payload value)
+	// I haven't decoded the response yet, but it contains
+	//         Date/Time
+	//         Pack Amps (-in/out)
+	//         Pack Voltage
+	//         Remaing Capacity (Ah)
+	//         Full Capacity (Ah)
+	//         MaxVolt (cell) (mV)
+	//         MinVolt (cell) (mV)
+	//         Alarm Type
+	//         Protect Type
+	//         Fault Type
+	//         Cell Voltage 1-16
+	//         Temperatures 1-6
+	// req:   ~250046A1C004018FFCA7.
+	// resp:  ~25004600709018021D020038100D970D990D9A0D990D990D970D990D980D990D980D800D980D980D990D980D98060B740B750B770B760B710B79FF6ED9D7286A286A0000000000060043FFFFFFFFDDE3.
+	//            the values in this response:  
+	//                2024-2-29 2:00:56 - 1.460	
+	//                55.767	
+	//                103.460	
+	//                103.460	
+	//                3482	
+	//                3456				
+	//                3479	3481	3482	3481	3481	3479	3481	3480	3481	3480	3456	3480	3480	3481	3480	3480	
+	//                20.2	20.3	20.5	20.4	19.9	20.7
+	// resp:  ~250046000000FDAF.
+	//            this means "no more records available"
 
 
-		// -------- NOT IMPLEMENTED --------
+	// -------- NOT IMPLEMENTED --------
 
 
-		// ==== System Time
-		// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
-		// 2 Month:  read: 08   write: 08
-		// 3 Day:    read: 21   write: 20 
-		// 4 Hour:   read: 05   write: 14
-		// 5 Minute: read: 29   write: 15
-		// 6 Second: read: 31   write: 37
-		// read:  ~250046B10000FD9C.
-		// resp:  ~25004600400C180815051D1FFB10.
-		//                     112233445566
-		// write: ~250046B2400C1808140E0F25FAFC.
-		// resp:  ~250046000000FDAF.
+	// ==== System Time
+	// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
+	// 2 Month:  read: 08   write: 08
+	// 3 Day:    read: 21   write: 20 
+	// 4 Hour:   read: 05   write: 14
+	// 5 Minute: read: 29   write: 15
+	// 6 Second: read: 31   write: 37
+	// read:  ~250046B10000FD9C.
+	// resp:  ~25004600400C180815051D1FFB10.
+	//                     112233445566
+	// write: ~250046B2400C1808140E0F25FAFC.
+	// resp:  ~250046000000FDAF.
 
 	static const uint8_t exampleReadSystemTimeRequestV25[];
 	static const uint8_t exampleReadSystemTimeResponseV25[];
@@ -603,24 +586,26 @@ public:
 // ============================================================================
 
 	enum ReadConfigurationType {
-		RC_CellOverVoltage = CID2_ReadCellOverVoltageConfiguration,
-		RC_PackOverVoltage = CID2_ReadPackOverVoltageConfiguration,
-		RC_CellUnderVoltage = CID2_ReadCellUnderVoltageConfiguration,
-		RC_PackUnderVoltage = CID2_ReadPackUnderVoltageConfiguration,
-		RC_ChargeOverCurrent = CID2_ReadChargeOverCurrentConfiguration,
-		RC_DischargeOverCurrent1 = CID2_ReadDischargeSlowOverCurrentConfiguration,
-		RC_DischargeOverCurrent2 = CID2_ReadDischargeFastOverCurrentConfiguration,
-		RC_ShortCircuitProtection = CID2_ReadShortCircuitProtectionConfiguration,
-		RC_CellBalancing = CID2_ReadCellBalancingConfiguration,
-		RC_Sleep = CID2_ReadSleepConfiguration,
-		RC_FullChargeLowCharge = CID2_ReadFullChargeLowChargeConfiguration,
-		RC_ChargeAndDischargeOverTemperature = CID2_ReadChargeAndDischargeOverTemperatureConfiguration,
+		RC_CellOverVoltage                    = CID2_ReadCellOverVoltageConfiguration,
+		RC_PackOverVoltage                    = CID2_ReadPackOverVoltageConfiguration,
+		RC_CellUnderVoltage                   = CID2_ReadCellUnderVoltageConfiguration,
+		RC_PackUnderVoltage                   = CID2_ReadPackUnderVoltageConfiguration,
+		RC_ChargeOverCurrent                  = CID2_ReadChargeOverCurrentConfiguration,
+		RC_DischargeOverCurrent1              = CID2_ReadDischargeSlowOverCurrentConfiguration,
+		RC_DischargeOverCurrent2              = CID2_ReadDischargeFastOverCurrentConfiguration,
+		RC_ShortCircuitProtection             = CID2_ReadShortCircuitProtectionConfiguration,
+		RC_CellBalancing                      = CID2_ReadCellBalancingConfiguration,
+		RC_Sleep                              = CID2_ReadSleepConfiguration,
+		RC_FullChargeLowCharge                = CID2_ReadFullChargeLowChargeConfiguration,
+		RC_ChargeAndDischargeOverTemperature  = CID2_ReadChargeAndDischargeOverTemperatureConfiguration,
 		RC_ChargeAndDischargeUnderTemperature = CID2_ReadChargeAndDischargeUnderTemperatureConfiguration,
-		RC_MosfetOverTemperature = CID2_ReadMosfetOverTemperatureConfiguration,
-		RC_EnvironmentOverUnderTemperature = CID2_ReadEnvironmentOverUnderTemperatureConfiguration,
-
+		RC_MosfetOverTemperature              = CID2_ReadMosfetOverTemperatureConfiguration,
+		RC_EnvironmentOverUnderTemperature    = CID2_ReadEnvironmentOverUnderTemperatureConfiguration,
 	};
 
+	// these are used for all of the individual configurations, "book-ending" them, while individual configuration's 
+	// process response / create write request are differentiated via parameter overload, taking or returning one of 
+	// the configuration structs
 	bool CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request);
 	bool ProcessWriteConfigurationResponse(const uint8_t busId, const std::vector<uint8_t>& response);
 
@@ -1129,8 +1114,8 @@ public:
 
 	enum ProtocolList_Type : uint8_t
 	{
-		empty = 0xFF, // 255d <blank entry>
-		Auto = 0x00, // 00d Auto
+		empty = 0xFF,  // 255d <blank entry>
+		Auto = 0x00,   // 00d Auto
 		Manual = 0x01, // 01d Manual
 	};
 
@@ -1159,8 +1144,9 @@ public:
 	/*
 	* SOK Protocol Edit (pbms tools)
 	-------------------------------
-	note:  unable to get responses since my BMS ignores this command BUT faking responses via Pace BMS Emulator cases
-			   the software to say "OK" when I send a response identical to that which works on the "new" protocol set
+	note:  unable to get responses since my BMS ignores this command BUT faking responses via Pace BMS Emulator causes
+			   the software to say "OK" when I send a response identical to that which works on the "new" set protocol command
+			   I believe this one is manufacturer specific for SOK firmwares
 
 	It's unclear if these commands would only work on rs232 but that's my guess.
 
@@ -1171,7 +1157,7 @@ public:
 					  xx
 
 	x = protocol to set
-		0E = paceic 0x25
+		0E = paceic version 25
 		0F = Pylon (DeYe) CAN
 		10 = Growatt CAN
 		13 = Pylon 485
@@ -1182,12 +1168,12 @@ public:
 	/*
 	enum OldStyleProtocolList
 	{
-		old_paceic = 0x0E,
-		old_CAN_Pylon = 0x0F,
+		old_paceic      = 0x0E,
+		old_CAN_Pylon   = 0x0F,
 		old_CAN_Growatt = 0x10,
-		old_Pylon = 0x13,
-		old_Growatt = 0x12,
-		old_LuxPower = 0x11,
+		old_Pylon       = 0x13,
+		old_Growatt     = 0x12,
+		old_LuxPower    = 0x11,
 	};
 	*/
 
