@@ -3,13 +3,13 @@
 
 This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
 
+The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers (usually) either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.  
+
 If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++17 support due to use of `std::optional`, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
 
 Example PACE BMS board:
 ![Example PACE BMS board (front)](images/example-board-front.png)
 ![Example PACE BMS board (back)](images/example-board-back.png)
-
-The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers (usually) either "**20**" or "**25**" and ending with a '**\r**' (carriage return) character.
 
 I strongly encourage you to read through this entire document, but here are some Quick Links:
 - [What Battery Packs are supported?](fixme)
@@ -25,22 +25,24 @@ I strongly encourage you to read through this entire document, but here are some
  - **PYLON**
  - **SEPLOS**
 
-Different manufacturers will have different BMS management software (it will not be PbmsTools) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
+Different manufacturers will have different BMS management software (it will not be PbmsTools for a version 20 BMS, but one of a variety of manufacturer-specific affronts to good software design) but typically it speaks a variant of paceic version 20.  These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
-There is a high likelihood that one of these protocol variants will work for battery packs speaking protocol version 20 which are branded by a different manufacturer than the three listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
+There is a high likelihood that one of these three version 20 protocol variants will work for battery packs which are branded by a different manufacturer than the three listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
 # Paceic Protocol Version 25
 
-This version seems more standardized, with an official protocol specification from PACE itself.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
+This version seems more standardized, with an official protocol specification from PACE itself and a relatively consistent software management interface.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
 These BMSes speaking paceic version 25 will invariably use PbmsTools for their BMS management software (or a rebadged version of it) which looks like this:
 
 ![PbmsTools Screenshot](images/PbmsTools.jpg)
 
-The exact look isn't important, just that the tabs and general layout looks like this.  This is PbmsTools regardless of any specific brand badging and indicates that your BMS supports protocol version 25.
+The exact look isn't important, just that the tabs and general layout looks like this.  This is PbmsTools regardless of any specific brand badging or interface tweaks, and indicates that your BMS supports protocol version 25.  
+
+The default password to unlock all settings is "123456" incidentally.  But there are legitimately some settings you shouldn't mess with (I didn't implement those in this component, basically just the calibration stuff).
 
 These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
