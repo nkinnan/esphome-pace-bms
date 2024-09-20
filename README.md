@@ -814,8 +814,23 @@ If you still have an issue, or are seeing some "strange data" or log output, you
 
 
 
-# Decoding the Status Values (but you probably don't want to - just use the text values I patiently decoded for you)
+# Decoding the Status Values (but you probably don't want to)
 
+No seriously, just use the text values I painstakingly decoded for you :)
+
+Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so lets go over them one by one.
+
+Paceic Version 25 Status Values
+-
+
+Paceic Version 20, PYLON variant
+-
+
+Paceic Version 20, SEPLOS variant
+-
+
+Paceic Version 20, EG4 variant
+-
 
 # Miscellaneous Notes
  
