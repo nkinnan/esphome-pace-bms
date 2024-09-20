@@ -928,7 +928,7 @@ The entries:
 - `warning_status_value_1`
 - `warning_status_value_2`
 
-Contain bitflags.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+Contain bitflags.  They indicate a warning but not a fault or error (yet).  Possible values:
 
 ```C++
 	enum StatusInformation_Warning1Flags
@@ -1034,7 +1034,7 @@ Contain bitflags.  These flags indicate that action is being taken by the BMS to
 The entry:
 - `fault_status_value`
 
-Contains bitflags.  These flags indicate the BMS is faulted, a more serious condition than a protection being enabled.  Possible values:
+Contains bitflags.  These flags indicate the BMS is faulted, a more serious condition than a protection being enabled.  Generally this means the hardware has failed in some way.  Possible values:
 
 ```C++
 	enum StatusInformation_FaultFlags
@@ -1049,9 +1049,6 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 		FF_ChargeMosfetBit = (1 << 0),
 	};
 ```
-
-
-
 
 
 Paceic Version 20 RAW Status Values, PYLON variant
