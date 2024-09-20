@@ -1,9 +1,9 @@
 
-esphome-pace-bms
--
+# esphome-pace-bms
+
 This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in SE Asia.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
 
-If you are a developer, the protocol implementation is fully portable with a clean interface in C++ with no dependencies on ESPHome or any other libraries (it does require C++17 support due to use of `std::optional`, though that could be removed easily).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
+If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++17 support due to use of `std::optional`, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
 
 Example PACE BMS board:
 ![Example PACE BMS board (front)](images/example-board-front.png)
@@ -18,8 +18,8 @@ I strongly encourage you to read through this entire document, but here are some
 - [I'm having a problem using this component](fixme)
 - [I want to talk to a battery that isn't listed](fixme)
 
-Paceic Protocol Version 20
--
+# Paceic Protocol Version 20
+
   This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
  - **EG4**
  - **PYLON**
@@ -32,8 +32,8 @@ There is a high likelihood that one of these protocol variants will work for bat
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
-Paceic Protocol Version 25
--
+# Paceic Protocol Version 25
+
 This version seems more standardized, with an official protocol specification from PACE itself.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
 These BMSes speaking paceic version 25 will invariably use PbmsTools for their BMS management software (or a rebadged version of it) which looks like this:
@@ -47,12 +47,12 @@ These BMSes will typically have two RS485 ports (looks like an ethernet socket) 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
-Pace MODBUS Protocol
--
-Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome supports MODBUS already, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
+# Pace MODBUS Protocol
 
-Supported BMS Values/Status (read only)
--
+Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome already has native support for MODBUS, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
+
+# Supported BMS Values/Status (read only)
+
 - All "Analog Information"
 	- **Cell Count**
 	- **Cell Voltage** (V) - up to x16 depending on your battery pack
@@ -85,13 +85,13 @@ Supported BMS Values/Status (read only)
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
-Supported BMS Configuration (read / write)
--
+# Supported BMS Configuration (read / write)
+
 - **System Date and Time** - Allows access to the BMS internal real-time clock 
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
-Supported BMS Configuration (read / write) - **Version 25 ONLY**
--
+# Supported BMS Configuration (read / write) - **Version 25 ONLY**
+
 It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
 
 - Toggles (switches) that turn various features on/off
@@ -175,15 +175,17 @@ It is difficult to find good documentation on either of these protocols.  All th
 	- **Environment Under Temperature Protection** (°C)
 	- **Environment Under Temperature Protection Release** (°C)
 
-What Battery Packs are Supported?
-- 
-As far as I know, many/most.  Any not listed should simply require a small tweak to the configuration.  
+# What Battery Packs are Supported?
 
-However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration tweaks required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
+**As far as I know, many/most.**  Any not listed should simply require a small tweak to the configuration.  
 
-For help figuring out how to do those configuration tweaks to get your battery pack working, see [here](FIXME)
+However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration settings required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
 
-**Known working protocol version 20 battery packs:**
+**If not listed**, for help figuring out the required settings to get your battery pack working, see [here](FIXME)
+
+Known working protocol version 20 battery packs:
+-
+
 - **EG4 LIFEPOWER4**
   - hardware versions: 
 	  - **QTHN 0d[3][6]**
@@ -198,7 +200,9 @@ For help figuring out how to do those configuration tweaks to get your battery p
 		  -   `response_timeout: 2000ms`
 
 
-**Known working protocol version 25 battery packs:**
+Known working protocol version 25 battery packs:
+-
+
 - **Jakiper JK48V100**
   - hardware versions: 
 	  - **FIXME**
@@ -206,8 +210,8 @@ For help figuring out how to do those configuration tweaks to get your battery p
   - required config: 
 	  - `protocol_commandset: 0x25`
 
-What ESPs are Supported?
-- 
+# What ESPs are Supported?
+
 Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  
 
 Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is not recommended.  
@@ -218,8 +222,8 @@ RS485 will require at least one additional GPIO pin for flow control in addition
 
 If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example config for that is included below in the YAML section.
 
-How do I wire my ESP to the RS485 port?
-- 
+# How do I wire my ESP to the RS485 port?
+
 You will need a converter chip.  I have had success with the MAX485.  It's designed for 5v but I've had no issues using it at 3.3v with an ESP.  [Here](https://www.amazon.com/gp/product/B00NIOLNAG) is an example breakout board for the MAX485 chip.  You may be able to find ESP boards with such a chip already integrated.
 
 ![MAX485 Breakout Board](images/max485.jpg)
@@ -239,8 +243,8 @@ Connect the breakout board to the **BMS**:
 
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
-How do I wire my ESP to the RS232 port?
-- 
+# How do I wire my ESP to the RS232 port?
+
 You will need a converter chip.  I have had success with the SP232.  It's compatible with the ESP 3.3v power and signaling levels.  [Here](https://www.amazon.com/gp/product/B091TN2ZPY) is an example breakout board for the SP232 chip.  You may be able to find ESP boards with such a chip already integrated.
 
 ![SP232 Breakout Board](images/sp232.jpg)
@@ -264,25 +268,33 @@ If cutting up a telephone extension cord, make sure it's "**dual line**" / has f
 
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
-Example ESPHome configuration YAML
--
+# Example ESPHome configuration YAML
+
 A full ESPHome configuration will consist of thee parts:
 
 1. The basic stuff like board type, wifi credentials, api or mqtt configuration, web_server if used, and so on. 
-2. Configuration of the UART and the pace_bms component to speak with your battery pack.
-3. Exposing the values / status / configuration that you want accessible via the web_server dashboard, homeassistant, or mqtt.
+3. Configuration of the UART and the pace_bms component to speak with your battery pack.
+4. Exposing the values / status / configuration that you want accessible via the web_server dashboard, homeassistant, or mqtt.
 
 I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
-If using an 8266 you will need to add this to your esphome config section.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
-
+8266 specific preamble
+-
+1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
 ```
 esphome:
   libraries:
-    # huge improvement to event throughput to the on-device web_server dashboard
-    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield```
+    # massive improvement to event throughput to the on-device web_server dashboard
+    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
+```
+2) Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
+```
+logger:
+  hardware_uart: UART1 # using UART0 for BMS communications
 ```
 
+external_components
+- 
 Before anything else, you will need to tell ESPHome where to find this component.  Add the following lines to your YAML:
 
 ```
@@ -293,7 +305,10 @@ external_components:
       ref: "main"
     components: [ pace_bms ]
     refresh: 1s
-    
+```
+If you're exposing the BMS date/time you might also need to include this:
+```
+external_components:
   - source:
       type: git
       url: https://github.com/nkinnan/esphome
@@ -302,8 +317,10 @@ external_components:
     refresh: 1s
 ```
 
-The second source section is needed to work around a design bug in the ESPHome DateTime component, it will be removed / become unnecessary once [the PR](https://github.com/esphome/esphome/pull/7425) to fix that goes through.
+This second source section is needed to work around a design bug in the ESPHome DateTime component, it will be removed / become unnecessary once [the PR](https://github.com/esphome/esphome/pull/7425) to fix that goes through.
 
+UART and pace_bms
+-
 Next, lets configure the UART and pace_bms component to speak with your BMS.
 
 ```yaml
@@ -327,10 +344,10 @@ pace_bms:
   request_throttle: 200ms 
   response_timeout: 2000ms 
 
-  protocol_commandset: 0x20
-  protocol_variant: "EG4"
-  protocol_version: 0x20 
-  battery_chemistry: 0x4A 
+  protocol_commandset: 0x20 # example only
+  protocol_variant: "EG4"   # example only
+  protocol_version: 0x20    # example only
+  battery_chemistry: 0x4A   # example only
 ```
 * **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using a push-pin to depress the recessed reset button.  The most common address values are 0 and 1, unless your battery packs are daisy chained, which is not currently supported by this component.
 * **uart_id:** The ID of the UART you configured.  This component currently requires one UART per BMS, though I'm considering a design change that would allow it to read "daisy chained" BMSes in the future.
@@ -341,11 +358,11 @@ pace_bms:
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
    - Consider these as a set.  Use values from the known supported list, or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
 
-
-
+Exposing the settings (this is the good part!)
+-
 Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, I will provide a complete example which you can pare down to only what you want to see.
 
-Example 1: All read-only values, available on all protocol versions and variants
+**Example 1: All read-only values, available on all protocol versions and variants**
 ```yaml
 sensor:
   - platform: pace_bms
@@ -460,7 +477,7 @@ text_sensor:
 
 ```
 
-Example 2: Read-write values available on both protocol version 20 and 25
+**Example 2: Read-write values available on both protocol version 20 and 25**
 ```yaml
 datetime:
  - platform: pace_bms
@@ -476,7 +493,7 @@ button:
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
 ```
-Example 3: Read-write values only available with protocol version 25
+**Example 3: Read-write values only available with protocol version 25**
 ```yaml
 switch:
  - platform: pace_bms
@@ -580,14 +597,14 @@ number:
     sleep_cell_voltage:
       name: "Sleep Cell Voltage"
     sleep_delay:
-      name: "Sleep Delay"
+      name: "Sleep Delay (Minutes)"
  
     full_charge_voltage:
       name: "Full Charge Voltage"
     full_charge_amps:
       name: "Full Charge Amps"
     low_charge_alarm_percent:
-      name: "Low Charge Alarm"
+      name: "Low Charge Alarm Percent"
  
     charge_over_temperature_alarm:
       name: "Charge Over Temperature Alarm"
@@ -640,13 +657,13 @@ number:
 ```
 
 
-I want to talk to a battery that isn't listed
-- 
+# I want to talk to a battery that isn't listed
+
 Before proceeding through this section, please read the entire rest of this document first!  It assumes some familiarity and does not repeat steps like configuring the UART, but simply provides a guide on how to determine the specific protocol your BMS is speaking.
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
-The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (they may be programmed to speak different protocols).  
+The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
 
 Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this:
 
@@ -762,27 +779,27 @@ The problem areas are going to be the last of the analog values such as Cycle Co
 
 If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
 
-I'm having a problem using this component
-- 
+# I'm having a problem using this component
+
 Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
 
 If you still have an issue, or are seeing some "strange data" or log output, you can create an issue report. 
 
-Each Configuration Entry in Excruciating Detail
-- 
+# Each Configuration Entry in Excruciating Detail
 
 
-Decoding the Status Values (but you probably don't want to)
-- 
 
-Miscellaneous Notes
-- 
+# Decoding the Status Values (but you probably don't want to)
+
+
+# Miscellaneous Notes
+ 
 - My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.  It's currently a bit of a mishmash until I can refactor over to ESPHome's style completely.
 
 - Huge shout-out to https://github.com/syssi/esphome-seplos-bms who implemented an initial basic decode letting me know this was possible, and also compiled some documentation which was immensely useful.  Without which I might never have gotten started on, or been motivated to finish, this more complete implementation of the protocol.
 
-Helping Out
-- 
+# Helping Out
+
 - I would like to make additions to the [known supported battery packs](fixme) section.  If you have a pack that works, please share!
 
 - If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
