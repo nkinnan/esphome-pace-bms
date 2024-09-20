@@ -285,14 +285,14 @@ I won't go over 1 since that will be specific to your setup, except to say that 
 8266-specific preamble
 -
 1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
-```
+```yaml
 esphome:
   libraries:
     # massive improvement to event throughput to the on-device web_server dashboard
     - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 ```
 2) Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
-```
+```yaml
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
 ```
@@ -301,7 +301,7 @@ external_components
 - 
 Before anything else, you will need to tell ESPHome where to find this component.  Add the following lines to your YAML:
 
-```
+```yaml
 external_components:
   - source:
       type: git
@@ -311,7 +311,7 @@ external_components:
     refresh: 1s
 ```
 If you're exposing the BMS date/time you might also need to include this:
-```
+```yaml
 external_components:
   - source:
       type: git
@@ -826,7 +826,7 @@ Paceic Version 25 RAW Status Values
 -
 
 First, the full set of YAML config entries:
-```
+```yaml
 sensor:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
