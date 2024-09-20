@@ -282,6 +282,18 @@ A full ESPHome configuration will consist of thee parts:
 
 I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
+A note on logging
+-
+While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.
+
+```yaml
+logger:
+  #level: INFO
+  #level: DEBUG
+  #level: VERBOSE
+  level: VERY_VERBOSE
+```
+
 8266-specific preamble
 -
 1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
