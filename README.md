@@ -190,7 +190,7 @@ Known working protocol version 20 battery packs:
   - hardware versions: 
 	  - **QTHN 0d[3][6]**
 	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
-  - required config: 
+  - required `pace_bms` config: 
 	  - `protocol_commandset: 0x20`
 	  - `protocol_variant: "EG4"`
 	  - `battery_chemistry: 0x4A`
@@ -207,7 +207,7 @@ Known working protocol version 25 battery packs:
   - hardware versions: 
 	  - **FIXME**
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
-  - required config: 
+  - required `pace_bms` config: 
 	  - `protocol_commandset: 0x25`
 
 # What ESPs are Supported?
@@ -278,7 +278,7 @@ A full ESPHome configuration will consist of thee parts:
 
 I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
-8266 specific preamble
+8266-specific preamble
 -
 1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
 ```
@@ -663,16 +663,20 @@ Before proceeding through this section, please read the entire rest of this docu
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
+Step 1: Is the BMS talking paceic?
+-
 The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
 
-Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this:
+Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this (make sure you're in "text" mode):
 
-```~25xx46xxxxxxxx\r```
+```~25xx46xxxxxxxxxx\r```
 or
-```~20xx46xxxxxxxx\r```
+```~20xx46xxxxxxxxxx\r```
 
 The x's will be hexidecimal values.  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
 
+Step 2: Understanding what we need
+-
 We need at least one and as many as four configuration values to speak with the BMS successfully:
 1) **`protocol_commandset`** - The **actual** protocol version being used, this determines what commands can be sent to the BMS.
 2) **`protocol_version`** - The "claimed version" of the protocol - some BMSes lie about what protocol version they are speaking.  This is the value sent over the wire in the frame header, but which commands can be sent is still determined by `protocol_commandset`
@@ -682,6 +686,8 @@ We need at least one and as many as four configuration values to speak with the 
     * EG4
 4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who again hate compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
+Step 3: the commandset
+-
 Now, going back to the requests you snooped over the COM port
 ```
 ~25xx46xxxxxxxx\r
@@ -703,7 +709,11 @@ pace_bms:
 
 If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
-If the requests you were seeing didn't start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25, but is lying about it because manufacturers dislike compatibility for some reason.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.
+Step 4: If the BMS is lying
+-
+If the requests you were seeing started with either **20 or 25, skip this step**.
+
+If the requests you were seeing *didn't* start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25, but is lying about it because some manufacturers dislike compatibility, presumably because they want to lock you into an ecosystem.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.  We'll need to try both.
 
 ```yaml
 pace_bms:
@@ -734,7 +744,9 @@ text_sensor:
 
 Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
-However, if it is 0x20 then you also need to figure out which "variant" of protocol version 20 it is.  Start by putting this into your config:
+Step 5: An extra step for commandset 20
+-
+If you determined the commandset to be 0x20 then you also need to figure out which "variant" of protocol version 20 it is.  Start by putting this into your config:
 
 ```yaml
 sensor:
@@ -777,7 +789,9 @@ If you only got the yellow highlighted line, you're going to have to guess.  Try
 
 The problem areas are going to be the last of the analog values such as Cycle Count, State of Charge and State of Health, and all of the status values.  If those don't make sense, or the BMS doesn't respond, it's the wrong protocol variant.  
 
-If none of them work properly, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
+Step: It didn't work
+-
+If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
 
 # I'm having a problem using this component
 
