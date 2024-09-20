@@ -1,14 +1,13 @@
 #pragma once
 
 #include <string>
-//#include <cstring>
 #include <vector>
 
 // uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
-//#include <optional>
-//#define OPTIONAL_NS std
 #include "esphome/core/optional.h"
 #define OPTIONAL_NS esphome
+//#include <optional>
+//#define OPTIONAL_NS std
 
 /*
 General format of requests/responses:
@@ -117,7 +116,7 @@ protected:
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
 	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
-	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
+	// decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
 	uint32_t ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
@@ -134,6 +133,5 @@ protected:
 	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
 
 	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, const std::vector<uint8_t> response);
-
 };
 

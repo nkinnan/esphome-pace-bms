@@ -180,7 +180,7 @@ int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::vector<uint8_t>& da
 	return sshort;
 }
 
-// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
+// decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
 uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset)
 {
 	if (data.size() - dataOffset < 8)
@@ -307,6 +307,7 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 	// SOI marker
 	request[byteOffset++] = '~';
 
+	// protocol version
 	uint8_t target_ver = this->protocol_commandset;
 	if (this->protocol_version.has_value())
 		target_ver = this->protocol_version.value();
@@ -348,48 +349,53 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 {
 	uint16_t byteOffset = 0;
 
-	// the number of bytes for a response with zero payload, we'll check again once we decode the checksummed length embedded in the response to make sure we don't run past the end of the buffer
+	// the number of bytes for a response with zero payload, we'll check again once we decode the checksummed length embedded 
+	// in the response to make sure we don't run past the end of the buffer
 	if (response.size() < 18)
 	{
-		LogError("Response is truncated, even a response without payload should be 18 bytes");
+		LogError("Response is truncated, even a response without payload should be 18 bytes long");
 		return -1;
 	}
 
+	// SOI
 	if (response[byteOffset++] != '~')
 	{
 		LogError("Response does not begin with SOI marker");
 		return -1;
 	}
 
+	// Protocol Version
 	uint8_t ver = ReadHexEncodedByte(response, byteOffset);
 	uint8_t target_ver = this->protocol_commandset;
 	if (this->protocol_version.has_value())
 		target_ver = this->protocol_version.value();
 	if (ver != target_ver)
 	{
-		LogError("Response has wrong version number");
+		LogError("Response has wrong protocol version number");
 		return -1;
 	}
 
+	// Bus Id
 	uint8_t addr = ReadHexEncodedByte(response, byteOffset);
 	if (addr != busId)
 	{
-		LogError("Response from wrong bus Id");
+		LogError("Response from wrong Bus Id");
 		return -1;
 	}
 
+	// CID1
 	uint8_t cid = ReadHexEncodedByte(response, byteOffset);
 	if (cid != cid1)
 	{
-		LogError("Response has wrong CID1");
+		LogError("Response has wrong CID1 (battery chemistry)");
 		return -1;
 	}
 
+	// Return Code
 	uint8_t returnCode = ReadHexEncodedByte(response, byteOffset);
 	if (returnCode != 0)
 	{
-		std::string message = std::string("Error code returned by device: ") + FormatReturnCode(returnCode);
-		LogError(message);
+		LogError(std::string("Error code returned by device: ") + FormatReturnCode(returnCode));
 		return -1;
 	}
 
@@ -403,13 +409,15 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 
 	uint16_t payloadLen = LengthFromChecksummedLength(cklen);
 
-	if (payloadLen + 18 < (uint16_t)response.size() && response[response.size() - 1] == '\r')
-	{
-		LogError("Response contains an incorrect payload length, fixing up the value by checking against EOI, ignoring since this is a known firmware bug");
-		return -1;
-		//payloadLen = (uint16_t)response.size() - 18;
-	}
+	////// fixup a bad payload length
+	////if (payloadLen + 18 < (uint16_t)response.size() && response[response.size() - 1] == '\r')
+	////{
+	////	LogWarning("Response contains an incorrect payload length, fixing up the value by checking against EOI");
+	////	//return -1;
+	////	payloadLen = (uint16_t)response.size() - 18;
+	////}
 
+	// check payload length
 	if ((uint16_t)response.size() < payloadLen + 18)
 	{
 		LogError("Response is truncated, should be 18 bytes + decoded payload length");
