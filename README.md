@@ -20,16 +20,16 @@ I strongly encourage you to read through this entire document, but here are some
 
 # Paceic Protocol Version 20
 
-  This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
+This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
  - **EG4**
  - **PYLON**
  - **SEPLOS**
 
+There is a high likelihood that one of these three version 20 protocol variants implemented by pace_bms will work for version 20 battery packs which are branded by a different manufacturer than the three listed.  I only named them for those manufacturers because I was able to find spec docs under those names - the same firmware / protocol variant may be used by many different brands.  But if you can find a spec doc for a new variant that behaves differently, I can probably add support for that too.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
+
 Different manufacturers will have different BMS management software for version 20 battery packs.  It will not be PbmsTools, but one of a variety of manufacturer-specific affronts to good software design.  If your pack uses PbmsTools it's version 25.
 
 These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
-
-There is a high likelihood that one of these three version 20 protocol variants implemented by pace_bms will work for version 20 battery packs which are branded by a different manufacturer than the three listed.  I only named them for those manufacturers because I was able to find spec docs under those names, the same firmware / protocol variant may be used by many different brands.  But if you can find a spec doc for a new variant that behaves differently, I can probably add support for that too.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
