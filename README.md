@@ -913,7 +913,7 @@ The entries:
 
 All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
 
-```
+```C++
 	enum StatusInformation_WarningValues
 	{
 		WV_Normal = 0,
@@ -930,7 +930,7 @@ The entries:
 
 Contain bitflags.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
 
-```
+```C++
 	enum StatusInformation_Warning1Flags
 	{
 		W1F_UndefinedWarning1Bit8 = (1 << 7),
@@ -965,7 +965,7 @@ The entry:
 
 Contains bitflags.  These flags indicate the current status of the BMS.  Possible values:
 
-```
+```C++
 	enum StatusInformation_SystemFlags
 	{
 		SF_HeartIndicatorBit = (1 << 7),
@@ -985,7 +985,7 @@ The entry:
 
 Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
 
-```
+```C++
 	enum StatusInformation_ConfigurationFlags
 	{
 		CF_UndefinedConfigurationStatusBit8 = (1 << 7),
@@ -1005,7 +1005,7 @@ The entry:
 
 Contain bitflags.  These flags indicate that action is being taken by the BMS to protect itself.  Possible values:
 
-```
+```C++
 	enum StatusInformation_Protection1Flags
 	{
 		P1F_UndefinedProtect1Bit = (1 << 7),
@@ -1036,7 +1036,7 @@ The entry:
 
 Contains bitflags.  These flags indicate the BMS is faulted, a more serious condition than a protection being enabled.  Possible values:
 
-```
+```C++
 	enum StatusInformation_FaultFlags
 	{
 		FF_UndefinedFaultStatusBit8 = (1 << 7),
