@@ -44,7 +44,7 @@ These BMSes speaking paceic version 25 will invariably use PbmsTools for their B
 
 The exact look isn't important, just that the tabs and general layout looks like this.  This is PbmsTools regardless of any specific brand badging or interface tweaks, and indicates that your BMS supports protocol version 25.  
 
-The default password to unlock all settings is "123456" incidentally.  But there are legitimately some settings you shouldn't mess with (I didn't implement those in this component, basically just the calibration stuff under the System Config tab).
+The default password to unlock all settings is "123456" incidentally.  But there are legitimately some settings you shouldn't mess with (I didn't implement those in this component - basically just the calibration stuff under the System Config tab).
 
 These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
@@ -659,7 +659,14 @@ number:
     environment_under_temperature_protection_release:
       name: "Environment Under Temperature Protection Release"
 ```
+Example Config Files (in full)
+-
+Why are these "hidden" below that "long, rambly" explanation of the settings?  So you'd hopefully read that first and understand what's in these - it'll reduce support overhead :) 
 
+* ESP8266-01_V25.yaml
+* ESP32-C3_V25.yaml
+* ESP32-WROOM_V25.yaml
+* etc (todo)
 
 # I want to talk to a battery that isn't listed
 
@@ -825,6 +832,3 @@ If you still have an issue, or are seeing some "strange data" or log output, you
 - Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant. 
 
 - And of course, if you appreciate the work that went into this, you can always [buy me a coffee](https://www.buymeacoffee.com/nkinnan) :)
-
-
-
