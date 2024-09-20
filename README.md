@@ -29,7 +29,7 @@ Different manufacturers will have different BMS management software for version 
 
 These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
-There is a high likelihood that one of these three version 20 protocol variants implemented by pace_bms will work for version 20 battery packs which are branded by a different manufacturer than the three listed, but if you can find a spec doc for a new variant that behaves differently, I can probably add support.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
+There is a high likelihood that one of these three version 20 protocol variants implemented by pace_bms will work for version 20 battery packs which are branded by a different manufacturer than the three listed.  I only named them for those manufacturers because I was able to find spec docs under those names, the same firmware / protocol variant may be used by many different brands.  But if you can find a spec doc for a new variant that behaves differently, I can probably add support for that too.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x20) for documentation on currently known version 20 protocol variants. 
 
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
@@ -284,7 +284,7 @@ I won't go over 1 since that will be specific to your setup, except to say that 
 
 A note on logging
 -
-While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.
+While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.  You might want to remove many/most of the sensors when running at the VERY_VERBOSE level however, as a sensors publishing new values generates a **lot** of log output, and it's mainly the component lots that are important, not the sensor logs.
 
 ```yaml
 logger:
@@ -322,7 +322,7 @@ external_components:
     components: [ pace_bms ]
     refresh: 1s
 ```
-If you're exposing the BMS date/time you might also need to include this:
+If you're exposing the BMS date/time sensor you might also need to include this:
 ```yaml
 external_components:
   - source:
@@ -374,7 +374,7 @@ pace_bms:
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
    - Consider these as a set.  Use values from the known supported list, or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
 
-Exposing the settings (this is the good part!)
+Exposing the sensors (this is the good part!)
 -
 Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, I will provide a complete example which you can pare down to only what you want to see.
 
@@ -673,7 +673,7 @@ number:
 ```
 Example Config Files (in full)
 -
-Why are these "hidden" below that "long, rambly" explanation of the settings?  So you'd hopefully read that first and understand what's in these - it'll reduce support overhead :) 
+Why are these "hidden" below that "long, rambly" explanation of the settings?  So you'd hopefully read that first and understand what's in these files - it'll reduce support overhead :) 
 
 * ESP8266-01_V25.yaml
 * ESP32-C3_V25.yaml
@@ -686,7 +686,7 @@ Before proceeding through this section, please read the entire rest of this docu
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
-Step 1: Is the BMS talking paceic?
+Step 1: Is the BMS speaking paceic?
 -
 The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
 
