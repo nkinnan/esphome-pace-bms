@@ -33,13 +33,13 @@ I strongly encourage you to read through this entire document, but here's a tabl
     - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
   - [Example Config Files (in full)](#Example-Config-Files-in-full)
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
-- [I'm having a problem using this component](#Im-having-a-problem-using-this-component)
 - [Each Configuration Entry in Excruciating Detail](#Each-Configuration-Entry-in-Excruciating-Detail)
 - [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to)
   - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
   - [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic-Version-20-RAW-Status-Values-PYLON-variant)
   - [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic-Version-20-RAW-Status-Values-SEPLOS-variant)
   - [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic-Version-20-RAW-Status-Values-EG4-variant)
+- [I'm having a problem using this component](#Im-having-a-problem-using-this-component)
 - [Miscellaneous Notes](#Miscellaneous-Notes)
 - [Helping Out](#Helping-Out)
 
@@ -207,7 +207,7 @@ It is difficult to find good documentation on either of these protocols.  All th
 
 # What Battery Packs are Supported?
 
-**As far as I know, many/most.**  Any not listed should simply require a small tweak to the configuration.  
+**As far as I know, many/most.**  Any not listed should simply require a slightly different configuration (or might re-use one of the existing ones).  
 
 However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration settings required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
 
@@ -304,9 +304,9 @@ A full ESPHome configuration will consist of thee parts:
 
 1. The basic stuff like board type, wifi credentials, api or mqtt configuration, web_server if used, and so on. 
 3. Configuration of the UART and the pace_bms component to speak with your battery pack.
-4. Exposing the values / status / configuration that you want accessible via the web_server dashboard, homeassistant, or mqtt.
+4. Exposing the sensors / configuration values that you want accessible via the web_server dashboard, homeassistant, or mqtt.
 
-I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
+I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up.  It is a *significant* improvement over version 2, but not yet set as the default, and some of the color choices indicate it was designed in dark mode since they don't work as well with a white background - mainly the logging colors.
 
 sub-sections:
 - [A note on logging](#A-note-on-logging)
@@ -402,10 +402,10 @@ pace_bms:
   protocol_version: 0x20    # example only
   battery_chemistry: 0x4A   # example only
 ```
-* **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using a push-pin to depress the recessed reset button.  The most common address values are 0 and 1, unless your battery packs are daisy chained, which is not currently supported by this component.
+* **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using something like a toothpick or push-pin to depress the recessed reset button.  The most common address values are 0 and 1, unless your battery packs are daisy chained, which is not currently supported by this component.
 * **uart_id:** The ID of the UART you configured.  This component currently requires one UART per BMS, though I'm considering a design change that would allow it to read "daisy chained" BMSes in the future.
 * **flow_control_pin:** If using RS232 this setting should be omitted.  If using RS485, this is required to be set, as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.
-* **update_interval:** How often to query the BMS and publish whatever updated values are read back.  What queries are sent to the BMS is determined by what values you have requested to be published in the rest of your configuration.
+* **update_interval:** How often to query the BMS and publish whatever updated values are read back.  What queries are sent to the BMS is determined by what values you have requested to be published in [the rest of your configuration](#Exposing-the-sensors-this-is-the-good-part).
 * **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
@@ -721,40 +721,45 @@ Why are these "hidden" below that "long, rambly" explanation of the settings?  S
 
 # How to configure a battery pack that's not in the supported list (yet)
 
+sub-sections:
+
+
 Before proceeding through this section, please read the entire rest of this document first!  It assumes some familiarity and does not repeat steps like configuring the UART, but simply provides a guide on how to determine the specific protocol your BMS is speaking.
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
 Step 1: Is the BMS speaking paceic?
 -
-The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS management software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
+The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
 
-Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this](https://www.com-port-monitoring.com/downloads.html) software to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this (make sure you're in "text" mode):
+Once your manufacturer's recommended software is talking to your battery pack successfully, if you're on Windows, you can use [this software](https://www.com-port-monitoring.com/downloads.html) to "snoop" on the COM port and see what the protocol looks like.  Linux or Mac should have equivalents available but I'm not familiar with them.  You should see something like this (make sure you're in "text" mode):
 
 ```~25xx46xxxxxxxxxx\r```
 or
 ```~20xx46xxxxxxxxxx\r```
 
-The x's will be hexidecimal values.  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
+The x's will be hexidecimal values (in fact, all values are ASCII text hexidecimal).  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
 
 Step 2: Understanding what we need
 -
 We need at least one and as many as four configuration values to speak with the BMS successfully:
 1) **`protocol_commandset`** - The **actual** protocol version being used, this determines what commands can be sent to the BMS.
-2) **`protocol_version`** - The "claimed version" of the protocol - some BMSes lie about what protocol version they are speaking.  This is the value sent over the wire in the frame header, but which commands can be sent is still determined by `protocol_commandset`
+2) **`protocol_version`** - The "claimed" version of the protocol - some BMSes lie about what protocol version they are speaking in order to lock you into an ecosystem.  This is the value sent over the wire in the frame header, but which commands can be sent is still determined by `protocol_commandset`
 3) **`protocol_variant`** - For protocol commandset 20 only, the "variant" of the protocol this BMS is using.  This determines how some of the BMS responses (to the same command) are interpreted, and can be one of (currently) three supported values:
     * PYLON
     * SEPLOS
     * EG4
-4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who again hate compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
+4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who intentionally break compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
 Step 3: the commandset
 -
 Now, going back to the requests you snooped over the COM port
 ```
-~25xx46xxxxxxxx\r
+~25xx46xxxxxxxxxx\r
 ```
-The first number, the 20 or the 25 at the beginning (it may be a different number, more on that in a moment) is the protocol version your BMS is speaking.  The second number (after two x's) is your battery chemistry.  Put both of them into your config YAML (you can skip battery_chemistry if it was 46 as expected since that is the default value):
+The first number, the 20 or the 25 at the beginning (it may be a different number, more on that in a moment) is the protocol version your BMS is speaking.  The second number (after two other hexidecimal values shown as x's) is your battery chemistry.  Put both of them into your config YAML (you can skip battery_chemistry if it was 46 as expected since that is the default value).  
+
+Note that the "0x" prefix just means "this value is hexidecimal":
  
 
 ```yaml
@@ -769,26 +774,25 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```  
 
-If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 Step 4: If the BMS is lying
 -
 If the requests you were seeing started with either **20 or 25, skip this step**.
 
-If the requests you were seeing *didn't* start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25, but is lying about it because some manufacturers dislike compatibility, presumably because they want to lock you into an ecosystem.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.  We'll need to try both.
+If the requests you were seeing *didn't* start with either 20 or 25, but otherwise "looked right", that means your BMS is using a custom firmware with a non-standard protocol version reported.  That's probably fine, it's probably still speaking version 20 or 25, but is lying about it because some manufacturers intentionally break compatibility, presumably because they want to lock you into their ecosystem.  So you're going to have to try both, and configure pace_bms to lie right back.  Here we'll use 42 as an example of that first number you saw instead of a 20 or 25.  We'll need to try both.
 
 ```yaml
 pace_bms:
   protocol_commandset: 0x20
   protocol_version: 0x42 # the BMS is lying, so lie right back
-  battery_chemistry: 0x4A # only if not 46
 ```
 or
+
 ```yaml
 pace_bms:
   protocol_commandset: 0x25
   protocol_version: 0x42 # the BMS is lying, so lie right back
-  battery_chemistry: 0x4A # only if not 46
 ```
 
 If you had to guess which commandset like this, you can figure out if it is "truly" 0x20 or 0x25 simply by seeing if pace_bms starts logging errors or returns good data.  I suggest trying to read these two values first, since there is some overlap between the protocol versions for the analog and status values - so it may not be obvious at first if the data returned is wrong or not.  If the BMS responds to either of these with something intelligible, you have probably picked the correct commandset value.  But keep an eye on the logs for errors and warnings.
@@ -804,7 +808,7 @@ text_sensor:
       name: "Serial Number"
 ```
 
-Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with the rest of the settings / readouts you want exposed and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 Step 5: An extra step for commandset 20
 -
@@ -851,15 +855,12 @@ If you only got the yellow highlighted line, you're going to have to guess.  Try
 
 The problem areas are going to be the last of the analog values such as Cycle Count, State of Charge and State of Health, and all of the status values.  If those don't make sense, or the BMS doesn't respond, it's the wrong protocol variant.  
 
-Step: It didn't work
+Once you've figured out the proper protocol variant that returns sensible status values, just fill out your YAML with [the rest of the settings / readouts you want exposed](https://stackedit.io/app#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section. Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+
+If it didn't work
 -
-If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or the manufacturer's recommended BMS software if not).  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
+If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You may have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can, including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or from the manufacturer's recommended BMS software if not), and VERY_VERBOSE level logs.  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
 
-# I'm having a problem using this component
-
-Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
-
-If you still have an issue, or are seeing some "strange data" or log output, you can create an issue report. 
 
 # Each Configuration Entry in Excruciating Detail
 
@@ -1852,6 +1853,12 @@ Contains bitflags.  These flags contain mixed status information on current stat
 ```
 
 
+# I'm having a problem using this component
+
+Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
+
+If you still have an issue, or are seeing some "strange data" or log output, you can create an issue report. 
+
 # Miscellaneous Notes
  
 - My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.  It's currently a bit of a mishmash until I can refactor over to ESPHome's style completely.
@@ -1860,7 +1867,7 @@ Contains bitflags.  These flags contain mixed status information on current stat
 
 # Helping Out
 
-- I would like to make additions to the [known support battery packs](#What-Battery-Packs-are-Supported) section.  If you have a pack that works, please share!
+- I would like to make additions to the [known supported battery packs](#What-Battery-Packs-are-Supported) section.  If you have a pack that works, please share!
 
 - If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
 
