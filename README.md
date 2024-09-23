@@ -210,7 +210,7 @@ It is difficult to find good documentation on either of these protocols.  All th
 
 However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration settings required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
 
-**If not listed**, for help figuring out the required settings to get your battery pack working, see [here](FIXME)
+**If not listed**, for help figuring out the required settings to get your battery pack working, see [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 
 Known working protocol version 20 battery packs:
 -
@@ -407,7 +407,7 @@ pace_bms:
 * **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
-   - Consider these as a set.  Use values from the [known supported list](fixme), or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
+   - Consider these as a set.  Use values from the [known supported list](#What-Battery-Packs-are-Supported), or determine them manually by following the steps in [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 
 ## Exposing the sensors (this is the good part!)
 
@@ -1858,7 +1858,7 @@ Contains bitflags.  These flags contain mixed status information on current stat
 
 # Helping Out
 
-- I would like to make additions to the [known supported battery packs](fixme) section.  If you have a pack that works, please share!
+- I would like to make additions to the [known support battery packs](#What-Battery-Packs-are-Supported) section.  If you have a pack that works, please share!
 
 - If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
 
