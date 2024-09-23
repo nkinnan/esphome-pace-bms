@@ -17,7 +17,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [What Is Pace MODBUS Protocol](#What-Is-Pace-MODBUS-Protocol)
 - [Supported BMS Sensors (read only)](#Supported-BMS-Sensors-read-only)
 - [Supported BMS Configuration (read / write)](#Supported-BMS-Configuration-read--write)
-- [Supported BMS Configuration (read / write) - **Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Version-25-ONLY)
+- [Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Version-25-ONLY)
 - [What Battery Packs are Supported?](#What-Battery-Packs-are-Supported)
 - [What ESPs are Supported?](#What-ESPs-are-Supported)
 - [How do I wire my ESP to the RS485 port?](#How-do-I-wire-my-ESP-to-the-RS485-port)
@@ -111,7 +111,7 @@ Some BMS firmwares also support reading data via MODBUS protocol over the RS485 
 - **System Date and Time** - Allows access to the BMS internal real-time clock 
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
-# Supported BMS Configuration (read / write) - **Version 25 ONLY**
+# Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**
 
 It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
 
@@ -299,8 +299,18 @@ A full ESPHome configuration will consist of thee parts:
 
 I won't go over 1 since that will be specific to your setup, except to say that if you want to use `web_server` then you should probably add `version: 3` and click the dark mode icon whenever you open it up because it is a *significant* improvement over version 2, but not yet set as the default.
 
-A note on logging
--
+sub-sections:
+- [A note on logging](#A-note-on-logging)
+- [8266-specific preamble](#8266-specific-preamble)
+- [external_components](#external_components)
+- [UART and pace_bms](#UART-and-pace_bms)
+- [Exposing the sensors (this is the good part!)](#Exposing-the-sensors-this-is-the-good-part)
+  - [All read-only values](#All-read-only-values)
+  - [Read-write values](#Read-write-values)
+  - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
+
+## A note on logging
+
 While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.  You might want to remove many/most of the sensors when running at the VERY_VERBOSE level however, as a sensors publishing new values generates a **lot** of log output, and it's mainly the component logs that are important, not the sensor logs.
 
 ```yaml
@@ -311,8 +321,8 @@ logger:
   level: VERY_VERBOSE
 ```
 
-8266-specific preamble
--
+## 8266-specific preamble
+
 1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
 ```yaml
 esphome:
@@ -326,8 +336,8 @@ logger:
   hardware_uart: UART1 # using UART0 for BMS communications
 ```
 
-external_components
-- 
+## external_components
+
 Before anything else, you will need to tell ESPHome where to find this component.  Add the following lines to your YAML:
 
 ```yaml
@@ -352,8 +362,8 @@ external_components:
 
 This second source section is needed to work around a design bug in the ESPHome DateTime component, it will be removed / become unnecessary once [the PR](https://github.com/esphome/esphome/pull/7425) to fix that goes through.
 
-UART and pace_bms
--
+## UART and pace_bms
+
 Next, lets configure the UART and pace_bms component to speak with your BMS.
 
 ```yaml
@@ -391,11 +401,11 @@ pace_bms:
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
    - Consider these as a set.  Use values from the [known supported list](fixme), or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
 
-Exposing the sensors (this is the good part!)
--
+## Exposing the sensors (this is the good part!)
+
 Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, I will provide a complete example which you can pare down to only what you want to see.
 
-**Example 1: All read-only values, available on all protocol versions and variants**
+### All read-only values
 ```yaml
 sensor:
   - platform: pace_bms
@@ -510,7 +520,8 @@ text_sensor:
 
 ```
 
-**Example 2: Read-write values available on both protocol version 20 and 25**
+### Read-write values
+
 ```yaml
 datetime:
  - platform: pace_bms
@@ -526,7 +537,8 @@ button:
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
 ```
-**Example 3: Read-write values only available with protocol version 25**
+### Read-write values - Protocol Version 25 ONLY
+
 ```yaml
 switch:
  - platform: pace_bms
@@ -852,10 +864,10 @@ Really? OK, well here's the thing.  They're completely different for every singl
 This is going to be tedious, so I'll "cheat" a bit by sharing some raw enums from the code.
 
 sub-sections:
-- [Paceic Version 25 RAW Status Values](#Paceic%20Version%2025%20RAW%20Status%20Values)
-- [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20PYLON%20variant)
-- [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20SEPLOS%20variant)
-- [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20EG4%20variant)
+  - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
+  - [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic-Version-20-RAW-Status-Values-PYLON-variant)
+  - [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic-Version-20-RAW-Status-Values-SEPLOS-variant)
+  - [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic-Version-20-RAW-Status-Values-EG4-variant)
 
 
 Paceic Version 25 RAW Status Values
