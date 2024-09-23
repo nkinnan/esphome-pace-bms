@@ -1250,7 +1250,316 @@ Contains bitflags.  These flags indicate a cell fault.  Possible values:
 Paceic Version 20 RAW Status Values, SEPLOS variant
 -
 
+First, the full set of YAML config entries:
+```yaml
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+    
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+    
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+
+    balancing_status_value:
+      name: "Balancing Status Value"
+    system_status_value:
+      name: "System Status Value"
+      
+    power_status_value:
+      name: "Power Status Value"
+    disconnection_status_value: 
+      name: "Disconnection Status Value"
+
+    warning1_status_value:
+      name: "Warning1 Status Value"
+    warning2_status_value:
+      name: "Warning2 Status Value"
+    warning3_status_value:
+      name: "Warning3 Status Value"
+    warning4_status_value:
+      name: "Warning4 Status Value"
+    warning5_status_value:
+      name: "Warning5 Status Value"
+    warning6_status_value:
+      name: "Warning6 Status Value"
+    warning7_status_value:
+      name: "Warning7 Status Value"
+    warning8_status_value:
+      name: "Warning8 Status Value"
+```
+
+The entries:
+- `warning_status_value_cell_01` through `warning_status_value_cell_16`
+- `warning_status_value_temperature_01` through `warning_status_value_temperature_06`
+- `warning_status_value_charge_current` *
+- `warning_status_value_discharge_current` *
+- `warning_status_value_total_voltage`
+
+All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+
+**Important:** * The SEPLOS variant does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
+
+```C++
+	enum StatusInformation_WarningValues
+	{
+		WV_Normal = 0,
+		WV_BelowLowerLimitValue = 1,
+		WV_AboveUpperLimitValue = 2,
+		WV_OtherFaultValue = 0xF0,
+	};
+```
+
+The entry:
+- `balancing_status_value`
+
+Contains bitflags.  It is 16 bits wide.  One for each cell.  If the bit is set, it indicates that cell is currently balancing.  Cell 1 is the least significant bit.
+
+The entry:
+- `system_status_value`
+
+Contains bitflags.  These flags indicate the current system status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_SystemStatus
+		{
+			SS_ReservedSystemStatusBit8 = (1 << 7),
+			SS_ReservedSystemStatusBit7 = (1 << 6),
+			SS_PowerOff = (1 << 5),
+			SS_Standby = (1 << 4),
+			SS_ReservedSystemStatusBit4 = (1 << 3),
+			SS_FloatingCharge = (1 << 2),
+			SS_Charging = (1 << 1),
+			SS_Discharging = (1 << 0),
+		};
+```
+
+The entry:
+- `power_status_value`
+
+Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_PowerStatus
+		{
+			PS_ReservedPowerStatusBit8 = (1 << 7),
+			PS_ReservedPowerStatusBit7 = (1 << 6),
+			PS_ReservedPowerStatusBit6 = (1 << 5),
+			PS_ReservedPowerStatusBit5 = (1 << 4),
+			PS_HeatingSwitchStatus = (1 << 3),
+			PS_CurrentLimitSwitchStatus = (1 << 2),
+			PS_ChargeSwitchStatus = (1 << 1),
+			PS_DischargeSwitchStatus = (1 << 0),
+		};
+```
+
+The entry:
+- `disconnection_status_value`
+
+Contains bitflags.  It is 16 bits wide.  One for each cell.  If the bit is set, it indicates that cell is disconnected.  Cell 1 is the least significant bit.
+
+The entry:
+- `warning1_status_value`
+
+Contains bitflags.  These flags indicate faults of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning1
+		{
+			// pretty sure these three mean MOSFET when they say "Switch" in the doc...
+			W1_CurrentLimitSwitchFailure = (1 << 7), // fault
+			W1_DischaringSwitchFailure = (1 << 6), // fault
+			W1_ChargingSwitchFailure = (1 << 5), // fault
+			W1_CellVoltageDifferenceSensingFailure = (1 << 4), // fault
+			W1_PowerSwitchFailure = (1 << 3), // fault
+			W1_CurrentSensingFailure = (1 << 2), // fault
+			W1_TemperatureSensingFailure = (1 << 1), // fault
+			W1_VoltageSensingFailure = (1 << 0), // fault
+		};
+```
+
+The entry:
+- `warning2_status_value`
+
+Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning2
+		{
+			W2_PackLowVoltageProtection = (1 << 7), // protection 
+			W2_PackLowVoltageWarning = (1 << 6), // warning 
+			W2_PackOverVoltageProtection = (1 << 5), // protection 
+			W2_PackOverVoltageWarning = (1 << 4), // warning 
+			W2_CellLowVoltageProtection = (1 << 3), // protection 
+			W2_CellLowVoltageWarning = (1 << 2), // warning 
+			W2_CellOverVoltageProtection = (1 << 1), // protection 
+			W2_CellOverVoltageWarning = (1 << 0), // warning 
+		};
+```
+
+The entry:
+- `warning3_status_value`
+
+Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning3
+		{
+			W3_DischargingLowTemperatureProtection = (1 << 7), // protection 
+			W3_DischargingLowTemperatureWarning = (1 << 6), // warning
+			W3_DischargingHighTemperatureProtection = (1 << 5), // protection 
+			W3_DischargingHighTemperatureWarning = (1 << 4), // warning
+			W3_ChargingLowTemperatureProtection = (1 << 3), // protection 
+			W3_ChargingLowTemperatureWarning = (1 << 2), // warning
+			W3_ChargingHighTemperatureProtection = (1 << 1), // protection 
+			W3_ChargingHighTemperatureWarning = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `warning4_status_value`
+
+Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning4
+		{
+			W4_ReservedWarning4Bit8 = (1 << 7), // warning
+			W4_Heating = (1 << 6), // system
+			W4_ComponentHighTemperatureProtection = (1 << 5), // protection
+			W4_ComponentHighTemperatureWarning = (1 << 4), // warning
+			W4_AmbientLowTemperatureProtection  = (1 << 3), // protection
+			W4_AmbientLowTemperatureWarning = (1 << 2), // warning
+			W4_AmbientHighTemperatureProtection = (1 << 1), // protection
+			W4_AmbientHighTemperatureWarning = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `warning5_status_value`
+
+Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning5
+		{
+			W5_OutputShortCircuitLock = (1 << 7), // fault 
+			W5_TransientOverCurrentLock = (1 << 6), // fault
+			W5_OutputShortCircuitProtection = (1 << 5), // protection 
+			W5_TansientOverCurrentProtection = (1 << 4), // protection 
+			W5_DischargeOverCurrentProtection = (1 << 3), // protection 
+			W5_DischargeOverCurrentWarning = (1 << 2), // warning
+			W5_ChargeOverCurrentProtection = (1 << 1), // protection 
+			W5_ChargeOverCurrentWarning = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `warning6_status_value`
+
+Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning6
+		{
+			W6_InternalWarning6Bit8 = (1 << 7), // warning
+			W6_OutputConnectionFailure = (1 << 6), // fault
+			W6_OutputReverseConnectionProtection = (1 << 5), // protection
+			W6_CellLowVoltageChargingForbidden = (1 << 4), // fault
+			W6_RemaingCapacityProtection = (1 << 3), // protection
+			W6_RemaingCapacityWarning = (1 << 2), // warning
+			W6_IntermittentPowerSupplementWaiting = (1 << 1), // warning
+			W6_ChargingHighVoltageProtection = (1 << 0), // protection
+		};
+```
+
+The entry:
+- `warning7_status_value`
+
+Contains bitflags.  These flags indicate warning status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning7
+		{
+			W7_Warning7InternalBit8 = (1 << 7),
+			W7_Warning7InternalBit7 = (1 << 6),
+			W7_ManualChargingWait = (1 << 5),
+			W7_AutoChargingWait = (1 << 4),
+			W7_Warning7InternalBit4 = (1 << 3),
+			W7_Warning7InternalBit3 = (1 << 2),
+			W7_Warning7InternalBit2 = (1 << 1),
+			W7_Warning7InternalBit1 = (1 << 0),
+		};
+```
+
+The entry:
+- `warning8_status_value`
+
+Contains bitflags.  These flags indicate fault status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Warning8
+		{
+			W8_Warning8InternalBit8 = (1 << 7),
+			W8_Warning8InternalBit7 = (1 << 6),
+			W8_Warning8InternalBit6 = (1 << 5),
+			W8_NoNullPointCalibration = (1 << 4),
+			W8_NoCurrentCalibration = (1 << 3),
+			W8_NoVoltageCalibration = (1 << 2),
+			W8_RTCFailure = (1 << 1),
+			W8_EEPStorageFailure = (1 << 0),
+		};
+```
 
 Paceic Version 20 RAW Status Values, EG4 variant
 -
@@ -1343,7 +1652,7 @@ The entries:
 
 All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
 
-**Important:** * The EG4 does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
+**Important:** * The EG4 variant does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
 
 ```C++
 	enum StatusInformation_WarningValues
