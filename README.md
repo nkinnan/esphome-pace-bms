@@ -284,7 +284,7 @@ I won't go over 1 since that will be specific to your setup, except to say that 
 
 A note on logging
 -
-While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.  You might want to remove many/most of the sensors when running at the VERY_VERBOSE level however, as a sensors publishing new values generates a **lot** of log output, and it's mainly the component lots that are important, not the sensor logs.
+While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.  You might want to remove many/most of the sensors when running at the VERY_VERBOSE level however, as a sensors publishing new values generates a **lot** of log output, and it's mainly the component logs that are important, not the sensor logs.
 
 ```yaml
 logger:
@@ -372,7 +372,7 @@ pace_bms:
 * **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
-   - Consider these as a set.  Use values from the known supported list, or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
+   - Consider these as a set.  Use values from the [known supported list](fixme), or determine them manually by following the steps in [I want to talk to a battery that isn't listed](fixme)
 
 Exposing the sensors (this is the good part!)
 -
@@ -897,6 +897,7 @@ sensor:
       name: "Warning Status Value Total Voltage"
     warning_status_value_discharge_current:
       name: "Warning Status Value Discharge Current"
+      
     warning_status_value_1:
       name: "Warning Status Value 1"
     warning_status_value_2:
@@ -1071,6 +1072,248 @@ Paceic Version 20 RAW Status Values, SEPLOS variant
 
 Paceic Version 20 RAW Status Values, EG4 variant
 -
+
+First, the full set of YAML config entries:
+```yaml
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+    
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+    
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    
+    balance_event_value:
+      name: "Balance Event Value"
+    voltage_event_value:
+      name: "Voltage Event Value"
+    temperature_event_value:
+      name: "Temperature Event Value"
+    current_event_value:
+      name: "Current Event Value"
+    remaining_capacity_value:
+      name: "Remaining Capacity Value"
+    fet_status_value:
+      name: "FET Status Value"
+
+    system_status_value:
+     name: "System Status Value"
+
+```
+
+The entries:
+- `warning_status_value_cell_01` through `warning_status_value_cell_16`
+- `warning_status_value_temperature_01` through `warning_status_value_temperature_06`
+- `warning_status_value_charge_current` *
+- `warning_status_value_discharge_current` *
+- `warning_status_value_total_voltage`
+
+All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+
+**Important:** * The EG4 does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
+
+```C++
+	enum StatusInformation_WarningValues
+	{
+		WV_Normal = 0,
+		WV_BelowLowerLimitValue = 1,
+		WV_AboveUpperLimitValue = 2,
+		WV_OtherFaultValue = 0xF0,
+	};
+```
+
+The entry:
+- `balance_event_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_BalanceEvent
+		{
+			BE_BalanceEventReservedBit8 = (1 << 7), // warning
+			BE_DischargeMosFaultAlarm = (1 << 6), // fault
+			BE_ChargeMosFaultAlarm = (1 << 5), // fault
+			BE_CellVoltageDifferenceAlarm = (1 << 4), // warning
+			BE_BalanceEventReservedBit4 = (1 << 3), // warning
+			BE_BalanceEventReservedBit3 = (1 << 2), // warning
+			BE_BalanceEventReservedBit2 = (1 << 1), // warning
+			BE_BalanceEventBalancingActive = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `voltage_event_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_VoltageEvent
+		{
+			VE_PackUnderVoltageProtect = (1 << 7), // protection
+			VE_PackUnderVoltageAlarm = (1 << 6), // warning
+			VE_PackOverVoltageProtect = (1 << 5), // protection
+			VE_PackOverVoltageAlarm = (1 << 4), // warning
+			VE_CellUnderVoltageProtect = (1 << 3), // protection
+			VE_CellUnderVoltageAlarm = (1 << 2), // warning
+			VE_CellOverVoltageProtect = (1 << 1), // protection
+			VE_CellOverVoltageAlarm = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `temperature_event_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_TemperatureEvent
+		{
+			TE_TemperatureEventReservedBit16 = (1 << 15), // warning
+			TE_TemperatureEventReservedBit15 = (1 << 14), // warning
+			TE_FireAlarm = (1 << 13), // fault
+			TE_MosfetHighTemperatureProtect = (1 << 12), // protection
+			TE_EnvironmentLowTemperatureProtect = (1 << 11), // protection
+			TE_EnvironmentLowTemperatureAlarm = (1 << 10), // warning
+			TE_EnvironmentHighTemperatureProtect = (1 << 9), // protection
+			TE_EnvironmentHighTemperatureAlarm = (1 << 8), // warning
+			TE_DischargeLowTemperatureProtect = (1 << 7), // protection
+			TE_DischargeLowTemperatureAlarm = (1 << 6), // warning
+			TE_DischargeHighTemperatureProtect = (1 << 5), // protection
+			TE_DischargeHighTemperatureAlarm = (1 << 4), // warning
+			TE_ChargeLowTemperatureProtect = (1 << 3), // protection
+			TE_ChargeLowTemperatureAlarm = (1 << 2), // warning
+			TE_ChargeHighTemperatureProtect = (1 << 1), // protection
+			TE_ChargeHighTemperatureAlarm = (1 << 0), // warning
+		};
+```
+
+The entry:
+- ` current_event_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_CurrentEvent
+		{
+			CE_OutputShortCircuitLockout = (1 << 7), // fault
+			CE_DischargeLevel2OverCurrentLockout = (1 << 6), // fault
+			CE_OutputShortCircuitProtect = (1 << 5), // protection
+			CE_DischargeLevel2OverCurrentProtect = (1 << 4), // protection
+			CE_DischargeOverCurrentProtect = (1 << 3), // protection
+			CE_DischargeOverCurrentAlarm = (1 << 2), // warning
+			CE_ChargeOverCurrentProtect = (1 << 1), // protection
+			CE_ChargeOverCurrentAlarm = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `remaining_capacity_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_RemainingCapacity
+		{
+			RC_RemainingCapacityReservedBit8 = (1 << 7), // warning
+			RC_RemainingCapacityReservedBit7 = (1 << 6), // warning
+			RC_RemainingCapacityReservedBit6 = (1 << 5), // warning
+			RC_RemainingCapacityReservedBit5 = (1 << 4), // warning
+			RC_RemainingCapacityReservedBit4 = (1 << 3), // warning
+			RC_RemainingCapacityReservedBit3 = (1 << 2), // warning
+			RC_RemainingCapacityReservedBit2 = (1 << 1), // warning
+			RC_StateOfChargeLow = (1 << 0), // warning
+		};
+```
+
+The entry:
+- `fet_status_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_FetStatus
+		{
+			FS_FetStatusReservedBit8 = (1 << 7), // configuration
+			FS_FetStatusReservedBit7 = (1 << 6), // configuration
+			FS_FetStatusReservedBit6 = (1 << 5), // configuration
+			FS_FetStatusReservedBit5 = (1 << 4), // configuration
+			FS_HeaterOn = (1 << 3), // configuration
+			FS_ChargeCurrentLimiterOn = (1 << 2), // configuration
+			FS_ChargeMosfetOn = (1 << 1), // configuration
+			FS_DischargeMosfetOn = (1 << 0), // configuration
+		};
+```
+
+The entry:
+- `system_status_value`
+
+Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_SystemStatus
+		{
+			SS_SystemStatusReservedBit8 = (1 << 7), // system
+			SS_SystemStatusReservedBit7 = (1 << 6), // system
+			SS_SystemStatusReservedBit6 = (1 << 5), // system
+			SS_SystemStatusReservedBit5 = (1 << 4), // system
+			SS_Standby = (1 << 3), // system
+			SS_SystemStatusReservedBit3 = (1 << 2), // system
+			SS_Charging = (1 << 1), // system
+			SS_Discharging = (1 << 0), // system
+		};
+```
+
 
 # Miscellaneous Notes
  
