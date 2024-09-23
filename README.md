@@ -749,6 +749,8 @@ We need at least one and as many as four configuration values to speak with the 
     * PYLON
     * SEPLOS
     * EG4
+
+    Protocol 25 has no known variants.
 4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who intentionally break compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
 Step 3: the commandset
