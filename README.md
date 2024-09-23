@@ -12,13 +12,30 @@ Example PACE BMS board:
 ![Example PACE BMS board (back)](images/example-board-back.png)
 
 I strongly encourage you to read through this entire document, but here are some Quick Links:
-- [What Battery Packs are supported?](fixme)
-- [I just want an ESPHome config](fixme)
-- [How do I wire my ESP to the RS485/RS232 port?](fixme)
-- [I'm having a problem using this component](fixme)
-- [I want to talk to a battery that isn't listed](fixme)
+- [What Is Paceic Protocol Version 20](#What%20Is%20Paceic%20Protocol%20Version%2020)
+- [What Is Paceic Protocol Version 25](#What%20Is%20Paceic%20Protocol%20Version%2025)
+- [What Is Pace MODBUS Protocol](#What%20Is%20Pace%20MODBUS%20Protocol)
+- [Supported BMS Sensors (read only)](#Supported%20BMS%20Sensors%20(read%20only))
+- [Supported BMS Configuration (read / write)](#Supported%20BMS%20Configuration%20(read%20/%20write))
+- [Supported BMS Configuration (read / write) - **Version 25 ONLY**](#Supported%20BMS%20Configuration%20(read%20/%20write)%20-%20Version%2025%20ONLY)
+- [What Battery Packs are Supported?](#What%20Battery%20Packs%20are%20Supported?)
+- [What ESPs are Supported?](#What%20ESPs%20are%20Supported?)
+- [How do I wire my ESP to the RS485 port?](#How%20do%20I%20wire%20my%20ESP%20to%20the%20RS485%20port?)
+- [How do I wire my ESP to the RS232 port?](#How%20do%20I%20wire%20my%20ESP%20to%20the%20RS232%20port?)
+- [ESPHome configuration YAML](#ESPHome%20configuration%20YAML)
+- [How to configure a battery pack that's not in the supported list (yet)](#How%20to%20configure%20a%20battery%20pack%20that's%20not%20in%20the%20supported%20list%20(yet))
+- [I'm having a problem using this component](#I'm%20having%20a%20problem%20using%20this%20component)
+- [Each Configuration Entry in Excruciating Detail](#Each%20Configuration%20Entry%20in%20Excruciating%20Detail)
+- [Decoding the Status Values (but you probably don't want to)](#Decoding%20the%20Status%20Values%20(but%20you%20probably%20don't%20want%20to))
+  - [Paceic Version 25 RAW Status Values](#Paceic%20Version%2025%20RAW%20Status%20Values)
+  - [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20PYLON%20variant)
+  - [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20SEPLOS%20variant)
+  - [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20EG4%20variant)
+- [Miscellaneous Notes](#Miscellaneous%20Notes)
+- [Helping Out](#Helping%20Out)
 
-# Paceic Protocol Version 20
+
+# What Is Paceic Protocol Version 20
 
 This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
  - **EG4**
@@ -34,7 +51,7 @@ These older BMSes will usually have two RS485 ports (looks like an ethernet sock
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
-# Paceic Protocol Version 25
+# What Is Paceic Protocol Version 25
 
 This version seems more standardized, with an official protocol specification from PACE itself and a relatively consistent software management interface.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
@@ -51,11 +68,11 @@ These BMSes will typically have two RS485 ports (looks like an ethernet socket) 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
-# Pace MODBUS Protocol
+# What Is Pace MODBUS Protocol
 
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome already has native support for MODBUS, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
 
-# Supported BMS Values/Status (read only)
+# Supported BMS Sensors (read only)
 
 - All "Analog Information"
 	- **Cell Count**
@@ -272,7 +289,7 @@ If cutting up a telephone extension cord, make sure it's "**dual line**" / has f
 
 Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
 
-# Example ESPHome configuration YAML
+# ESPHome configuration YAML
 
 A full ESPHome configuration will consist of thee parts:
 
@@ -680,7 +697,7 @@ Why are these "hidden" below that "long, rambly" explanation of the settings?  S
 * ESP32-WROOM_V25.yaml
 * etc (todo)
 
-# I want to talk to a battery that isn't listed
+# How to configure a battery pack that's not in the supported list (yet)
 
 Before proceeding through this section, please read the entire rest of this document first!  It assumes some familiarity and does not repeat steps like configuring the UART, but simply provides a guide on how to determine the specific protocol your BMS is speaking.
 
@@ -828,11 +845,18 @@ If you still have an issue, or are seeing some "strange data" or log output, you
 
 # Decoding the Status Values (but you probably don't want to)
 
-No seriously, just use the text values I painstakingly decoded for you :)
+No seriously, just use the text values I painstakingly decoded for you :)  This is under a separate heading for a reason.
 
-Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so I did expose them.  Lets go over them one by one.
+Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so I did painstakingly expose and document them all.  Lets go over them one by one.
 
-This is going to be rather tedious, so I'll "cheat" a bit by sharing some raw enums.
+This is going to be tedious, so I'll "cheat" a bit by sharing some raw enums from the code.
+
+sub-sections:
+- [Paceic Version 25 RAW Status Values](#Paceic%20Version%2025%20RAW%20Status%20Values)
+- [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20PYLON%20variant)
+- [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20SEPLOS%20variant)
+- [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic%20Version%2020%20RAW%20Status%20Values:%20EG4%20variant)
+
 
 Paceic Version 25 RAW Status Values
 -
@@ -1064,7 +1088,7 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 ```
 
 
-Paceic Version 20 RAW Status Values, PYLON variant
+Paceic Version 20 RAW Status Values: PYLON variant
 -
 
 First, the full set of YAML config entries:
@@ -1247,7 +1271,7 @@ Contains bitflags.  These flags indicate a cell fault.  Possible values:
 		};
 ```
 
-Paceic Version 20 RAW Status Values, SEPLOS variant
+Paceic Version 20 RAW Status Values: SEPLOS variant
 -
 
 First, the full set of YAML config entries:
@@ -1561,7 +1585,7 @@ Contains bitflags.  These flags indicate fault status of the BMS.  Possible valu
 		};
 ```
 
-Paceic Version 20 RAW Status Values, EG4 variant
+Paceic Version 20 RAW Status Values: EG4 variant
 -
 
 First, the full set of YAML config entries:
