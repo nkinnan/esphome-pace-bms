@@ -26,7 +26,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 - [I'm having a problem using this component](#Im-having-a-problem-using-this-component)
 - [Each Configuration Entry in Excruciating Detail](#Each-Configuration-Entry-in-Excruciating-Detail)
-- [Decoding the Status Values (but you probably don't want to)](#Decoding-the-Status-Values-but-you-probably-don't-want-to)
+- [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to)
   - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
   - [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic-Version-20-RAW-Status-Values:-PYLON-variant)
   - [Paceic Version 20 RAW Status Values: SEPLOS variant](#Paceic-Version-20-RAW-Status-Values:-SEPLOS-variant)
