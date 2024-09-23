@@ -1067,8 +1067,190 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 Paceic Version 20 RAW Status Values, PYLON variant
 -
 
+First, the full set of YAML config entries:
+```yaml
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    warning_status_value_cell_01:
+      name: "Warning Status Value Cell 01"
+    warning_status_value_cell_02:
+      name: "Warning Status Value Cell 02"
+    warning_status_value_cell_03:
+      name: "Warning Status Value Cell 03"
+    warning_status_value_cell_04:
+      name: "Warning Status Value Cell 04"
+    warning_status_value_cell_05:
+      name: "Warning Status Value Cell 05"
+    warning_status_value_cell_06:
+      name: "Warning Status Value Cell 06"
+    warning_status_value_cell_07:
+      name: "Warning Status Value Cell 07"
+    warning_status_value_cell_08:
+      name: "Warning Status Value Cell 08"
+    warning_status_value_cell_09:
+      name: "Warning Status Value Cell 09"
+    warning_status_value_cell_10:
+      name: "Warning Status Value Cell 10"
+    warning_status_value_cell_11:
+      name: "Warning Status Value Cell 11"
+    warning_status_value_cell_12:
+      name: "Warning Status Value Cell 12"
+    warning_status_value_cell_13:
+      name: "Warning Status Value Cell 13"
+    warning_status_value_cell_14:
+      name: "Warning Status Value Cell 14"
+    warning_status_value_cell_15:
+      name: "Warning Status Value Cell 15"
+    warning_status_value_cell_16:
+      name: "Warning Status Value Cell 16"
+    
+    warning_status_value_temperature_01:
+      name: "Warning Status Value Temperature 01"
+    warning_status_value_temperature_02:
+      name: "Warning Status Value Temperature 02"
+    warning_status_value_temperature_03:
+      name: "Warning Status Value Temperature 03"
+    warning_status_value_temperature_04:
+      name: "Warning Status Value Temperature 04"
+    warning_status_value_temperature_05:
+      name: "Warning Status Value Temperature 05"
+    warning_status_value_temperature_06:
+      name: "Warning Status Value Temperature 06"
+    
+    warning_status_value_charge_current:
+      name: "Warning Status Value Charge Current"
+    warning_status_value_total_voltage:
+      name: "Warning Status Value Total Voltage"
+    warning_status_value_discharge_current:
+      name: "Warning Status Value Discharge Current"
+
+    status1_value:
+      name: "Status1 Value"
+    status2_value:
+      name: "Status2 Value"
+    status3_value:
+      name: "Status3 Value"
+    status4_value:
+      name: "Status4 Value"
+    status5_value:
+      name: "Status5 Value"
+```
+
+The entries:
+- `warning_status_value_cell_01` through `warning_status_value_cell_16`
+- `warning_status_value_temperature_01` through `warning_status_value_temperature_06`
+- `warning_status_value_charge_current`
+- `warning_status_value_total_voltage`
+- `warning_status_value_discharge_current`
+
+All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
+
+```C++
+	enum StatusInformation_WarningValues
+	{
+		WV_Normal = 0,
+		WV_BelowLowerLimitValue = 1,
+		WV_AboveUpperLimitValue = 2,
+		WV_OtherFaultValue = 0xF0,
+	};
+```
+
+The entry:
+- `status1_value`
+
+Contains bitflags.  It's unclear from the documentation whether these are "warning" or "protection" flags.  I chose to implement them as "protection" but if you have a PYLON BMS and can tell me otherwise I'm happy to better classify them.  Possible values:
+
+```C++
+		enum StatusInformation_Status1
+		{
+			S1_PackUnderVoltage = (1 << 7),
+			S1_ChargeTemperatureProtection = (1 << 6),
+			S1_DischargeTemperatureProtection = (1 << 5),
+			S1_DischargeOverCurrent = (1 << 4),
+			S1_UndefinedStatus1Bit4 = (1 << 3),
+			S1_ChargeOverCurrent = (1 << 2),
+			S1_CellUnderVoltage = (1 << 1),
+			S1_PackOverVoltage = (1 << 0),
+		};
+```
+
+The entry:
+- `status2_value`
+
+Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Status2
+		{
+			S2_UndefinedStatus2Bit8 = (1 << 7),
+			S2_UndefinedStatus2Bit7 = (1 << 6),
+			S2_UndefinedStatus2Bit6 = (1 << 5),
+			S2_UndefinedStatus2Bit5 = (1 << 4),
+			S2_UsingBatteryPower = (1 << 3),
+			S2_DischargeMosfetOn = (1 << 2),
+			S2_ChargeMosfetOn = (1 << 1),
+			S2_PrechargeMosfetOn = (1 << 0),
+		};
+```
+
+The entry:
+- `status3_value`
+
+Contains bitflags.  These flags indicate the current system state of the BMS.  Possible values:
+
+```C++
+		enum StatusInformation_Status3
+		{
+			S3_Charging = (1 << 7),
+			S3_Discharging = (1 << 6),
+			S3_HeaterOn = (1 << 5),
+			S3_UndefinedStatus3Bit5 = (1 << 4),
+			S3_FullyCharged = (1 << 3),
+			S3_UndefinedStatus3Bit3 = (1 << 2),
+			S3_UndefinedStatus3Bit2 = (1 << 1),
+			S3_Buzzer = (1 << 0),
+		};
+```
+
+The entries:
+- `status4_value`
+- `status5_value`
+
+Contains bitflags.  These flags indicate a cell fault.  Possible values:
+
+```C++
+		enum StatusInformation_Status4
+		{
+			S4_Cell08Fault = (1 << 7),
+			S4_Cell07Fault = (1 << 6),
+			S4_Cell06Fault = (1 << 5),
+			S4_Cell05Fault = (1 << 4),
+			S4_Cell04Fault = (1 << 3),
+			S4_Cell03Fault = (1 << 2),
+			S4_Cell02Fault = (1 << 1),
+			S4_Cell01Fault = (1 << 0),
+		};
+		enum StatusInformation_Status5
+		{
+			S5_Cell16Fault = (1 << 7),
+			S5_Cell15Fault = (1 << 6),
+			S5_Cell14Fault = (1 << 5),
+			S5_Cell13Fault = (1 << 4),
+			S5_Cell12Fault = (1 << 3),
+			S5_Cell11Fault = (1 << 2),
+			S5_Cell10Fault = (1 << 1),
+			S5_Cell09Fault = (1 << 0),
+		};
+```
+
 Paceic Version 20 RAW Status Values, SEPLOS variant
 -
+
+
 
 Paceic Version 20 RAW Status Values, EG4 variant
 -
