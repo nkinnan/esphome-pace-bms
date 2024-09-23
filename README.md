@@ -17,7 +17,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [What Is Pace MODBUS Protocol](#What-Is-Pace-MODBUS-Protocol)
 - [Supported BMS Sensors (read only)](#Supported-BMS-Sensors-read-only)
 - [Supported BMS Configuration (read / write)](#Supported-BMS-Configuration-read--write)
-- [Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Version-25-ONLY)
+- [Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Protocol Version-25-ONLY)
 - [What Battery Packs are Supported?](#What-Battery-Packs-are-Supported)
 - [What ESPs are Supported?](#What-ESPs-are-Supported)
 - [How do I wire my ESP to the RS485 port?](#How-do-I-wire-my-ESP-to-the-RS485-port)
