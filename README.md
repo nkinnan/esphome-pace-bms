@@ -1115,8 +1115,13 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 ```
 </details>
 
-Paceic Version 20 RAW Status Values: PYLON variant
--
+<details>
+<summary>
+
+## Paceic Version 20 RAW Status Values: PYLON variant
+
+</summary>
+
 
 First, the full set of YAML config entries:
 ```yaml
@@ -1297,9 +1302,14 @@ Contains bitflags.  These flags indicate a cell fault.  Possible values:
 			S5_Cell09Fault = (1 << 0),
 		};
 ```
+</details>
 
-Paceic Version 20 RAW Status Values: SEPLOS variant
--
+<details>
+<summary>
+
+## Paceic Version 20 RAW Status Values: SEPLOS variant
+
+</summary>
 
 First, the full set of YAML config entries:
 ```yaml
@@ -1611,9 +1621,14 @@ Contains bitflags.  These flags indicate fault status of the BMS.  Possible valu
 			W8_EEPStorageFailure = (1 << 0),
 		};
 ```
+</details>
 
-Paceic Version 20 RAW Status Values: EG4 variant
--
+<details>
+<summary>
+
+## Paceic Version 20 RAW Status Values: EG4 variant
+
+</summary>
 
 First, the full set of YAML config entries:
 ```yaml
@@ -1855,7 +1870,7 @@ Contains bitflags.  These flags contain mixed status information on current stat
 			SS_Discharging = (1 << 0), // system
 		};
 ```
-
+</details>
 
 # I'm having a problem using this component
 
