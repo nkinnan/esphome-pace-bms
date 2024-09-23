@@ -1115,6 +1115,7 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 ```
 </details>
 
+(click header to expand section)
 <details>
 <summary>
 
