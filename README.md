@@ -31,6 +31,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
     - [All read-only values](#All-read-only-values)
     - [Read-write values](#Read-write-values)
     - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
+  - [Example Config Files (in full)](#Example-Config-Files-in-full)
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 - [I'm having a problem using this component](#Im-having-a-problem-using-this-component)
 - [Each Configuration Entry in Excruciating Detail](#Each-Configuration-Entry-in-Excruciating-Detail)
@@ -316,6 +317,7 @@ sub-sections:
   - [All read-only values](#All-read-only-values)
   - [Read-write values](#Read-write-values)
   - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
+- [Example Config Files (in full)](#Example-Config-Files-in-full)
 
 ## A note on logging
 
@@ -708,8 +710,8 @@ number:
     environment_under_temperature_protection_release:
       name: "Environment Under Temperature Protection Release"
 ```
-Example Config Files (in full)
--
+## Example Config Files (in full)
+
 Why are these "hidden" below that "long, rambly" explanation of the settings?  So you'd hopefully read that first and understand what's in these files - it'll reduce support overhead :) 
 
 * ESP8266-01_V25.yaml
