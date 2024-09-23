@@ -787,6 +787,7 @@ If the requests you were seeing *didn't* start with either 20 or 25, but otherwi
 ```yaml
 pace_bms:
   protocol_commandset: 0x20
+  battery_chemistry: 0x4A # only if not 46
   protocol_version: 0x42 # the BMS is lying, so lie right back
 ```
 or
@@ -794,6 +795,7 @@ or
 ```yaml
 pace_bms:
   protocol_commandset: 0x25
+  battery_chemistry: 0x4A # only if not 46
   protocol_version: 0x42 # the BMS is lying, so lie right back
 ```
 
