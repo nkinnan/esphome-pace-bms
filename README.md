@@ -881,8 +881,12 @@ sub-sections:
   - [Paceic Version 20 RAW Status Values: EG4 variant](#Paceic-Version-20-RAW-Status-Values-EG4-variant)
 
 
-Paceic Version 25 RAW Status Values
--
+<details>
+<summary>
+
+## Paceic Version 25 RAW Status Values
+
+</summary>
 
 First, the full set of YAML config entries:
 ```yaml
@@ -1109,7 +1113,7 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 		FF_ChargeMosfetBit = (1 << 0),
 	};
 ```
-
+</details>
 
 Paceic Version 20 RAW Status Values: PYLON variant
 -
