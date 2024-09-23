@@ -33,7 +33,6 @@ I strongly encourage you to read through this entire document, but here's a tabl
     - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
   - [Example Config Files (in full)](#Example-Config-Files-in-full)
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
-- [Each Configuration Entry in Excruciating Detail](#Each-Configuration-Entry-in-Excruciating-Detail)
 - [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to)
   - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
   - [Paceic Version 20 RAW Status Values: PYLON variant](#Paceic-Version-20-RAW-Status-Values-PYLON-variant)
@@ -859,15 +858,11 @@ If you only got the yellow highlighted line, you're going to have to guess.  Try
 
 The problem areas are going to be the last of the analog values such as Cycle Count, State of Charge and State of Health, and all of the status values.  If those don't make sense, or the BMS doesn't respond, it's the wrong protocol variant.  
 
-Once you've figured out the proper protocol variant that returns sensible status values, just fill out your YAML with [the rest of the settings / readouts you want exposed](https://stackedit.io/app#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section. Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+Once you've figured out the proper protocol variant that returns sensible status values, just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section. Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 If it didn't work
 -
 If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You may have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can, including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or from the manufacturer's recommended BMS software if not), and VERY_VERBOSE level logs.  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
-
-
-# Each Configuration Entry in Excruciating Detail
-
 
 
 # Decoding the Status Values (but you probably don't want to)
