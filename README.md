@@ -1118,9 +1118,7 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 (click header to expand section)
 <details>
 <summary>
-
 ## Paceic Version 20 RAW Status Values: PYLON variant
-
 </summary>
 
 
