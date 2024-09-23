@@ -1114,10 +1114,10 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 	};
 ```
 </details>
-(click header to expand section)
+(click header to expand/collapse section)
 <details>
 <summary>
-	
+
 ## Paceic Version 20 RAW Status Values: PYLON variant
 
 </summary>
@@ -1303,7 +1303,7 @@ Contains bitflags.  These flags indicate a cell fault.  Possible values:
 		};
 ```
 </details>
-
+(click header to expand/collapse section)
 <details>
 <summary>
 
@@ -1622,7 +1622,7 @@ Contains bitflags.  These flags indicate fault status of the BMS.  Possible valu
 		};
 ```
 </details>
-
+(click header to expand/collapse section)
 <details>
 <summary>
 
@@ -1871,6 +1871,8 @@ Contains bitflags.  These flags contain mixed status information on current stat
 		};
 ```
 </details>
+(click header to expand/collapse section)
+
 
 # I'm having a problem using this component
 
