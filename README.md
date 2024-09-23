@@ -11,7 +11,7 @@ Example PACE BMS board:
 ![Example PACE BMS board (front)](images/example-board-front.png)
 ![Example PACE BMS board (back)](images/example-board-back.png)
 
-I strongly encourage you to read through this entire document, but here are some Quick Links:
+I strongly encourage you to read through this entire document, but here's a table of contents:
 - [What Is Paceic Protocol Version 20](#What%20Is%20Paceic%20Protocol%20Version%2020)
 - [What Is Paceic Protocol Version 25](#What%20Is%20Paceic%20Protocol%20Version%2025)
 - [What Is Pace MODBUS Protocol](#What%20Is%20Pace%20MODBUS%20Protocol)
@@ -35,7 +35,7 @@ I strongly encourage you to read through this entire document, but here are some
 - [Helping Out](#Helping%20Out)
 
 
-# What Is Paceic Protocol Version 20
+# <a name="What%20Is%20Paceic%20Protocol%20Version%2020">What Is Paceic Protocol Version 20
 
 This protocol version is spoken by older battery packs and has several variants, with firmware customized by individual manufacturers.  Three protocol variants are currently known/supported:
  - **EG4**
@@ -51,7 +51,7 @@ These older BMSes will usually have two RS485 ports (looks like an ethernet sock
 Example protocol version 20 BMS front-panel:
 ![EG4 Protocol 20 Front Panel](images/EG4-0x20.webp)
 
-# What Is Paceic Protocol Version 25
+# <a name="What%20Is%20Paceic%20Protocol%20Version%2025">What Is Paceic Protocol Version 25
 
 This version seems more standardized, with an official protocol specification from PACE itself and a relatively consistent software management interface.  As far as I know, all newer battery packs speaking this protocol version should be supported.  See [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/paceic/0x25) for documentation on protocol version 25.
 
@@ -68,7 +68,7 @@ These BMSes will typically have two RS485 ports (looks like an ethernet socket) 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
 
-# What Is Pace MODBUS Protocol
+# <a name="What%20Is%20Pace%20MODBUS%20Protocol">What Is Pace MODBUS Protocol
 
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome already has native support for MODBUS, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
 
