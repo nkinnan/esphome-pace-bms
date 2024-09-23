@@ -23,7 +23,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [How do I wire my ESP to the RS485 port?](#How-do-I-wire-my-ESP-to-the-RS485-port)
 - [How do I wire my ESP to the RS232 port?](#How-do-I-wire-my-ESP-to-the-RS232-port)
 - [ESPHome configuration YAML](#ESPHome-configuration-YAML)
-- [How to configure a battery pack that's not in the supported list (yet)](#How-to-configure-a-battery-pack-that's-not-in-the-supported-list-(yet))
+- [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 - [I'm having a problem using this component](#I'm-having-a-problem-using-this-component)
 - [Each Configuration Entry in Excruciating Detail](#Each-Configuration-Entry-in-Excruciating-Detail)
 - [Decoding the Status Values (but you probably don't want to)](#Decoding-the-Status-Values-but-you-probably-don't-want-to)
