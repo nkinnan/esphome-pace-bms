@@ -6,7 +6,7 @@
 
 #include "pace_bms_select_implementation.h"
 
-#include "../pace_bms_v25.h"
+#include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
 namespace pace_bms {
