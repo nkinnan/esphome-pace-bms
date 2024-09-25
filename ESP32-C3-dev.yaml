@@ -1,6 +1,6 @@
 substitutions:
-  name: "esp32-c3-supermini-jk48v100"
-  friendly_name: "ESP32-C3-Supermini JK48V100 Battery"
+  name: "esp-wroom-01"
+  friendly_name: "ESP32-wroom JK48V100 Battery"
 
 esphome:
   name: ${name}

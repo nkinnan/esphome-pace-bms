@@ -23,7 +23,6 @@ CONFIG_SCHEMA = cv.Schema(
 
         cv.Optional(CONF_SYSTEM_DATE_AND_TIME): datetime.datetime_schema(
             PaceBmsDatetimeImplementation,
-            requires_time = False,
         ).extend({ 
             cv.Optional(CONF_TYPE, default="DATETIME"): cv.one_of("DATETIME", upper=True),
         }),
@@ -38,7 +37,7 @@ async def to_code(config):
     cg.add(var.set_parent(parent))
 
     if system_date_and_time_config := config.get(CONF_SYSTEM_DATE_AND_TIME):
-        dt = await datetime.new_datetime(system_date_and_time_config, requires_time = False)
+        dt = await datetime.new_datetime(system_date_and_time_config)
         cg.add(var.set_system_date_and_time_datetime(dt))
 
 
