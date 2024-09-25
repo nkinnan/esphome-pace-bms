@@ -234,7 +234,7 @@ Known working protocol version 25 battery packs:
 
 - **Jakiper JK48V100**
   - hardware versions: 
-	  - **FIXME**
+	  - **P16S100A-1812-1.00**
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x25`
