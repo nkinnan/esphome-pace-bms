@@ -7,10 +7,6 @@ The protocol is characterized by both requests and responses beginning with a '*
 
 If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++17 support due to use of `std::optional`, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
 
-Example PACE BMS board:
-![Example PACE BMS board (front)](images/example-board-front.png)
-![Example PACE BMS board (back)](images/example-board-back.png)
-
 I strongly encourage you to read through this entire document, but here's a table of contents:
 - [What Is Paceic Protocol Version 20](#What-Is-Paceic-Protocol-Version-20)
 - [What Is Paceic Protocol Version 25](#What-Is-Paceic-Protocol-Version-25)
@@ -41,6 +37,10 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [I'm having a problem using this component](#Im-having-a-problem-using-this-component)
 - [Miscellaneous Notes](#Miscellaneous-Notes)
 - [Helping Out](#Helping-Out)
+
+Example PACE BMS board:
+![Example PACE BMS board (front)](images/example-board-front.png)
+![Example PACE BMS board (back)](images/example-board-back.png)
 
 
 # What Is Paceic Protocol Version 20
