@@ -1,7 +1,7 @@
 #pragma once
 
 #include "esphome/core/component.h"
-#include "esphome/components/pace_bms/pace_bms.h"
+#include "esphome/components/pace_bms/pace_bms_component.h"
 
 #include "pace_bms_number_implementation.h"
 
