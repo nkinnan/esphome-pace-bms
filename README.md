@@ -329,6 +329,13 @@ logger:
   #level: VERBOSE
   level: VERY_VERBOSE
 ```
+Additionally, if you want to get serial logs over USB on a C3, S2 and S3, you should add this to your logger config:
+
+```
+logger:
+  # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
+  hardware_uart: USB_CDC 
+```
 
 ## 8266-specific preamble
 
