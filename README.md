@@ -718,12 +718,26 @@ number:
 ```
 ## Example Config Files (in full)
 
-Why are these "hidden" below that "long, rambly" explanation of the settings?  So you'd hopefully read that first and understand what's in these files - it'll reduce support overhead :) 
+If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [ESPHome configuration YAML](#ESPHome-configuration-YAML))
 
-* ESP8266-01_V25.yaml
-* ESP32-C3_V25.yaml
-* ESP32-WROOM_V25.yaml
-* etc (todo)
+### Protocol 25
+
+- ESP8266
+	- todo
+- ESP32
+	- [esp32dev-0x25-full.yaml](esp32dev-0x25-full.yaml) - everything, including BMS configuration settings
+	- [esp32dev-0x25-sensors_only.yaml](esp32dev-0x25-sensors_only.yaml) - use this if you only want to read the sensor values
+- ESP32-C3
+	- todo
+
+### Protocol 20, EG4 variant
+
+- ESP8266
+	- todo
+- ESP32
+	- [esp32dev-0x20-EG4.yaml](esp32dev-0x20-EG4.yaml)
+- ESP32-C3
+	- todo
 
 # How to configure a battery pack that's not in the supported list (yet)
 
