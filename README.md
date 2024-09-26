@@ -331,7 +331,7 @@ logger:
 ```
 Additionally, if you want to get serial logs over USB on a C3, S2 and S3, you should add this to your logger config:
 
-```
+```yaml
 logger:
   # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
   hardware_uart: USB_CDC 
@@ -740,9 +740,6 @@ If you already have a config for your board, you should use that, and then copy/
 	- todo
 
 # How to configure a battery pack that's not in the supported list (yet)
-
-sub-sections:
-
 
 Before proceeding through this section, please read the entire rest of this document first!  It assumes some familiarity and does not repeat steps like configuring the UART, but simply provides a guide on how to determine the specific protocol your BMS is speaking.
 
