@@ -5,7 +5,7 @@
 namespace esphome {
 namespace pace_bms {
 
-static const char* const TAG = "pace_bms.switch_impl";
+static const char* const TAG = "pace_bms.number_impl";
 
 void PaceBmsNumberImplementation::control(float number) {
 	ESP_LOGD(TAG, "control: new value %f", number);

@@ -18,7 +18,7 @@ void PaceBmsSensor::setup() {
 			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
 		}
 	}
-	if (this->parent_->get_protocol_commandset() == 0x20) {
+	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (request_analog_info_callback_ == true) {
 			this->parent_->register_analog_information_callback_v20([this](PaceBmsProtocolV20::AnalogInformation& analog_information) { this->analog_information_callback_v20(analog_information); });
 		}

@@ -1,6 +1,7 @@
+
 substitutions:
-  name: "esp32-c3-supermini-jk48v100"
-  friendly_name: "ESP32-C3-Supermini JK48V100 Battery"
+  name: "esp32dev-0x25-full"
+  friendly_name: "esp32dev-0x25-full"
 
 esphome:
   name: ${name}
@@ -10,31 +11,25 @@ esphome:
   project:
     name: esphome.web
     version: dev
-  libraries:
-    # required to be added prior to ESPAsyncWebServer-esphome
-    - WiFi
-    - FS
-    - Update
-    # huge improvement to event throughput to the on-device web_server dashboard
-    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
-    #- ESPAsyncWebServer-esphome=symlink://C:\Users\nkinnan\Documents\git\ESPAsyncWebServer
 
 esp32:
-  board: esp32-c3-devkitm-1
-  variant: esp32c3
+  board: esp32dev
   framework:
     type: arduino
 
 # Enable logging
 logger:
-  hardware_uart: USB_CDC 
-  #level: INFO
-  level: DEBUG
+  # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
+  #hardware_uart: USB_CDC 
+
+  # use INFO for production, VERY_VERBOSE for debugging or filing an issue report
+  level: INFO
+  #level: DEBUG
   #level: VERBOSE
   #level: VERY_VERBOSE
 
-##### Enable Home Assistant API
-####api:
+# Enable Home Assistant API
+api:
 
 # Allow Over-The-Air updates
 ota:
@@ -43,95 +38,55 @@ ota:
 wifi:
   # Set up a wifi access point
   ap: {}
-  # # don't scan first, would be a problem if you have multiple APs (BSSIDs) but I only have one
-  # fast_connect: true
 
-# To have a "next url" for improv serial
+# In combination with the `ap` this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+# allows access to all BMS sensors and configuration
 web_server:
-  # uses an extra 76KB (V3) or 12KB (V2) worth of flash, but avoids referencing external web resources for 
-  #     situations where you won't have internet while accessing the on-device dashboard
-  #local: true
   version: 3
 
+# import the pace_bms component
 external_components:
   - source:
-      #type: git
-      #url: https://github.com/nkinnan/esphome-pace-bms
-      #ref: "main"
-      type: local
-      path: C:\Users\nkinnan\Documents\git\esphome-pace-bms\components
+      type: git
+      url: https://github.com/nkinnan/esphome-pace-bms
+      ref: "main"
     components: [ pace_bms ]
     refresh: 1s
-    
+
+  # this can be removed once the PR goes through: https://github.com/esphome/esphome/pull/7425
   - source:
       type: git
       url: https://github.com/nkinnan/esphome
       ref: "make_time_dependency_optional"
-      #type: local
-      #path: C:\Users\nkinnan\Documents\git\esphome\esphome\components
     components: [ datetime ]
     refresh: 1s
-    
-
-##### board: https://europe1.discourse-cdn.com/arduino/optimized/4X/9/2/f/92f1e8e2fcc888726ff7838dad725dd94f43438d_2_690x301.jpeg
-
-
-debug:
-  update_interval: 1s
-
 
 uart:
-  id: uart_0
-  baud_rate: 9600 # may also be 19200
-  tx_pin: GPIO2
-  rx_pin: GPIO1
-  rx_buffer_size: 256 # this is the default, just being explicit since it's actually exactly what we need
+  id: uart_1
+  baud_rate: 9600 
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  rx_buffer_size: 256
 
-# RichPower BMS073: protocol version 0x80, cid1 0xD5
-# Chisage ESS CE48100-R: protocol version 0x22, cid1 46
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
-  uart_id: uart_0
-  flow_control_pin: GPIO0 # this will be brought high when writing to the bus - needed for RS485 communications, it should be omitted with RS232
+  uart_id: uart_1
+  # needed for RS485
+  #flow_control_pin: GPIO5 
   update_interval: 5s
-  request_throttle: 200ms # 0x20 class BMSes will timeout if queried too quickly, this also helps to limit the rate at which things are sent to Home Assistant since updates can be dropped if sent too quickly
-  response_timeout: 2000ms # responses are typically immediate, but I do occasionally see a larger delay after writing a value, and 0x20 class BMSes are a lot slower
+  request_throttle: 200ms 
+  response_timeout: 2000ms 
 
-  protocol_commandset: 0x20
-  protocol_variant: "EG4"
-  #protocol_version: 0x20 # if your battery wants to be "special"
-  battery_chemistry: 0x4A # needed for my EG4 LIFEPOWER4 battery, which seems to be using an unconventional CID1, it should be 0x46 for LiFePo4
-
+  protocol_commandset: 0x25   # example only
+  # protocol_variant: "EG4"   # example only
+  # protocol_version: 0x20    # example only
+  # battery_chemistry: 0x4A   # example only
 
 sensor:
-  - platform: debug
-    free:
-      name: "Heap Free"
-      unit_of_measurement: kB
-      accuracy_decimals: 3
-      filters:
-        - multiply: 0.001
-#    block:
-#      name: "Heap Max Block"
-#      unit_of_measurement: kB
-#      accuracy_decimals: 3
-#      filters:
-#        - multiply: 0.001
-#    fragmentation:
-#      name: "Heap Fragmentation"
-    loop_time:
-      name: "Loop Time"
-# ESP-32 only
-#    psram:
-#      name: "Free PSRAM"
-
-  - platform: uptime
-    update_interval: 1s
-    type: seconds
-    name: "Uptime"
-
-
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
@@ -200,7 +155,7 @@ sensor:
       name: "Remaining Capacity"
     full_capacity:
       name: "Full Capacity"
-    design_capacity:
+    design_capacity: # not available on EG4 protocol 0x20 variant
       name: "Design Capacity"
 
     state_of_charge:
@@ -219,8 +174,8 @@ sensor:
     max_cell_differential:
       name: "Max Cell Differential"
 
-    # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
-    # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    # # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
     # warning_status_value_cell_01:
     #   name: "Warning Status Value Cell 01"
     # warning_status_value_cell_02:
@@ -273,81 +228,24 @@ sensor:
     #   name: "Warning Status Value Total Voltage"
     # warning_status_value_discharge_current:
     #   name: "Warning Status Value Discharge Current"
-
-    ######## NOT IN 0x20
-    #warning_status_value_1:
-    #  name: "Warning Status Value 1"
-    #warning_status_value_2:
-    #  name: "Warning Status Value 2"
-    #
-    ######### 0x20 SEPLOS and EG4 also use these two
-    balancing_status_value:
-     name: "Balancing Status Value"
-    system_status_value:
-     name: "System Status Value"
-    ######## NOT IN 0x20
-    #configuration_status_value:
-    #  name: "Configuration Status Value"
-    #protection_status_value_1:
-    #  name: "Protection Status Value 1"
-    #protection_status_value_2:
-    #  name: "Protection Status Value 2"
-    #fault_status_value:
-    #  name: "Fault Status Value"
-
-    ######## NEW in 0x20 PYLON variant
-    # status1_value:
-    #   name: "Status1 Value"
-    # status2_value:
-    #   name: "Status2 Value"
-    # status3_value:
-    #   name: "Status3 Value"
-    # status4_value:
-    #   name: "Status4 Value"
-    # status5_value:
-    #   name: "Status5 Value"
-
-    ######## NEW in 0x20 SEPLOS variant
-    # warning1_status_value:
-    #   name: "Warning1 Status Value"
-    # warning2_status_value:
-    #   name: "Warning2 Status Value"
-    # warning3_status_value:
-    #   name: "Warning3 Status Value"
-    # warning4_status_value:
-    #   name: "Warning4 Status Value"
-    # warning5_status_value:
-    #   name: "Warning5 Status Value"
-    # warning6_status_value:
-    #   name: "Warning6 Status Value"
-    # power_status_value:
-    #   name: "Power Status Value"
-    # # re-using previously exposed sensor
-    # #balancing_status_value: # one bit per cell, lowest bit = cell 1
-    # #  name: "Balancing Status Value"
-    # # re-using previously exposed sensor
-    # #system_status_value:
-    # #  name: "System Status Value"
-    # disconnection_status_value: # one bit per cell, lowest bit = cell 1
-    #   name: "Disconnection Status Value"
-    # warning7_status_value:
-    #   name: "Warning7 Status Value"
-    # warning8_status_value:
-    #   name: "Warning8 Status Value"
-
-    ######## NEW in 0x20 EG4 variant
-    balance_event_value:
-      name: "Balance Event Value"
-    voltage_event_value:
-      name: "Voltage Event Value"
-    temperature_event_value:
-      name: "Temperature Event Value"
-    current_event_value:
-      name: "Current Event Value"
-    remaining_capacity_value:
-      name: "Remaining Capacity Value"
-    fet_status_value:
-      name: "FET Status Value"
+      
+    # warning_status_value_1:
+    #   name: "Warning Status Value 1"
+    # warning_status_value_2:
+    #   name: "Warning Status Value 2"
+    
+    # balancing_status_value:
+    #   name: "Balancing Status Value"
+    # system_status_value:
+    #   name: "System Status Value"
+    # configuration_status_value:
+    #   name: "Configuration Status Value"
+    # protection_status_value_1:
+    #   name: "Protection Status Value 1"
+    # protection_status_value_2:
+    #   name: "Protection Status Value 2"
+    # fault_status_value:
+    #   name: "Fault Status Value"
 
 text_sensor:
   - platform: pace_bms
@@ -355,9 +253,8 @@ text_sensor:
 
     hardware_version:
       name: "Hardware Version"
-    # not supported by EG4
-    # serial_number:
-    #   name: "Serial Number"
+    serial_number: # not available on EG4 protocol 0x20 variant
+      name: "Serial Number"
 
     # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
     warning_status:
@@ -373,7 +270,6 @@ text_sensor:
     balancing_status:
       name: "Balancing Status"
 
-
 datetime:
  - platform: pace_bms
    pace_bms_id: pace_bms_at_address_1
@@ -387,38 +283,37 @@ button:
 
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
-
+  
 switch:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
- 
-    buzzer_alarm:
-      name: "Buzzer Alarm"
-    led_alarm:
-      name: "Led Alarm"
-    charge_current_limiter:
-      name: "Charge Current Limiter"
-    charge_mosfet:
-      name: "Charge Mosfet"
-    discharge_mosfet:
-      name: "Discharge Mosfet"
- 
- 
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   buzzer_alarm:
+     name: "Buzzer Alarm"
+   led_alarm:
+     name: "Led Alarm"
+   charge_current_limiter:
+     name: "Charge Current Limiter"
+   charge_mosfet:
+     name: "Charge Mosfet"
+   discharge_mosfet:
+     name: "Discharge Mosfet"
+
 select:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
- 
+
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
- 
-    #protocol_can:
-    #  name: "Protocol (CAN)"
-    #protocol_rs485:
-    #  name: "Protocol (RS485)"
-    #protocol_type:
-    #  name: "Protocol (Type)"
- 
- 
+
+    # setting the protocol is possible on some version 25 BMSes but not all
+    protocol_can:
+      name: "Protocol (CAN)"
+    protocol_rs485:
+      name: "Protocol (RS485)"
+    protocol_type:
+      name: "Protocol (Type)"
+
 number:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
@@ -489,14 +384,14 @@ number:
     sleep_cell_voltage:
       name: "Sleep Cell Voltage"
     sleep_delay:
-      name: "Sleep Delay"
+      name: "Sleep Delay (Minutes)"
  
     full_charge_voltage:
       name: "Full Charge Voltage"
     full_charge_amps:
       name: "Full Charge Amps"
     low_charge_alarm_percent:
-      name: "Low Charge Alarm"
+      name: "Low Charge Alarm Percent"
  
     charge_over_temperature_alarm:
       name: "Charge Over Temperature Alarm"
@@ -546,5 +441,3 @@ number:
       name: "Environment Under Temperature Protection"
     environment_under_temperature_protection_release:
       name: "Environment Under Temperature Protection Release"
- 
- 

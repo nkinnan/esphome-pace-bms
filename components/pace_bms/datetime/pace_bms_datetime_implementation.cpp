@@ -6,7 +6,7 @@
 namespace esphome {
 namespace pace_bms {
 
-static const char* const TAG = "pace_bms.switch_impl";
+static const char* const TAG = "pace_bms.datetime_impl";
 
 void PaceBmsDatetimeImplementation::add_on_control_callback(std::function<void(const datetime::DateTimeCall&)>&& callback) {
 	this->control_callbacks_.add(std::move(callback));
