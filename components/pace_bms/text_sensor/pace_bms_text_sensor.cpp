@@ -7,7 +7,7 @@
 namespace esphome {
 namespace pace_bms {
 
-static const char* const TAG = "pace_bms.sensor";
+static const char* const TAG = "pace_bms.textsensor";
 
 void PaceBmsTextSensor::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {

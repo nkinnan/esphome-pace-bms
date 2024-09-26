@@ -119,7 +119,6 @@
     </None>
     <None Include="..\..\ESP-01.yaml" />
     <None Include="..\..\ESP-01-dev.yaml" />
-    <None Include="..\..\ESP-WROOM-32.yaml" />
     <None Include="..\..\components\pace_bms\button\__init__.py">
       <Filter>components\pace_bms\button</Filter>
     </None>
@@ -131,6 +130,9 @@
       <Filter>components\pace_bms\datetime</Filter>
     </None>
     <None Include="..\..\ESP32-C3-0x25.yaml" />
+    <None Include="..\..\esp32dev-0x25-full.yaml" />
+    <None Include="..\..\esp32dev-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32dev-0x20-EG4.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
