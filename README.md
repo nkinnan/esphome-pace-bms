@@ -54,6 +54,8 @@ There is a high likelihood that one of these three version 20 protocol variants 
 
 Different manufacturers will have different BMS management software for version 20 battery packs.  It will not be PbmsTools, but one of a variety of manufacturer-specific affronts to good software design.  If your pack uses PbmsTools it's version 25.
 
+The password for "Qualtech 48100 Test", the BMS management software for EG4 LIFEPOWER4 is "888888".  But there are legitimately some settings you shouldn't mess with - basically most of the stuff under the Config tab, but I wouldn't mess with overriding the firmware upgrade settings either).
+
 These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
 Example protocol version 20 BMS front-panel:
@@ -217,13 +219,14 @@ Known working protocol version 20 battery packs:
 
 - **EG4 LIFEPOWER4**
   - hardware versions: 
-	  - **QT-YS00-16SV100A-V3.6** /  **QTHN 0d[3][6]**
+	  - **QT-YS00-16SV100A-V3.6** aka QT_PBMS_EPBMS_48100_16S aka QT-EPBMS-48100-16S100Z0 aka QT-PBMS-48100
 	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x20`
 	  - `protocol_variant: "EG4"`
 	  - `battery_chemistry: 0x4A`
   - notes:
+	  - Although the protocol documentation I have is labeled EG4, the BMS is manufactured by Qualtech.  Any battery pack using the same BMS would be supported.
 	  - The BMS is a bit slow, so don't reduce the timeouts too much. I have found the following settings prevent lockup from querying it too quickly:
 		  -   `request_throttle: 200ms`
 		  -   `response_timeout: 2000ms`
@@ -233,7 +236,7 @@ Known working protocol version 25 battery packs:
 -
 
 - **Jakiper JK48V100**
-  - hardware versions: 
+  - BMS hardware versions: 
 	  - **P16S100A-1812-1.00**
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required `pace_bms` config: 
@@ -745,6 +748,29 @@ Before proceeding through this section, please read the entire rest of this docu
 
 If your battery pack has a front panel that "looks like" a Pace BMS but is not in the "known supported" list, it probably is, and is probably supported.  Unless there are more version 20 variants out there than I've guessed, but even then you should be able to get some useful data back.  So you just need to figure out what settings will enable this component to speak with it.
 
+Step 0 (shortcut): Just try protocol version 25 with defaults
+-
+This is the version "spoken" by (I believe) the majority of packs sold today.   You can short circuit any extra steps by simply trying this:
+
+```yaml
+pace_bms:
+  <...etc...>
+  protocol_commandset: 0x20
+
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    hardware_version:
+      name: "Hardware Version"
+    serial_number:
+      name: "Serial Number"
+```
+
+If it worked, you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+
+If it didn't, no worries, just continue reading.
+
 Step 1: Is the BMS speaking paceic?
 -
 The first step is to make sure it's communicating at all.  If you can't connect the battery manufacturer's BMS software to it and get readings back, don't proceed any further until you can.  There's no point trying to debug a dead port or a broken BMS.  You can try both RS232 and RS485.  One or the other may not be "active".  The RS232 port if available is the most likely to be speaking paceic (different ports may be configured to speak different protocols).  
@@ -755,7 +781,7 @@ Once your manufacturer's recommended software is talking to your battery pack su
 or
 ```~20xx46xxxxxxxxxx\r```
 
-The x's will be hexidecimal values (in fact, all values are ASCII text hexidecimal).  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
+The values may be slightly different.  The x's will be hexidecimal numbers (in fact, all values are ASCII text hexidecimal).  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
 
 Step 2: Understanding what we need
 -
