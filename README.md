@@ -227,7 +227,7 @@ Known working protocol version 20 battery packs:
 	  - `protocol_variant: "EG4"`
 	  - `battery_chemistry: 0x4A`
   - notes:
-	  - Although the protocol documentation I have is labeled EG4, the BMS is manufactured by Qualtech.  Any battery pack using the same BMS would be supported.
+	  - Although the protocol documentation I have is labeled EG4, the BMS is manufactured by [Qualtech](http://qualtech.com.cn/en/).  Any battery pack using the same BMS would be supported.
 	  - The BMS is a bit slow, so don't reduce the timeouts too much. I have found the following settings prevent lockup from querying it too quickly:
 		  -   `request_throttle: 200ms`
 		  -   `response_timeout: 2000ms`
