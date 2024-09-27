@@ -220,6 +220,7 @@ Known working protocol version 20 battery packs:
 - **EG4 LIFEPOWER4**
   - hardware versions: 
 	  - **QT-YS00-16SV100A-V3.6** aka QT_PBMS_EPBMS_48100_16S aka QT-EPBMS-48100-16S100Z0 aka QT-PBMS-48100
+	  - Related hardware versions: 48100-22S100Z0, 48500-16S500Z0, 24200-8S100Z0, etc.
 	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x20`
