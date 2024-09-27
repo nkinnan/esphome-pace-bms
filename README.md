@@ -73,7 +73,7 @@ The exact look isn't important, just that the tabs and general layout looks like
 
 The default password to unlock all settings is "123456" incidentally.  But there are legitimately some settings you shouldn't mess with (I didn't implement those in this component - basically just the calibration stuff under the System Config tab).
 
-These BMSes will typically have two RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
+These BMSes will typically have two or three RS485 ports (looks like an ethernet socket) an RS232 port (looks like a telephone socket) and possibly a CAN bus port and an LCD display as well, especially if newer.
 
 Example protocol version 25 BMS front-panel:
 ![Jakiper Protocol 25 Front Panel](images/Jakiper-0x25.png)
@@ -239,6 +239,7 @@ Known working protocol version 25 battery packs:
 - **Jakiper JK48V100**
   - BMS hardware versions: 
 	  - **P16S100A-1812-1.00**
+	  - Related hardware versions: [P16S100A-0004-20A](http://www.pacebms.com/en/index.php/shows/33/12.html), [P16S200A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/66.html), [P16S150A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/67.html), [P16S120A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/68.html), [P16S50A-0001-10A](http://www.pacebms.com/en/index.php/shows/33/69.html), [P16S100A-0005-10A](http://www.pacebms.com/en/index.php/shows/33/77.html), [P16S100A-0001-10A](http://www.pacebms.com/en/index.php/shows/32/14.html), [P16S100A-0002-20A](http://www.pacebms.com/en/index.php/shows/32/11.html), 
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x25`
