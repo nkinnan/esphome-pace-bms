@@ -27,7 +27,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
     - [All read-only values](#All-read-only-values)
     - [Read-write values](#Read-write-values)
     - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
-  - [Example Config Files (in full)](#Example-Config-Files-in-full)
+  - [Example Config Files](#Example-Config-Files)
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 - [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to)
   - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
@@ -214,8 +214,7 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 **If not listed**, for help figuring out the required settings to get your battery pack working, see [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 
-Known working protocol version 20 battery packs:
--
+## Known working protocol version 20 battery packs:
 
 - **EG4 LIFEPOWER4**
   - hardware versions: 
@@ -233,8 +232,7 @@ Known working protocol version 20 battery packs:
 		  -   `response_timeout: 2000ms`
 
 
-Known working protocol version 25 battery packs:
--
+## Known working protocol version 25 battery packs:
 
 - **Jakiper JK48V100**
   - BMS hardware versions: 
@@ -243,6 +241,10 @@ Known working protocol version 25 battery packs:
 	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x25`
+
+## Untested:
+
+TDT-6016
 
 # What ESPs are Supported?
 
@@ -334,7 +336,7 @@ logger:
   #level: VERBOSE
   level: VERY_VERBOSE
 ```
-Additionally, if you want to get serial logs over USB on a C3, S2 and S3, you should add this to your logger config:
+Additionally, if you want to get serial logs over USB on a C3, S2 or S3, you should add this to your logger config:
 
 ```yaml
 logger:
@@ -349,6 +351,8 @@ logger:
 esphome:
   libraries:
     # massive improvement to event throughput to the on-device web_server dashboard
+    # can be removed once this PR goes through: https://github.com/esphome/ESPAsyncWebServer/pull/41
+    # but the web_server dashboard is basically useless on an 8266 without it
     - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 ```
 2) Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
@@ -405,8 +409,8 @@ pace_bms:
   uart_id: uart_0
   flow_control_pin: GPIO0 
   update_interval: 5s
-  request_throttle: 200ms 
-  response_timeout: 2000ms 
+  request_throttle: 200ms # can be reduced to 50ms for protocol 25
+  response_timeout: 2000ms # can be reduced to 1000ms for protocol 25
 
   protocol_commandset: 0x20 # example only
   protocol_variant: "EG4"   # example only
@@ -721,28 +725,76 @@ number:
     environment_under_temperature_protection_release:
       name: "Environment Under Temperature Protection Release"
 ```
-## Example Config Files (in full)
+## Example Config Files
 
-If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [ESPHome configuration YAML](#ESPHome-configuration-YAML))
+If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific preamble](#8266-specific-preamble))
 
 ### Protocol 25
 
 - ESP8266
-	- todo
+	- [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+		- This will fail in a boot loop due to out of memory on the 8266 with it's limited resources.  You will need to trim down the number of sensors before uploading.  This is the only example config file with this issue.
+	- [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensor values only
 - ESP32
-	- [esp32dev-0x25-full.yaml](esp32dev-0x25-full.yaml) - everything, including BMS configuration settings
-	- [esp32dev-0x25-sensors_only.yaml](esp32dev-0x25-sensors_only.yaml) - use this if you only want to read the sensor values
+	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensor values only
 - ESP32-C3
-	- todo
+	- [esp32-c3-0x25-full.yaml](esp32-c3-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [esp32-c3-0x25-sensors_only.yaml](esp32-c3-0x25-sensors_only.yaml) - sensor values only
+- ESP32-S2
+	- [esp32-s2-0x25-full.yaml](esp32-s2-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [esp32-s2-0x25-sensors_only.yaml](esp32-s2-0x25-sensors_only.yaml) - sensor values only
+- ESP32-S3
+	- [esp32-s3-0x25-full.yaml](esp32-s3-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [esp32-s3-0x25-sensors_only.yaml](esp32-s3-0x25-sensors_only.yaml) - sensor values only
+- RP2040
+	- [rp2040-0x25-full.yaml](rp2040-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [rp2040-0x25-sensors_only.yaml](rp2040-0x25-sensors_only.yaml) - sensor values only
 
 ### Protocol 20, EG4 variant
 
 - ESP8266
-	- todo
+	- [esp8266-0x20-EG4.yaml](esp8266-0x20-EG4.yaml)
 - ESP32
-	- [esp32dev-0x20-EG4.yaml](esp32dev-0x20-EG4.yaml)
+	- [esp32-0x20-EG4.yaml](esp32-0x20-EG4.yaml)
 - ESP32-C3
-	- todo
+	- [esp32-c3-0x20-EG4.yaml](esp32-c3-0x20-EG4.yaml)
+- ESP32-S2
+	- [esp32-s2-0x20-EG4.yaml](esp32-s2-0x20-EG4.yaml)
+- ESP32-S3
+	- [esp32-s3-0x20-EG4.yaml](esp32-s3-0x20-EG4.yaml)
+- RP2040
+	- [rp2040-0x20-EG4.yaml](rp2040-0x20-EG4.yaml)
+
+### Protocol 20, SEPLOS variant
+
+- ESP8266
+	- [esp8266-0x20-SEPLOS.yaml](esp8266-0x20-SEPLOS.yaml)
+- ESP32
+	- [esp32-0x20-SEPLOS.yaml](esp32-0x20-SEPLOS.yaml)
+- ESP32-C3
+	- [esp32-c3-0x20-SEPLOS.yaml](esp32-c3-0x20-SEPLOS.yaml)
+- ESP32-S2
+	- [esp32-s2-0x20-SEPLOS.yaml](esp32-s2-0x20-SEPLOS.yaml)
+- ESP32-S3
+	- [esp32-s3-0x20-SEPLOS.yaml](esp32-s3-0x20-SEPLOS.yaml)
+- RP2040
+	- [rp2040-0x20-SEPLOS.yaml](rp2040-0x20-SEPLOS.yaml)
+
+### Protocol 20, PYLON variant
+
+- ESP8266
+	- [esp8266-0x20-PYLON.yaml](esp8266-0x20-PYLON.yaml)
+- ESP32
+	- [esp32-0x20-PYLON.yaml](esp32-0x20-PYLON.yaml)
+- ESP32-C3
+	- [esp32-c3-0x20-PYLON.yaml](esp32-c3-0x20-PYLON.yaml)
+- ESP32-S2
+	- [esp32-s2-0x20-PYLON.yaml](esp32-s2-0x20-PYLON.yaml)
+- ESP32-S3
+	- [esp32-s3-0x20-PYLON.yaml](esp32-s3-0x20-PYLON.yaml)
+- RP2040
+	- [rp2040-0x20-PYLON.yaml](rp2040-0x20-PYLON.yaml)
 
 # How to configure a battery pack that's not in the supported list (yet)
 
@@ -769,9 +821,9 @@ text_sensor:
       name: "Serial Number"
 ```
 
-If it worked, you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+If you get reasonable values back for the two text sensors, you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
-If it didn't, no worries, just continue reading.
+If it didn't work, no worries, continue reading.
 
 Step 1: Is the BMS speaking paceic?
 -
@@ -783,7 +835,7 @@ Once your manufacturer's recommended software is talking to your battery pack su
 or
 ```~20xx46xxxxxxxxxx\r```
 
-The values may be slightly different.  The x's will be hexidecimal numbers (in fact, all values are ASCII text hexidecimal).  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine, continue on as long as at least some of them do.
+The values may be slightly different.  The x's will be hexidecimal numbers (in fact, all values are ASCII text hexidecimal).  The \r may or may not be visible, it might just show up as a line return in whatever software you're using to snoop on the COM port.  If it looks nothing like that at all, sorry, you're out of luck.  If some of the requests look like that and other's don't, that's fine.  Continue on as long as at least some of them do.
 
 Step 2: Understanding what we need
 -
@@ -795,7 +847,7 @@ We need at least one and as many as four configuration values to speak with the 
     * SEPLOS
     * EG4
 
-    Protocol 25 has no known variants.
+    Protocol 25 has no variants I am aware of.
 4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who intentionally break compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
 Step 3: the commandset
