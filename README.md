@@ -15,7 +15,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
 - [Supported BMS Configuration (read / write)](#Supported-BMS-Configuration-read--write)
 - [Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Protocol-Version-25-ONLY)
 - [What Battery Packs are Supported?](#What-Battery-Packs-are-Supported)
-- [What ESPs are Supported?](#What-ESPs-are-Supported)
+- [What ESPs and RPs are Supported?](#What-ESPs-and-RPs-are-Supported)
 - [How do I wire my ESP to the RS485 port?](#How-do-I-wire-my-ESP-to-the-RS485-port)
 - [How do I wire my ESP to the RS232 port?](#How-do-I-wire-my-ESP-to-the-RS232-port)
 - [ESPHome configuration YAML](#ESPHome-configuration-YAML)
@@ -246,9 +246,9 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 TDT-6016
 
-# What ESPs are Supported?
+# What ESPs and RPs are Supported?
 
-Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  
+Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.
 
 Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is not recommended.  
 
@@ -256,7 +256,7 @@ You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 por
 
 RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins.  RS232 will require only the UART RX and TX.
 
-If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example config for that is included below in the YAML section.
+If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example of how to do that is included below in the [YAML section](#8266-specific-preamble).
 
 # How do I wire my ESP to the RS485 port?
 
