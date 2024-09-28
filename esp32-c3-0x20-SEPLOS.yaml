@@ -182,9 +182,8 @@ sensor:
       name: "Remaining Capacity"
     full_capacity:
       name: "Full Capacity"
-    # # not available on EG4 protocol 0x20 variant
-    # design_capacity: 
-    #   name: "Design Capacity"
+    design_capacity: 
+      name: "Design Capacity"
 
     state_of_charge:
       name: "State of Charge"
@@ -252,26 +251,37 @@ sensor:
     
     # warning_status_value_charge_current:
     #   name: "Warning Status Value Charge Current"
-    # warning_status_value_discharge_current:
-    #   name: "Warning Status Value Discharge Current"
     # warning_status_value_total_voltage:
     #   name: "Warning Status Value Total Voltage"
-    
-    # balance_event_value:
-    #   name: "Balance Event Value"
-    # voltage_event_value:
-    #   name: "Voltage Event Value"
-    # temperature_event_value:
-    #   name: "Temperature Event Value"
-    # current_event_value:
-    #   name: "Current Event Value"
-    # remaining_capacity_value:
-    #   name: "Remaining Capacity Value"
-    # fet_status_value:
-    #   name: "FET Status Value"
+    # warning_status_value_discharge_current:
+    #   name: "Warning Status Value Discharge Current"
 
+    # balancing_status_value:
+    #   name: "Balancing Status Value"
     # system_status_value:
-    #  name: "System Status Value"
+    #   name: "System Status Value"
+      
+    # power_status_value:
+    #   name: "Power Status Value"
+    # disconnection_status_value: 
+    #   name: "Disconnection Status Value"
+
+    # warning1_status_value:
+    #   name: "Warning1 Status Value"
+    # warning2_status_value:
+    #   name: "Warning2 Status Value"
+    # warning3_status_value:
+    #   name: "Warning3 Status Value"
+    # warning4_status_value:
+    #   name: "Warning4 Status Value"
+    # warning5_status_value:
+    #   name: "Warning5 Status Value"
+    # warning6_status_value:
+    #   name: "Warning6 Status Value"
+    # warning7_status_value:
+    #   name: "Warning7 Status Value"
+    # warning8_status_value:
+    #   name: "Warning8 Status Value"
 
 text_sensor:
   - platform: pace_bms
@@ -279,9 +289,8 @@ text_sensor:
 
     hardware_version:
       name: "Hardware Version"
-    # # not available on EG4 protocol 0x20 variant
-    # serial_number: 
-    #   name: "Serial Number"
+    serial_number: 
+      name: "Serial Number"
 
     # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
     warning_status:

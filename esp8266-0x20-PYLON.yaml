@@ -186,14 +186,15 @@ sensor:
       name: "Remaining Capacity"
     full_capacity:
       name: "Full Capacity"
-    # # not available on EG4 protocol 0x20 variant
+    # # not available on PYLON protocol 0x20 variant
     # design_capacity: 
     #   name: "Design Capacity"
 
     state_of_charge:
       name: "State of Charge"
-    state_of_health:
-      name: "State of Health"
+    # # not available on PYLON protocol 0x20 variant
+    # state_of_health:
+    #   name: "State of Health"
     cycle_count:
       name: "Cycle Count"
 
@@ -256,26 +257,21 @@ sensor:
     
     # warning_status_value_charge_current:
     #   name: "Warning Status Value Charge Current"
-    # warning_status_value_discharge_current:
-    #   name: "Warning Status Value Discharge Current"
     # warning_status_value_total_voltage:
     #   name: "Warning Status Value Total Voltage"
-    
-    # balance_event_value:
-    #   name: "Balance Event Value"
-    # voltage_event_value:
-    #   name: "Voltage Event Value"
-    # temperature_event_value:
-    #   name: "Temperature Event Value"
-    # current_event_value:
-    #   name: "Current Event Value"
-    # remaining_capacity_value:
-    #   name: "Remaining Capacity Value"
-    # fet_status_value:
-    #   name: "FET Status Value"
+    # warning_status_value_discharge_current:
+    #   name: "Warning Status Value Discharge Current"
 
-    # system_status_value:
-    #  name: "System Status Value"
+    # status1_value:
+    #   name: "Status1 Value"
+    # status2_value:
+    #   name: "Status2 Value"
+    # status3_value:
+    #   name: "Status3 Value"
+    # status4_value:
+    #   name: "Status4 Value"
+    # status5_value:
+    #   name: "Status5 Value"
 
 text_sensor:
   - platform: pace_bms
@@ -283,9 +279,8 @@ text_sensor:
 
     hardware_version:
       name: "Hardware Version"
-    # # not available on EG4 protocol 0x20 variant
-    # serial_number: 
-    #   name: "Serial Number"
+    serial_number: 
+      name: "Serial Number"
 
     # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
     warning_status:
