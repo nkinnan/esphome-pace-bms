@@ -1,6 +1,7 @@
+
 substitutions:
-  name: "esp01-jk48v100"
-  friendly_name: "ESP-01 - JK48V100 Battery"
+  name: "esp32-c3-0x20-EG4"
+  friendly_name: "esp32-c3-0x20-EG4"
 
 esphome:
   name: ${name}
@@ -10,19 +11,16 @@ esphome:
   project:
     name: esphome.web
     version: dev
-  libraries:
-    # massive improvement to event throughput to the on-device web_server dashboard
-    # can be removed once this PR goes through: https://github.com/esphome/ESPAsyncWebServer/pull/41
-    # but the web_server dashboard is basically useless on an 8266 without it
-    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
 
-esp8266:
-  board: esp01_1m
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
 
 # Enable logging
 logger:
-  # using UART0 for BMS communications
-  hardware_uart: UART1
+  # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
+  hardware_uart: USB_CDC 
 
   # use INFO for production, VERY_VERBOSE for debugging or filing an issue report
   level: INFO
@@ -35,8 +33,8 @@ api:
   #encryption:
   #  key: !secret api_encryption_key
 
-  # the 8266 WiFi stack may not be completely stable, requiring reboot if it gets into a bad state
-  reboot_timeout: 15min
+  # disable reboot if unable to connect API
+  reboot_timeout: 0min
 
 # Allow Over-The-Air updates
 ota:
@@ -54,15 +52,9 @@ wifi:
     # how long to try connecting to WiFi before spawning the backup AP
     ap_timeout: 5min
 
-  # the 8266 WiFi stack may not be completely stable, requiring reboot if it gets into a bad state
-  reboot_timeout: 15min
+  # disable reboot if unable to connect to WiFi
+  reboot_timeout: 0min
 
-  # manual_ip:
-  #   # Set this to the IP of the ESP
-  #   static_ip: 192.168.10.102
-  #   subnet: 255.255.255.0
-  #   gateway: 192.168.10.1
-    
 # In combination with the wifi fallback AP this allows the user
 # to provision wifi credentials to the device via WiFi AP.
 captive_portal:
@@ -72,7 +64,7 @@ web_server:
   version: 3
 
   # this would just be annoying every time, so disable ota from here instead
-  #auth:
+ # auth:
   #  username: !secret web_server_username
   #  password: !secret web_server_password  
   
@@ -80,8 +72,7 @@ web_server:
   ota: false
 
   # don't reference external resources hosted on the net so that device webserver dashboard will continue working if internet is down
-  # a 1MB flash 8266 is not going to have enough space for this
-  # local: true
+  local: true
 
 # import the pace_bms component
 external_components:
@@ -103,8 +94,8 @@ external_components:
 uart:
   id: uart_0
   baud_rate: 9600 
-  tx_pin: GPIO1
-  rx_pin: GPIO3
+  tx_pin: GPIO17
+  rx_pin: GPIO16
   rx_buffer_size: 256
 
 pace_bms:
@@ -112,15 +103,15 @@ pace_bms:
   address: 1
   uart_id: uart_0
   # needed for RS485
-  flow_control_pin: GPIO0 
+  #flow_control_pin: GPIO5 
   update_interval: 5s
   request_throttle: 200ms 
   response_timeout: 2000ms 
 
-  protocol_commandset: 0x25   # example only
-  # protocol_variant: "EG4"   # example only
-  # protocol_version: 0x20    # example only
-  # battery_chemistry: 0x4A   # example only
+  protocol_commandset: 0x20   # example only
+  protocol_variant: "PYLON"   # example only
+  protocol_version: 0x20      # example only
+  battery_chemistry: 0x46     # example only
 
 sensor:
   - platform: pace_bms
@@ -191,7 +182,7 @@ sensor:
       name: "Remaining Capacity"
     full_capacity:
       name: "Full Capacity"
-    design_capacity: # not available on EG4 protocol 0x20 variant
+    design_capacity: 
       name: "Design Capacity"
 
     state_of_charge:
@@ -264,24 +255,33 @@ sensor:
     #   name: "Warning Status Value Total Voltage"
     # warning_status_value_discharge_current:
     #   name: "Warning Status Value Discharge Current"
-      
-    # warning_status_value_1:
-    #   name: "Warning Status Value 1"
-    # warning_status_value_2:
-    #   name: "Warning Status Value 2"
-    
+
     # balancing_status_value:
     #   name: "Balancing Status Value"
     # system_status_value:
     #   name: "System Status Value"
-    # configuration_status_value:
-    #   name: "Configuration Status Value"
-    # protection_status_value_1:
-    #   name: "Protection Status Value 1"
-    # protection_status_value_2:
-    #   name: "Protection Status Value 2"
-    # fault_status_value:
-    #   name: "Fault Status Value"
+      
+    # power_status_value:
+    #   name: "Power Status Value"
+    # disconnection_status_value: 
+    #   name: "Disconnection Status Value"
+
+    # warning1_status_value:
+    #   name: "Warning1 Status Value"
+    # warning2_status_value:
+    #   name: "Warning2 Status Value"
+    # warning3_status_value:
+    #   name: "Warning3 Status Value"
+    # warning4_status_value:
+    #   name: "Warning4 Status Value"
+    # warning5_status_value:
+    #   name: "Warning5 Status Value"
+    # warning6_status_value:
+    #   name: "Warning6 Status Value"
+    # warning7_status_value:
+    #   name: "Warning7 Status Value"
+    # warning8_status_value:
+    #   name: "Warning8 Status Value"
 
 text_sensor:
   - platform: pace_bms
@@ -289,7 +289,7 @@ text_sensor:
 
     hardware_version:
       name: "Hardware Version"
-    serial_number: # not available on EG4 protocol 0x20 variant
+    serial_number: 
       name: "Serial Number"
 
     # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
@@ -319,161 +319,3 @@ button:
 
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
-  
-switch:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
-
-   buzzer_alarm:
-     name: "Buzzer Alarm"
-   led_alarm:
-     name: "Led Alarm"
-   charge_current_limiter:
-     name: "Charge Current Limiter"
-   charge_mosfet:
-     name: "Charge Mosfet"
-   discharge_mosfet:
-     name: "Discharge Mosfet"
-
-select:
-  - platform: pace_bms
-    pace_bms_id: pace_bms_at_address_1
-
-    charge_current_limiter_gear:
-      name: "Charge Current Limiter Gear"
-
-    # setting the protocol is possible on some version 25 BMSes but not all
-    protocol_can:
-      name: "Protocol (CAN)"
-    protocol_rs485:
-      name: "Protocol (RS485)"
-    protocol_type:
-      name: "Protocol (Type)"
-
-# number:
-#   - platform: pace_bms
-#     pace_bms_id: pace_bms_at_address_1
- 
-#     cell_over_voltage_alarm:
-#       name: "Cell Over Voltage Alarm" 
-#     cell_over_voltage_protection:
-#       name: "Cell Over Voltage Protection" 
-#     cell_over_voltage_protection_release:
-#       name: "Cell Over Voltage Protection Release" 
-#     cell_over_voltage_protection_delay:
-#       name: "Cell Over Voltage Protection Delay" 
- 
-#     pack_over_voltage_alarm:
-#       name: "Pack Over Voltage Alarm" 
-#     pack_over_voltage_protection:
-#       name: "Pack Over Voltage Protection" 
-#     pack_over_voltage_protection_release:
-#       name: "Pack Over Voltage Protection Release" 
-#     pack_over_voltage_protection_delay:
-#       name: "Pack Over Voltage Protection Delay" 
- 
-#     cell_under_voltage_alarm:
-#       name: "Cell Under Voltage Alarm" 
-#     cell_under_voltage_protection:
-#       name: "Cell Under Voltage Protection" 
-#     cell_under_voltage_protection_release:
-#       name: "Cell Under Voltage Protection Release" 
-#     cell_under_voltage_protection_delay:
-#       name: "Cell Under Voltage Protection Delay" 
- 
-#     pack_under_voltage_alarm:
-#       name: "Pack Under Voltage Alarm" 
-#     pack_under_voltage_protection:
-#       name: "Pack Under Voltage Protection" 
-#     pack_under_voltage_protection_release:
-#       name: "Pack Under Voltage Protection Release" 
-#     pack_under_voltage_protection_delay:
-#       name: "Pack Under Voltage Protection Delay" 
- 
-#     charge_over_current_alarm:
-#       name: "Charge Over Current Alarm" 
-#     charge_over_current_protection:
-#       name: "Charge Over Current Protection" 
-#     charge_over_current_protection_delay:
-#       name: "Charge Over Current Protection Delay" 
- 
-#     discharge_over_current1_alarm:
-#       name: "Discharge Over Current 1 Alarm" 
-#     discharge_over_current1_protection:
-#       name: "Discharge Over Current 1 Protection" 
-#     discharge_over_current1_protection_delay:
-#       name: "Discharge Over Current 1 Protection Delay" 
- 
-#     discharge_over_current2_protection:
-#       name: "Discharge Over Current 2 Protection" 
-#     discharge_over_current2_protection_delay:
-#       name: "Discharge Over Current 2 Protection Delay" 
- 
-#     short_circuit_protection_delay:
-#       name: "Short Circuit Protection Delay (Milliseconds)" 
- 
-#     cell_balancing_threshold:
-#       name: "Cell Balancing Threshold"
-#     cell_balancing_delta:
-#       name: "Cell Balancing Delta"
- 
-#     sleep_cell_voltage:
-#       name: "Sleep Cell Voltage"
-#     sleep_delay:
-#       name: "Sleep Delay (Minutes)"
- 
-#     full_charge_voltage:
-#       name: "Full Charge Voltage"
-#     full_charge_amps:
-#       name: "Full Charge Amps"
-#     low_charge_alarm_percent:
-#       name: "Low Charge Alarm Percent"
- 
-#     charge_over_temperature_alarm:
-#       name: "Charge Over Temperature Alarm"
-#     charge_over_temperature_protection:
-#       name: "Charge Over Temperature Protection"
-#     charge_over_temperature_protection_release:
-#       name: "Charge Over Temperature Protection Release"
- 
-#     discharge_over_temperature_alarm:
-#       name: "Discharge Over Temperature Alarm"
-#     discharge_over_temperature_protection:
-#       name: "Discharge Over Temperature Protection"
-#     discharge_over_temperature_protection_release:
-#       name: "Discharge Over Temperature Protection Release"
- 
-#     charge_under_temperature_alarm:
-#       name: "Charge Under Temperature Alarm"
-#     charge_under_temperature_protection:
-#       name: "Charge Under Temperature Protection"
-#     charge_under_temperature_protection_release:
-#       name: "Charge Under Temperature Protection Release"
- 
-#     discharge_under_temperature_alarm:
-#       name: "Discharge Under Temperature Alarm"
-#     discharge_under_temperature_protection:
-#       name: "Discharge Under Temperature Protection"
-#     discharge_under_temperature_protection_release:
-#       name: "Discharge Under Temperature Protection Release"
- 
-#     mosfet_over_temperature_alarm:
-#       name: "Mosfet Over Temperature Alarm"
-#     mosfet_over_temperature_protection:
-#       name: "Mosfet Over Temperature Protection"
-#     mosfet_over_temperature_protection_release:
-#       name: "Mosfet Over Temperature Protection Release"
- 
-#     environment_over_temperature_alarm:
-#       name: "Environment Over Temperature Alarm"
-#     environment_over_temperature_protection:
-#       name: "Environment Over Temperature Protection"
-#     environment_over_temperature_protection_release:
-#       name: "Environment Over Temperature Protection Release"
- 
-#     environment_under_temperature_alarm:
-#       name: "Environment Under Temperature Alarm"
-#     environment_under_temperature_protection:
-#       name: "Environment Under Temperature Protection"
-#     environment_under_temperature_protection_release:
-#       name: "Environment Under Temperature Protection Release"

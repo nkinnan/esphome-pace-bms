@@ -26,8 +26,10 @@ class PaceBmsProtocolV20 : public PaceBmsProtocolBase
 public:
 	enum CID1 : uint8_t
 	{
-		CID1_LithiumIronEG4 = 0x4A, // undocumented value used by EG4 for lithium iron
 		CID1_LithiumIron = 0x46, // documented as lithium iron
+		CID1_LithiumIron_EG4 = 0x4A, // undocumented value used by EG4 for lithium iron
+		CID1_LithiumTitanate_Manganese_EG4 = 0x4E, // undocumented value used by EG4 for lithium titanate with manganese cathode
+		CID1_LithiumTitanate_Ternary_EG4 = 0x4F, // undocumented value used by EG4 for lithium titanate with ternary (nickel, cobalt, and manganese or aluminum) cathode
 	};
 
 	// dependency injection

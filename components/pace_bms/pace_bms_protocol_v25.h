@@ -1150,7 +1150,7 @@ public:
 
 	It's unclear if these commands would only work on rs232 but that's my guess.
 
-	There does not appear to be a "get current inverter protocol" command for this older method
+	There does not appear to be a "get current inverter protocol" command for this older custom method
 
 	set paceic (unclear if CAN/485)
 	req: ~25004699E0020EFD11.

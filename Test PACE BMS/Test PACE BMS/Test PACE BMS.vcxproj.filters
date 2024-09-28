@@ -117,7 +117,6 @@
     <None Include="..\..\components\pace_bms\select\__init__.py">
       <Filter>components\pace_bms\select</Filter>
     </None>
-    <None Include="..\..\ESP-01.yaml" />
     <None Include="..\..\ESP-01-dev.yaml" />
     <None Include="..\..\components\pace_bms\button\__init__.py">
       <Filter>components\pace_bms\button</Filter>
@@ -125,14 +124,39 @@
     <None Include="..\..\components\pace_bms\number\__init__.py">
       <Filter>components\pace_bms\number</Filter>
     </None>
-    <None Include="..\..\ESP32-C3-dev.yaml" />
     <None Include="..\..\components\pace_bms\datetime\__init__.py">
       <Filter>components\pace_bms\datetime</Filter>
     </None>
-    <None Include="..\..\ESP32-C3-0x25.yaml" />
-    <None Include="..\..\esp32dev-0x25-full.yaml" />
-    <None Include="..\..\esp32dev-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp32dev-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-c3-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-c3-0x25-full.yaml" />
+    <None Include="..\..\esp32-c3-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-0x25-full.yaml" />
+    <None Include="..\..\esp32-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp8266-0x20-EG4.yaml" />
+    <None Include="..\..\esp8266-0x25-full.yaml" />
+    <None Include="..\..\esp8266-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-s3-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-s3-0x25-full.yaml" />
+    <None Include="..\..\esp32-s3-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-s2-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-s2-0x25-full.yaml" />
+    <None Include="..\..\esp32-s2-0x25-sensors_only.yaml" />
+    <None Include="..\..\rp2040-0x20-EG4.yaml" />
+    <None Include="..\..\rp2040-0x25-full.yaml" />
+    <None Include="..\..\rp2040-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-c3-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-s2-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-s3-0x20-PYLON.yaml" />
+    <None Include="..\..\esp8266-0x20-PYLON.yaml" />
+    <None Include="..\..\rp2040-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-c3-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-s2-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-s3-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp8266-0x20-SEPLOS.yaml" />
+    <None Include="..\..\rp2040-0x20-SEPLOS.yaml" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">

@@ -1978,8 +1978,9 @@ bool PaceBmsProtocolV20::ProcessReadSerialNumberResponse(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV20::exampleWriteRebootCommandRequestV20[] = "~2500469CE00201FD1B\r";
-const unsigned char PaceBmsProtocolV20::exampleWriteRebootCommandResponseV20[] = "~250046000000FDAF\r";
+                                                         // "system reboot" EG4: ~20014A45C004060FFCAC\r
+const unsigned char PaceBmsProtocolV20::exampleWriteRebootCommandRequestV20[] = "";
+const unsigned char PaceBmsProtocolV20::exampleWriteRebootCommandResponseV20[] = "";
 
 bool PaceBmsProtocolV20::CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {

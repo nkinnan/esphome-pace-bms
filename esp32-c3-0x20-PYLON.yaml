@@ -1,0 +1,307 @@
+
+substitutions:
+  name: "esp32-c3-0x20-EG4"
+  friendly_name: "esp32-c3-0x20-EG4"
+
+esphome:
+  name: ${name}
+  friendly_name: ${friendly_name}
+  min_version: 2024.6.0
+  name_add_mac_suffix: false
+  project:
+    name: esphome.web
+    version: dev
+
+esp32:
+  board: esp32-c3-devkitm-1
+  framework:
+    type: arduino
+
+# Enable logging
+logger:
+  # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
+  hardware_uart: USB_CDC 
+
+  # use INFO for production, VERY_VERBOSE for debugging or filing an issue report
+  level: INFO
+  #level: DEBUG
+  #level: VERBOSE
+  #level: VERY_VERBOSE
+
+# Enable Home Assistant API
+api:
+  #encryption:
+  #  key: !secret api_encryption_key
+
+  # disable reboot if unable to connect API
+  reboot_timeout: 0min
+
+# Allow Over-The-Air updates
+ota:
+  platform: esphome
+  # password: !secret ota_password
+
+wifi:
+  # ssid: !secret wifi_ssid
+  # password: !secret wifi_password
+
+  # In conjunction with captive_portal, this spawns an AP with the device name and mac address if unable to connect
+  ap: 
+    # password: !secret fallback_hotspot_password
+
+    # how long to try connecting to WiFi before spawning the backup AP
+    ap_timeout: 5min
+
+  # disable reboot if unable to connect to WiFi
+  reboot_timeout: 0min
+
+# In combination with the wifi fallback AP this allows the user
+# to provision wifi credentials to the device via WiFi AP.
+captive_portal:
+
+# allows access to all BMS sensors and configuration
+web_server:
+  version: 3
+
+  # this would just be annoying every time, so disable ota from here instead
+ # auth:
+  #  username: !secret web_server_username
+  #  password: !secret web_server_password  
+  
+  # disable firmware upload via the web server which is currently un-authenticated
+  ota: false
+
+  # don't reference external resources hosted on the net so that device webserver dashboard will continue working if internet is down
+  local: true
+
+# import the pace_bms component
+external_components:
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome-pace-bms
+      ref: "main"
+    components: [ pace_bms ]
+    refresh: 1s
+
+  # this can be removed once the PR goes through: https://github.com/esphome/esphome/pull/7425
+  - source:
+      type: git
+      url: https://github.com/nkinnan/esphome
+      ref: "make_time_dependency_optional"
+    components: [ datetime ]
+    refresh: 1s
+
+uart:
+  id: uart_0
+  baud_rate: 9600 
+  tx_pin: GPIO17
+  rx_pin: GPIO16
+  rx_buffer_size: 256
+
+pace_bms:
+  id: pace_bms_at_address_1
+  address: 1
+  uart_id: uart_0
+  # needed for RS485
+  #flow_control_pin: GPIO5 
+  update_interval: 5s
+  request_throttle: 200ms 
+  response_timeout: 2000ms 
+
+  protocol_commandset: 0x20   # example only
+  protocol_variant: "PYLON"   # example only
+  protocol_version: 0x21      # example only
+  battery_chemistry: 0x46     # example only
+
+sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    cell_count:
+      name: "Cell Count"
+
+    cell_voltage_01:
+      name: "Cell Voltage 01"
+    cell_voltage_02:
+      name: "Cell Voltage 02"
+    cell_voltage_03:
+      name: "Cell Voltage 03"
+    cell_voltage_04:
+      name: "Cell Voltage 04"
+    cell_voltage_05:
+      name: "Cell Voltage 05"
+    cell_voltage_06:
+      name: "Cell Voltage 06"
+    cell_voltage_07:
+      name: "Cell Voltage 07"
+    cell_voltage_08:
+      name: "Cell Voltage 08" 
+    cell_voltage_09:
+      name: "Cell Voltage 09"
+    cell_voltage_10:
+      name: "Cell Voltage 10"
+    cell_voltage_11:
+      name: "Cell Voltage 11"
+    cell_voltage_12:
+      name: "Cell Voltage 12"
+    cell_voltage_13:
+      name: "Cell Voltage 13"
+    cell_voltage_14:
+      name: "Cell Voltage 14"
+    cell_voltage_15:
+      name: "Cell Voltage 15"
+    cell_voltage_16:
+      name: "Cell Voltage 16"
+
+    temperature_count:
+      name: "Temperature Count"
+
+    # Generally the first four temperatures are cell measurements and the last two are 
+    # MOSFET / Environment or Environment / MOSFET with the order of those two depending on manufacturer
+    temperature_01:
+      name: "Cell Temperature 1"
+    temperature_02:
+      name: "Cell Temperature 2"
+    temperature_03:
+      name: "Cell Temperature 3"
+    temperature_04:
+      name: "Cell Temperature 4"
+    temperature_05:
+      name: "MOSFET Temperature"
+    temperature_06:
+      name: "Environment Temperature"
+
+    total_voltage:
+      name: "Total Voltage"
+    current:
+      name: "Current"
+    power:
+      name: "Power"
+
+    remaining_capacity:
+      name: "Remaining Capacity"
+    full_capacity:
+      name: "Full Capacity"
+    # # not available on PYLON protocol 0x20 variant
+    # design_capacity: 
+    #   name: "Design Capacity"
+
+    state_of_charge:
+      name: "State of Charge"
+    # # not available on PYLON protocol 0x20 variant
+    # state_of_health:
+    #   name: "State of Health"
+    cycle_count:
+      name: "Cycle Count"
+
+    min_cell_voltage:
+      name: "Min Cell Voltage"
+    max_cell_voltage:
+      name: "Max Cell Voltage"
+    avg_cell_voltage:
+      name: "Avg Cell Voltage"
+    max_cell_differential:
+      name: "Max Cell Differential"
+
+    # # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
+    # # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
+    # warning_status_value_cell_01:
+    #   name: "Warning Status Value Cell 01"
+    # warning_status_value_cell_02:
+    #   name: "Warning Status Value Cell 02"
+    # warning_status_value_cell_03:
+    #   name: "Warning Status Value Cell 03"
+    # warning_status_value_cell_04:
+    #   name: "Warning Status Value Cell 04"
+    # warning_status_value_cell_05:
+    #   name: "Warning Status Value Cell 05"
+    # warning_status_value_cell_06:
+    #   name: "Warning Status Value Cell 06"
+    # warning_status_value_cell_07:
+    #   name: "Warning Status Value Cell 07"
+    # warning_status_value_cell_08:
+    #   name: "Warning Status Value Cell 08"
+    # warning_status_value_cell_09:
+    #   name: "Warning Status Value Cell 09"
+    # warning_status_value_cell_10:
+    #   name: "Warning Status Value Cell 10"
+    # warning_status_value_cell_11:
+    #   name: "Warning Status Value Cell 11"
+    # warning_status_value_cell_12:
+    #   name: "Warning Status Value Cell 12"
+    # warning_status_value_cell_13:
+    #   name: "Warning Status Value Cell 13"
+    # warning_status_value_cell_14:
+    #   name: "Warning Status Value Cell 14"
+    # warning_status_value_cell_15:
+    #   name: "Warning Status Value Cell 15"
+    # warning_status_value_cell_16:
+    #   name: "Warning Status Value Cell 16"
+    
+    # warning_status_value_temperature_01:
+    #   name: "Warning Status Value Temperature 01"
+    # warning_status_value_temperature_02:
+    #   name: "Warning Status Value Temperature 02"
+    # warning_status_value_temperature_03:
+    #   name: "Warning Status Value Temperature 03"
+    # warning_status_value_temperature_04:
+    #   name: "Warning Status Value Temperature 04"
+    # warning_status_value_temperature_05:
+    #   name: "Warning Status Value Temperature 05"
+    # warning_status_value_temperature_06:
+    #   name: "Warning Status Value Temperature 06"
+    
+    # warning_status_value_charge_current:
+    #   name: "Warning Status Value Charge Current"
+    # warning_status_value_total_voltage:
+    #   name: "Warning Status Value Total Voltage"
+    # warning_status_value_discharge_current:
+    #   name: "Warning Status Value Discharge Current"
+
+    # status1_value:
+    #   name: "Status1 Value"
+    # status2_value:
+    #   name: "Status2 Value"
+    # status3_value:
+    #   name: "Status3 Value"
+    # status4_value:
+    #   name: "Status4 Value"
+    # status5_value:
+    #   name: "Status5 Value"
+
+text_sensor:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    hardware_version:
+      name: "Hardware Version"
+    serial_number: 
+      name: "Serial Number"
+
+    # pre-decoded human readable text strings that describe all of the specific status values and are suitable for display
+    warning_status:
+      name: "Warning Status"
+    protection_status:
+      name: "Protection Status"
+    fault_status:
+      name: "Fault Status"
+    system_status:
+      name: "System Status"
+    configuration_status:
+      name: "Configuration Status"
+    balancing_status:
+      name: "Balancing Status"
+
+datetime:
+ - platform: pace_bms
+   pace_bms_id: pace_bms_at_address_1
+
+   system_date_and_time:
+     name: "System Date and Time"
+
+button:
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
+
+    shutdown:
+      name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
