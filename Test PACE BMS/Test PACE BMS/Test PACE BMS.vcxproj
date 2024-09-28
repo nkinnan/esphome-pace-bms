@@ -248,36 +248,39 @@
     <None Include="..\..\components\pace_bms\__init__.py">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\ESP-01.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
     <None Include="..\..\ESP-01-dev.yaml">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </None>
-    <None Include="..\..\ESP32-C3-0x25.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\ESP32-C3-dev.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\esp32dev-0x20-EG4.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\esp32dev-0x25-full.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
-    <None Include="..\..\esp32dev-0x25-sensors_only.yaml">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
-    </None>
+    <None Include="..\..\esp32-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-0x25-full.yaml" />
+    <None Include="..\..\esp32-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-c3-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-c3-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-c3-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-c3-0x25-full.yaml" />
+    <None Include="..\..\esp32-c3-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-s2-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-s2-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-s2-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-s2-0x25-full.yaml" />
+    <None Include="..\..\esp32-s2-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp32-s3-0x20-EG4.yaml" />
+    <None Include="..\..\esp32-s3-0x20-PYLON.yaml" />
+    <None Include="..\..\esp32-s3-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-s3-0x25-full.yaml" />
+    <None Include="..\..\esp32-s3-0x25-sensors_only.yaml" />
+    <None Include="..\..\esp8266-0x20-EG4.yaml" />
+    <None Include="..\..\esp8266-0x20-PYLON.yaml" />
+    <None Include="..\..\esp8266-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp8266-0x25-full.yaml" />
+    <None Include="..\..\esp8266-0x25-sensors_only.yaml" />
+    <None Include="..\..\rp2040-0x20-EG4.yaml" />
+    <None Include="..\..\rp2040-0x20-PYLON.yaml" />
+    <None Include="..\..\rp2040-0x20-SEPLOS.yaml" />
+    <None Include="..\..\rp2040-0x25-full.yaml" />
+    <None Include="..\..\rp2040-0x25-sensors_only.yaml" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
