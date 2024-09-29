@@ -30,8 +30,8 @@ logger:
 
 # Enable Home Assistant API
 api:
-  #encryption:
-  #  key: !secret api_encryption_key
+  encryption:
+   key: !secret api_encryption_key
 
   # disable reboot if unable to connect API
   reboot_timeout: 0min
@@ -39,15 +39,15 @@ api:
 # Allow Over-The-Air updates
 ota:
   platform: esphome
-  # password: !secret ota_password
+  password: !secret ota_password
 
 wifi:
-  # ssid: !secret wifi_ssid
-  # password: !secret wifi_password
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
 
   # In conjunction with captive_portal, this spawns an AP with the device name and mac address if unable to connect
   ap: 
-    # password: !secret fallback_hotspot_password
+    password: !secret fallback_hotspot_password
 
     # how long to try connecting to WiFi before spawning the backup AP
     ap_timeout: 5min
@@ -94,8 +94,8 @@ external_components:
 uart:
   id: uart_0
   baud_rate: 9600 
-  tx_pin: GPIO17
-  rx_pin: GPIO16
+  tx_pin: GPIO7
+  rx_pin: GPIO6
   rx_buffer_size: 256
 
 pace_bms:
@@ -103,7 +103,7 @@ pace_bms:
   address: 1
   uart_id: uart_0
   # needed for RS485
-  #flow_control_pin: GPIO5 
+  flow_control_pin: GPIO5 
   update_interval: 5s
   request_throttle: 200ms 
   response_timeout: 2000ms 
