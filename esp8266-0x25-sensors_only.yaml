@@ -36,8 +36,8 @@ api:
   encryption:
    key: !secret api_encryption_key
 
-  # disable reboot if unable to connect API
-  reboot_timeout: 0min
+  # the 8266 WiFi stack may not be completely stable, requiring reboot if it gets into a bad state
+  reboot_timeout: 15min
 
 # Allow Over-The-Air updates
 ota:
