@@ -127,36 +127,96 @@
     <None Include="..\..\components\pace_bms\datetime\__init__.py">
       <Filter>components\pace_bms\datetime</Filter>
     </None>
-    <None Include="..\..\esp32-c3-0x20-EG4.yaml" />
-    <None Include="..\..\esp32-c3-0x25-full.yaml" />
-    <None Include="..\..\esp32-c3-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp32-0x20-EG4.yaml" />
-    <None Include="..\..\esp32-0x25-full.yaml" />
-    <None Include="..\..\esp32-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp8266-0x20-EG4.yaml" />
-    <None Include="..\..\esp8266-0x25-full.yaml" />
-    <None Include="..\..\esp8266-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp32-s3-0x20-EG4.yaml" />
-    <None Include="..\..\esp32-s3-0x25-full.yaml" />
-    <None Include="..\..\esp32-s3-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp32-s2-0x20-EG4.yaml" />
-    <None Include="..\..\esp32-s2-0x25-full.yaml" />
-    <None Include="..\..\esp32-s2-0x25-sensors_only.yaml" />
-    <None Include="..\..\rp2040-0x20-EG4.yaml" />
-    <None Include="..\..\rp2040-0x25-full.yaml" />
-    <None Include="..\..\rp2040-0x25-sensors_only.yaml" />
-    <None Include="..\..\esp32-0x20-PYLON.yaml" />
-    <None Include="..\..\esp32-c3-0x20-PYLON.yaml" />
-    <None Include="..\..\esp32-s2-0x20-PYLON.yaml" />
-    <None Include="..\..\esp32-s3-0x20-PYLON.yaml" />
-    <None Include="..\..\esp8266-0x20-PYLON.yaml" />
-    <None Include="..\..\rp2040-0x20-PYLON.yaml" />
-    <None Include="..\..\esp32-0x20-SEPLOS.yaml" />
-    <None Include="..\..\esp32-c3-0x20-SEPLOS.yaml" />
-    <None Include="..\..\esp32-s2-0x20-SEPLOS.yaml" />
-    <None Include="..\..\esp32-s3-0x20-SEPLOS.yaml" />
-    <None Include="..\..\esp8266-0x20-SEPLOS.yaml" />
-    <None Include="..\..\rp2040-0x20-SEPLOS.yaml" />
+    <None Include="..\..\esp32-0x20-EG4.yaml">
+      <Filter>configs\esp32</Filter>
+    </None>
+    <None Include="..\..\esp32-0x20-PYLON.yaml">
+      <Filter>configs\esp32</Filter>
+    </None>
+    <None Include="..\..\esp32-0x20-SEPLOS.yaml">
+      <Filter>configs\esp32</Filter>
+    </None>
+    <None Include="..\..\esp32-0x25-full.yaml">
+      <Filter>configs\esp32</Filter>
+    </None>
+    <None Include="..\..\esp32-0x25-sensors_only.yaml">
+      <Filter>configs\esp32</Filter>
+    </None>
+    <None Include="..\..\esp32-c3-0x20-EG4.yaml">
+      <Filter>configs\esp32-c3</Filter>
+    </None>
+    <None Include="..\..\esp32-c3-0x20-PYLON.yaml">
+      <Filter>configs\esp32-c3</Filter>
+    </None>
+    <None Include="..\..\esp32-c3-0x20-SEPLOS.yaml">
+      <Filter>configs\esp32-c3</Filter>
+    </None>
+    <None Include="..\..\esp32-c3-0x25-full.yaml">
+      <Filter>configs\esp32-c3</Filter>
+    </None>
+    <None Include="..\..\esp32-c3-0x25-sensors_only.yaml">
+      <Filter>configs\esp32-c3</Filter>
+    </None>
+    <None Include="..\..\esp32-s2-0x20-EG4.yaml">
+      <Filter>configs\esp32-s2</Filter>
+    </None>
+    <None Include="..\..\esp32-s2-0x20-PYLON.yaml">
+      <Filter>configs\esp32-s2</Filter>
+    </None>
+    <None Include="..\..\esp32-s2-0x20-SEPLOS.yaml">
+      <Filter>configs\esp32-s2</Filter>
+    </None>
+    <None Include="..\..\esp32-s2-0x25-full.yaml">
+      <Filter>configs\esp32-s2</Filter>
+    </None>
+    <None Include="..\..\esp32-s2-0x25-sensors_only.yaml">
+      <Filter>configs\esp32-s2</Filter>
+    </None>
+    <None Include="..\..\esp32-s3-0x20-EG4.yaml">
+      <Filter>configs\esp32-s3</Filter>
+    </None>
+    <None Include="..\..\esp32-s3-0x20-PYLON.yaml">
+      <Filter>configs\esp32-s3</Filter>
+    </None>
+    <None Include="..\..\esp32-s3-0x20-SEPLOS.yaml">
+      <Filter>configs\esp32-s3</Filter>
+    </None>
+    <None Include="..\..\esp32-s3-0x25-full.yaml">
+      <Filter>configs\esp32-s3</Filter>
+    </None>
+    <None Include="..\..\esp32-s3-0x25-sensors_only.yaml">
+      <Filter>configs\esp32-s3</Filter>
+    </None>
+    <None Include="..\..\esp8266-0x20-EG4.yaml">
+      <Filter>configs\esp8266</Filter>
+    </None>
+    <None Include="..\..\esp8266-0x20-PYLON.yaml">
+      <Filter>configs\esp8266</Filter>
+    </None>
+    <None Include="..\..\esp8266-0x20-SEPLOS.yaml">
+      <Filter>configs\esp8266</Filter>
+    </None>
+    <None Include="..\..\esp8266-0x25-full.yaml">
+      <Filter>configs\esp8266</Filter>
+    </None>
+    <None Include="..\..\esp8266-0x25-sensors_only.yaml">
+      <Filter>configs\esp8266</Filter>
+    </None>
+    <None Include="..\..\rp2040-0x20-EG4.yaml">
+      <Filter>configs\rp2040</Filter>
+    </None>
+    <None Include="..\..\rp2040-0x20-PYLON.yaml">
+      <Filter>configs\rp2040</Filter>
+    </None>
+    <None Include="..\..\rp2040-0x20-SEPLOS.yaml">
+      <Filter>configs\rp2040</Filter>
+    </None>
+    <None Include="..\..\rp2040-0x25-full.yaml">
+      <Filter>configs\rp2040</Filter>
+    </None>
+    <None Include="..\..\rp2040-0x25-sensors_only.yaml">
+      <Filter>configs\rp2040</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="components">
@@ -185,6 +245,27 @@
     </Filter>
     <Filter Include="components\pace_bms\datetime">
       <UniqueIdentifier>{0d4ab76e-2d9d-4c2c-9b78-84185a6ada36}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs">
+      <UniqueIdentifier>{b4392821-6382-45de-a36a-1b74a4999c68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\esp32">
+      <UniqueIdentifier>{3b12c31c-981f-4f7d-b992-7eb156ead196}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\esp32-c3">
+      <UniqueIdentifier>{0f56c631-352e-4fea-ac5c-9d3df990a07a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\esp32-s2">
+      <UniqueIdentifier>{66188690-a729-410e-ab3a-d84b43430963}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\esp32-s3">
+      <UniqueIdentifier>{a57fc5ee-d5de-4922-91ad-c8ee3f2fa255}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\esp8266">
+      <UniqueIdentifier>{c41b54ee-0c85-47fe-b133-af815240192d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="configs\rp2040">
+      <UniqueIdentifier>{b45c5472-79ce-402d-997e-21b92f1b3045}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
