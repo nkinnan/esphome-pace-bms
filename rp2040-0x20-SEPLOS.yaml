@@ -1,7 +1,7 @@
 
 substitutions:
-  name: "esp32-c3-0x20-EG4"
-  friendly_name: "esp32-c3-0x20-EG4"
+  name: "rp2040-0x20-EG4"
+  friendly_name: "rp2040-0x20-EG4"
 
 esphome:
   name: ${name}
@@ -14,9 +14,6 @@ esphome:
 
 rp2040:
   board: rpipicow
-  framework:
-    # Required until https://github.com/platformio/platform-raspberrypi/pull/36 is merged
-    platform_version: https://github.com/maxgerhardt/platform-raspberrypi.git
 
 # Enable logging
 logger:

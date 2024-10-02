@@ -1,7 +1,7 @@
 
 substitutions:
-  name: "esp32-0x20-EG4"
-  friendly_name: "esp32-0x20-EG4"
+  name: "esp32-0x20-PYLON"
+  friendly_name: "esp32-0x20-PYLON"
 
 esphome:
   name: ${name}

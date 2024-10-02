@@ -1,7 +1,7 @@
 
 substitutions:
-  name: "esp32-c3-0x25-sensors_only"
-  friendly_name: "esp32-c3-0x25-sensors_only"
+  name: "esp32-s3-0x25-sensors_only"
+  friendly_name: "esp32-s3-0x25-sensors_only"
 
 esphome:
   name: ${name}
