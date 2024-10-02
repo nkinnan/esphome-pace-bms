@@ -1,7 +1,7 @@
 
 substitutions:
-  name: "esp32-c3-0x25-full"
-  friendly_name: "esp32-c3-0x25-full"
+  name: "esp32-s2-0x25-full"
+  friendly_name: "esp32-s2-0x25-full"
 
 esphome:
   name: ${name}
