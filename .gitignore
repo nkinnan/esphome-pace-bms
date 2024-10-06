@@ -7,3 +7,4 @@ secrets.yaml
 /Test PACE BMS/x64/
 /Test PACE BMS/Test PACE BMS/x64/
 __pycache__
+test*.yaml

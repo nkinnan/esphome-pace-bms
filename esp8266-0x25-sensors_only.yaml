@@ -109,8 +109,8 @@ pace_bms:
   # needed for RS485
   flow_control_pin: GPIO0 
   update_interval: 5s
-  request_throttle: 200ms 
-  response_timeout: 2000ms 
+  request_throttle: 50ms 
+  response_timeout: 1000ms 
 
   protocol_commandset: 0x25   # example only
   # protocol_variant: "EG4"   # example only
