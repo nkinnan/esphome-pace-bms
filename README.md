@@ -809,7 +809,7 @@ This is the version "spoken" by (I believe) the majority of packs sold today.   
 ```yaml
 pace_bms:
   <...etc...>
-  protocol_commandset: 0x20
+  protocol_commandset: 0x25
 
 text_sensor:
   - platform: pace_bms
