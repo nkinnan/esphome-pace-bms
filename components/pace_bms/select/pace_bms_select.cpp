@@ -88,9 +88,9 @@ void PaceBmsSelect::setup() {
 				this->parent_->write_protocols_v25(protocols_);
 			});
 		}
-		else {
-			ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_commandset());
-		}
+	}
+	else {
+		ESP_LOGE(TAG, "Protocol version not supported: 0x%02X", this->parent_->get_protocol_commandset());
 	}
 }
 void PaceBmsSelect::dump_config() {
