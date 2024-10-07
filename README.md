@@ -242,6 +242,16 @@ However, I'd like to keep a full list here if only for search engine discoverabi
   - required `pace_bms` config: 
 	  - `protocol_commandset: 0x25`
 
+- **Easun Powerwall**
+  - BMS hardware versions: 
+	  - **IBattery-EA-51.2V-200AH** / BMS Reports: P16S100A-32117-1.00 / PCB Sticker: P16S100A-PX32117-20A-K4-10B
+          - Related: IBattery-EA-51.2V-100AH
+	    - ![Easun Powerwall](images/easun-powerwall-240.png)
+  - required `pace_bms` config: 
+	  - `protocol_commandset: 0x25`
+  - notes:
+	  - Thank you Mateusz for reporting.
+
 ## Untested:
 
 TDT-6016
