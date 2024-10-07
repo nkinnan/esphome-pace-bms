@@ -244,7 +244,7 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 - **Easun Powerwall**
   - BMS hardware versions: 
-    - **IBattery-EA-51.2V-200AH** / BMS Reports: **P16S100A-32117-1.00** / PCB Sticker: **P16S100A-PX32117-20A-K4-10B**
+    - **IBattery-EA-51.2V-200AH** / BMS: **P16S100A-32117-1.00** / PCB: **P16S100A-PX32117-20A-K4-10B**
     - Related: IBattery-EA-51.2V-100AH
       - ![Easun Powerwall](images/easun-powerwall-240.png)
   - required `pace_bms` config: 
