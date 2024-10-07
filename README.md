@@ -218,39 +218,39 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 - **EG4 LIFEPOWER4**
   - hardware versions: 
-	  - **QT-YS00-16SV100A-V3.6** aka QT_PBMS_EPBMS_48100_16S aka QT-EPBMS-48100-16S100Z0 aka QT-PBMS-48100
-	  - Related hardware versions: 48100-22S100Z0, 48500-16S500Z0, 24200-8S100Z0, etc.
-	    - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
+    - **QT-YS00-16SV100A-V3.6** aka QT_PBMS_EPBMS_48100_16S aka QT-EPBMS-48100-16S100Z0 aka QT-PBMS-48100
+    - Related hardware versions: 48100-22S100Z0, 48500-16S500Z0, 24200-8S100Z0, etc.
+      - ![EG4 LIFEPOWER4](images/EG4-0x20-320.png)
   - required `pace_bms` config: 
-	  - `protocol_commandset: 0x20`
-	  - `protocol_variant: "EG4"`
-	  - `battery_chemistry: 0x4A`
+    - `protocol_commandset: 0x20`
+    - `protocol_variant: "EG4"`
+    - `battery_chemistry: 0x4A`
   - notes:
-	  - Although the protocol documentation I have is labeled EG4, the BMS is manufactured by [Qualtech](http://qualtech.com.cn/en/).  Any battery pack using the same BMS would be supported.
-	  - The BMS is a bit slow, so don't reduce the timeouts too much. I have found the following settings prevent lockup from querying it too quickly:
-		  -   `request_throttle: 200ms`
-		  -   `response_timeout: 2000ms`
+    - Although the protocol documentation I have is labeled EG4, the BMS is manufactured by [Qualtech](http://qualtech.com.cn/en/).  Any battery pack using the same BMS would be supported.
+    - The BMS is a bit slow, so don't reduce the timeouts too much. I have found the following settings prevent lockup from querying it too quickly:
+      - `request_throttle: 200ms`
+      - `response_timeout: 2000ms`
 
 
 ## Known working protocol version 25 battery packs:
 
 - **Jakiper JK48V100**
   - BMS hardware versions: 
-	  - **P16S100A-1812-1.00**
-	  - Related hardware versions: [P16S100A-0004-20A](http://www.pacebms.com/en/index.php/shows/33/12.html), [P16S200A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/66.html), [P16S150A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/67.html), [P16S120A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/68.html), [P16S50A-0001-10A](http://www.pacebms.com/en/index.php/shows/33/69.html), [P16S100A-0005-10A](http://www.pacebms.com/en/index.php/shows/33/77.html), [P16S100A-0001-10A](http://www.pacebms.com/en/index.php/shows/32/14.html), [P16S100A-0002-20A](http://www.pacebms.com/en/index.php/shows/32/11.html), 
-	    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
+    - **P16S100A-1812-1.00**
+    - Related hardware versions: [P16S100A-0004-20A](http://www.pacebms.com/en/index.php/shows/33/12.html), [P16S200A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/66.html), [P16S150A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/67.html), [P16S120A-0001-20A](http://www.pacebms.com/en/index.php/shows/33/68.html), [P16S50A-0001-10A](http://www.pacebms.com/en/index.php/shows/33/69.html), [P16S100A-0005-10A](http://www.pacebms.com/en/index.php/shows/33/77.html), [P16S100A-0001-10A](http://www.pacebms.com/en/index.php/shows/32/14.html), [P16S100A-0002-20A](http://www.pacebms.com/en/index.php/shows/32/11.html), 
+    - ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
   - required `pace_bms` config: 
-	  - `protocol_commandset: 0x25`
+    - `protocol_commandset: 0x25`
 
 - **Easun Powerwall**
   - BMS hardware versions: 
-	  - **IBattery-EA-51.2V-200AH** / BMS Reports: P16S100A-32117-1.00 / PCB Sticker: P16S100A-PX32117-20A-K4-10B
-          - Related: IBattery-EA-51.2V-100AH
-	    - ![Easun Powerwall](images/easun-powerwall-240.png)
+    - **IBattery-EA-51.2V-200AH** / BMS Reports: **P16S100A-32117-1.00** / PCB Sticker: **P16S100A-PX32117-20A-K4-10B**
+    - Related: IBattery-EA-51.2V-100AH
+      - ![Easun Powerwall](images/easun-powerwall-240.png)
   - required `pace_bms` config: 
-	  - `protocol_commandset: 0x25`
+    - `protocol_commandset: 0x25`
   - notes:
-	  - Thank you Mateusz for reporting.
+    - Thank you Mateusz for reporting.
 
 ## Untested:
 
