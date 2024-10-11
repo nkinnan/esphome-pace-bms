@@ -254,9 +254,9 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 - **Tewaycell All-in-one Mobile ESS Hybrid off-grid Inverter**
   - BMS hardware versions: 
-    - **[AO-MB-51200-10KW-WIFI](https://tewaycell.com/products/tewaycell-48v-400ah-20kwh-all-in-one-mobile-ess-built-in-hybrid-inverter)** / BMS: **fixme**
+    - **[AO-MB-51200-10KW-WIFI](https://tewaycell.com/products/tewaycell-48v-400ah-20kwh-all-in-one-mobile-ess-built-in-hybrid-inverter)** / BMS: **P16S200A-21587-2.03**
     - SKUs: AO-MB-51200-10KW-WIFI, AO-MB-51300-10KW-S-WIFI, AO-MB-51400-10KW-S-WIFI, AO-MB-51300-10KW-T-WIFI, AO-MB-51400-10KW-T-WIFI, AO-MB-51200-10KW-None, AO-MB-51300-10KW-S-None, AO-MB-51400-10KW-S-None, AO-MB-51300-10KW-T-None, AO-MB-51400-10KW-T-None
-    - Models: TW-AO-MB51300-AC380V-10KW-EU, TW-AO-MB51400-AC380V-10KW-EU, TW-AO-MB51300-10KW, TW-AO-MB51400-10KW, TW-AO-MB51200-10KW
+    - Models: TW-AO-MB51300-AC380V-10KW-EU, TW-AO-MB51400-AC380V-10KW-EU, TW-AO-MB51300-10KW, TW-AO-MB51400-10KW, TW-AO-MB51200-10KW, TW-AO-MB-51300-AC380V-10KW-EU, TW-AO-MB-51400-AC380V-10KW-EU, TW-AO-MB-51300-10KW, TW-AO-MB-51400-10KW, TW-AO-MB-51200-10KW
       - ![Tewaycell All-in-one](images/Tewaycell_All-in-one_265.png)
   - required `pace_bms` config: 
     - `protocol_commandset: 0x25`
