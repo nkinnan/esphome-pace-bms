@@ -252,6 +252,16 @@ However, I'd like to keep a full list here if only for search engine discoverabi
   - notes:
     - Thank you Mateusz for reporting.
 
+- **Tewaycell All-in-one Mobile ESS Hybrid off-grid Inverter**
+  - BMS hardware versions: 
+    - **[AO-MB-51200-10KW-WIFI](https://tewaycell.com/products/tewaycell-48v-400ah-20kwh-all-in-one-mobile-ess-built-in-hybrid-inverter)** / BMS: **fixme**
+    - SKUs: AO-MB-51200-10KW-WIFI, AO-MB-51300-10KW-S-WIFI, AO-MB-51400-10KW-S-WIFI, AO-MB-51300-10KW-T-WIFI, AO-MB-51400-10KW-T-WIFI, AO-MB-51200-10KW-None, AO-MB-51300-10KW-S-None, AO-MB-51400-10KW-S-None, AO-MB-51300-10KW-T-None, AO-MB-51400-10KW-T-None, 
+      - ![Tewaycell All-in-one](images/Tewaycell_All-in-one_300.png)
+  - required `pace_bms` config: 
+    - `protocol_commandset: 0x25`
+  - notes:
+    - Thank you tbrasser for reporting.
+
 ## Untested:
 
 TDT-6016
