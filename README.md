@@ -286,6 +286,8 @@ You will need a converter chip.  I have had success with the MAX485.  It's desig
 
 This example breakout board separates out the flow control pins **DE** and **R̅E̅**, but they need to be tied together which you can do by either bridging the solder blobs on the back of the pins, or otherwise wiring both pins together.  
 
+Some boards or more advanced tranceiver chips may have logic incorporated which automatically sets the flow control direction based on whether the TX pin is being toggled.  These boards/adapters won't need the flow control pin set and you can ignore references to **DE** and **R̅E̅**.  I haven't used such an adapter myself yet, but it should work fine.
+
 Connect the breakout board to the **ESP**:
 * **DI** (driver input) **->** ESP UART **TX** 
 * **RO** (receiver output) **->** ESP UART **RX**
