@@ -20,6 +20,8 @@ public:
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 protected:
+	int16_t AnalogInformationUserDefinedValue = -1;
+
 	enum CID2 : uint8_t
 	{
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4

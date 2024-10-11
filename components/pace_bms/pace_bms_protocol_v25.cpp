@@ -97,10 +97,11 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 	analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
-	uint8_t P3 = ReadHexEncodedByte(response, byteOffset);
-	if (P3 != 3)
+	AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
+	if (AnalogInformationUserDefinedValue != 3 && 
+		AnalogInformationUserDefinedValue != 9)
 	{
-		LogWarning("Response contains a constant with an unexpected value, this may be an incorrect protocol variant");
+		LogWarning("Response contains a constant with an unexpected value, this may be an incorrect protocol variant. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
 		//return false;
 	}
 
@@ -110,10 +111,17 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 	analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
+	// reported by f3nix that a BMS variant used in some wall-mount packs is 0x25 compatible but contains some extra
+	// garbage in the response (he partly decoded it but it was not of interest) so skip that before doing a length check
+	if (AnalogInformationUserDefinedValue == 9)
+	{
+		byteOffset += 28;
+	}
+
 	if (byteOffset != payloadLen + 13)
 	{
-		LogError("Length mismatch reading analog information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off");
-		return false;
+		LogError("Length mismatch reading analog information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
+		//return false;
 	}
 
 	// calculate some "extras"
@@ -634,9 +642,16 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));
 	}
 
+	// reported by f3nix that a BMS variant used in some wall-mount packs is 0x25 compatible but contains some extra
+	// garbage in the response (he partly decoded it but it was not of interest) so skip that before doing a length check
+	if (AnalogInformationUserDefinedValue == 9)
+	{
+		byteOffset += 2;
+	}
+
 	if (byteOffset != payloadLen + 13)
 	{
-		LogError("Length mismatch reading status information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off");
+		LogError("Length mismatch reading status information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
 		return false;
 	}
 
