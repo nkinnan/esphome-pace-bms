@@ -54,7 +54,7 @@ There is a high likelihood that one of these three version 20 protocol variants 
 
 Different manufacturers will have different BMS management software for version 20 battery packs.  It will not be PbmsTools, but one of a variety of manufacturer-specific affronts to good software design.  If your pack uses PbmsTools it's version 25.
 
-The password for "Qualtech 48100 Test" aka "BMSTest", the BMS management software for EG4 LIFEPOWER4 is "888888".  But there are legitimately some settings you shouldn't mess with - basically most of the stuff under the Config tab, but I wouldn't mess with overriding the firmware upgrade settings either).
+The password for "Qualtech 48100 Test" aka "BMS_Test", the BMS management software for EG4 LIFEPOWER4 is "888888".  But there are legitimately some settings you shouldn't mess with - basically most of the stuff under the Config tab, but I wouldn't mess with overriding the firmware upgrade settings either).
 
 These older BMSes will usually have two RS485 ports (looks like an ethernet socket) and may have an RS232 port (looks like a telephone socket).  They usually won't have a CAN bus port.
 
