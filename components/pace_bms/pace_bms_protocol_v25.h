@@ -135,7 +135,7 @@ protected:
 		for(int i = 0; i < Protocol25VariantCount; i++)
 		{
 			if (protocol25VariantInfo[i].analogInformationUserDefinedValue == analogInformationUserDefinedValue)
-				return protocol25VariantInfo[i];
+				return &(protocol25VariantInfo[i]);
 		}
 		return nullptr;
 	}
