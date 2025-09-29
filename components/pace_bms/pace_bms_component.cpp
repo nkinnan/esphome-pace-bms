@@ -142,6 +142,7 @@ void PaceBms::setup() {
 * fill read_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensors
 * instances via setting callbacks to receive the updates
 */
+
 void PaceBms::update() {
 	if (this->pace_bms_v25_ == nullptr &&
 		this->pace_bms_v20_ == nullptr)
@@ -442,7 +443,7 @@ void PaceBms::loop() {
 		// did we run out of buffer before EOI?
 		if (this->raw_data_index_ + 1 >= this->max_data_len_) {
 			std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
-			ESP_LOGV(TAG, "Response frame exceeds maximum supported length, last request was '%s', incomplete response frame: %s", this->last_request_description.c_str(), str.c_str());
+			ESP_LOGV(TAG, "Response frame exceeds maximum supported length, increase rx_buffer_size (recommended: 256 * number of battery packs), last request was '%s', incomplete response frame: %s", this->last_request_description.c_str(), str.c_str());
 			request_outstanding_ = false;
 			this->raw_data_index_ = 0;
 			return;
