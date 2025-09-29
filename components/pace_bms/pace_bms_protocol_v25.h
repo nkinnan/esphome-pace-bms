@@ -95,7 +95,8 @@ protected:
 	};
 
 	// known variants of the 0x25 protocol, identified by the "User Defined Value" field in the Analog Information response
-	Protocol25Variant protocol25VariantInfo[4] = 
+	const int Protocol25VariantCount = 4;
+	Protocol25Variant protocol25VariantInfo[Protocol25VariantCount] = 
 	{
 		// default / standard protocol
 		{
@@ -131,7 +132,7 @@ protected:
 
 	Protocol25Variant* GetProtocolVariantInfo(const int16_t analogInformationUserDefinedValue)
 	{
-		for(int i = 0; i < protocol25VariantInfo.size(); i++)
+		for(int i = 0; i < Protocol25VariantCount; i++)
 		{
 			if (protocol25VariantInfo[i].analogInformationUserDefinedValue == analogInformationUserDefinedValue)
 				return protocol25VariantInfo[i];
