@@ -144,7 +144,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 		{
 			// Eenovance/Sunsynk have 8 temperature readings, this is "expected" so we can log info instead of warning
-			if(currentProtocolVariant->analogInformationUserDefinedValue == 4)) 
+			if(currentProtocolVariant->analogInformationUserDefinedValue == 4)
 			{
 				LogInfo("Response contains more temperature readings than are supported, but that is expected for this protocol variant; the 7th and 8th readings will be ignored");
 			}

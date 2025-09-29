@@ -126,6 +126,10 @@ protected:
 	SlaveDiscoveryMode slave_discovery_mode_{ SLAVE_DISCOVERY_MODE_NONE };
 
 	// put into command_item as a pointer to handle the BMS response
+	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::vector<uint8_t>& response);
+	void handle_slave_discovery_broadcast_read_status_information_response_v25(std::vector<uint8_t>& response);
+	void handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response);
+	void handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response);
 	void handle_read_analog_information_response_v25(std::vector<uint8_t>& response);
 	void handle_read_status_information_response_v25(std::vector<uint8_t>& response);
 	void handle_read_hardware_version_response_v25(std::vector<uint8_t>& response);
