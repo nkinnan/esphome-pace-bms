@@ -46,7 +46,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 	// first thing we need to do is look ahead and check the AnalogInformation UserDefinedValue, which tells us how to interpret the rest of the payload
 	uint16_t snoopOffset = 13 + 36;
-	lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopAheadByteOffset);
+	uint8_t lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopAheadByteOffset);
 	lookAhead_AnalogInformationUserDefinedValue = -1;
 	if(lookAhead_TemperatureCount == 8)
 	{
