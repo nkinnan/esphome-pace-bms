@@ -137,147 +137,147 @@ void PaceBms::update() {
 				command_item* item = new command_item;
 				item->description_ = std::string("read analog information");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->status_information_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read status information");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->hardware_version_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read hardware version");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadHardwareVersionRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_hardware_version_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_hardware_version_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->serial_number_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read serial number");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadSerialNumberRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_serial_number_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_serial_number_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->protocols_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read protocols");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadProtocolsRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_protocols_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_protocols_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->cell_over_voltage_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read cell over voltage configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_CellOverVoltage, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_over_voltage_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_cell_over_voltage_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->pack_over_voltage_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read pack over voltage configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_PackOverVoltage, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_pack_over_voltage_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_pack_over_voltage_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->cell_under_voltage_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read cell under voltage configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_CellUnderVoltage, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_under_voltage_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_cell_under_voltage_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->pack_under_voltage_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read pack under voltage configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_PackUnderVoltage, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_pack_under_voltage_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_pack_under_voltage_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->charge_over_current_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read charge over current configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_ChargeOverCurrent, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_charge_over_current_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_charge_over_current_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->discharge_over_current1_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read discharge over current 1 configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_DischargeOverCurrent1, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_discharge_over_current1_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_discharge_over_current1_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->discharge_over_current2_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read discharge over current 2 configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_DischargeOverCurrent2, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_discharge_over_current2_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_discharge_over_current2_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->short_circuit_protection_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read short circuit protection configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_ShortCircuitProtection, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_short_circuit_protection_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_short_circuit_protection_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->cell_balancing_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read cell balancing configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_CellBalancing, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_cell_balancing_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_cell_balancing_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->sleep_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read sleep configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_Sleep, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_sleep_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_sleep_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->full_charge_low_charge_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read full charge low charge configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_FullChargeLowCharge, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_full_charge_low_charge_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_full_charge_low_charge_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->charge_and_discharge_over_temperature_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read charge and discharge over temperature configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_ChargeAndDischargeOverTemperature, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_charge_and_discharge_over_temperature_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_charge_and_discharge_over_temperature_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->charge_and_discharge_under_temperature_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read charge and discharge under temperature configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_ChargeAndDischargeUnderTemperature, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_charge_and_discharge_under_temperature_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_charge_and_discharge_under_temperature_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->system_datetime_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read system date/time");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadSystemDateTimeRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_system_datetime_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_system_datetime_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->mosfet_over_temperature_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read mosfet over temperature configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_MosfetOverTemperature, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_mosfet_over_temperature_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_mosfet_over_temperature_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->environment_over_under_temperature_configuration_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read environment over/under temperature configuration");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadConfigurationRequest(this->address_, PaceBmsProtocolV25::RC_EnvironmentOverUnderTemperature, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_environment_over_under_temperature_configuration_response_v25(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_environment_over_under_temperature_configuration_response_v25(response); };
 				read_queue_.push(item);
 			}
 		}
@@ -288,35 +288,35 @@ void PaceBms::update() {
 				command_item* item = new command_item;
 				item->description_ = std::string("read analog information");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadAnalogInformationRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_analog_information_response_v20(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v20(response); };
 				read_queue_.push(item);
 			}
 			if (this->status_information_callbacks_v20_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read status information");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadStatusInformationRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_status_information_response_v20(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v20(response); };
 				read_queue_.push(item);
 			}
 			if (this->hardware_version_callbacks_v20_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read hardware version");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadHardwareVersionRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_hardware_version_response_v20(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_hardware_version_response_v20(response); };
 				read_queue_.push(item);
 			}
 			if (this->serial_number_callbacks_v20_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read serial number");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadSerialNumberRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_serial_number_response_v20(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_serial_number_response_v20(response); };
 				read_queue_.push(item);
 			}
 			if (this->system_datetime_callbacks_v20_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read system date/time");
 				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateReadSystemDateTimeRequest(this->address_, request); };
-				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_read_system_datetime_response_v20(response); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_system_datetime_response_v20(response); };
 				read_queue_.push(item);
 			}
 		}
