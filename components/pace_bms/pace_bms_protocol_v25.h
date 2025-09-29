@@ -201,7 +201,7 @@ public:
 	};
 
 	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList);
 
 	// ==== Read Status Information
 	// 0 Responding Bus Id
@@ -402,7 +402,7 @@ protected:
 	const std::string DecodeWarningStatus2Value(const uint8_t val);
 
 public:
-	bool ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::vector<StatusInformation>& statusInformationList);
 
 	// ==== Read Hardware Version
 	// 1 Hardware Version string (may be ' ' padded at the end), the length header value will tell you how long it is, should be 20 'actual character' bytes (40 ASCII hex chars)
