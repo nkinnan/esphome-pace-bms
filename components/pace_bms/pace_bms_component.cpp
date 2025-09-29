@@ -560,7 +560,7 @@ void PaceBms::handle_slave_discovery_broadcast_read_analog_information_response_
 		return;
 	}
 
-	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Analog Information request", analog_information_list.size());
+	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Analog Information request", analog_information_list.size() - 1);
 }
 
 void PaceBms::handle_slave_discovery_broadcast_read_status_information_response_v25(std::vector<uint8_t>& response) {
@@ -573,7 +573,7 @@ void PaceBms::handle_slave_discovery_broadcast_read_status_information_response_
 		return;
 	}
 
-	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Status Information request", status_information_list.size());
+	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Status Information request", status_information_list.size() - 1);
 }
 
 void PaceBms::handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response) {
