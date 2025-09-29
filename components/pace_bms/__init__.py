@@ -8,7 +8,6 @@ from esphome.const import (
     CONF_ADDRESS,
 )
 from esphome import pins
-#from enum import Enum
 
 CODEOWNERS = ["@nkinnan"]
 
