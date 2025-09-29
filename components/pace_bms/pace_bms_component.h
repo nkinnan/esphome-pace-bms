@@ -233,7 +233,7 @@ protected:
 	std::queue<std::function<void()>> sensor_update_queue_;
 	std::queue<command_item*> read_queue_;
 	std::list<command_item*> write_queue_;
-	std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
+	std::function<void(std::span<uint8_t>&)> next_response_handler_ = nullptr;
 	std::string last_request_description;
 
 	// helper to avoid pushing redundant write requests
