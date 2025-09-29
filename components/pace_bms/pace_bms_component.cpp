@@ -108,7 +108,7 @@ void PaceBms::setup() {
 				if(address == this->address_) 
 					continue;
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery: query slave address " + std::to_string(i) + " for analog information");
+				item->description_ = std::string("slave discovery: query slave address " + std::to_string(address) + " for analog information");
 				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(address, request); };
 				item->process_response_frame_ = [this, address](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(address, response); };
 				read_queue_.push(item);
@@ -120,7 +120,7 @@ void PaceBms::setup() {
 				if(address == this->address_) 
 					continue;
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery: query slave address " + std::to_string(i) + " for status information");
+				item->description_ = std::string("slave discovery: query slave address " + std::to_string(address) + " for status information");
 				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(address, request); };
 				item->process_response_frame_ = [this, address](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(address, response); };
 				read_queue_.push(item);
