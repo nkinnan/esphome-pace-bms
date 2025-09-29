@@ -47,7 +47,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	// first thing we need to do is look ahead and check the AnalogInformation UserDefinedValue, which tells us how to interpret the rest of the payload
 	uint16_t snoopOffset = 13 + 36;
 	uint8_t lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopOffset);
-	lookAhead_AnalogInformationUserDefinedValue = -1;
+	uint8_t lookAhead_AnalogInformationUserDefinedValue = -1;
 	if(lookAhead_TemperatureCount == 8)
 	{
 		// tsk tsk, Eenovance/Sunsynk have 8 temperature readings so the offset is advanced by 8 bytes, gotta love that vendor lock in!
