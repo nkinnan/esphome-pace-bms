@@ -558,7 +558,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 	ESP_LOGV(TAG, "Processing response frame for '%s' request", this->last_request_description.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	{
-		const int maxChunkSize = 100;
+		/*const int maxChunkSize = 100;
 
 		// log the frame, but split it up into chunks if it's too long for a single log entry
 		// this prevents the esp32 logging buffer from being exceeded and cutting off the log entry
@@ -583,7 +583,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 
 				chunkNum++;
 			}
-		}
+		}*/
 		else // just log the entire thing in one go if short enough
 		{
 			std::string str(frame_bytes, frame_bytes + frame_length);
