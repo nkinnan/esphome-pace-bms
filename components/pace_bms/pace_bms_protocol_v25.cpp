@@ -131,7 +131,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	for(int i = 0; i < responseCount; i++)
 	{
 		AnalogInformation& analogInformation = analogInformationList.at(i);
-		std::memset(&analogInformation, 0, sizeof(AnalogInformation));
+		//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
 		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
 		if (analogInformation.cellCount > MAX_CELL_COUNT)
@@ -555,13 +555,6 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
-	statusInformation.warningText.clear();
-	statusInformation.balancingText.clear();
-	statusInformation.systemText.clear();
-	statusInformation.configurationText.clear();
-	statusInformation.protectionText.clear();
-	statusInformation.faultText.clear();
-
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
 	{
@@ -632,7 +625,14 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	for(int i = 0; i < responseCount; i++)
 	{
 		StatusInformation& statusInformation = statusInformationList.at(i);
-		std::memset(&statusInformation, 0, sizeof(StatusInformation));
+		//std::memset(&statusInformation, 0, sizeof(StatusInformation));
+
+		statusInformation.warningText.clear();
+		statusInformation.balancingText.clear();
+		statusInformation.systemText.clear();
+		statusInformation.configurationText.clear();
+		statusInformation.protectionText.clear();
+		statusInformation.faultText.clear();
 
 		// ========================== Warning / Alarm Status ==========================
 		uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
