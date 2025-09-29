@@ -42,6 +42,8 @@ CONF_RESPONSE_TIMEOUT            = "response_timeout"
 
 CONF_SLAVE_DISCOVERY_MODE            = "slave_discovery_mode"
 
+CONF_RX_BUFFER_SIZE = "rx_buffer_size"
+
 
 #DEFAULT_FLOW_CONTROL_PIN = 
 DEFAULT_ADDRESS = 1
@@ -56,6 +58,8 @@ DEFAULT_REQUEST_THROTTLE = "50ms"
 DEFAULT_RESPONSE_TIMEOUT = "200ms"
 
 DEFAULT_SLAVE_DISCOVERY_MODE = "NONE"
+
+DEFAULT_RX_BUFFER_SIZE = 256
 
 
 CONFIG_SCHEMA = (
@@ -76,6 +80,8 @@ CONFIG_SCHEMA = (
             cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
 
             cv.Optional(CONF_SLAVE_DISCOVERY_MODE, default=DEFAULT_SLAVE_DISCOVERY_MODE): cv.enum(SLAVE_DISCOVERY_MODE, upper=True),
+
+            cv.Optional(CONF_RX_BUFFER_SIZE, default=DEFAULT_RX_BUFFER_SIZE): cv.int_range(min=256, max=4096),
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -114,3 +120,6 @@ async def to_code(config):
 
     if (slave_discovery_mode := config.get(CONF_SLAVE_DISCOVERY_MODE)) is not None:
         cg.add(var.set_slave_discovery_mode(SLAVE_DISCOVERY_MODE[slave_discovery_mode]))
+
+    if CONF_RX_BUFFER_SIZE in config:
+        cg.add(var.set_rx_buffer_size(config[CONF_RX_BUFFER_SIZE]))

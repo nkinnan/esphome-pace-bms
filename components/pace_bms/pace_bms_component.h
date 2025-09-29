@@ -36,7 +36,8 @@ public:
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 	void set_slave_discovery_mode(SlaveDiscoveryMode mode) { this->slave_discovery_mode_ = mode; }
-	
+	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->max_data_len_ = rx_buffer_size; }
+
 	// make accessible to sensors
 	int get_protocol_commandset() { return this->protocol_commandset_; }
 	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
@@ -201,9 +202,8 @@ protected:
 	//           send_next_request_frame_) once a response arrives
 	PaceBmsProtocolV25* pace_bms_v25_;
 	PaceBmsProtocolV20* pace_bms_v20_;
-	// this is currently "right sized" as it's only slightly larger than the largest 0x20 response I've seen
-	static const uint16_t max_data_len_ = 256;
-	uint8_t raw_data_[max_data_len_];
+	uint16_t max_data_len_ = 256;
+	uint8_t *raw_data_;
 	uint8_t raw_data_index_{ 0 };
 	uint32_t last_transmit_{ 0 };
 	uint32_t last_receive_{ 0 };

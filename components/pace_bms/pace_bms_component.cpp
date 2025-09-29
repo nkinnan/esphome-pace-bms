@@ -58,6 +58,8 @@ void PaceBms::dump_config() {
 */
 
 void PaceBms::setup() {
+	this->raw_data_ = new uint8_t[this->max_data_len_];
+
 	if (this->protocol_commandset_ == 0x25) {
 		// the protocol en/decoder PaceBmsProtocolV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
 		this->pace_bms_v25_ = new PaceBmsProtocolV25(
