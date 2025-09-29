@@ -131,7 +131,7 @@ protected:
 
 	Protocol25Variant* GetProtocolVariantInfo(const int16_t analogInformationUserDefinedValue)
 	{
-		for(int i = 0; i < protocol25VariantInfo.length(); i++)
+		for(int i = 0; i < protocol25VariantInfo.size(); i++)
 		{
 			if (protocol25VariantInfo[i].analogInformationUserDefinedValue == analogInformationUserDefinedValue)
 				return protocol25VariantInfo[i];
