@@ -58,13 +58,12 @@ void PaceBms::dump_config() {
 */
 
 void PaceBms::setup() {
-	/*
 	this->raw_data_ = new uint8_t[this->max_data_len_];
 	if(this->raw_data_ == nullptr) {
 		this->status_set_error();
 		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %u bytes", this->max_data_len_);
 		return;
-	}*/
+	}
 
 	if (this->protocol_commandset_ == 0x25) {
 		// the protocol en/decoder PaceBmsProtocolV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
@@ -559,7 +558,7 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 	ESP_LOGV(TAG, "Processing response frame for '%s' request", this->last_request_description.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	{
-		/*const int maxChunkSize = 100;
+		const int maxChunkSize = 100;
 
 		// log the frame, but split it up into chunks if it's too long for a single log entry
 		// this prevents the esp32 logging buffer from being exceeded and cutting off the log entry
@@ -586,7 +585,6 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 			}
 		}
 		else // just log the entire thing in one go if short enough
-		*/
 		{
 			std::string str(frame_bytes, frame_bytes + frame_length);
 			ESP_LOGVV(TAG, "Response frame: %s", str.c_str());

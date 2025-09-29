@@ -203,9 +203,8 @@ protected:
 	PaceBmsProtocolV25* pace_bms_v25_;
 	PaceBmsProtocolV20* pace_bms_v20_;
 	uint16_t max_data_len_ = 256;
-	//uint8_t *raw_data_;
-	uint8_t raw_data_[1024];
-	uint8_t raw_data_index_{ 0 };
+	uint8_t *raw_data_;
+	uint16_t raw_data_index_{ 0 };
 	uint32_t last_transmit_{ 0 };
 	uint32_t last_receive_{ 0 };
 	bool request_outstanding_ = false;
