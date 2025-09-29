@@ -157,7 +157,9 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 				LogInfo("Response contains more temperature readings than are supported, but that is expected for this protocol variant; the 7th and 8th readings will be ignored");
 			}
 			else
+			{
 				LogWarning("Response contains more temperature readings than are supported, results will be truncated");
+			}
 		}
 		for (int i = 0; i < analogInformation.temperatureCount; i++)
 		{
