@@ -766,6 +766,38 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));
 		}
 	
+		// pop off any trailing "; " separator
+		if (statusInformation.warningText.length() > 2)
+		{
+			statusInformation.warningText.pop_back();
+			statusInformation.warningText.pop_back();
+		}
+		if (statusInformation.balancingText.length() > 2)
+		{
+			statusInformation.balancingText.pop_back();
+			statusInformation.balancingText.pop_back();
+		}
+		if (statusInformation.systemText.length() > 2)
+		{
+			statusInformation.systemText.pop_back();
+			statusInformation.systemText.pop_back();
+		}
+		if (statusInformation.configurationText.length() > 2)
+		{
+			statusInformation.configurationText.pop_back();
+			statusInformation.configurationText.pop_back();
+		}
+		if (statusInformation.protectionText.length() > 2)
+		{
+			statusInformation.protectionText.pop_back();
+			statusInformation.protectionText.pop_back();
+		}
+		if (statusInformation.faultText.length() > 2)
+		{
+			statusInformation.faultText.pop_back();
+			statusInformation.faultText.pop_back();
+		}
+
 		// skip any extra bytes that are part of this protocol variant
 		byteOffset += currentProtocolVariant->statusInformationExtraBytes;
 	}
@@ -774,38 +806,6 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	{
 		LogError("Length mismatch reading status information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. This will be ignored, but accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 		//return false;
-	}
-
-	// pop off any trailing "; " separator
-	if (statusInformation.warningText.length() > 2)
-	{
-		statusInformation.warningText.pop_back();
-		statusInformation.warningText.pop_back();
-	}
-	if (statusInformation.balancingText.length() > 2)
-	{
-		statusInformation.balancingText.pop_back();
-		statusInformation.balancingText.pop_back();
-	}
-	if (statusInformation.systemText.length() > 2)
-	{
-		statusInformation.systemText.pop_back();
-		statusInformation.systemText.pop_back();
-	}
-	if (statusInformation.configurationText.length() > 2)
-	{
-		statusInformation.configurationText.pop_back();
-		statusInformation.configurationText.pop_back();
-	}
-	if (statusInformation.protectionText.length() > 2)
-	{
-		statusInformation.protectionText.pop_back();
-		statusInformation.protectionText.pop_back();
-	}
-	if (statusInformation.faultText.length() > 2)
-	{
-		statusInformation.faultText.pop_back();
-		statusInformation.faultText.pop_back();
 	}
 
 	return true;
