@@ -581,6 +581,8 @@ void PaceBms::handle_slave_discovery_relay_read_analog_information_response_v25(
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
 	}
+
+	ESP_LOGI(TAG, "Discovered slave at address %i using relay Analog Information request", slaveAddress);
 }
 
 void PaceBms::handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response) {
@@ -592,6 +594,8 @@ void PaceBms::handle_slave_discovery_relay_read_status_information_response_v25(
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
 	}
+
+	ESP_LOGI(TAG, "Discovered slave at address %i using relay Status Information request", slaveAddress);
 }
 
 void PaceBms::handle_read_analog_information_response_v25(std::vector<uint8_t>& response) {

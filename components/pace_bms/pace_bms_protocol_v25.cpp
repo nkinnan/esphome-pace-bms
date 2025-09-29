@@ -33,7 +33,7 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
-bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -126,8 +126,13 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	LogVeryVerbose(std::to_string(responseCount) + " responses found in analog information payload");
 #endif
 
+	analogInformationList.resize(responseCount);
+
 	for(int i = 0; i < responseCount; i++)
 	{
+		AnalogInformation& analogInformation = analogInformationList.at(i);
+		std::memset(&analogInformation, 0, sizeof(AnalogInformation));
+
 		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
 		if (analogInformation.cellCount > MAX_CELL_COUNT)
 		{
