@@ -122,6 +122,9 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 			return false;
 		}
 	}
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
+	ESP_LOGVV(TAG, std::to_string(responseCount) + " responses found in payload");
+#endif
 
 	for(int i = 0; i < responseCount; i++)
 	{
