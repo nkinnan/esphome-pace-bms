@@ -121,13 +121,13 @@ protected:
 	uint32_t ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-	void WriteHexEncodedByte(std::span<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
+	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
 
 	// encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedUShort(std::span<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
+	void WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort);
 
 	// encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-	void WriteHexEncodedSShort(std::span<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
+	void WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort);
 
 	std::string FormatReturnCode(const uint8_t returnCode);
 

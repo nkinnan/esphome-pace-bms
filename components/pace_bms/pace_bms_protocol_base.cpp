@@ -201,7 +201,7 @@ uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::span<uint8_t>& data
 }
 
 // encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedByte(std::span<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
+void PaceBmsProtocolBase::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
 {
 	if (data.size() - dataOffset < 2)
 	{
@@ -213,7 +213,7 @@ void PaceBmsProtocolBase::WriteHexEncodedByte(std::span<uint8_t>& data, uint16_t
 }
 
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedUShort(std::span<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
+void PaceBmsProtocolBase::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
 	if (data.size() - dataOffset < 4)
 	{
@@ -227,7 +227,7 @@ void PaceBmsProtocolBase::WriteHexEncodedUShort(std::span<uint8_t>& data, uint16
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedSShort(std::span<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
+void PaceBmsProtocolBase::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
 	if (data.size() - dataOffset < 4)
 	{
