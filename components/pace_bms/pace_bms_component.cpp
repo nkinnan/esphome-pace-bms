@@ -88,21 +88,21 @@ void PaceBms::setup() {
 	// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
 	if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE /* todo: once I have implemented slave devices, only the master (with the uart) can do this */) {
 		// asking for analog info is always the first thing (here and in update()) so that we can sniff the User Defined Value field to determine the protocol variant
-		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			command_item* item = new command_item;
 			item->description_ = std::string("slave discovery: broadcast query for analog information");
 			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(0xFF, request); };
 			item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_analog_information_response_v25(response); };
 			read_queue_.push(item);
 		}
-		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			command_item* item = new command_item;
 			item->description_ = std::string("slave discovery: broadcast query for status information");
 			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(0xFF, request); };
 			item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
 			read_queue_.push(item);
 		}
-		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			for(int i = 0; i < 16; i++) { 
 				// don't query self
 				if(i == this->address_) 
@@ -114,7 +114,7 @@ void PaceBms::setup() {
 				read_queue_.push(item);
 			}
 		}
-		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			for(int i = 0; i < 16; i++) { 
 				// don't query self
 				if(i == this->address_) 
