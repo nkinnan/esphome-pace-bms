@@ -106,7 +106,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		int remainder = payloadLen % (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes);
 		if(remainder != 0)
 		{
-			LogError("Response to AnalogInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
+			LogError("Response to AnalogInformation broadcast request contains a payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
 			error = true;
 		}
 
@@ -600,7 +600,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		int remainder = payloadLen % (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes);
 		if(remainder != 0)
 		{
-			LogError("Response to StatusInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
+			LogError("Response to StatusInformation broadcast request contains a payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
 			error = true;
 		}
 
