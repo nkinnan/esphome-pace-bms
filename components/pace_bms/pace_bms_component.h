@@ -14,6 +14,12 @@
 namespace esphome {
 namespace pace_bms {
 
+enum SlaveDiscoveryMode : uint8_t {
+	SLAVE_DISCOVERY_MODE_NONE = 0,
+	SLAVE_DISCOVERY_MODE_RELAY = 1,
+	SLAVE_DISCOVERY_MODE_BROADCAST = 2,
+	SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST = 3,
+};
 
 // this class encapsulates an instance of PaceBmsProtocolV25 (which handles protocol version 0x25) and injects the logging dependencies into it
 //     in the future, other protocol versions may be supported
@@ -29,7 +35,8 @@ public:
 	void set_chemistry(uint8_t chemistry) { this->chemistry_ = chemistry; }
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
-
+	void set_slave_discovery_mode(SlaveDiscoveryMode mode) { this->slave_discovery_mode_ = mode; }
+	
 	// make accessible to sensors
 	int get_protocol_commandset() { return this->protocol_commandset_; }
 	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
@@ -115,6 +122,8 @@ protected:
 
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
+
+	SlaveDiscoveryMode slave_discovery_mode_{ SLAVE_DISCOVERY_MODE_NONE };
 
 	// put into command_item as a pointer to handle the BMS response
 	void handle_read_analog_information_response_v25(std::vector<uint8_t>& response);

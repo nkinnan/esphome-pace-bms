@@ -87,6 +87,58 @@ protected:
 		CID2_WriteCommunicationsProtocols                         = 0xEC,
 	};
 
+	struct Protocol25Variant
+	{
+		int16_t analogInformationUserDefinedValue;
+		int16_t analogInformationExtraBytes;
+		int16_t statusInformationExtraBytes;
+	};
+
+	// known variants of the 0x25 protocol, identified by the "User Defined Value" field in the Analog Information response
+	Protocol25Variant protocol25VariantInfo[] = 
+	{
+		// default / standard protocol
+		{
+			3,  // analogInformationUserDefinedValue
+			0,  // analogInformationExtraBytes
+			0   // statusInformationExtraBytes
+		},
+		// reported by f3nix that a BMS variant used in some wall-mount packs is 0x25 compatible but contains some extra
+		// garbage in the response (he partly decoded it but it was not of interest)
+		{
+			9,  // analogInformationUserDefinedValue
+			28, // analogInformationExtraBytes
+			2   // statusInformationExtraBytes
+		},
+		// reported by RoganDawes that Greenrich U-P5000 packs have an extra 2 bytes at the end of both analog and status responses containing unknown information
+		{
+			2,  // analogInformationUserDefinedValue
+			2,  // analogInformationExtraBytes
+			2   // statusInformationExtraBytes
+		},
+		// reported by johnmsole that Eenovance/Sunsynk packs have an 2 extra temperatures (2 * 4 bytes) plus an extra 28 bytes at the end containing unknown 
+		// information for a total of 36 extra bytes in the analog info response
+		//     the 8 temperature readings requires some special handling that is hard coded in ProcessReadAnalogInformationResponse
+		// and an extra 6 bytes at the end of the status response containing unknown information
+		{
+			4,  // analogInformationUserDefinedValue
+			28, // analogInformationExtraBytes (technically 36 but 8 of those are the extra temperature readings which are handled separately)
+			6   // statusInformationExtraBytes
+		},
+	};
+
+	Protocol25Variant* currentProtocolVariant;
+
+	Protocol25Variant* GetProtocolVariantInfo(const int16_t analogInformationUserDefinedValue)
+	{
+		for(int i = 0; i < protocol25VariantInfo.length(); i++)
+		{
+			if (protocol25VariantInfo[i].analogInformationUserDefinedValue == analogInformationUserDefinedValue)
+				return protocol25VariantInfo[i];
+		}
+		return nullptr;
+	}
+
 public:
 
 // ============================================================================
@@ -114,6 +166,10 @@ public:
 	//                     00001122222222222222222222222222222222222222222222222222222222222222223344444444444444444444444455556666777788999900001111
 	// Greenrich U-P5000: 
 	//        ~25014600D07C0001100CCB0CCC0CCB0CCC0CCB0CCB0CCB0CCB0CCA0CCA0CCB0CCB0CCB0CCB0CCB0CCC060B9F0B9F0B9E0BA40BA10BB9FE25CCB11E280226AC02EB26AC4EE086
+	//multi:  ~25014600D0F40002100CCC0CCD0CCC0CCC0CCC0CCC0CCC0CCC0CCB0CCC0CCC0CCC0CCC0CCC0CCD0CCC060B950B930B910B990B9A0BAFFE80CCC11C730226AC038826AC4A
+	//multi:                   100CCD0CCE0CCD0CCD0CCE0CCD0CCD0CCD0CCD0CCD0CCD0CCD0CCD0CCC0CCD0CCE060B980B900B910B970B9D0BB0FE8DCD0617A70226AC038226AC3DC4AC
+	//multi:  ~25014600D0F40002100CC30CC30CC20CC10CC30CC40CC30CC40CC40CC60CC10CC20CC50CC40CC30CC2060B850B790B840B790B940B92FEA0CC321772024DFC00C74E201E
+	//multi:                   100CC20CC20CC30CC40CC40CC40CC30CC40CC20CC40CC30CC40CC40CC30CC30CC2060B670B6B0B6B0B690B610B73FE02CC341A450350DC000E4E2020C70E\r
 	// FSP PS5120E (same UserDefinedValue constant as the U-P5000):
 	//        ~25014600D07C0001100CE70CEC0CE70CE80CEA0CEB0CEB0CE80CE60CE80CE60CEA0CEA0CE90CE70CEB060B950B910B940B910BB20BBC0407CE8D08CD022673004F271017E168
 	// Eenovance (rebadged Sunsynk from South Africa) **** NOTE THIS HAS 8 TEMPERATURE READINGS **** All values past that section are shifted right by 8 bytes
@@ -121,7 +177,6 @@ public:
 
 	static const uint8_t exampleReadAnalogInformationRequestV25[];
 	static const uint8_t exampleReadAnalogInformationResponseV25[];
-
 	static const uint8_t MAX_CELL_COUNT = 16;
 	static const uint8_t MAX_TEMP_COUNT = 6;
 	struct AnalogInformation
@@ -174,9 +229,13 @@ public:
 	//        ~25014600E04E000110000000000000000000000000000000000600000000000000000000000E00000000000000EEC3.
 	// Greenrich U-P5000: 
 	//        ~25014600E04E000110000000000000000000000000000000000600000000000000000000000E00000000000011EEC1
+	//multi:  ~25014600F098000210000000000000000000000000000000000600000000000000000000000E00000000000011
+	//multi:                   10000000000000000000000000000000000600000000000000000000000E00000000000000E0CB
+	//multi:  ~25014600F098000210000000000000000000000000000000000600000000000000000000000E00000000000008
+	//multi:                   10000000000000000000000000000000000600000000000000000000000E48000000000000E0B9
 	// Eenovance (rebadged Sunsynk from South Africa)
-	//        ~25014600905200011000000000000000000000000000000000060000000000000000000000260000000000000F0040EE14\r
-	
+	//        ~25014600905200011000000000000000000000000000000000060000000000000000000000260000000000000F0040EE14
+
 	static const uint8_t exampleReadStatusInformationRequestV25[];
 	static const uint8_t exampleReadStatusInformationResponseV25[];
 

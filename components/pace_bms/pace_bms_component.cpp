@@ -84,13 +84,57 @@ void PaceBms::setup() {
 	while (this->available() != 0) {
 		this->read_byte(&byte);
 	}
+
+	// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
+	if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE /* todo: once I have implemented slave devices, only the master (with the uart) can do this */) {
+		// asking for analog info is always the first thing (here and in update()) so that we can sniff the User Defined Value field to determine the protocol variant
+		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			command_item* item = new command_item;
+			item->description_ = std::string("slave discovery: broadcast query for analog information");
+			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(0xFF, request); };
+			item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_analog_information_response_v25(response); };
+			read_queue_.push(item);
+		}
+		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			command_item* item = new command_item;
+			item->description_ = std::string("slave discovery: broadcast query for status information");
+			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(0xFF, request); };
+			item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
+			read_queue_.push(item);
+		}
+		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			for(int i = 0; i < 16; i++) { 
+				// don't query self
+				if(i == this->address_) 
+					continue;
+				command_item* item = new command_item;
+				item->description_ = std::string("slave discovery: query slave address " + std::to_string(i) + " for analog information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(i, request); };
+				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(i, response); };
+				read_queue_.push(item);
+			}
+		}
+		if(this->slave_discovery_mode_ = SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			for(int i = 0; i < 16; i++) { 
+				// don't query self
+				if(i == this->address_) 
+					continue;
+				command_item* item = new command_item;
+				item->description_ = std::string("slave discovery: query slave address " + std::to_string(i) + " for status information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(i, request); };
+				item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(i, response); };
+				read_queue_.push(item);
+			}
+		}
+
+		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
+	}
 }
 
 /*
-* fill read_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensor
+* fill read_queue_ with any necessary BMS commands to update sensor values, based on what was subscribed for by child sensors
 * instances via setting callbacks to receive the updates
 */
-
 void PaceBms::update() {
 	if (this->pace_bms_v25_ == nullptr &&
 		this->pace_bms_v20_ == nullptr)
@@ -104,6 +148,7 @@ void PaceBms::update() {
 		if (this->pace_bms_v25_ != nullptr) {
 			ESP_LOGV(TAG, "Queueing v25 refresh commands");
 
+			// asking for analog info is always the first thing (here and in setup() if applicable) so that we can sniff the User Defined Value field to determine the protocol variant
 			if (this->analog_information_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read analog information");
@@ -504,6 +549,50 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 /*
 * read/write response frame received handlers, called via next_response_handler_ from process_response_frame
 */
+
+void PaceBms::handle_slave_discovery_broadcast_read_analog_information_response_v25(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsProtocolV25::AnalogInformation analog_information;
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(0xFF, this->responding_address_, response, analog_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+}
+
+void PaceBms::handle_slave_discovery_broadcast_read_status_information_response_v25(std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsProtocolV25::StatusInformation status_information;
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(0xFF, this->responding_address_, response, status_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+}
+
+void PaceBms::handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsProtocolV25::AnalogInformation analog_information;
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(slaveAddress, this->responding_address_, response, analog_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+}
+
+void PaceBms::handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	PaceBmsProtocolV25::StatusInformation status_information;
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(slaveAddress, this->responding_address_, response, status_information);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+}
 
 void PaceBms::handle_read_analog_information_response_v25(std::vector<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());

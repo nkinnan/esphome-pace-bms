@@ -8,6 +8,7 @@ from esphome.const import (
     CONF_ADDRESS,
 )
 from esphome import pins
+#from enum import Enum
 
 CODEOWNERS = ["@nkinnan"]
 
@@ -15,6 +16,17 @@ DEPENDENCIES = ["uart"]
 
 pace_bms_ns = cg.esphome_ns.namespace("pace_bms")
 PaceBms = pace_bms_ns.class_("PaceBms", cg.PollingComponent, uart.UARTDevice)
+
+
+SlaveDiscoveryMode = pace_bms_ns.enum("SlaveDiscoveryMode")
+
+SLAVE_DISCOVERY_MODE = {
+    "NONE": SlaveDiscoveryMode.SLAVE_DISCOVERY_MODE_NONE,
+    "RELAY": SlaveDiscoveryMode.SLAVE_DISCOVERY_MODE_RELAY,
+    "BROADCAST": SlaveDiscoveryMode.SLAVE_DISCOVERY_MODE_BROADCAST,
+    "RELAY_AND_BROADCAST": SlaveDiscoveryMode.SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST,
+}
+
 
 # "this" for pace_bms_sensor/text_sensor/switch/etc. to get parent from
 CONF_PACE_BMS_ID = "pace_bms_id"
@@ -29,6 +41,8 @@ CONF_CHEMISTRY                   = "battery_chemistry"
 CONF_REQUEST_THROTTLE            = "request_throttle"
 CONF_RESPONSE_TIMEOUT            = "response_timeout"
 
+CONF_SLAVE_DISCOVERY_MODE            = "slave_discovery_mode"
+
 
 #DEFAULT_FLOW_CONTROL_PIN = 
 DEFAULT_ADDRESS = 1
@@ -41,6 +55,8 @@ DEFAULT_PROTOCOL_COMMANDSET = 0x25
 
 DEFAULT_REQUEST_THROTTLE = "50ms"
 DEFAULT_RESPONSE_TIMEOUT = "200ms"
+
+DEFAULT_SLAVE_DISCOVERY_MODE = "NONE"
 
 
 CONFIG_SCHEMA = (
@@ -59,6 +75,8 @@ CONFIG_SCHEMA = (
 
             cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
             cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
+
+            cv.Optional(CONF_SLAVE_DISCOVERY_MODE, default=DEFAULT_SLAVE_DISCOVERY_MODE): cv.enum(SLAVE_DISCOVERY_MODE, upper=True),
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -95,3 +113,5 @@ async def to_code(config):
     if CONF_RESPONSE_TIMEOUT in config:
         cg.add(var.set_response_timeout(config[CONF_RESPONSE_TIMEOUT]))
 
+    if (slave_discovery_mode := config.get(CONF_SLAVE_DISCOVERY_MODE)) is not None:
+        cg.add(var.set_slave_discovery_mode(SLAVE_DISCOVERY_MODE[slave_discovery_mode]))

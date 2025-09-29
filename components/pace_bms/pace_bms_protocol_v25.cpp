@@ -44,6 +44,30 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		return false;
 	}
 
+	// first thing we need to do is look ahead and check the AnalogInformation UserDefinedValue, which tells us how to interpret the rest of the payload
+	uint16_t snoopOffset = 13 + 36;
+	lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopAheadByteOffset);
+	lookAhead_AnalogInformationUserDefinedValue = -1;
+	if(lookAhead_TemperatureCount == 8)
+	{
+		// tsk tsk, Eenovance/Sunsynk have 8 temperature readings so the offset is advanced by 8 bytes, gotta love that vendor lock in!
+		uint16_t snoopOffset = 13 + 116; // 129
+		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset);
+	}
+	else
+	{
+		// "normal" offset for the User Defined Value
+		uint16_t snoopOffset = 13 + 108; // 121
+		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset);
+	}
+	currentProtocolVariant = GetProtocolVariantInfo(lookAhead_AnalogInformationUserDefinedValue);
+	if(currentProtocolVariant == nullptr)
+	{
+		LogWarning("Response contains a constant with an unexpected value '" + std::to_string(AnalogInformationUserDefinedValue) + "' this may be an incorrect protocol variant. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
+		// we can still try to parse the rest of the response, just assume the "standard" variant
+		currentProtocolVariant = GetProtocolVariantInfo(3);
+	}
+
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
@@ -54,128 +78,142 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		LogVerbose("Response contains a value other than zero before the BusId");
 	}
 
-	// note that this is the *payload* busId, not the header busId which was already validated
-	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
-	if (busIdResponding != busId)
+	// by default we expect a single response, but if the request was sent to the broadcast address 0xFF, then 
+	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
+	// (I think, but need more examples to be sure this is the proper interpretation)
+	uint8_t responseCount = 1;
+	if(busId != 0xFF)
 	{
-		LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
-		return false;
-	}
-
-	analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (analogInformation.cellCount > MAX_CELL_COUNT)
-	{
-		LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
-	}
-	for (int i = 0; i < analogInformation.cellCount; i++)
-	{
-		uint16_t cellVoltage = ReadHexEncodedUShort(response, byteOffset);
-
-		if (i > MAX_CELL_COUNT - 1)
-			continue;
-
-		analogInformation.cellVoltagesMillivolts[i] = cellVoltage;
-	}
-
-	analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
-	if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
-	{
-		// Eenovance/Sunsynk have 8 temperature readings, so if we haven't already seen the AnalogInformationUserDefinedValue
-		// (if it's still -1) and the count of temperature readings is 8, then lets go ahead and do a quick read-ahead to see 
-		// if it "looks like" one of those packs in which case we can log info instead of warning
-		int16_t Lookahead_AnalogInformationUserDefinedValue = -1;
-		if(analogInformation.temperatureCount == 8 && AnalogInformationUserDefinedValue == -1 /* not read yet */)
+		// note that this is the *payload* busId, not the header busId which was already validated
+		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
+		if (busIdResponding != busId)
 		{
-			// this is at byte offset 13 (start of payload) + 116 (offset in payload) in the response, note this is offset from "normal" due to the 8 temperature readings
-			uint16_t snoopAheadByteOffset = 13 + 116; // 129
-			Lookahead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopAheadByteOffset);
+			LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
+			return false;
+		}
+	}
+	else
+	{
+		bool error = false;
+
+		responseCount = ReadHexEncodedByte(response, byteOffset);
+		if (responseCount < 1 || responseCount > 16)
+		{
+			LogError("Response to AnalogInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
+			error = true;
 		}
 
-		if((AnalogInformationUserDefinedValue == 4) || 
-		   (AnalogInformationUserDefinedValue == -1 /* not read yet */ && Lookahead_AnalogInformationUserDefinedValue == 4)) 
+		int remainder = payloadLen % (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes - 4 /* byte 0x00 plus responseCount byte */);
+		if(remainder != 0)
 		{
-			LogInfo("Response contains more temperature readings than are supported, but that is expected for this protocol variant; the 7th and 8th readings will be ignored");
+			LogError("Response to AnalogInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
+			error = true;
 		}
-		else
-			LogWarning("Response contains more temperature readings than are supported, results will be truncated");
+
+		int calculatedResponseCount = payloadLen / (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes - 4 /* byte 0x00 plus count byte */);
+		if(calculatedResponseCount != responseCount)
+		{
+			LogWarning("Response to AnalogInformation broadcast request contains a response count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
+			responseCount = calculatedResponseCount;
+		}
+
+		if(error)
+		{
+			return false;
+		}
 	}
-	for (int i = 0; i < analogInformation.temperatureCount; i++)
+
+	for(int i = 0; i < responseCount; i++)
 	{
-		uint16_t temperature = ReadHexEncodedUShort(response, byteOffset);
+		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
+		if (analogInformation.cellCount > MAX_CELL_COUNT)
+		{
+			LogWarning("Response contains more cell voltage readings than are supported, results will be truncated");
+		}
+		for (int i = 0; i < analogInformation.cellCount; i++)
+		{
+			uint16_t cellVoltage = ReadHexEncodedUShort(response, byteOffset);
 
-		if (i > MAX_TEMP_COUNT - 1)
-			continue; // already logged above if count was too high
+			if (i > MAX_CELL_COUNT - 1)
+				continue;
 
-		analogInformation.temperaturesTenthsCelcius[i] = (temperature - 2730);
+			analogInformation.cellVoltagesMillivolts[i] = cellVoltage;
+		}
+
+		analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
+		if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
+		{
+			// Eenovance/Sunsynk have 8 temperature readings, this is "expected" so we can log info instead of warning
+			if(currentProtocolVariant->analogInformationUserDefinedValue == 4)) 
+			{
+				LogInfo("Response contains more temperature readings than are supported, but that is expected for this protocol variant; the 7th and 8th readings will be ignored");
+			}
+			else
+				LogWarning("Response contains more temperature readings than are supported, results will be truncated");
+		}
+		for (int i = 0; i < analogInformation.temperatureCount; i++)
+		{
+			uint16_t temperature = ReadHexEncodedUShort(response, byteOffset);
+
+			if (i > MAX_TEMP_COUNT - 1)
+				continue; // already logged above if count was too high
+
+			analogInformation.temperaturesTenthsCelcius[i] = (temperature - 2730);
+		}
+
+		analogInformation.currentMilliamps = ReadHexEncodedSShort(response, byteOffset) * 10;
+
+		analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
+
+		analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+
+		AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
+		if (AnalogInformationUserDefinedValue != currentProtocolVariant->analogInformationUserDefinedValue)
+		{
+			LogWarning("AnalogInformation UserDefinedValue lookahead mismatch, this is a bug in PACE_BMS. Please file an issue report with full logs at VERY_VERBOSE level.");
+			return false;
+		}
+
+		analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+
+		analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
+
+		analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+	
+		// skip any extra bytes that are part of this protocol variant
+		byteOffset += currentProtocolVariant->analogInformationExtraBytes;
+
+		// calculate some "extras"
+		analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
+		analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
+		if (analogInformation.SoH > 100)
+		{
+			// many packs have a little bit "extra" capacity to make sure they hit their nameplate value
+			analogInformation.SoH = 100;
+		}
+		analogInformation.powerWatts = ((float)analogInformation.totalVoltageMillivolts * (float)analogInformation.currentMilliamps) / 1000000.0f;
+		analogInformation.minCellVoltageMillivolts = 65535;
+		analogInformation.maxCellVoltageMillivolts = 0;
+		analogInformation.avgCellVoltageMillivolts = 0;
+		for (int i = 0; i < analogInformation.cellCount; i++)
+		{
+			if (analogInformation.cellVoltagesMillivolts[i] > analogInformation.maxCellVoltageMillivolts)
+				analogInformation.maxCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
+			if (analogInformation.cellVoltagesMillivolts[i] < analogInformation.minCellVoltageMillivolts)
+				analogInformation.minCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
+			analogInformation.avgCellVoltageMillivolts += analogInformation.cellVoltagesMillivolts[i];
+		}
+		analogInformation.avgCellVoltageMillivolts /= analogInformation.cellCount;
+		analogInformation.maxCellDifferentialMillivolts = analogInformation.maxCellVoltageMillivolts - analogInformation.minCellVoltageMillivolts;
 	}
 
-	analogInformation.currentMilliamps = ReadHexEncodedSShort(response, byteOffset) * 10;
-
-	analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
-
-	analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
-
-	AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
-	if (AnalogInformationUserDefinedValue != 3 && 
-	    AnalogInformationUserDefinedValue != 9 &&
-	    AnalogInformationUserDefinedValue != 2 &&
-	    AnalogInformationUserDefinedValue != 4)
-	{
-		LogWarning("Response contains a constant with an unexpected value '" + std::to_string(AnalogInformationUserDefinedValue) + "' this may be an incorrect protocol variant. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
-		//return false;
-	}
-
-	analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
-
-	analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
-
-	analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
-
-	// reported by f3nix that a BMS variant used in some wall-mount packs is 0x25 compatible but contains some extra
-	// garbage in the response (he partly decoded it but it was not of interest) so skip that before doing a length check
-	if (AnalogInformationUserDefinedValue == 9)
-	{
-		byteOffset += 28;
-	}
-	// reported by RoganDawes that Greenrich U-P5000 packs have an extra 2 bytes at the end containing unknown information
-	else if (AnalogInformationUserDefinedValue == 2)
-	{
-		byteOffset += 2;
-	}
-	// reported by johnmsole that Eenovance/Sunsynk packs have an 2 extra temperatures (2 * 4 bytes) plus an extra 28 bytes at the end containing unknown information for a total of 36 extra bytes
-	else if (AnalogInformationUserDefinedValue == 4)
-	{
-		byteOffset += 28; 
-	}
-
-	if (byteOffset != payloadLen + 13)
+	// this check remains valid with broadcast responses due to the loop above
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */)
 	{
 		LogError("Length mismatch reading analog information response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. This will be ignored, but accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 		//return false;
 	}
-
-	// calculate some "extras"
-	analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
-	analogInformation.SoH = ((float)analogInformation.fullCapacityMilliampHours / (float)analogInformation.designCapacityMilliampHours) * 100.0f;
-	if (analogInformation.SoH > 100)
-	{
-		// many packs have a little bit "extra" capacity to make sure they hit their nameplate value
-		analogInformation.SoH = 100;
-	}
-	analogInformation.powerWatts = ((float)analogInformation.totalVoltageMillivolts * (float)analogInformation.currentMilliamps) / 1000000.0f;
-	analogInformation.minCellVoltageMillivolts = 65535;
-	analogInformation.maxCellVoltageMillivolts = 0;
-	analogInformation.avgCellVoltageMillivolts = 0;
-	for (int i = 0; i < analogInformation.cellCount; i++)
-	{
-		if (analogInformation.cellVoltagesMillivolts[i] > analogInformation.maxCellVoltageMillivolts)
-			analogInformation.maxCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
-		if (analogInformation.cellVoltagesMillivolts[i] < analogInformation.minCellVoltageMillivolts)
-			analogInformation.minCellVoltageMillivolts = analogInformation.cellVoltagesMillivolts[i];
-		analogInformation.avgCellVoltageMillivolts += analogInformation.cellVoltagesMillivolts[i];
-	}
-	analogInformation.avgCellVoltageMillivolts /= analogInformation.cellCount;
-	analogInformation.maxCellDifferentialMillivolts = analogInformation.maxCellVoltageMillivolts - analogInformation.minCellVoltageMillivolts;
 
 	return true;
 }
@@ -533,161 +571,187 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		LogVerbose("Response contains a value other than zero before the BusId");
 	}
 
-	// note that this is the *payload* busId, not the header busId which was already validated
-	uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
-	if (busIdResponding != busId)
+	// by default we expect a single response, but if the request was sent to the broadcast address 0xFF, then 
+	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
+	// (I think, but need more examples to be sure this is the proper interpretation)
+	uint8_t responseCount = 1;
+	if(busId != 0xFF)
 	{
-		LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
-		return false;
-	}
-
-	// ========================== Warning / Alarm Status ==========================
-	uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
-	if (cellCount > MAX_CELL_COUNT)
-	{
-		LogWarning("Response contains more cell warnings than are supported, results will be truncated");
-	}
-	for (int i = 0; i < cellCount; i++)
-	{
-		uint8_t cw = ReadHexEncodedByte(response, byteOffset);
-		statusInformation.warning_value_cell[i] = cw;
-
-		if (i > MAX_CELL_COUNT - 1)
-			continue;
-
-		if (cw == 0)
-			continue;
-
-		// below/above limit
-		statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
-	}
-
-	uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
-	if (tempCount > MAX_TEMP_COUNT)
-	{
-		LogWarning("Response contains more temperature warnings than are supported, results will be truncated");
-	}
-	for (int i = 0; i < tempCount; i++)
-	{
-		uint8_t tw = ReadHexEncodedByte(response, byteOffset);
-		statusInformation.warning_value_temp[i] = tw;
-
-		if (i > MAX_TEMP_COUNT - 1)
-			continue;
-
-		if (tw == 0)
-			continue;
-
-		// below/above limit
-		statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw) + std::string("; "));
-	}
-
-	uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.warning_value_charge_current = chargeCurrentWarn;
-	if (chargeCurrentWarn != 0)
-	{
-		// below/above limit
-		statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
-	}
-
-	uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.warning_value_total_voltage = totalVoltageWarn;
-	if (totalVoltageWarn != 0)
-	{
-		// below/above limit
-		statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
-	}
-
-	uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.warning_value_discharge_current = dischargeCurrentWarn;
-	if (dischargeCurrentWarn != 0)
-	{
-		// below/above limit
-		statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
-	}
-
-	// ========================== Protection Status ==========================
-	uint8_t protectState1 = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.protection_value1 = protectState1;
-	if (protectState1 != 0)
-	{
-		statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
-	}
-
-	uint8_t protectState2 = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.protection_value2 = protectState2;
-	if (protectState2 != 0)
-	{
-		statusInformation.protectionText.append(DecodeProtectionStatus2Value(protectState2));
-	}
-
-	// ========================== System Status ==========================
-	uint8_t systemState = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.system_value = systemState;
-	if (systemState != 0)
-	{
-		statusInformation.systemText.append(DecodeStatusValue(systemState));
-	}
-
-	// ========================== Configuration Status ==========================
-	uint8_t controlState = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.configuration_value = controlState;
-	if (controlState != 0)
-	{
-		statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState));
-	}
-
-	// ========================== Fault Status ==========================
-	uint8_t faultState = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.fault_value = faultState;
-	if (faultState != 0)
-	{
-		statusInformation.faultText.append(DecodeFaultStatusValue(faultState));
-	}
-
-	// ========================== Balancing Status ==========================
-	uint16_t balanceState = ReadHexEncodedUShort(response, byteOffset);
-	statusInformation.balancing_value = balanceState;
-	for (int i = 0; i < 16; i++)
-	{
-		if ((balanceState & (1 << i)) != 0)
+		// note that this is the *payload* busId, not the header busId which was already validated
+		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
+		if (busIdResponding != busId)
 		{
-			statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
+			LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
+			return false;
+		}
+	}
+	else
+	{
+		bool error = false;
+
+		responseCount = ReadHexEncodedByte(response, byteOffset);
+		if (responseCount < 1 || responseCount > 16)
+		{
+			LogError("Response to StatusInformation broadcast request contains a response count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
+			error = true;
+		}
+
+		int remainder = payloadLen % (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes - 4 /* byte 0x00 plus count byte */);
+		if(remainder != 0)
+		{
+			LogError("Response to StatusInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
+			error = true;
+		}
+
+		int calculatedResponseCount = payloadLen / (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes - 4 /* byte 0x00 plus responseCount byte */);
+		if(calculatedResponseCount != responseCount)
+		{
+			LogWarning("Response to StatusInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
+			responseCount = calculatedResponseCount;
+		}
+
+		if(error)
+		{
+			return false;
 		}
 	}
 
-	// ========================== MORE Warning / Alarm Status ==========================
-	// Note: It seems like these two may be a "summary" of the previous "Warning / Alarm" section as it duplicates some of the same warnings,
-	//       but I'll leave it for completeness or in case the bit shows up in one place but not the other in practice.
-	uint8_t warnState1 = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.warning_value1 = warnState1;
-	if (warnState1 != 0)
+	for(int i = 0; i < responseCount; i++)
 	{
-		statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
-	}
+		// ========================== Warning / Alarm Status ==========================
+		uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
+		if (cellCount > MAX_CELL_COUNT)
+		{
+			LogWarning("Response contains more cell warnings than are supported, results will be truncated");
+		}
+		for (int i = 0; i < cellCount; i++)
+		{
+			uint8_t cw = ReadHexEncodedByte(response, byteOffset);
+			statusInformation.warning_value_cell[i] = cw;
 
-	uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset);
-	statusInformation.warning_value2 = warnState1;
-	if (warnState2 != 0)
-	{
-		statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));
-	}
+			if (i > MAX_CELL_COUNT - 1)
+				continue;
 
-	// reported by f3nix that a BMS variant used in some wall-mount packs is 0x25 compatible but contains some extra
-	// garbage in the response (he partly decoded it but it was not of interest) so skip that before doing a length check
-	if (AnalogInformationUserDefinedValue == 9)
-	{
-		byteOffset += 2;
-	}
-	// reported by RoganDawes that Greenrich U-P5000 packs have an extra 2 bytes at the end containing unknown information
-	if (AnalogInformationUserDefinedValue == 2)
-	{
-		byteOffset += 2;
-	}
-	// reported by johnmsole that Eenovance/Sunsynk packs have an extra 6 bytes at the end containing unknown information
-	else if (AnalogInformationUserDefinedValue == 4)
-	{
-		byteOffset += 6;
+			if (cw == 0)
+				continue;
+
+			// below/above limit
+			statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
+		}
+
+		uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
+		if (tempCount > MAX_TEMP_COUNT)
+		{
+			LogWarning("Response contains more temperature warnings than are supported, results will be truncated");
+		}
+		for (int i = 0; i < tempCount; i++)
+		{
+			uint8_t tw = ReadHexEncodedByte(response, byteOffset);
+			statusInformation.warning_value_temp[i] = tw;
+
+			if (i > MAX_TEMP_COUNT - 1)
+				continue;
+
+			if (tw == 0)
+				continue;
+
+			// below/above limit
+			statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw) + std::string("; "));
+		}
+
+		uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.warning_value_charge_current = chargeCurrentWarn;
+		if (chargeCurrentWarn != 0)
+		{
+			// below/above limit
+			statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
+		}
+
+		uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.warning_value_total_voltage = totalVoltageWarn;
+		if (totalVoltageWarn != 0)
+		{
+			// below/above limit
+			statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
+		}
+
+		uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.warning_value_discharge_current = dischargeCurrentWarn;
+		if (dischargeCurrentWarn != 0)
+		{
+			// below/above limit
+			statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn) + std::string("; "));
+		}
+
+		// ========================== Protection Status ==========================
+		uint8_t protectState1 = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.protection_value1 = protectState1;
+		if (protectState1 != 0)
+		{
+			statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
+		}
+
+		uint8_t protectState2 = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.protection_value2 = protectState2;
+		if (protectState2 != 0)
+		{
+			statusInformation.protectionText.append(DecodeProtectionStatus2Value(protectState2));
+		}
+
+		// ========================== System Status ==========================
+		uint8_t systemState = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.system_value = systemState;
+		if (systemState != 0)
+		{
+			statusInformation.systemText.append(DecodeStatusValue(systemState));
+		}
+
+		// ========================== Configuration Status ==========================
+		uint8_t controlState = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.configuration_value = controlState;
+		if (controlState != 0)
+		{
+			statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState));
+		}
+
+		// ========================== Fault Status ==========================
+		uint8_t faultState = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.fault_value = faultState;
+		if (faultState != 0)
+		{
+			statusInformation.faultText.append(DecodeFaultStatusValue(faultState));
+		}
+
+		// ========================== Balancing Status ==========================
+		uint16_t balanceState = ReadHexEncodedUShort(response, byteOffset);
+		statusInformation.balancing_value = balanceState;
+		for (int i = 0; i < 16; i++)
+		{
+			if ((balanceState & (1 << i)) != 0)
+			{
+				statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
+			}
+		}
+
+		// ========================== MORE Warning / Alarm Status ==========================
+		// Note: It seems like these two may be a "summary" of the previous "Warning / Alarm" section as it duplicates some of the same warnings,
+		//       but I'll leave it for completeness or in case the bit shows up in one place but not the other in practice.
+		uint8_t warnState1 = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.warning_value1 = warnState1;
+		if (warnState1 != 0)
+		{
+			statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
+		}
+
+		uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset);
+		statusInformation.warning_value2 = warnState1;
+		if (warnState2 != 0)
+		{
+			statusInformation.warningText.append(DecodeWarningStatus2Value(warnState2));
+		}
+	
+		// skip any extra bytes that are part of this protocol variant
+		byteOffset += currentProtocolVariant->statusInformationExtraBytes;
 	}
 
 	if (byteOffset != payloadLen + 13)
