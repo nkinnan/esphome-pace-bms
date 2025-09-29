@@ -86,7 +86,7 @@ uint16_t PaceBmsProtocolBase::LengthFromChecksummedLength(const uint16_t cklen)
 }
 
 // Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
-uint16_t PaceBmsProtocolBase::CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data)
+uint16_t PaceBmsProtocolBase::CalculateRequestOrResponseChecksum(const std::span<uint8_t>& data)
 {
 	uint32_t cksum = 0;
 
@@ -135,7 +135,7 @@ uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex)
 }
 
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset)
+uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
 	if (data.size() - dataOffset < 2)
 	{
@@ -149,7 +149,7 @@ uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::vector<uint8_t>& data
 }
 
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
+uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
 	if (data.size() - dataOffset < 4)
 	{
@@ -165,7 +165,7 @@ uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::vector<uint8_t>& d
 }
 
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset)
+int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
 	if (data.size() - dataOffset < 4)
 	{
@@ -181,7 +181,7 @@ int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::vector<uint8_t>& da
 }
 
 // decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
-uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset)
+uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
 	if (data.size() - dataOffset < 8)
 	{
@@ -201,7 +201,7 @@ uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::vector<uint8_t>& da
 }
 
 // encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
+void PaceBmsProtocolBase::WriteHexEncodedByte(std::span<uint8_t>& data, uint16_t& dataOffset, uint8_t byte)
 {
 	if (data.size() - dataOffset < 2)
 	{
@@ -213,7 +213,7 @@ void PaceBmsProtocolBase::WriteHexEncodedByte(std::vector<uint8_t>& data, uint16
 }
 
 // encode a 'real' uint16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
+void PaceBmsProtocolBase::WriteHexEncodedUShort(std::span<uint8_t>& data, uint16_t& dataOffset, uint16_t ushort)
 {
 	if (data.size() - dataOffset < 4)
 	{
@@ -227,7 +227,7 @@ void PaceBmsProtocolBase::WriteHexEncodedUShort(std::vector<uint8_t>& data, uint
 }
 
 // encode a 'real' int16_t to the stream by writing four ASCII hex encoded bytes
-void PaceBmsProtocolBase::WriteHexEncodedSShort(std::vector<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
+void PaceBmsProtocolBase::WriteHexEncodedSShort(std::span<uint8_t>& data, uint16_t& dataOffset, int16_t sshort)
 {
 	if (data.size() - dataOffset < 4)
 	{
@@ -345,7 +345,7 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 
 // validate all fields in the response except the payload data: SOI marker, header values, checksum, EOI marker
 // returns the detected payload length (payload always starts at offset 13), or -1 for error
-int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t> response)
+int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t> response)
 {
 	uint16_t byteOffset = 0;
 
