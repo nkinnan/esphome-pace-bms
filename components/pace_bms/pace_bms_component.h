@@ -209,7 +209,7 @@ protected:
 	uint32_t last_receive_{ 0 };
 	bool request_outstanding_ = false;
 	void send_next_request_frame_();
-	void process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length);
+	void process_response_frame_(uint8_t* frame_bytes, uint16_t frame_length);
 
 	// each item points to:
 	//     a description of what is happening such as "Read Analog Information" for logging purposes

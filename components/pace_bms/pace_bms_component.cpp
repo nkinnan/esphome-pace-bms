@@ -554,7 +554,7 @@ void PaceBms::send_next_request_frame_() {
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
-void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length) {
+void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_length) {
 	ESP_LOGV(TAG, "Processing response frame for '%s' request", this->last_request_description.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	{
