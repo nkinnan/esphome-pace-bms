@@ -420,11 +420,13 @@ void PaceBms::loop() {
 	// if there is no request active, throw away any incoming data before proceeding
 	if (this->request_outstanding_ == false &&
 		this->available() != 0) {
-		ESP_LOGV(TAG, "Throwing away incoming data because there is no request active");
 		uint8_t byte;
+		uint16_t discarded_bytes = 0;
 		while (this->available() != 0) {
 			this->read_byte(&byte);
+			discarded_bytes++;
 		}
+		ESP_LOGV(TAG, "Threw away %i bytes of incoming data because there is no request active", discarded_bytes);
 	}
 
 	const uint32_t now = millis();
