@@ -584,8 +584,9 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint8_t frame_length
 
 				chunkNum++;
 			}
-		}*/
+		}
 		else // just log the entire thing in one go if short enough
+		*/
 		{
 			std::string str(frame_bytes, frame_bytes + frame_length);
 			ESP_LOGVV(TAG, "Response frame: %s", str.c_str());
