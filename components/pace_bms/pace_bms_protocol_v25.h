@@ -95,7 +95,7 @@ protected:
 	};
 
 	// known variants of the 0x25 protocol, identified by the "User Defined Value" field in the Analog Information response
-	Protocol25Variant protocol25VariantInfo[] = 
+	Protocol25Variant protocol25VariantInfo[4] = 
 	{
 		// default / standard protocol
 		{
