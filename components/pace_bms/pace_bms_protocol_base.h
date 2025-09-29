@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <span>
 
 // uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
 //#include "esphome/core/optional.h"

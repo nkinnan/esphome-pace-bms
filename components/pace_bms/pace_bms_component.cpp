@@ -2,7 +2,6 @@
 #include <iomanip>
 #include <sstream>
 #include <functional>
-#include <span>
 
 #include "esphome/core/log.h"
 #include "pace_bms_component.h"
