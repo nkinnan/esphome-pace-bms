@@ -59,6 +59,11 @@ void PaceBms::dump_config() {
 
 void PaceBms::setup() {
 	this->raw_data_ = new uint8_t[this->max_data_len_];
+	if(this->raw_data_ == nullptr) {
+		this->status_set_error();
+		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %u bytes", this->max_data_len_);
+		return;
+	}
 
 	if (this->protocol_commandset_ == 0x25) {
 		// the protocol en/decoder PaceBmsProtocolV25 is meant to be standalone with no dependencies, so inject esphome logging function wrappers on construction
