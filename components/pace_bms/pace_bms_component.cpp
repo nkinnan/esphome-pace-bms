@@ -109,30 +109,6 @@ void PaceBms::setup() {
 			item->process_response_frame_ = [this](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
 			read_queue_.push(item);
 		}
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int address = 0; address < 16; address++) { 
-				// don't query self
-				if(address == this->address_) 
-					continue;
-				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery: query slave address " + std::to_string(address) + " for analog information");
-				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(address, request); };
-				item->process_response_frame_ = [this, address](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(address, response); };
-				read_queue_.push(item);
-			}
-		}
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int address = 0; address < 16; address++) { 
-				// don't query self
-				if(address == this->address_) 
-					continue;
-				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery: query slave address " + std::to_string(address) + " for status information");
-				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(address, request); };
-				item->process_response_frame_ = [this, address](std::vector<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(address, response); };
-				read_queue_.push(item);
-			}
-		}
 		
 		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
 	}
@@ -423,6 +399,8 @@ void PaceBms::loop() {
 	this->last_receive_ = now;
 
 	while (this->available() != 0) {
+		// todo: see if it's possible to avoid this copy by peeking into the uart buffer, and even sending 
+		// the underlying uart buffer downstream to process_response_frame_
 		this->read_byte(&this->raw_data_[this->raw_data_index_]);
 
 		// is the SOI marker present at byte 0?
@@ -545,7 +523,9 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_lengt
 	}
 #endif
 
+	// todo: see if it's possible to avoid this copy, maybe using std::span
 	std::vector<uint8_t> response(frame_bytes, frame_bytes + frame_length);
+	std::span<uint8_t> response_span = std::span<uint8_t>(frame_bytes, frame_length);
 
 	if (next_response_handler_ != nullptr)
 		next_response_handler_(response);
