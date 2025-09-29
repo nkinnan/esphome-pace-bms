@@ -63,7 +63,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	currentProtocolVariant = GetProtocolVariantInfo(lookAhead_AnalogInformationUserDefinedValue);
 	if(currentProtocolVariant == nullptr)
 	{
-		LogWarning("Response contains a constant with an unexpected value '" + std::to_string(AnalogInformationUserDefinedValue) + "' this may be an incorrect protocol variant. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
+		LogWarning("Response contains a constant with an unexpected value '" + std::to_string(lookAhead_AnalogInformationUserDefinedValue) + "' this may be an incorrect protocol variant. This will be ignored, but please file an issue report with full logs at VERY_VERBOSE level.");
 		// we can still try to parse the rest of the response, just assume the "standard" variant
 		currentProtocolVariant = GetProtocolVariantInfo(3);
 	}
@@ -170,8 +170,8 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 		analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
-		AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
-		if (AnalogInformationUserDefinedValue != currentProtocolVariant->analogInformationUserDefinedValue)
+		uint8_t again_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
+		if (again_AnalogInformationUserDefinedValue != currentProtocolVariant->analogInformationUserDefinedValue)
 		{
 			LogWarning("AnalogInformation UserDefinedValue lookahead mismatch, this is a bug in PACE_BMS. Please file an issue report with full logs at VERY_VERBOSE level.");
 			return false;
