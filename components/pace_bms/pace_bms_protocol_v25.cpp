@@ -551,7 +551,7 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t va
 	return str;
 }
 
-bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::vector<StatusInformation>& statusInformationList)
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
@@ -627,8 +627,13 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	LogVeryVerbose(std::to_string(responseCount) + " responses found in status information payload");
 #endif
 
+	statusInformationList.resize(responseCount);
+
 	for(int i = 0; i < responseCount; i++)
 	{
+		StatusInformation& statusInformation = statusInformationList.at(i);
+		std::memset(&statusInformation, 0, sizeof(StatusInformation));
+
 		// ========================== Warning / Alarm Status ==========================
 		uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
 		if (cellCount > MAX_CELL_COUNT)
