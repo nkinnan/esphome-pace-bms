@@ -523,8 +523,6 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_lengt
 	}
 #endif
 
-	// todo: see if it's possible to avoid this copy, maybe using std::span
-	//std::vector<uint8_t> response(frame_bytes, frame_bytes + frame_length);
 	std::span<uint8_t> response = std::span<uint8_t>(frame_bytes, frame_length);
 
 	if (next_response_handler_ != nullptr)
