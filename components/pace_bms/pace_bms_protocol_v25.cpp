@@ -103,14 +103,14 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 			error = true;
 		}
 
-		int remainder = payloadLen % (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes - 4 /* byte 0x00 plus responseCount byte */);
+		int remainder = payloadLen % (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes);
 		if(remainder != 0)
 		{
 			LogError("Response to AnalogInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
 			error = true;
 		}
 
-		int calculatedResponseCount = payloadLen / (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes - 4 /* byte 0x00 plus count byte */);
+		int calculatedResponseCount = payloadLen / (118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes);
 		if(calculatedResponseCount != responseCount)
 		{
 			LogWarning("Response to AnalogInformation broadcast request contains a response count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
@@ -597,14 +597,14 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			error = true;
 		}
 
-		int remainder = payloadLen % (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes - 4 /* byte 0x00 plus count byte */);
+		int remainder = payloadLen % (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes);
 		if(remainder != 0)
 		{
 			LogError("Response to StatusInformation broadcast request contains a payload length that is not a multiple of the expected payload size.");
 			error = true;
 		}
 
-		int calculatedResponseCount = payloadLen / (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes - 4 /* byte 0x00 plus responseCount byte */);
+		int calculatedResponseCount = payloadLen / (72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes);
 		if(calculatedResponseCount != responseCount)
 		{
 			LogWarning("Response to StatusInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
