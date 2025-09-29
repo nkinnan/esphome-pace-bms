@@ -126,7 +126,8 @@ protected:
 		},
 	};
 
-	Protocol25Variant* currentProtocolVariant;
+	// default is the "standard" protocol variant
+	Protocol25Variant* currentProtocolVariant = &protocol25VariantInfo[0];
 
 	Protocol25Variant* GetProtocolVariantInfo(const int16_t analogInformationUserDefinedValue)
 	{
