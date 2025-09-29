@@ -1342,7 +1342,7 @@ const unsigned char PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationR
 const unsigned char PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25[] = "~250046D4F01001E10AE740D2F00AF9FB\r";
 const unsigned char PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
-bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t> response, PackOverVoltageConfiguration& config)
+bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackOverVoltageConfiguration& config)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)

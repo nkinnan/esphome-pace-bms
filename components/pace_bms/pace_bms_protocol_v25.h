@@ -733,7 +733,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t> response, PackOverVoltageConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackOverVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const PackOverVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Cell Under Voltage Configuration
