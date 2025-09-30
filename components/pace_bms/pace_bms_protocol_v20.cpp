@@ -39,7 +39,7 @@ bool PaceBmsProtocolV20::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	// save in order compare against what ProcessReadStatusInformationResponse sussed out
 	OPTIONAL_NS::optional<std::string> previously_detected_variant = OPTIONAL_NS::optional<std::string>(detected_variant.value());
@@ -152,7 +152,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse(const uint8_t busI
 	}
 }
 
-bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -232,7 +232,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_PYLON(const uint8_
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -317,7 +317,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_SEPLOS(const uint8
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -1283,7 +1283,7 @@ void PaceBmsProtocolV20::StatusDecode_EG4::DecodeSystemStatus(const uint8_t val,
 	}
 }
 
-bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
 {
 	// save in order compare against what ProcessReadAnalogInformationResponse sussed out
 	OPTIONAL_NS::optional<std::string> previously_detected_variant = OPTIONAL_NS::optional<std::string>(detected_variant.value());
@@ -1397,7 +1397,7 @@ bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse(const uint8_t busI
 	}
 }
 
-bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -1523,7 +1523,7 @@ bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_PYLON(const uint8_
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -1698,7 +1698,7 @@ bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_SEPLOS(const uint8
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -1864,7 +1864,7 @@ bool PaceBmsProtocolV20::CreateReadHardwareVersionRequest(const uint8_t busId, s
 	CreateRequest(busId, CID2_ReadHardwareVersion, std::vector<uint8_t>(), request);
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadHardwareVersionResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::string& hardwareVersion)
+bool PaceBmsProtocolV20::ProcessReadHardwareVersionResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion)
 {
 	hardwareVersion.clear();
 
@@ -1924,7 +1924,7 @@ bool PaceBmsProtocolV20::CreateReadSerialNumberRequest(const uint8_t busId, std:
 	CreateRequest(busId, CID2_ReadSerialNumber, std::vector<uint8_t>(), request);
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadSerialNumberResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, std::string& serialNumber)
+bool PaceBmsProtocolV20::ProcessReadSerialNumberResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -1994,7 +1994,7 @@ bool PaceBmsProtocolV20::CreateWriteShutdownCommandRequest(const uint8_t busId, 
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessWriteShutdownCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response)
+bool PaceBmsProtocolV20::ProcessWriteShutdownCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -2028,7 +2028,7 @@ bool PaceBmsProtocolV20::CreateReadSystemDateTimeRequest(const uint8_t busId, st
 	CreateRequest(busId, CID2_ReadDateTime, std::vector<uint8_t>(), request);
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response, DateTime& dateTime)
+bool PaceBmsProtocolV20::ProcessReadSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
@@ -2065,7 +2065,7 @@ bool PaceBmsProtocolV20::CreateWriteSystemDateTimeRequest(const uint8_t busId, c
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessWriteSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t>& response)
+bool PaceBmsProtocolV20::ProcessWriteSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)

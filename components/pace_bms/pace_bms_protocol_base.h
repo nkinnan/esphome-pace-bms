@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <span>
 
 // uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
 //#include "esphome/core/optional.h"
@@ -97,7 +98,7 @@ protected:
 	static uint16_t LengthFromChecksummedLength(const uint16_t cklen);
 
 	// Calculates the checksum for an entire request or response "packet" (this is not for the embedded length value)
-	static uint16_t CalculateRequestOrResponseChecksum(const std::vector<uint8_t>& data);
+	static uint16_t CalculateRequestOrResponseChecksum(const std::span<uint8_t>& data);
 
 	// helper for WriteHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
@@ -108,16 +109,16 @@ protected:
 	uint8_t HexToNibble(const uint8_t hex);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	uint8_t ReadHexEncodedByte(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	uint8_t ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	uint16_t ReadHexEncodedUShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	uint16_t ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	int16_t ReadHexEncodedSShort(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	int16_t ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset);
 
 	// decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
-	uint32_t ReadHexEncodedULong(const std::vector<uint8_t>& data, uint16_t& dataOffset);
+	uint32_t ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
 	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
@@ -132,6 +133,6 @@ protected:
 
 	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
 
-	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::vector<uint8_t> response);
+	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t> response);
 };
 

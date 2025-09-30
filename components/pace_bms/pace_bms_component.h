@@ -127,45 +127,45 @@ protected:
 	SlaveDiscoveryMode slave_discovery_mode_{ SLAVE_DISCOVERY_MODE_NONE };
 
 	// put into command_item as a pointer to handle the BMS response
-	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::vector<uint8_t>& response);
-	void handle_slave_discovery_broadcast_read_status_information_response_v25(std::vector<uint8_t>& response);
-	void handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response);
-	void handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::vector<uint8_t>& response);
-	void handle_read_analog_information_response_v25(std::vector<uint8_t>& response);
-	void handle_read_status_information_response_v25(std::vector<uint8_t>& response);
-	void handle_read_hardware_version_response_v25(std::vector<uint8_t>& response);
-	void handle_read_serial_number_response_v25(std::vector<uint8_t>& response);
-	void handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand, std::vector<uint8_t>& response);
-	void handle_write_mosfet_switch_command_response_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state, std::vector<uint8_t>& response);
-	void handle_write_shutdown_command_response_v25(std::vector<uint8_t>& response);
-	void handle_read_protocols_response_v25(std::vector<uint8_t>& response);
-	void handle_write_protocols_response_v25(PaceBmsProtocolV25::Protocols protocols, std::vector<uint8_t>& response);
-	void handle_read_cell_over_voltage_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_pack_over_voltage_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_cell_under_voltage_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_pack_under_voltage_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_charge_over_current_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_discharge_over_current1_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_discharge_over_current2_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_short_circuit_protection_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_cell_balancing_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_sleep_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_full_charge_low_charge_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_charge_and_discharge_over_temperature_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_charge_and_discharge_under_temperature_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_mosfet_over_temperature_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_environment_over_under_temperature_configuration_response_v25(std::vector<uint8_t>& response);
-	void handle_read_system_datetime_response_v25(std::vector<uint8_t>& response);
-	void handle_write_system_datetime_response_v25(std::vector<uint8_t>& response);
-	void handle_write_configuration_response_v25(std::vector<uint8_t>& response);
+	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);
+	void handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response);
+	void handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
+	void handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
+	void handle_read_analog_information_response_v25(std::span<uint8_t>& response);
+	void handle_read_status_information_response_v25(std::span<uint8_t>& response);
+	void handle_read_hardware_version_response_v25(std::span<uint8_t>& response);
+	void handle_read_serial_number_response_v25(std::span<uint8_t>& response);
+	void handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand, std::span<uint8_t>& response);
+	void handle_write_mosfet_switch_command_response_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state, std::span<uint8_t>& response);
+	void handle_write_shutdown_command_response_v25(std::span<uint8_t>& response);
+	void handle_read_protocols_response_v25(std::span<uint8_t>& response);
+	void handle_write_protocols_response_v25(PaceBmsProtocolV25::Protocols protocols, std::span<uint8_t>& response);
+	void handle_read_cell_over_voltage_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_pack_over_voltage_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_cell_under_voltage_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_pack_under_voltage_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_charge_over_current_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_discharge_over_current1_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_discharge_over_current2_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_short_circuit_protection_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_cell_balancing_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_sleep_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_full_charge_low_charge_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_charge_and_discharge_over_temperature_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_charge_and_discharge_under_temperature_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_mosfet_over_temperature_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_environment_over_under_temperature_configuration_response_v25(std::span<uint8_t>& response);
+	void handle_read_system_datetime_response_v25(std::span<uint8_t>& response);
+	void handle_write_system_datetime_response_v25(std::span<uint8_t>& response);
+	void handle_write_configuration_response_v25(std::span<uint8_t>& response);
 
-	void handle_read_analog_information_response_v20(std::vector<uint8_t>& response);
-	void handle_read_status_information_response_v20(std::vector<uint8_t>& response);
-	void handle_read_hardware_version_response_v20(std::vector<uint8_t>& response);
-	void handle_read_serial_number_response_v20(std::vector<uint8_t>& response);
-	void handle_write_shutdown_command_response_v20(std::vector<uint8_t>& response);
-	void handle_read_system_datetime_response_v20(std::vector<uint8_t>& response);
-	void handle_write_system_datetime_response_v20(std::vector<uint8_t>& response);
+	void handle_read_analog_information_response_v20(std::span<uint8_t>& response);
+	void handle_read_status_information_response_v20(std::span<uint8_t>& response);
+	void handle_read_hardware_version_response_v20(std::span<uint8_t>& response);
+	void handle_read_serial_number_response_v20(std::span<uint8_t>& response);
+	void handle_write_shutdown_command_response_v20(std::span<uint8_t>& response);
+	void handle_read_system_datetime_response_v20(std::span<uint8_t>& response);
+	void handle_write_system_datetime_response_v20(std::span<uint8_t>& response);
 
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
@@ -219,7 +219,7 @@ protected:
 	{
 		std::string description_;
 		std::function<bool(std::vector<uint8_t>&)> create_request_frame_;
-		std::function<void(std::vector<uint8_t>&)> process_response_frame_;
+		std::function<void(std::span<uint8_t>&)> process_response_frame_;
 	};
 	// when the bus is clear:
 	//     the next command_item will be popped from either the read or the write queue (writes always take priority)
@@ -233,7 +233,7 @@ protected:
 	std::queue<std::function<void()>> sensor_update_queue_;
 	std::queue<command_item*> read_queue_;
 	std::list<command_item*> write_queue_;
-	std::function<void(std::vector<uint8_t>&)> next_response_handler_ = nullptr;
+	std::function<void(std::span<uint8_t>&)> next_response_handler_ = nullptr;
 	std::string last_request_description;
 
 	// helper to avoid pushing redundant write requests
