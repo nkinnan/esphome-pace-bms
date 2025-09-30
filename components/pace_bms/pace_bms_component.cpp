@@ -423,8 +423,8 @@ void PaceBms::loop() {
 	this->last_receive_ = now;
 
 	while (this->available() != 0) {
-		// todo: see if it's possible to avoid this copy by peeking into the uart buffer, and even sending 
-		// the underlying uart buffer downstream to process_response_frame_
+		// note that while it might theoretically be prefereable to be able to grab a pointer to the raw UART buffer instead of duplicating the 
+		// data in memory, there is no way to do that for some very good reasons
 		this->read_byte(&this->raw_data_[this->raw_data_index_]);
 
 		// is the SOI marker present at byte 0?
