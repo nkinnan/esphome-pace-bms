@@ -109,7 +109,31 @@ void PaceBms::setup() {
 			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
 			read_queue_.push(item);
 		}
-		
+		// this (and the next if) is a lot of traffic, and the BMS tends to barf if you ask it for a non-existent address, but I'll leave it for debugging purposes
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			for(int address = 0; address < 16; address++) { 
+				// don't query self
+				if(address == this->address_) 
+					continue;
+				command_item* item = new command_item;
+				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(address) + " for analog information");
+				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(address, request); };
+				item->process_response_frame_ = [this, address](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(address, response); };
+				read_queue_.push(item);
+			}
+		}
+		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+			for(int address = 0; address < 16; address++) { 
+				// don't query self
+				if(address == this->address_) 
+					continue;
+				command_item* item = new command_item;
+				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(address) + " for status information");
+				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(address, request); };
+				item->process_response_frame_ = [this, address](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(address, response); };
+				read_queue_.push(item);
+			}
+		}
 		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
 	}
 }
