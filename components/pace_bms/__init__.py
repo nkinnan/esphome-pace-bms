@@ -83,7 +83,7 @@ DEFAULT_RX_BUFFER_SIZE = 256
 
 
 BASE_SCHEMA = cv.Schema({
-    cv.Optional(CONF_TYPE, default=DEFAULT_CONF_TYPE): cv.enum(CONF_TYPE_ENUM, upper=True),
+    cv.Optional(CONF_TYPE, default=DEFAULT_CONF_TYPE): cv.enum(CONF_TYPE_ENUM, upper=False),
     cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
