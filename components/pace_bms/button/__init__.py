@@ -4,21 +4,21 @@ from esphome.components import button
 from esphome.const import (
     CONF_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsButton = pace_bms_ns.class_("PaceBmsButton", cg.Component)
-PaceBmsButtonImplementation = pace_bms_ns.class_("PaceBmsButtonImplementation", cg.Component, button.Button)
+PaceBmsButton = pace_bms_base_ns.class_("PaceBmsButton", cg.Component)
+PaceBmsButtonImplementation = pace_bms_base_ns.class_("PaceBmsButtonImplementation", cg.Component, button.Button)
 
 CONF_SHUTDOWN = "shutdown"
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsButton),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_SHUTDOWN): button.button_schema(PaceBmsButtonImplementation),
     }
