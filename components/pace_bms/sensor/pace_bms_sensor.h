@@ -75,7 +75,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBmsBase* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
 	// analog info
 	sensor::Sensor* cell_count_sensor_{ nullptr };

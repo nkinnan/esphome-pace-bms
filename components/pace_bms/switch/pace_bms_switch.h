@@ -27,13 +27,13 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBmsBase* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
-	pace_bms::PaceBmsSwitchImplementation* buzzer_alarm_switch_{ nullptr };
-	pace_bms::PaceBmsSwitchImplementation* led_alarm_switch_{ nullptr };
-	pace_bms::PaceBmsSwitchImplementation* charge_current_limiter_switch_{ nullptr };
-	pace_bms::PaceBmsSwitchImplementation* charge_mosfet_switch_{ nullptr };
-	pace_bms::PaceBmsSwitchImplementation* discharge_mosfet_switch_{ nullptr };
+	pace_bms_base::PaceBmsSwitchImplementation* buzzer_alarm_switch_{ nullptr };
+	pace_bms_base::PaceBmsSwitchImplementation* led_alarm_switch_{ nullptr };
+	pace_bms_base::PaceBmsSwitchImplementation* charge_current_limiter_switch_{ nullptr };
+	pace_bms_base::PaceBmsSwitchImplementation* charge_mosfet_switch_{ nullptr };
+	pace_bms_base::PaceBmsSwitchImplementation* discharge_mosfet_switch_{ nullptr };
 };
 
 }  // namespace pace_bms_base
