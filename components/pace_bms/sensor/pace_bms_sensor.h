@@ -10,7 +10,7 @@ namespace pace_bms_base {
 
 class PaceBmsSensor : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 
 	// analog info
 	void set_cell_count_sensor(sensor::Sensor* sens) { cell_count_sensor_ = sens;            request_analog_info_callback_ = true; }
@@ -75,7 +75,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms::PaceBmsBase* parent_;
 
 	// analog info
 	sensor::Sensor* cell_count_sensor_{ nullptr };

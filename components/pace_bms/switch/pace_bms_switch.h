@@ -27,7 +27,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms::PaceBmsBase* parent_;
 
 	pace_bms::PaceBmsSwitchImplementation* buzzer_alarm_switch_{ nullptr };
 	pace_bms::PaceBmsSwitchImplementation* led_alarm_switch_{ nullptr };

@@ -13,7 +13,7 @@ namespace pace_bms_base {
 
 class PaceBmsSelect : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 
 	void set_charge_current_limiter_gear_select(PaceBmsSelectImplementation* select) { this->charge_current_limiter_gear_select_ = select; }
 
@@ -26,7 +26,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms_base::PaceBms* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
 	pace_bms_base::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
 

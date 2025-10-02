@@ -26,7 +26,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms::PaceBmsBase* parent_;
 	text_sensor::TextSensor* warning_status_sensor_{ nullptr };
 	text_sensor::TextSensor* balancing_status_sensor_{ nullptr };
 	text_sensor::TextSensor* system_status_sensor_{ nullptr };

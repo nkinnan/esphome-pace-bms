@@ -90,7 +90,7 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms_base::PaceBms* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
 	PaceBmsProtocolV25::CellOverVoltageConfiguration cell_over_voltage_configuration_;
 	bool cell_over_voltage_configuration_seen_{ false };
