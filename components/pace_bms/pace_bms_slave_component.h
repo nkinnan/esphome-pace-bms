@@ -32,6 +32,8 @@ public:
 
 	// make accessible to sensors
 	int get_protocol_commandset() override;
+	// we don't push all updates in a single loop, that'd stall the ESP out
+	void queue_sensor_update(std::function<void()> update);
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 

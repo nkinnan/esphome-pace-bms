@@ -54,6 +54,8 @@ public:
 
 	// make accessible to sensors
 	int get_protocol_commandset() override { return this->protocol_commandset_; }
+	// we don't push all updates in a single loop, that'd stall the ESP out
+	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
@@ -241,9 +243,6 @@ protected:
 
 	// helper to avoid pushing redundant write requests (if the user hits a button multiple times quickly for example)
 	void write_queue_push_back_with_deduplication(command_item* item);
-
-	// we don't push all updates in a single loop, that'd stall the ESP out
-	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
 };
 
 }  // namespace pace_bms_master
