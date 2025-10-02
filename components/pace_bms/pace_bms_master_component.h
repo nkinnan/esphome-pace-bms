@@ -45,8 +45,7 @@ public:
 	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->rx_buffer_size_ = rx_buffer_size; }
 
 	// make accessible to sensors
-	int get_protocol_commandset() { return this->protocol_commandset_; }
-	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
+	int get_protocol_commandset() override { return this->protocol_commandset_; }
 
 	// standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
 	void dump_config() override;
@@ -174,8 +173,8 @@ protected:
 	// child sensor requested callback lists
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>>                               status_information_callbacks_v25_;
-	std::vector<std::function<void(std::string&)>>                                                 hardware_version_callbacks_v25_;
-	std::vector<std::function<void(std::string&)>>                                                 serial_number_callbacks_v25_;
+	std::vector<std::function<void(std::string&)>>                                                         hardware_version_callbacks_v25_;
+	std::vector<std::function<void(std::string&)>>                                                         serial_number_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::Protocols&)>>                                       protocols_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::CellOverVoltageConfiguration&)>>                    cell_over_voltage_configuration_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::PackOverVoltageConfiguration&)>>                    pack_over_voltage_configuration_callbacks_v25_;
@@ -196,8 +195,8 @@ protected:
 
 	std::vector<std::function<void(PaceBmsProtocolV20::AnalogInformation&)>>                               analog_information_callbacks_v20_;
 	std::vector<std::function<void(PaceBmsProtocolV20::StatusInformation&)>>                               status_information_callbacks_v20_;
-	std::vector<std::function<void(std::string&)>>                                                 hardware_version_callbacks_v20_;
-	std::vector<std::function<void(std::string&)>>                                                 serial_number_callbacks_v20_;
+	std::vector<std::function<void(std::string&)>>                                                         hardware_version_callbacks_v20_;
+	std::vector<std::function<void(std::string&)>>                                                         serial_number_callbacks_v20_;
 	std::vector<std::function<void(PaceBmsProtocolV20::DateTime&)>>                                        system_datetime_callbacks_v20_;
 
 	// along with loop() this is the "engine" of BMS communications
@@ -245,6 +244,9 @@ protected:
 
 	// helper to avoid pushing redundant write requests (if the user hits a button multiple times quickly for example)
 	void write_queue_push_back_with_deduplication(command_item* item);
+
+	// we don't push all updates in a single loop, that'd stall the ESP out
+	void queue_sensor_update(std::function<void()> update) { this->sensor_update_queue_.push(update); }
 };
 
 }  // namespace pace_bms_master
