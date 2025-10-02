@@ -19,17 +19,6 @@ enum SlaveDiscoveryMode : uint8_t {
 //     in the future, other protocol versions may be supported
 class PaceBmsMaster : public pace_bms_base::PaceBmsBase, public PollingComponent, public uart::UARTDevice {
 public:
-	// slave instances will have a pointer to us due to how the yaml is set up, but we also need to know about them so we can push updates
-	// out to their sensors when we get responses from the master BMS, so they will call this method to register themselves with us
-	// sorted because broadcast responses do not include addresses, but should return in address order (probably)
-	void register_slave(pace_bms_slave::PaceBmsSlave* slave)
-	{
-		this->slaves_.push_back(slave);
-		std::sort(slaves_.begin(), slaves_.end(), [](pace_bms_slave::PaceBmsSlave* a, pace_bms_slave::PaceBmsSlave* b) {
-			return a->get_address() < b->get_address();
-		});
-	}
-
 	// called by the codegen to set our YAML property values
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 	void set_protocol_commandset(int protocol_commandset) { this->protocol_commandset_ = protocol_commandset; }
@@ -41,9 +30,6 @@ public:
 	void set_slave_discovery_mode(SlaveDiscoveryMode mode) { this->slave_discovery_mode_ = mode; }
 	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->rx_buffer_size_ = rx_buffer_size; }
 
-	// make accessible to sensors
-	int get_protocol_commandset() override { return this->protocol_commandset_; }
-
 	// standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
 	void dump_config() override;
 	void setup() override;
@@ -54,6 +40,20 @@ public:
 	//     this class still handles the case where they register late gracefully, a single update cycle will simply 
 	//     be missed in that case
 	float get_setup_priority() const { return setup_priority::LATE; }
+
+	// slave instances will have a pointer to us due to how the yaml is set up, but we also need to know about them so we can push updates
+	// out to their sensors when we get responses from the master BMS, so they will call this method to register themselves with us
+	// sorted because broadcast responses do not include addresses, but should return in address order (probably)
+	void register_slave(pace_bms_slave::PaceBmsSlave* slave)
+	{
+		this->slaves_.push_back(slave);
+		std::sort(slaves_.begin(), slaves_.end(), [](pace_bms_slave::PaceBmsSlave* a, pace_bms_slave::PaceBmsSlave* b) {
+			return a->get_address() < b->get_address();
+		});
+	}
+
+	// make accessible to sensors
+	int get_protocol_commandset() override { return this->protocol_commandset_; }
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 

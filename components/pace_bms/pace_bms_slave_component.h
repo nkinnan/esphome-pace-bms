@@ -30,6 +30,10 @@ public:
 	//     be missed in that case
 	float get_setup_priority() const { return setup_priority::LATE; }
 
+
+
+	int get_protocol_commandset() override { return this->parent_->get_protocol_commandset(); }
+
 protected:
 	pace_bms_master::PaceBmsMaster* parent_{ nullptr };
 };
