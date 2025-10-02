@@ -345,7 +345,7 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 
 // validate all fields in the response except the payload data: SOI marker, header values, checksum, EOI marker
 // returns the detected payload length (payload always starts at offset 13), or -1 for error
-int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t> response)
+int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response)
 {
 	uint16_t byteOffset = 0;
 

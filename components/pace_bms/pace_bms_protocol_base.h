@@ -3,12 +3,7 @@
 #include <string>
 #include <vector>
 #include <span>
-
-// uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
-//#include "esphome/core/optional.h"
-//#define OPTIONAL_NS esphome
 #include <optional>
-#define OPTIONAL_NS std
 
 /*
 General format of requests/responses:
@@ -35,7 +30,7 @@ public:
 	// dependency injection
 	typedef void (*LogFuncPtr)(std::string message);
 
-	PaceBmsProtocolBase(uint8_t protocol_commandset, OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version, OPTIONAL_NS::optional<uint8_t> battery_chemistry,
+	PaceBmsProtocolBase(uint8_t protocol_commandset, std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version, std::optional<uint8_t> battery_chemistry,
 		                LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose)
 	{
 		this->protocol_commandset = protocol_commandset;
@@ -66,12 +61,12 @@ public:
 
 protected:
 	uint8_t protocol_commandset;
-	OPTIONAL_NS::optional<std::string> protocol_variant;
-	OPTIONAL_NS::optional<uint8_t> protocol_version;
+	std::optional<std::string> protocol_variant;
+	std::optional<uint8_t> protocol_version;
 	// battery chemistry
 	uint8_t cid1;
 
-	OPTIONAL_NS::optional<std::string> detected_variant;
+	std::optional<std::string> detected_variant;
 
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
@@ -133,6 +128,6 @@ protected:
 
 	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
 
-	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t> response);
+	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response);
 };
 

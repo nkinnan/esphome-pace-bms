@@ -1,18 +1,15 @@
 #pragma once
 
-#include <vector>
-#include <functional>
-#include <queue>
-#include <list>
-
-#include "esphome/core/component.h"
 #include "esphome/components/uart/uart.h"
+
+#include "../pace_bms_base/pace_bms_component_base.h"
+#include "../pace_bms_slave/pace_bms_slave_component.h"
 
 #include "pace_bms_protocol_v25.h"
 #include "pace_bms_protocol_v20.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_master {
 
 enum SlaveDiscoveryMode : uint8_t {
 	SLAVE_DISCOVERY_MODE_NONE = 0,
@@ -23,12 +20,21 @@ enum SlaveDiscoveryMode : uint8_t {
 
 // this class encapsulates an instance of PaceBmsProtocolV25 (which handles protocol version 0x25) and injects the logging dependencies into it
 //     in the future, other protocol versions may be supported
-class PaceBms : public PollingComponent, public uart::UARTDevice {
+class PaceBmsMaster : public pace_bms_base::PaceBmsBase, public PollingComponent, public uart::UARTDevice {
 public:
+	// slave instances will have a pointer to us due to how the yaml is set up, but we also need to know about them so we can push updates
+	// out to their sensors when we get responses from the master BMS, so they will call this method to register themselves with us
+	// sorted because broadcast responses do not include addresses, but should return in address order (probably)
+	void register_slave(pace_bms_slave::PaceBmsSlave* slave)
+	{
+		this->slaves_.push_back(slave);
+		std::sort(slaves_.begin(), slaves_.end(), [](pace_bms_slave::PaceBmsSlave* a, pace_bms_slave::PaceBmsSlave* b) {
+			return a->get_address() < b->get_address();
+		});
+	}
+
 	// called by the codegen to set our YAML property values
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
-	void set_address(uint8_t address) { this->address_ = address; }
-	void set_responding_address(uint8_t responding_address) { this->responding_address_ = responding_address; }
 	void set_protocol_commandset(int protocol_commandset) { this->protocol_commandset_ = protocol_commandset; }
 	void set_protocol_variant(std::string protocol_variant) { this->protocol_variant_ = protocol_variant; }
 	void set_protocol_version(uint8_t protocol_version_override) { this->protocol_version_ = protocol_version_override; }
@@ -36,7 +42,7 @@ public:
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 	void set_slave_discovery_mode(SlaveDiscoveryMode mode) { this->slave_discovery_mode_ = mode; }
-	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->max_data_len_ = rx_buffer_size; }
+	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->rx_buffer_size_ = rx_buffer_size; }
 
 	// make accessible to sensors
 	int get_protocol_commandset() { return this->protocol_commandset_; }
@@ -113,13 +119,11 @@ public:
 protected:
 	// config values set in YAML
 	GPIOPin* flow_control_pin_{ nullptr };
-	uint8_t address_{ 0 };
-	OPTIONAL_NS::optional<uint8_t> responding_address_;
 
 	int protocol_commandset_{ 0 };
-	OPTIONAL_NS::optional<std::string> protocol_variant_;
-	OPTIONAL_NS::optional<uint8_t> protocol_version_;
-	OPTIONAL_NS::optional<uint8_t> chemistry_;
+	std::optional<std::string> protocol_variant_;
+	std::optional<uint8_t> protocol_version_;
+	std::optional<uint8_t> chemistry_;
 
 	int request_throttle_{ 0 };
 	int response_timeout_{ 0 };
@@ -202,7 +206,7 @@ protected:
 	//           send_next_request_frame_) once a response arrives
 	PaceBmsProtocolV25* pace_bms_v25_;
 	PaceBmsProtocolV20* pace_bms_v20_;
-	uint16_t max_data_len_ = 256;
+	uint16_t rx_buffer_size_ = 0;
 	uint8_t *raw_data_;
 	uint16_t raw_data_index_{ 0 };
 	uint32_t last_transmit_{ 0 };
@@ -236,9 +240,12 @@ protected:
 	std::function<void(std::span<uint8_t>&)> next_response_handler_ = nullptr;
 	std::string last_request_description;
 
-	// helper to avoid pushing redundant write requests
+	// list of slaves that have registered with us
+	std::vector<pace_bms_slave::PaceBmsSlave*> slaves_;
+
+	// helper to avoid pushing redundant write requests (if the user hits a button multiple times quickly for example)
 	void write_queue_push_back_with_deduplication(command_item* item);
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_master
 }  // namespace esphome

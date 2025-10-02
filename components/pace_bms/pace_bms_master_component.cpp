@@ -4,12 +4,12 @@
 #include <functional>
 
 #include "esphome/core/log.h"
-#include "pace_bms_component.h"
+#include "pace_bms_master_component.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_master {
 
-static const char* const TAG = "pace_bms";
+static const char* const TAG = "pace_bms_master";
 
 // for the protocol implementation dependency injection only
 static const char* const TAG_PROTOCOL = "pace_bms_protocol";
@@ -43,13 +43,34 @@ void very_verbose_log_func(std::string message) {
 * log configuration
 */
 
-void PaceBms::dump_config() {
-	ESP_LOGCONFIG(TAG, "pace_bms:");
-	LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+static const char * SlaveDiscoveryModeStrings[] = { "NONE", "RELAY", "BROADCAST", "RELAY_AND_BROADCAST" };
+const char * to_cstring(SlaveDiscoveryMode mode) { return SlaveDiscoveryModeStrings[mode]; }
+
+// todo: check this
+void PaceBmsMaster::dump_config() {
+	ESP_LOGCONFIG(TAG, "pace_bms_master:");
 	ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-	ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_commandset_);
+	if(this->responding_address_.has_value())
+		ESP_LOGCONFIG(TAG, "  RespondingAddress: %i", this->responding_address_.value());
+
+	LOG_PIN("  Flow Control Pin: ", this->flow_control_pin_);
+
+	ESP_LOGCONFIG(TAG, "  ProtocolCommandSet: 0x%02X", this->protocol_commandset_);
+	if(this->protocol_variant_.has_value())
+		ESP_LOGCONFIG(TAG, "  ProtocolVariant: %s", this->protocol_variant_.value().c_str());
+	if(this->protocol_version_.has_value())
+		ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_.value));
+	if(this->chemistry_.has_value())
+		ESP_LOGCONFIG(TAG, "  Chemistry: 0x%02X", this->chemistry_.value());
+
 	ESP_LOGCONFIG(TAG, "  Request Throttle (ms): %i", this->request_throttle_);
 	ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
+
+	ESP_LOGCONFIG(TAG, "  Slave Discovery Mode: %s", to_cstring(this->slave_discovery_mode_));
+
+	ESP_LOGCONFIG(TAG, "  Rx Buffer Size: %i", this->rx_buffer_size_);
+
+	// todo: why did I put this here?
 	this->check_uart_settings(9600);
 }
 
@@ -57,11 +78,11 @@ void PaceBms::dump_config() {
 * setup this component
 */
 
-void PaceBms::setup() {
-	this->raw_data_ = new uint8_t[this->max_data_len_];
+void PaceBmsMaster::setup() {
+	this->raw_data_ = new uint8_t[this->rx_buffer_size_];
 	if(this->raw_data_ == nullptr) {
 		this->status_set_error();
-		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %u bytes", this->max_data_len_);
+		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %u bytes", this->rx_buffer_size_);
 		return;
 	}
 
@@ -98,39 +119,39 @@ void PaceBms::setup() {
 		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			command_item* item = new command_item;
 			item->description_ = std::string("slave discovery broadcast: query for analog information");
-			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(0xFF, request); };
+			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, 0xFF, request); };
 			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_analog_information_response_v25(response); };
 			read_queue_.push(item);
 		}
 		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			command_item* item = new command_item;
 			item->description_ = std::string("slave discovery broadcast: query for status information");
-			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(0xFF, request); };
+			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, 0xFF, request); };
 			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
 			read_queue_.push(item);
 		}
 		// this (and the next if) is a lot of traffic, and the BMS tends to barf if you ask it for a non-existent address, but I'll leave it for debugging purposes
 		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int address = 0; address < 16; address++) { 
+			for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
 				// don't query self
-				if(address == this->address_) 
+				if(slaveAddress == this->address_) 
 					continue;
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(address) + " for analog information");
-				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(address, request); };
-				item->process_response_frame_ = [this, address](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(address, response); };
+				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for analog information");
+				item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slaveAddress, request); };
+				item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(slaveAddress, response); };
 				read_queue_.push(item);
 			}
 		}
 		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int address = 0; address < 16; address++) { 
+			for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
 				// don't query self
-				if(address == this->address_) 
+				if(slaveAddress == this->address_) 
 					continue;
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(address) + " for status information");
-				item->create_request_frame_ = [this, address](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(address, request); };
-				item->process_response_frame_ = [this, address](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(address, response); };
+				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for status information");
+				item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slaveAddress, request); };
+				item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(slaveAddress, response); };
 				read_queue_.push(item);
 			}
 		}
@@ -143,7 +164,7 @@ void PaceBms::setup() {
 * instances via setting callbacks to receive the updates
 */
 
-void PaceBms::update() {
+void PaceBmsMaster::update() {
 	if (this->pace_bms_v25_ == nullptr &&
 		this->pace_bms_v20_ == nullptr)
 		return;
@@ -160,14 +181,14 @@ void PaceBms::update() {
 			if (this->analog_information_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read analog information");
-				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, request); };
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, this->address_, request); };
 				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
 				read_queue_.push(item);
 			}
 			if (this->status_information_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read status information");
-				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, request); };
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, this->address_, request); };
 				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
 				read_queue_.push(item);
 			}
@@ -354,7 +375,7 @@ void PaceBms::update() {
 * once request_throttle has been satisfied and no request is outstanding, call send_next_request_frame to continue popping the read/write queues
 */
 
-void PaceBms::loop() {
+void PaceBmsMaster::loop() {
 	if (this->pace_bms_v25_ == nullptr &&
 		this->pace_bms_v20_ == nullptr)
 		return;
@@ -445,7 +466,7 @@ void PaceBms::loop() {
 		}
 
 		// did we run out of buffer before EOI?
-		if (this->raw_data_index_ + 1 >= this->max_data_len_) {
+		if (this->raw_data_index_ + 1 >= this->rx_buffer_size_) {
 			std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
 			ESP_LOGV(TAG, "Response frame exceeds maximum supported length, increase rx_buffer_size (recommended: 256 * number of battery packs), last request was '%s', incomplete response frame: %s", this->last_request_description.c_str(), str.c_str());
 			request_outstanding_ = false;
@@ -458,7 +479,7 @@ void PaceBms::loop() {
 }
 
 // pops the next item off of this->command_queue_, generates and dispatches a request frame, and sets up this->next_response_handler_
-void PaceBms::send_next_request_frame_() {
+void PaceBmsMaster::send_next_request_frame_() {
 
 	if (read_queue_.empty() && write_queue_.empty()) {
 		ESP_LOGE(TAG, "command queue empty on send_next_request_frame");
@@ -466,7 +487,7 @@ void PaceBms::send_next_request_frame_() {
 	}
 
 	// always process writes first
-	PaceBms::command_item* command;
+	PaceBmsMaster::command_item* command;
 	if (!write_queue_.empty()) {
 		command = write_queue_.front();
 		write_queue_.pop_front();
@@ -509,7 +530,7 @@ void PaceBms::send_next_request_frame_() {
 }
 
 // calls this->next_response_handler_ (set up from the previously dispatched command_queue_ item)
-void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_length) {
+void PaceBmsMaster::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_length) {
 	ESP_LOGV(TAG, "Processing response frame for '%s' request", this->last_request_description.c_str());
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	{
@@ -562,37 +583,37 @@ void PaceBms::process_response_frame_(uint8_t* frame_bytes, uint16_t frame_lengt
 * read/write response frame received handlers, called via next_response_handler_ from process_response_frame
 */
 
-void PaceBms::handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(0xFF, this->responding_address_, response, analog_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->responding_address_, response, analog_information_list);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
 	}
 
-	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Analog Information request", analog_information_list.size() - 1);
+	ESP_LOGI(TAG, "Discovered %i slaves at unknown addresses (but likely contiguous) using broadcast Analog Information request", analog_information_list.size() - 1);
 }
 
-void PaceBms::handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(0xFF, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->responding_address_, response, status_information_list);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
 	}
 
-	ESP_LOGI(TAG, "Discovered %i slaves using broadcast Status Information request", status_information_list.size() - 1);
+	ESP_LOGI(TAG, "Discovered %i slaves at unknown addresses (but likely contiguous) using broadcast Status Information request", status_information_list.size() - 1);
 }
 
-void PaceBms::handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(slaveAddress, this->responding_address_, response, analog_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->responding_address_, response, analog_information_list);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -601,11 +622,11 @@ void PaceBms::handle_slave_discovery_relay_read_analog_information_response_v25(
 	ESP_LOGI(TAG, "Discovered slave at address %i using relay Analog Information request", slaveAddress);
 }
 
-void PaceBms::handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(slaveAddress, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->responding_address_, response, status_information_list);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -614,7 +635,7 @@ void PaceBms::handle_slave_discovery_relay_read_status_information_response_v25(
 	ESP_LOGI(TAG, "Discovered slave at address %i using relay Status Information request", slaveAddress);
 }
 
-void PaceBms::handle_read_analog_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
@@ -630,7 +651,7 @@ void PaceBms::handle_read_analog_information_response_v25(std::span<uint8_t>& re
 	}
 }
 
-void PaceBms::handle_read_status_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
@@ -646,7 +667,7 @@ void PaceBms::handle_read_status_information_response_v25(std::span<uint8_t>& re
 	}
 }
 
-void PaceBms::handle_read_hardware_version_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_hardware_version_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::string hardware_version;
@@ -662,7 +683,7 @@ void PaceBms::handle_read_hardware_version_response_v25(std::span<uint8_t>& resp
 	}
 }
 
-void PaceBms::handle_read_serial_number_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_serial_number_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::string serial_number;
@@ -678,7 +699,7 @@ void PaceBms::handle_read_serial_number_response_v25(std::span<uint8_t>& respons
 	}
 }
 
-void PaceBms::handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand switch_command, std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand switch_command, std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteSwitchCommandResponse(this->address_, this->responding_address_, switch_command, response);
@@ -688,7 +709,7 @@ void PaceBms::handle_write_switch_command_response_v25(PaceBmsProtocolV25::Switc
 	}
 }
 
-void PaceBms::handle_write_mosfet_switch_command_response_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state, std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_mosfet_switch_command_response_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state, std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteMosfetSwitchCommandResponse(this->address_, this->responding_address_, type, state, response);
@@ -698,7 +719,7 @@ void PaceBms::handle_write_mosfet_switch_command_response_v25(PaceBmsProtocolV25
 	}
 }
 
-void PaceBms::handle_write_shutdown_command_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_shutdown_command_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteShutdownCommandResponse(this->address_, this->responding_address_, response);
@@ -708,7 +729,7 @@ void PaceBms::handle_write_shutdown_command_response_v25(std::span<uint8_t>& res
 	}
 }
 
-void PaceBms::handle_read_protocols_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_protocols_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::Protocols protocols;
@@ -719,7 +740,7 @@ void PaceBms::handle_read_protocols_response_v25(std::span<uint8_t>& response) {
 	}
 }
 
-void PaceBms::handle_write_protocols_response_v25(PaceBmsProtocolV25::Protocols protocols, std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_protocols_response_v25(PaceBmsProtocolV25::Protocols protocols, std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteProtocolsResponse(this->address_, this->responding_address_, response);
@@ -729,7 +750,7 @@ void PaceBms::handle_write_protocols_response_v25(PaceBmsProtocolV25::Protocols 
 	}
 }
 
-void PaceBms::handle_read_cell_over_voltage_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_cell_over_voltage_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::CellOverVoltageConfiguration config;
@@ -744,7 +765,7 @@ void PaceBms::handle_read_cell_over_voltage_configuration_response_v25(std::span
 	}
 }
 
-void PaceBms::handle_read_pack_over_voltage_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_pack_over_voltage_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::PackOverVoltageConfiguration config;
@@ -759,7 +780,7 @@ void PaceBms::handle_read_pack_over_voltage_configuration_response_v25(std::span
 	}
 }
 
-void PaceBms::handle_read_cell_under_voltage_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_cell_under_voltage_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::CellUnderVoltageConfiguration config;
@@ -774,7 +795,7 @@ void PaceBms::handle_read_cell_under_voltage_configuration_response_v25(std::spa
 	}
 }
 
-void PaceBms::handle_read_pack_under_voltage_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_pack_under_voltage_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::PackUnderVoltageConfiguration config;
@@ -789,7 +810,7 @@ void PaceBms::handle_read_pack_under_voltage_configuration_response_v25(std::spa
 	}
 }
 
-void PaceBms::handle_read_charge_over_current_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_charge_over_current_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::ChargeOverCurrentConfiguration config;
@@ -805,7 +826,7 @@ void PaceBms::handle_read_charge_over_current_configuration_response_v25(std::sp
 	}
 }
 
-void PaceBms::handle_read_discharge_over_current1_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_discharge_over_current1_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::DischargeOverCurrent1Configuration config;
@@ -820,7 +841,7 @@ void PaceBms::handle_read_discharge_over_current1_configuration_response_v25(std
 	}
 }
 
-void PaceBms::handle_read_discharge_over_current2_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_discharge_over_current2_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::DischargeOverCurrent2Configuration config;
@@ -835,7 +856,7 @@ void PaceBms::handle_read_discharge_over_current2_configuration_response_v25(std
 	}
 }
 
-void PaceBms::handle_read_short_circuit_protection_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_short_circuit_protection_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::ShortCircuitProtectionConfiguration config;
@@ -850,7 +871,7 @@ void PaceBms::handle_read_short_circuit_protection_configuration_response_v25(st
 	}
 }
 
-void PaceBms::handle_read_cell_balancing_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_cell_balancing_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::CellBalancingConfiguration config;
@@ -865,7 +886,7 @@ void PaceBms::handle_read_cell_balancing_configuration_response_v25(std::span<ui
 	}
 }
 
-void PaceBms::handle_read_sleep_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_sleep_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::SleepConfiguration config;
@@ -880,7 +901,7 @@ void PaceBms::handle_read_sleep_configuration_response_v25(std::span<uint8_t>& r
 	}
 }
 
-void PaceBms::handle_read_full_charge_low_charge_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_full_charge_low_charge_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::FullChargeLowChargeConfiguration config;
@@ -895,7 +916,7 @@ void PaceBms::handle_read_full_charge_low_charge_configuration_response_v25(std:
 	}
 }
 
-void PaceBms::handle_read_charge_and_discharge_over_temperature_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_charge_and_discharge_over_temperature_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration config;
@@ -910,7 +931,7 @@ void PaceBms::handle_read_charge_and_discharge_over_temperature_configuration_re
 	}
 }
 
-void PaceBms::handle_read_charge_and_discharge_under_temperature_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_charge_and_discharge_under_temperature_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration config;
@@ -925,7 +946,7 @@ void PaceBms::handle_read_charge_and_discharge_under_temperature_configuration_r
 	}
 }
 
-void PaceBms::handle_write_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteConfigurationResponse(this->address_, this->responding_address_, response);
@@ -935,7 +956,7 @@ void PaceBms::handle_write_configuration_response_v25(std::span<uint8_t>& respon
 	}
 }
 
-void PaceBms::handle_read_system_datetime_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_system_datetime_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::DateTime dt;
@@ -950,7 +971,7 @@ void PaceBms::handle_read_system_datetime_response_v25(std::span<uint8_t>& respo
 	}
 }
 
-void PaceBms::handle_read_mosfet_over_temperature_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_mosfet_over_temperature_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::MosfetOverTemperatureConfiguration config;
@@ -965,7 +986,7 @@ void PaceBms::handle_read_mosfet_over_temperature_configuration_response_v25(std
 	}
 }
 
-void PaceBms::handle_read_environment_over_under_temperature_configuration_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_environment_over_under_temperature_configuration_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration config;
@@ -980,7 +1001,7 @@ void PaceBms::handle_read_environment_over_under_temperature_configuration_respo
 	}
 }
 
-void PaceBms::handle_write_system_datetime_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_system_datetime_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v25_->ProcessWriteSystemDateTimeResponse(this->address_, this->responding_address_, response);
@@ -991,7 +1012,7 @@ void PaceBms::handle_write_system_datetime_response_v25(std::span<uint8_t>& resp
 }
 
 
-void PaceBms::handle_read_analog_information_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_analog_information_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV20::AnalogInformation analog_information;
@@ -1007,7 +1028,7 @@ void PaceBms::handle_read_analog_information_response_v20(std::span<uint8_t>& re
 	}
 }
 
-void PaceBms::handle_read_status_information_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_status_information_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV20::StatusInformation status_information;
@@ -1023,7 +1044,7 @@ void PaceBms::handle_read_status_information_response_v20(std::span<uint8_t>& re
 	}
 }
 
-void PaceBms::handle_read_hardware_version_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_hardware_version_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::string hardware_version;
@@ -1039,7 +1060,7 @@ void PaceBms::handle_read_hardware_version_response_v20(std::span<uint8_t>& resp
 	}
 }
 
-void PaceBms::handle_read_serial_number_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_serial_number_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::string serial_number;
@@ -1055,7 +1076,7 @@ void PaceBms::handle_read_serial_number_response_v20(std::span<uint8_t>& respons
 	}
 }
 
-void PaceBms::handle_write_shutdown_command_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_shutdown_command_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v20_->ProcessWriteShutdownCommandResponse(this->address_, this->responding_address_, response);
@@ -1065,7 +1086,7 @@ void PaceBms::handle_write_shutdown_command_response_v20(std::span<uint8_t>& res
 	}
 }
 
-void PaceBms::handle_read_system_datetime_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_system_datetime_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	PaceBmsProtocolV20::DateTime dt;
@@ -1080,7 +1101,7 @@ void PaceBms::handle_read_system_datetime_response_v20(std::span<uint8_t>& respo
 	}
 }
 
-void PaceBms::handle_write_system_datetime_response_v20(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_write_system_datetime_response_v20(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	bool result = this->pace_bms_v20_->ProcessWriteSystemDateTimeResponse(this->address_, this->responding_address_, response);
@@ -1095,7 +1116,7 @@ void PaceBms::handle_write_system_datetime_response_v20(std::span<uint8_t>& resp
 */
 
 // helper for when multiple writes are requested due to fast UX interaction
-void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
+void PaceBmsMaster::write_queue_push_back_with_deduplication(command_item* item) {
 	auto iter = std::find_if(this->write_queue_.begin(), this->write_queue_.end(),
 		[&item](const command_item* test) -> bool {
 			return test->description_ == item->description_;
@@ -1110,7 +1131,7 @@ void PaceBms::write_queue_push_back_with_deduplication(command_item* item) {
 	}
 }
 
-void PaceBms::write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state) {
+void PaceBmsMaster::write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state) {
 	command_item* item = new command_item;
 
 	// this is just to generate the text
@@ -1139,7 +1160,7 @@ void PaceBms::write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state) {
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state) {
+void PaceBmsMaster::write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state) {
 	command_item* item = new command_item;
 
 	// this is just to generate the text
@@ -1159,7 +1180,7 @@ void PaceBms::write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBm
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_shutdown_v25() {
+void PaceBmsMaster::write_shutdown_v25() {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write shutdown");
@@ -1170,7 +1191,7 @@ void PaceBms::write_shutdown_v25() {
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols) {
+void PaceBmsMaster::write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write protocols");
@@ -1181,7 +1202,7 @@ void PaceBms::write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols) {
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config) {
+void PaceBmsMaster::write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write cell over voltage configuration");
@@ -1192,7 +1213,7 @@ void PaceBms::write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::Cell
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config) {
+void PaceBmsMaster::write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write pack over voltage configuration");
@@ -1203,7 +1224,7 @@ void PaceBms::write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::Pack
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config) {
+void PaceBmsMaster::write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write cell under voltage configuration");
@@ -1214,7 +1235,7 @@ void PaceBms::write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::Cel
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config) {
+void PaceBmsMaster::write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write pack under voltage configuration");
@@ -1225,7 +1246,7 @@ void PaceBms::write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::Pac
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config) {
+void PaceBmsMaster::write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write charge over current configuration");
@@ -1236,7 +1257,7 @@ void PaceBms::write_charge_over_current_configuration_v25(PaceBmsProtocolV25::Ch
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config) {
+void PaceBmsMaster::write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write discharge over current 1 configuration");
@@ -1247,7 +1268,7 @@ void PaceBms::write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config) {
+void PaceBmsMaster::write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write discharge over current 2 configuration");
@@ -1258,7 +1279,7 @@ void PaceBms::write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config) {
+void PaceBmsMaster::write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write short circuit protection configuration");
@@ -1269,7 +1290,7 @@ void PaceBms::write_short_circuit_protection_configuration_v25(PaceBmsProtocolV2
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config) {
+void PaceBmsMaster::write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write cell balancing configuration");
@@ -1280,7 +1301,7 @@ void PaceBms::write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBal
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config) {
+void PaceBmsMaster::write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write sleep configuration");
@@ -1291,7 +1312,7 @@ void PaceBms::write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfigurati
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config) {
+void PaceBmsMaster::write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write full charge low charge configuration");
@@ -1302,7 +1323,7 @@ void PaceBms::write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25:
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config) {
+void PaceBmsMaster::write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write charge and discharge over temperature configuration");
@@ -1313,7 +1334,7 @@ void PaceBms::write_charge_and_discharge_over_temperature_configuration_v25(Pace
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config) {
+void PaceBmsMaster::write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write charge and discharge under temperature configuration");
@@ -1324,7 +1345,7 @@ void PaceBms::write_charge_and_discharge_under_temperature_configuration_v25(Pac
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config) {
+void PaceBmsMaster::write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write mosfet over temperature configuration");
@@ -1335,7 +1356,7 @@ void PaceBms::write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config) {
+void PaceBmsMaster::write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write environment over under temperature configuration");
@@ -1346,7 +1367,7 @@ void PaceBms::write_environment_over_under_temperature_configuration_v25(PaceBms
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) {
+void PaceBmsMaster::write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write system date/time");
@@ -1358,7 +1379,7 @@ void PaceBms::write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) {
 }
 
 
-void PaceBms::write_shutdown_v20() {
+void PaceBmsMaster::write_shutdown_v20() {
 	command_item* item = new command_item;
 	ESP_LOGE(TAG, "SHUTTING DOWN");
 	item->description_ = std::string("write shutdown");
@@ -1369,7 +1390,7 @@ void PaceBms::write_shutdown_v20() {
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-void PaceBms::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) {
+void PaceBmsMaster::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) {
 	command_item* item = new command_item;
 
 	item->description_ = std::string("write system date/time");
@@ -1380,5 +1401,5 @@ void PaceBms::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) {
 	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_master
 }  // namespace esphome
