@@ -86,7 +86,7 @@ public:
 	void write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config) override;
 	void write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config) override;
 	void write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config) override;
-	void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt override);
+	void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) override;
 
 	void write_shutdown_v20() override;
 	void write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) override;
