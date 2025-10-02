@@ -33,63 +33,63 @@ public:
 	// make accessible to sensors
 	int get_protocol_commandset() override;
 	// we don't push all updates in a single loop, that'd stall the ESP out
-	void queue_sensor_update(std::function<void()> update);
+	void queue_sensor_update(std::function<void()> update) override;
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
 	//     periodically gather these updates for fan-out to the sensors the first place
-	virtual void register_analog_information_callback_v25(std::function<void(PaceBmsProtocolV25::AnalogInformation&)> callback);
-	virtual void register_status_information_callback_v25(std::function<void(PaceBmsProtocolV25::StatusInformation&)> callback);
-	virtual void register_hardware_version_callback_v25(std::function<void(std::string&)> callback);
-	virtual void register_serial_number_callback_v25(std::function<void(std::string&) > callback);
-	virtual void register_protocols_callback_v25(std::function<void(PaceBmsProtocolV25::Protocols&) > callback);
-	virtual void register_cell_over_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellOverVoltageConfiguration&)> callback);
-	virtual void register_pack_over_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::PackOverVoltageConfiguration&)> callback);
-	virtual void register_cell_under_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellUnderVoltageConfiguration&)> callback);
-	virtual void register_pack_under_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::PackUnderVoltageConfiguration&)> callback);
-	virtual void register_charge_over_current_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeOverCurrentConfiguration&)> callback);
-	virtual void register_discharge_over_current1_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::DischargeOverCurrent1Configuration&)> callback);
-	virtual void register_discharge_over_current2_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::DischargeOverCurrent2Configuration&)> callback);
-	virtual void register_short_circuit_protection_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration&)> callback);
-	virtual void register_cell_balancing_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellBalancingConfiguration&)> callback);
-	virtual void register_sleep_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::SleepConfiguration&)> callback);
-	virtual void register_full_charge_low_charge_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::FullChargeLowChargeConfiguration&)> callback);
-	virtual void register_charge_and_discharge_over_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback);
-	virtual void register_charge_and_discharge_under_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback);
-	virtual void register_mosfet_over_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration&)> callback);
-	virtual void register_environment_over_under_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration&)> callback);
-	virtual void register_system_datetime_callback_v25(std::function<void(PaceBmsProtocolV25::DateTime&)> callback);
+	void register_analog_information_callback_v25(std::function<void(PaceBmsProtocolV25::AnalogInformation&)> callback) override;
+	void register_status_information_callback_v25(std::function<void(PaceBmsProtocolV25::StatusInformation&)> callback) override;
+	void register_hardware_version_callback_v25(std::function<void(std::string&)> callback) override;
+	void register_serial_number_callback_v25(std::function<void(std::string&) > callback) override;
+	void register_protocols_callback_v25(std::function<void(PaceBmsProtocolV25::Protocols&) > callback) override;
+	void register_cell_over_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellOverVoltageConfiguration&)> callback) override;
+	void register_pack_over_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::PackOverVoltageConfiguration&)> callback) override;
+	void register_cell_under_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellUnderVoltageConfiguration&)> callback) override;
+	void register_pack_under_voltage_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::PackUnderVoltageConfiguration&)> callback) override;
+	void register_charge_over_current_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeOverCurrentConfiguration&)> callback) override;
+	void register_discharge_over_current1_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::DischargeOverCurrent1Configuration&)> callback) override;
+	void register_discharge_over_current2_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::DischargeOverCurrent2Configuration&)> callback) override;
+	void register_short_circuit_protection_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration&)> callback) override;
+	void register_cell_balancing_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::CellBalancingConfiguration&)> callback) override;
+	void register_sleep_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::SleepConfiguration&)> callback) override;
+	void register_full_charge_low_charge_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::FullChargeLowChargeConfiguration&)> callback) override;
+	void register_charge_and_discharge_over_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration&)> callback) override;
+	void register_charge_and_discharge_under_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration&)> callback) override;
+	void register_mosfet_over_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration&)> callback) override;
+	void register_environment_over_under_temperature_configuration_callback_v25(std::function<void(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration&)> callback) override;
+	void register_system_datetime_callback_v25(std::function<void(PaceBmsProtocolV25::DateTime&)> callback) override;
 
-	virtual void register_analog_information_callback_v20(std::function<void(PaceBmsProtocolV20::AnalogInformation&)> callback);
-	virtual void register_status_information_callback_v20(std::function<void(PaceBmsProtocolV20::StatusInformation&)> callback);
-	virtual void register_hardware_version_callback_v20(std::function<void(std::string&)> callback);
-	virtual void register_serial_number_callback_v20(std::function<void(std::string&) > callback);
-	virtual void register_system_datetime_callback_v20(std::function<void(PaceBmsProtocolV20::DateTime&)> callback);
+	void register_analog_information_callback_v20(std::function<void(PaceBmsProtocolV20::AnalogInformation&)> callback) override;
+	void register_status_information_callback_v20(std::function<void(PaceBmsProtocolV20::StatusInformation&)> callback) override;
+	void register_hardware_version_callback_v20(std::function<void(std::string&)> callback) override;
+	void register_serial_number_callback_v20(std::function<void(std::string&) > callback) override;
+	void register_system_datetime_callback_v20(std::function<void(PaceBmsProtocolV20::DateTime&)> callback) override;
 
 	// child sensors call these to schedule new values be written out to the hardware
-	virtual void write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state);
-	virtual void write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state);
-	virtual void write_shutdown_v25();
-	virtual void write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols);
-	virtual void write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config);
-	virtual void write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config);
-	virtual void write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config);
-	virtual void write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config);
-	virtual void write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config);
-	virtual void write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config);
-	virtual void write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config);
-	virtual void write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config);
-	virtual void write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config);
-	virtual void write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config);
-	virtual void write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config);
-	virtual void write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config);
-	virtual void write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config);
-	virtual void write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config);
-	virtual void write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config);
-	virtual void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt);
+	void write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand state) override;
+	void write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state) override;
+	void write_shutdown_v25() override;
+	void write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols) override;
+	void write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config) override;
+	void write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config) override;
+	void write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config) override;
+	void write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config) override;
+	void write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config) override;
+	void write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config) override;
+	void write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config) override;
+	void write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config) override;
+	void write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config) override;
+	void write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config) override;
+	void write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config) override;
+	void write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config) override;
+	void write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config) override;
+	void write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config) override;
+	void write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config) override;
+	void write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt override);
 
-	virtual void write_shutdown_v20();
-	virtual void write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt);
+	void write_shutdown_v20() override;
+	void write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) override;
 
 protected:
 	pace_bms_master::PaceBmsMaster* parent_{ nullptr };
