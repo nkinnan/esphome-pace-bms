@@ -2,7 +2,7 @@
 #include "esphome/core/log.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 static const char* const TAG = "pace_bms.button";
 
@@ -33,5 +33,5 @@ void PaceBmsButton::dump_config() {
 	LOG_BUTTON("  ", "Shutdown", this->shutdown_button_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

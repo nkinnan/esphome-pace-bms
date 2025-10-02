@@ -6,7 +6,7 @@
 #include "esphome/components/pace_bms/pace_bms_component_base.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsButton : public Component {
 public:
@@ -19,11 +19,11 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBmsBase* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
 	// analog info
 	button::Button* shutdown_button_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

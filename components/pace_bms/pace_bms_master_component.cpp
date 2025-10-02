@@ -59,7 +59,7 @@ void PaceBmsMaster::dump_config() {
 	if(this->protocol_variant_.has_value())
 		ESP_LOGCONFIG(TAG, "  ProtocolVariant: %s", this->protocol_variant_.value().c_str());
 	if(this->protocol_version_.has_value())
-		ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_.value));
+		ESP_LOGCONFIG(TAG, "  Protocol Version: 0x%02X", this->protocol_version_.value());
 	if(this->chemistry_.has_value())
 		ESP_LOGCONFIG(TAG, "  Chemistry: 0x%02X", this->chemistry_.value());
 

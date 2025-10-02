@@ -4,7 +4,7 @@
 #include "esphome/components/button/button.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsButtonImplementation : public Component, public button::Button {
 public:
@@ -15,5 +15,5 @@ protected:
 	void press_action() override;
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
