@@ -13,7 +13,7 @@ from esphome import pins
 
 CODEOWNERS = ["@nkinnan"]
 DEPENDENCIES = ["uart"]
-
+MULTI_CONF = True
 
 pace_bms_base_ns = cg.esphome_ns.namespace("pace_bms_base")
 pace_bms_master_ns = cg.esphome_ns.namespace("pace_bms_master")
@@ -38,8 +38,8 @@ CONF_PACE_BMS    = "pace_bms"
 CONF_PACE_BMS_ID = "pace_bms_id"
 CONF_MASTER_BMS_ID = "master_bms_id"
 
-CONF_TYPE_MASTER = "MASTER"
-CONF_TYPE_SLAVE = "SLAVE"
+CONF_TYPE_MASTER = "master"
+CONF_TYPE_SLAVE = "slave"
 
 CONF_TYPE_ENUM = {
     CONF_TYPE_MASTER: 0,
@@ -62,7 +62,7 @@ CONF_SLAVE_DISCOVERY_MODE        = "slave_discovery_mode"
 CONF_RX_BUFFER_SIZE              = "rx_buffer_size"
 
 
-DEFAULT_CONF_TYPE = "MASTER"
+DEFAULT_CONF_TYPE = "master"
 
 DEFAULT_ADDRESS = 1
 #DEFAULT_RESPONDING_ADDRESS = 1
