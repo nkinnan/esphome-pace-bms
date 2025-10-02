@@ -2,7 +2,7 @@
 
 #include "esphome/core/component.h"
 
-#include "esphome/components/pace_bms/pace_bms_component.h"
+#include "esphome/components/pace_bms/pace_bms_component_base.h"
 
 #include "pace_bms_select_implementation.h"
 

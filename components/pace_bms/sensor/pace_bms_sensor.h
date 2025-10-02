@@ -3,7 +3,7 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 
-#include "esphome/components/pace_bms/pace_bms_component.h"
+#include "esphome/components/pace_bms/pace_bms_component_base.h"
 
 namespace esphome {
 namespace pace_bms_base {
