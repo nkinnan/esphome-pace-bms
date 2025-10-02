@@ -5,9 +5,9 @@
 #include "pace_bms_switch.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.switch";
+static const char* const TAG = "pace_bms_base.switch";
 
 void PaceBmsSwitch::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
@@ -84,5 +84,5 @@ void PaceBmsSwitch::dump_config() {
 	LOG_SWITCH("  ", "Discharge MOSFET", this->discharge_mosfet_switch_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

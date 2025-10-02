@@ -6,11 +6,11 @@
 #include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsTextSensor : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 	void set_warning_status_sensor(text_sensor::TextSensor* warning_status_sensor) { warning_status_sensor_ = warning_status_sensor; }
 	void set_balancing_status_sensor(text_sensor::TextSensor* balancing_status_sensor) { balancing_status_sensor_ = balancing_status_sensor; }
 	void set_system_status_sensor(text_sensor::TextSensor* system_status_sensor) { system_status_sensor_ = system_status_sensor; }
@@ -38,5 +38,5 @@ protected:
 	text_sensor::TextSensor* serial_number_sensor_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

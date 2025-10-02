@@ -4,7 +4,7 @@
 namespace esphome {
 namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.button";
+static const char* const TAG = "pace_bms_base.button";
 
 void PaceBmsButton::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {

@@ -6,7 +6,7 @@
 #include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSensor : public Component {
 public:
@@ -145,5 +145,5 @@ protected:
 	void status_information_callback_v20(PaceBmsProtocolV20::StatusInformation& status_information);
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

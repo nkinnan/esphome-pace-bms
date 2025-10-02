@@ -18,7 +18,7 @@ from esphome.const import (
     UNIT_WATT,
     UNIT_PERCENT,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 UNIT_AMP_HOURS = "Ah" # todo: use existing
 
@@ -26,7 +26,7 @@ CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
+PaceBmsSensor = pace_bms_base_ns.class_("PaceBmsSensor", cg.Component)
 
 CONF_CELL_COUNT = "cell_count"
 CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
@@ -184,7 +184,7 @@ CONF_FET_STATUS_VALUE         = "fet_status_value"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,

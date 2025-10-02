@@ -9,11 +9,11 @@
 #include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSwitch : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 
 	// current switch states are actually in the status information response, so subscribe to that in order to update switch state
 	void set_buzzer_alarm_switch(PaceBmsSwitchImplementation* sw) { this->buzzer_alarm_switch_ = sw; }
@@ -36,6 +36,6 @@ protected:
 	pace_bms::PaceBmsSwitchImplementation* discharge_mosfet_switch_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 

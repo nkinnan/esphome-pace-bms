@@ -9,7 +9,7 @@
 #include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSelect : public Component {
 public:
@@ -26,17 +26,17 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms_base::PaceBms* parent_;
 
-	pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
 
 	PaceBmsProtocolV25::Protocols protocols_;
 	bool protocols_seen_ = false;
-	pace_bms::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
-	pace_bms::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };
-	pace_bms::PaceBmsSelectImplementation* protocol_type_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_type_select_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 

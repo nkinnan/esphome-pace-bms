@@ -5,9 +5,9 @@
 #include "pace_bms_number.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.number";
+static const char* const TAG = "pace_bms_base.number";
 
 /*
 * wire up all the lambda callbacks
@@ -1069,5 +1069,5 @@ void PaceBmsNumber::dump_config() {
 	LOG_NUMBER("  ", "Environment Over Temperature Protection Release", this->environment_over_temperature_protection_release_number_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

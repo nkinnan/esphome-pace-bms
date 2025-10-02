@@ -6,7 +6,7 @@
 #include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsDatetimeImplementation : public Component, public datetime::DateTimeEntity {
 public:
@@ -22,5 +22,5 @@ protected:
 	CallbackManager<void(const datetime::DateTimeCall&)> control_callbacks_{};
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

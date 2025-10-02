@@ -4,14 +4,14 @@ from esphome.components import switch
 from esphome.const import (
     CONF_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSwitch = pace_bms_ns.class_("PaceBmsSwitch", cg.Component)
-PaceBmsSwitchImplementation = pace_bms_ns.class_("PaceBmsSwitchImplementation", cg.Component, switch.Switch)
+PaceBmsSwitch = pace_bms_base_ns.class_("PaceBmsSwitch", cg.Component)
+PaceBmsSwitchImplementation = pace_bms_base_ns.class_("PaceBmsSwitchImplementation", cg.Component, switch.Switch)
 
 CONF_BUZZER_ALARM           = "buzzer_alarm"
 CONF_LED_ALARM              = "led_alarm"
@@ -22,7 +22,7 @@ CONF_DISCHARGE_MOSFET       = "discharge_mosfet"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_BUZZER_ALARM): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
         cv.Optional(CONF_LED_ALARM): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),

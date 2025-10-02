@@ -83,6 +83,7 @@ DEFAULT_RX_BUFFER_SIZE = 256
 
 
 BASE_SCHEMA = cv.Schema({
+    # todo why isn't default working for CONF_TYPE??????
     cv.Optional(CONF_TYPE, default=DEFAULT_CONF_TYPE): cv.enum(CONF_TYPE_ENUM, upper=False),
     cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
@@ -118,6 +119,7 @@ CONFIG_SCHEMA = cv.typed_schema({
 },lower=True)
 
 
+# todo why doesn't this work???????
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
 #FINAL_VALIDATE_SCHEMA = cv.typed_schema({
 #    CONF_TYPE_MASTER: cv.Schema({

@@ -3,9 +3,9 @@
 #include "pace_bms_number_implementation.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.number_impl";
+static const char* const TAG = "pace_bms_base.number_impl";
 
 void PaceBmsNumberImplementation::control(float number) {
 	ESP_LOGD(TAG, "control: new value %f", number);
@@ -17,5 +17,5 @@ void PaceBmsNumberImplementation::control(float number) {
 	this->publish_state(number);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

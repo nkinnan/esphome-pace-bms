@@ -5,9 +5,9 @@
 #include "pace_bms_sensor.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.sensor";
+static const char* const TAG = "pace_bms_base.sensor";
 
 void PaceBmsSensor::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
@@ -334,5 +334,5 @@ void PaceBmsSensor::status_information_callback_v20(PaceBmsProtocolV20::StatusIn
 	}
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

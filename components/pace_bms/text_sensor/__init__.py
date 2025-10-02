@@ -4,13 +4,13 @@ from esphome.components import text_sensor
 from esphome.const import (
     CONF_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsTextSensor = pace_bms_ns.class_("PaceBmsTextSensor", cg.Component)
+PaceBmsTextSensor = pace_bms_base_ns.class_("PaceBmsTextSensor", cg.Component)
 
 CONF_WARNING_STATUS       = "warning_status"
 CONF_BALANCING_STATUS     = "balancing_status"
@@ -25,7 +25,7 @@ CONF_SERIAL_NUMBER        = "serial_number"
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsTextSensor),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_WARNING_STATUS): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_BALANCING_STATUS): text_sensor.text_sensor_schema(),

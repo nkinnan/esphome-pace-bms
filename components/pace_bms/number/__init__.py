@@ -19,14 +19,14 @@ from esphome.const import (
     UNIT_CELSIUS,
     ENTITY_CATEGORY_CONFIG,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsNumber = pace_bms_ns.class_("PaceBmsNumber", cg.Component)
-PaceBmsNumberImplementation = pace_bms_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
+PaceBmsNumber = pace_bms_base_ns.class_("PaceBmsNumber", cg.Component)
+PaceBmsNumberImplementation = pace_bms_base_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
 
 NUMBER_MODE_BOX = "BOX"
 
@@ -104,7 +104,7 @@ CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION_RELEASE  = "environment_over_temper
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_CELL_OVER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,

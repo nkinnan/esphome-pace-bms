@@ -4,14 +4,14 @@ from esphome.components import select
 from esphome.const import (
     CONF_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSelect = pace_bms_ns.class_("PaceBmsSelect", cg.Component)
-PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", cg.Component, select.Select)
+PaceBmsSelect = pace_bms_base_ns.class_("PaceBmsSelect", cg.Component)
+PaceBmsSelectImplementation = pace_bms_base_ns.class_("PaceBmsSelectImplementation", cg.Component, select.Select)
 
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
 charge_current_limiter_gear_options = {
@@ -87,7 +87,7 @@ protocol_type_options = {
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSelect),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER_GEAR): select.select_schema(PaceBmsSelectImplementation),
 

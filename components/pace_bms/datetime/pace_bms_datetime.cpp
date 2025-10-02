@@ -5,9 +5,9 @@
 #include "pace_bms_datetime.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.datetime";
+static const char* const TAG = "pace_bms_base.datetime";
 
 /*
 * wire up all the lambda callbacks
@@ -77,7 +77,7 @@ void PaceBmsDatetime::dump_config() {
 	LOG_DATETIME_DATETIME("  ", "System Date and Time", this->system_date_and_time_datetime_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 
 

@@ -5,21 +5,21 @@ from esphome.const import (
     CONF_ID,
     CONF_TYPE,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsDatetime = pace_bms_ns.class_("PaceBmsDatetime", cg.Component)
-PaceBmsDatetimeImplementation = pace_bms_ns.class_("PaceBmsDatetimeImplementation", cg.Component, datetime.DateTimeEntity)
+PaceBmsDatetime = pace_bms_base_ns.class_("PaceBmsDatetime", cg.Component)
+PaceBmsDatetimeImplementation = pace_bms_base_ns.class_("PaceBmsDatetimeImplementation", cg.Component, datetime.DateTimeEntity)
 
 CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
 
 CONFIG_SCHEMA = cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsDatetime),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
         cv.Optional(CONF_SYSTEM_DATE_AND_TIME): datetime.datetime_schema(
             PaceBmsDatetimeImplementation,

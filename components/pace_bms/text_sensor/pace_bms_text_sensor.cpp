@@ -5,9 +5,9 @@
 #include "pace_bms_text_sensor.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.textsensor";
+static const char* const TAG = "pace_bms_base.textsensor";
 
 void PaceBmsTextSensor::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
@@ -113,5 +113,5 @@ void PaceBmsTextSensor::dump_config() {
 	LOG_TEXT_SENSOR("  ", "Serial Number", this->serial_number_sensor_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

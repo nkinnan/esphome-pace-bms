@@ -6,7 +6,7 @@
 #include "esphome/components/pace_bms/pace_bms_component.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsDatetime : public Component {
 public:
@@ -19,14 +19,14 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms_base::PaceBms* parent_;
 
 	PaceBmsProtocolV25::DateTime system_date_and_time_;
 	bool system_date_and_time_seen_{ false };
-	pace_bms::PaceBmsDatetimeImplementation* system_date_and_time_datetime_{ nullptr };
+	pace_bms_base::PaceBmsDatetimeImplementation* system_date_and_time_datetime_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 
 

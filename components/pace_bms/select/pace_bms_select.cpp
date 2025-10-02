@@ -5,9 +5,9 @@
 #include "pace_bms_select.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.select";
+static const char* const TAG = "pace_bms_base.select";
 
 void PaceBmsSelect::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
@@ -101,5 +101,5 @@ void PaceBmsSelect::dump_config() {
 	LOG_SELECT("  ", "Protocol Type", this->protocol_type_select_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

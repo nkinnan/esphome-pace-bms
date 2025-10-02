@@ -3,9 +3,9 @@
 #include "pace_bms_switch_implementation.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.switch_impl";
+static const char* const TAG = "pace_bms_base.switch_impl";
 
 void PaceBmsSwitchImplementation::write_state(bool state) {
 	this->write_state_callback_.call(state);
@@ -14,5 +14,5 @@ void PaceBmsSwitchImplementation::write_state(bool state) {
 	this->publish_state(state);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
