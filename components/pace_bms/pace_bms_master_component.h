@@ -2,8 +2,8 @@
 
 #include "esphome/components/uart/uart.h"
 
-#include "../pace_bms_base/pace_bms_component_base.h"
-#include "../pace_bms_slave/pace_bms_slave_component.h"
+#include "pace_bms_component_base.h"
+#include "pace_bms_slave_component.h"
 
 #include "pace_bms_protocol_v25.h"
 #include "pace_bms_protocol_v20.h"
