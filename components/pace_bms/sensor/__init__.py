@@ -763,6 +763,11 @@ async def to_code(config):
     if CONF_DEVICE_ID in config:
         platform_device_id = config[CONF_DEVICE_ID]
 
+    if platform_device_id is None:
+        raise Exception(f"platform_device_id is None")
+    if platform_device_id is not None:
+        raise Exception(f"platform_device_id has value {platform_device_id}")
+
     if cell_count_config := config.get(CONF_CELL_COUNT):
         # if sensor does not have a device id, try to inherit platform-level device id 
         if cell_count_config.get(CONF_DEVICE_ID) is None and platform_device_id is not None:
