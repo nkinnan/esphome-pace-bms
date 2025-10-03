@@ -87,7 +87,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
 	}
 
-	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
+	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response, quietMode);
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
@@ -102,19 +102,19 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 
 	// first thing we need to do is look ahead and check the AnalogInformation UserDefinedValue, which tells us how to interpret the rest of the payload
 	uint16_t snoopOffset = 13 + 36;
-	uint8_t lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopOffset);
+	uint8_t lookAhead_TemperatureCount = ReadHexEncodedByte(response, snoopOffset, quietMode);
 	uint8_t lookAhead_AnalogInformationUserDefinedValue = -1;
 	if(lookAhead_TemperatureCount == 8)
 	{
 		// tsk tsk, Eenovance/Sunsynk have 8 temperature readings so the offset is advanced by 8 bytes, gotta love that vendor lock in!
 		uint16_t snoopOffset = 13 + 116; // 129
-		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset);
+		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset, quietMode);
 	}
 	else
 	{
 		// "normal" offset for the User Defined Value
 		uint16_t snoopOffset = 13 + 108; // 121
-		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset);
+		lookAhead_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, snoopOffset, quietMode);
 	}
 	currentProtocolVariant = GetProtocolVariantInfo(lookAhead_AnalogInformationUserDefinedValue);
 	if(currentProtocolVariant == nullptr)
@@ -128,7 +128,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	uint16_t byteOffset = 13;
 
 	// SPEC BUG: doc says the response starts with the busId, but "on the wire" I see an extra byte value of 0x00 preceeding it
-	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset, quietMode);
 	if (unknown != 0)
 	{
 		logVerbose("Response contains a value other than zero before the BusId");
@@ -141,7 +141,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
-		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
+		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (busIdResponding != targetedBusId)
 		{
 			logError("Response from wrong bus Id in payload, expected " + std::to_string(targetedBusId) + " but got " + std::to_string(busIdResponding));
@@ -152,7 +152,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	{
 		bool error = false;
 
-		responseCount = ReadHexEncodedByte(response, byteOffset);
+		responseCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (responseCount < 1 || responseCount > 16)
 		{
 			logError("Response to AnalogInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
@@ -189,7 +189,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		AnalogInformation& analogInformation = analogInformationList.at(i);
 		//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
-		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset);
+		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (analogInformation.cellCount > MAX_CELL_COUNT)
 		{
 			logWarning("Response contains more cell voltage readings than are supported, results will be truncated");
@@ -197,7 +197,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		int sanityCheck_totalVoltage = 0;
 		for (int i = 0; i < analogInformation.cellCount; i++)
 		{
-			uint16_t cellVoltage = ReadHexEncodedUShort(response, byteOffset);
+			uint16_t cellVoltage = ReadHexEncodedUShort(response, byteOffset, quietMode);
 
 			if (i > MAX_CELL_COUNT - 1)
 				continue;
@@ -213,7 +213,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 			return false;
 		}
 
-		analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset);
+		analogInformation.temperatureCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (analogInformation.temperatureCount > MAX_TEMP_COUNT)
 		{
 			// Eenovance/Sunsynk have 8 temperature readings, this is "expected" so we can log info instead of warning
@@ -228,7 +228,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		}
 		for (int i = 0; i < analogInformation.temperatureCount; i++)
 		{
-			uint16_t temperature = ReadHexEncodedUShort(response, byteOffset);
+			uint16_t temperature = ReadHexEncodedUShort(response, byteOffset, quietMode);
 
 			if (i > MAX_TEMP_COUNT - 1)
 				continue; // already logged above if count was too high
@@ -236,24 +236,24 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 			analogInformation.temperaturesTenthsCelcius[i] = (temperature - 2730);
 		}
 
-		analogInformation.currentMilliamps = ReadHexEncodedSShort(response, byteOffset) * 10;
+		analogInformation.currentMilliamps = ReadHexEncodedSShort(response, byteOffset, quietMode) * 10;
 
-		analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
+		analogInformation.totalVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset, quietMode);
 
-		analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+		analogInformation.remainingCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset, quietMode) * 10;
 
-		uint8_t again_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset);
+		uint8_t again_AnalogInformationUserDefinedValue = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (again_AnalogInformationUserDefinedValue != currentProtocolVariant->analogInformationUserDefinedValue)
 		{
 			logWarning("AnalogInformation UserDefinedValue lookahead mismatch, this is a bug in PACE_BMS. Please file an issue report with full logs at VERY_VERBOSE level.");
 			return false;
 		}
 
-		analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+		analogInformation.fullCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset, quietMode) * 10;
 
-		analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
+		analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset, quietMode);
 
-		analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
+		analogInformation.designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset, quietMode) * 10;
 
 		// calculate some "extras"
 		analogInformation.SoC = ((float)analogInformation.remainingCapacityMilliampHours / (float)analogInformation.fullCapacityMilliampHours) * 100.0f;
@@ -638,7 +638,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
 	}
 
-	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
+	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response, quietMode);
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
@@ -655,7 +655,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	uint16_t byteOffset = 13;
 
 	// SPEC BUG: doc says the response starts with the busId, but "on the wire" I see an extra byte value of 0x00 preceeding it
-	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
+	uint8_t unknown = ReadHexEncodedByte(response, byteOffset, quietMode);
 	if (unknown != 0)
 	{
 		logVerbose("Response contains a value other than zero before the BusId");
@@ -668,7 +668,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
-		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
+		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (busIdResponding != targetedBusId)
 		{
 			logError("Response from wrong bus Id in payload, expected " + std::to_string(targetedBusId) + " but got " + std::to_string(busIdResponding));
@@ -679,7 +679,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	{
 		bool error = false;
 
-		responseCount = ReadHexEncodedByte(response, byteOffset);
+		responseCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (responseCount < 1 || responseCount > 16)
 		{
 			logError("Response to StatusInformation broadcast request contains a response count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
@@ -724,7 +724,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		statusInformation.faultText.clear();
 
 		// ========================== Warning / Alarm Status ==========================
-		uint8_t cellCount = ReadHexEncodedByte(response, byteOffset);
+		uint8_t cellCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (cellCount > MAX_CELL_COUNT)
 		{
 			logWarning("Response contains more cell warnings than are supported, results will be truncated");
@@ -732,7 +732,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		int sanityCheck_cellsWithoutVoltageWarnings = 0;
 		for (int i = 0; i < cellCount; i++)
 		{
-			uint8_t cw = ReadHexEncodedByte(response, byteOffset);
+			uint8_t cw = ReadHexEncodedByte(response, byteOffset, quietMode);
 			statusInformation.warning_value_cell[i] = cw;
 
 			sanityCheck_cellsWithoutVoltageWarnings += (cw == 0 ? 1 : 0);
@@ -747,7 +747,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw) + std::string("; "));
 		}
 
-		uint8_t tempCount = ReadHexEncodedByte(response, byteOffset);
+		uint8_t tempCount = ReadHexEncodedByte(response, byteOffset, quietMode);
 		if (tempCount > MAX_TEMP_COUNT)
 		{
 			logWarning("Response contains more temperature warnings than are supported, results will be truncated");
@@ -755,7 +755,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		int sanityCheck_cellsWithoutTemperatureWarnings = 0;
 		for (int i = 0; i < tempCount; i++)
 		{
-			uint8_t tw = ReadHexEncodedByte(response, byteOffset);
+			uint8_t tw = ReadHexEncodedByte(response, byteOffset, quietMode);
 			statusInformation.warning_value_temp[i] = tw;
 
 			sanityCheck_cellsWithoutTemperatureWarnings += (tw == 0 ? 1 : 0);
@@ -770,7 +770,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw) + std::string("; "));
 		}
 
-		uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
+		uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.warning_value_charge_current = chargeCurrentWarn;
 		if (chargeCurrentWarn != 0)
 		{
@@ -778,7 +778,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn) + std::string("; "));
 		}
 
-		uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset);
+		uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.warning_value_total_voltage = totalVoltageWarn;
 		if (totalVoltageWarn != 0)
 		{
@@ -786,7 +786,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 			statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn) + std::string("; "));
 		}
 
-		uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset);
+		uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.warning_value_discharge_current = dischargeCurrentWarn;
 		if (dischargeCurrentWarn != 0)
 		{
@@ -795,14 +795,14 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 
 		// ========================== Protection Status ==========================
-		uint8_t protectState1 = ReadHexEncodedByte(response, byteOffset);
+		uint8_t protectState1 = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.protection_value1 = protectState1;
 		if (protectState1 != 0)
 		{
 			statusInformation.protectionText.append(DecodeProtectionStatus1Value(protectState1));
 		}
 
-		uint8_t protectState2 = ReadHexEncodedByte(response, byteOffset);
+		uint8_t protectState2 = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.protection_value2 = protectState2;
 		if (protectState2 != 0)
 		{
@@ -810,7 +810,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 
 		// ========================== System Status ==========================
-		uint8_t systemState = ReadHexEncodedByte(response, byteOffset);
+		uint8_t systemState = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.system_value = systemState;
 		if (systemState != 0)
 		{
@@ -818,7 +818,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 
 		// ========================== Configuration Status ==========================
-		uint8_t controlState = ReadHexEncodedByte(response, byteOffset);
+		uint8_t controlState = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.configuration_value = controlState;
 		if (controlState != 0)
 		{
@@ -826,7 +826,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 
 		// ========================== Fault Status ==========================
-		uint8_t faultState = ReadHexEncodedByte(response, byteOffset);
+		uint8_t faultState = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.fault_value = faultState;
 		if (faultState != 0)
 		{
@@ -834,7 +834,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 
 		// ========================== Balancing Status ==========================
-		uint16_t balanceState = ReadHexEncodedUShort(response, byteOffset);
+		uint16_t balanceState = ReadHexEncodedUShort(response, byteOffset, quietMode);
 		statusInformation.balancing_value = balanceState;
 		for (int i = 0; i < 16; i++)
 		{
@@ -847,14 +847,14 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		// ========================== MORE Warning / Alarm Status ==========================
 		// Note: It seems like these two may be a "summary" of the previous "Warning / Alarm" section as it duplicates some of the same warnings,
 		//       but I'll leave it for completeness or in case the bit shows up in one place but not the other in practice.
-		uint8_t warnState1 = ReadHexEncodedByte(response, byteOffset);
+		uint8_t warnState1 = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.warning_value1 = warnState1;
 		if (warnState1 != 0)
 		{
 			statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1));
 		}
 
-		uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset);
+		uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset, quietMode);
 		statusInformation.warning_value2 = warnState1;
 		if (warnState2 != 0)
 		{
