@@ -137,10 +137,10 @@ protected:
 	void handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
 	void handle_read_analog_information_response_v25(std::span<uint8_t>& response);
 	void handle_read_status_information_response_v25(std::span<uint8_t>& response);
-	void handle_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response)
-	void handle_broadcast_read_status_information_response_v25(std::span<uint8_t>& response)
-	void handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave)
-	void handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave)
+	void handle_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);
+	void handle_broadcast_read_status_information_response_v25(std::span<uint8_t>& response);
+	void handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave);
+	void handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave);
 	void handle_read_hardware_version_response_v25(std::span<uint8_t>& response);
 	void handle_read_serial_number_response_v25(std::span<uint8_t>& response);
 	void handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand, std::span<uint8_t>& response);
