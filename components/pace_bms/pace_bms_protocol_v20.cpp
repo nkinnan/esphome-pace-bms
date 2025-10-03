@@ -381,7 +381,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_EG4(const uint8_t 
 	analogInformation.minCellVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	analogInformation.maxCellDifferentialMillivolts = ReadHexEncodedUShort(response, byteOffset);
 
-	// todo: expose this extra information
+	// todo: expose this extra information?
 	uint16_t maxCellTempTenthsCelcius = ReadHexEncodedUShort(response, byteOffset) - 2730;
 	uint16_t minCellTempTenthsCelcius = ReadHexEncodedUShort(response, byteOffset) - 2730;
 

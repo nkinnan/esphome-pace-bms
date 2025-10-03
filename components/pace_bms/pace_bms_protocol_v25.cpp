@@ -1303,7 +1303,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-	// todo: everywhere check payload length is what's expected
+	// todo: (everywhere) check payload length is what's expected
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;

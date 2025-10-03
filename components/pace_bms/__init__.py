@@ -97,7 +97,6 @@ DEFAULT_RX_BUFFER_SIZE = 256
 
 
 BASE_SCHEMA = cv.Schema({
-    # todo why isn't default working for CONF_TYPE??????
     cv.Optional(CONF_TYPE, default=DEFAULT_BMS_TYPE): cv.enum(BMS_TYPE, upper=True),
     cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 

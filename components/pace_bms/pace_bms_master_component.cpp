@@ -70,8 +70,8 @@ void PaceBmsMaster::dump_config() {
 
 	ESP_LOGCONFIG(TAG, "  Rx Buffer Size: %i", this->rx_buffer_size_);
 
-	// todo: why did I put this here?
-	this->check_uart_settings(9600);
+	// print a warning if the settings do not match
+	this->check_uart_settings(baud_rate=9600, /*require_rx=True, require_tx=True,*/ data_bits=8, parity="NONE", stop_bits=1);
 }
 
 /*
