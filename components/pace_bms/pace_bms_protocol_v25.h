@@ -160,7 +160,7 @@ public:
 	static const uint8_t exampleReadBmsCountResponseV25[];
 
 	bool CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber);
+	bool ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& serialNumber);
 
 	// ==== Read Analog Information
 	// 0 Responding Bus Id
