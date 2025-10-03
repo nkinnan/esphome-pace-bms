@@ -183,6 +183,7 @@ CONF_FET_STATUS_VALUE         = "fet_status_value"
 
 def inherit_device_id(schema):
     parent_device_id = schema.get(CONF_DEVICE_ID)
+    print(f"parent_device_id: {parent_device_id}") ######################
     if(parent_device_id is None):
         return schema
         
