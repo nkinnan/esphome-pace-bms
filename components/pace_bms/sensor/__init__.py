@@ -181,8 +181,13 @@ CONF_CURRENT_EVENT_VALUE      = "current_event_value"
 CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
+def inherit_device_id_outer(schema):
+    print(f"======================= the OUTER schema is {schema}")
+    return schema
 
-CONFIG_SCHEMA = cv.Schema(
+CONFIG_SCHEMA = cv.All(
+inherit_device_id_outer,
+cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
@@ -744,6 +749,7 @@ CONFIG_SCHEMA = cv.Schema(
         ),
 
     }
+)
 )
 
 async def to_code(config):
