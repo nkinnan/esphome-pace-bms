@@ -38,10 +38,12 @@ void PaceBmsProtocolBase::LogVerbose(std::string message)
 }
 void PaceBmsProtocolBase::LogVeryVerbose(std::string message)
 {
+#if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	if (LogVeryVerbosePtr != 0)
 	{
 		LogVeryVerbosePtr(message);
 	}
+#endif
 }
 
 // Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
