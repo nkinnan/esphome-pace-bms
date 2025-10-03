@@ -105,7 +105,7 @@ BASE_SCHEMA = cv.Schema({
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
 
-async def inherit_device_id(schema):
+def inherit_device_id(schema):
     return schema
 
 CONFIG_SCHEMA = cv.All(
