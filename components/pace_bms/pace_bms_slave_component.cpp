@@ -46,6 +46,7 @@ void PaceBmsSlave::queue_sensor_update(std::function<void()> update) { this->par
 // child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 //     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
 //     periodically gather these updates for fan-out to the sensors the first place
+void PaceBmsSlave::register_bms_count_callback_v25(std::function<void(uint8_t&)> callback) { ESP_LOGE(TAG, "non-analog/status information commands not available for slave devices"); }
 void PaceBmsSlave::register_analog_information_callback_v25(std::function<void(PaceBmsProtocolV25::AnalogInformation&)> callback) { this->register_analog_information_callback_v25(callback); }
 void PaceBmsSlave::register_status_information_callback_v25(std::function<void(PaceBmsProtocolV25::StatusInformation&)> callback) { this->register_status_information_callback_v25(callback); }
 void PaceBmsSlave::register_hardware_version_callback_v25(std::function<void(std::string&)> callback) { ESP_LOGE(TAG, "non-analog/status information commands not available for slave devices"); }

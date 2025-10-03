@@ -43,10 +43,12 @@ void very_verbose_log_func(std::string message) {
 * log configuration
 */
 
+// helpers for printing the enums
 static const char * SlaveDiscoveryModeStrings[] = { "NONE", "RELAY", "BROADCAST", "RELAY_AND_BROADCAST" };
 const char * to_cstring(SlaveDiscoveryMode mode) { return SlaveDiscoveryModeStrings[mode]; }
+static const char * SlaveQueryModeStrings[] = { "BROADCAST", "RELAY" };
+const char * to_cstring(SlaveQueryMode mode) { return SlaveQueryModeStrings[mode]; }
 
-// todo: check this
 void PaceBmsMaster::dump_config() {
 	ESP_LOGCONFIG(TAG, "pace_bms_master:");
 	ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
@@ -67,11 +69,13 @@ void PaceBmsMaster::dump_config() {
 	ESP_LOGCONFIG(TAG, "  Response Timeout (ms): %i", this->response_timeout_);
 
 	ESP_LOGCONFIG(TAG, "  Slave Discovery Mode: %s", to_cstring(this->slave_discovery_mode_));
+	ESP_LOGCONFIG(TAG, "  Slave Query Mode: %s", to_cstring(this->slave_query_mode_));
 
 	ESP_LOGCONFIG(TAG, "  Rx Buffer Size: %i", this->rx_buffer_size_);
+	ESP_LOGCONFIG(TAG, "  Update Interval: %i", this->update_interval_);
 
-	// print a warning if the settings do not match
-	this->check_uart_settings(baud_rate=9600, /*require_rx=True, require_tx=True,*/ data_bits=8, parity="NONE", stop_bits=1);
+	// print an error if the settings do not match
+	this->check_uart_settings(9600, /*require_rx=True, require_tx=True,*/ 1, uart::UART_CONFIG_PARITY_NONE, 8);
 }
 
 /*
@@ -113,49 +117,62 @@ void PaceBmsMaster::setup() {
 		this->read_byte(&byte);
 	}
 
-	// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
-	if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE /* todo: once I have implemented slave devices, only the master (with the uart) can do this */) {
-		// asking for analog info is always the first thing (here and also in update()) so that we can sniff the User Defined Value field to determine the protocol variant
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+	// currently no "setup" is done for 0x20 so there is no else block, and this is all optional anyway
+	if(this->protocol_version_ == 0x25) {
+		// always send the "Read BMS Count" command first thing, this is what PBmsTools does, it can't hurt, and the value could be useful
+		// later even if the user doesn't request the sensor
+		if(this->get_bms_type() == pace_bms_base::BMS_TYPE_MASTER) {
 			command_item* item = new command_item;
-			item->description_ = std::string("slave discovery broadcast: query for analog information");
-			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, 0xFF, request); };
-			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_analog_information_response_v25(response); };
+			item->description_ = std::string("read BMS count");
+			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadBmsCountRequest(this->address_, request); };
+			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_bms_count_response_v25(response); };
 			read_queue_.push(item);
 		}
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			command_item* item = new command_item;
-			item->description_ = std::string("slave discovery broadcast: query for status information");
-			item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, 0xFF, request); };
-			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
-			read_queue_.push(item);
-		}
-		// this (and the next if) is a lot of traffic, and the BMS tends to barf if you ask it for a non-existent address, but I'll leave it for debugging purposes
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
-				// don't query self
-				if(slaveAddress == this->address_) 
-					continue;
+
+		// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
+		if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE && this->get_bms_type() == pace_bms_base::BMS_TYPE_MASTER) {
+			// asking for analog info is always the first thing (here and also in update()) so that we can sniff the User Defined Value field to determine the protocol variant
+			if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for analog information");
-				item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slaveAddress, request); };
-				item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(slaveAddress, response); };
+				item->description_ = std::string("slave discovery broadcast: query for analog information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, 0xFF, request); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_analog_information_response_v25(response); };
 				read_queue_.push(item);
 			}
-		}
-		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
-			for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
-				// don't query self
-				if(slaveAddress == this->address_) 
-					continue;
+			if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 				command_item* item = new command_item;
-				item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for status information");
-				item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slaveAddress, request); };
-				item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(slaveAddress, response); };
+				item->description_ = std::string("slave discovery broadcast: query for status information");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, 0xFF, request); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_broadcast_read_status_information_response_v25(response); };
 				read_queue_.push(item);
 			}
+			// this (and the next if) is a lot of traffic, and the BMS tends to barf if you ask it for a non-existent address, but I'll leave it for debugging purposes
+			if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+				for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
+					// don't query self
+					if(slaveAddress == this->address_) 
+						continue;
+					command_item* item = new command_item;
+					item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for analog information");
+					item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slaveAddress, request); };
+					item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_analog_information_response_v25(slaveAddress, response); };
+					read_queue_.push(item);
+				}
+			}
+			if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
+				for(int slaveAddress = 0; slaveAddress < 16; slaveAddress++) { 
+					// don't query self
+					if(slaveAddress == this->address_) 
+						continue;
+					command_item* item = new command_item;
+					item->description_ = std::string("slave discovery relay: query slave address " + std::to_string(slaveAddress) + " for status information");
+					item->create_request_frame_ = [this, slaveAddress](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slaveAddress, request); };
+					item->process_response_frame_ = [this, slaveAddress](std::span<uint8_t>& response) -> void { this->handle_slave_discovery_relay_read_status_information_response_v25(slaveAddress, response); };
+					read_queue_.push(item);
+				}
+			}
+			ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
 		}
-		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
 	}
 }
 
@@ -171,11 +188,19 @@ void PaceBmsMaster::update() {
 
 	// writes are always processed first so no need to check that as well
 	if (!read_queue_.empty()) {
-		ESP_LOGW(TAG, "Commands still in queue on update(), skipping this refresh cycle: Could not speak with the BMS fast enough: increase update_interval or reduce request_throttle.");
+		ESP_LOGI(TAG, "Commands still in queue on update(), skipping this refresh cycle; Could not speak with the BMS fast enough, possible solutions: increase update_interval, reduce request_throttle, decrease the number of sensors (relevant for multiple chained battery pack setups).");
 	}
 	else {
 		if (this->pace_bms_v25_ != nullptr) {
 			ESP_LOGV(TAG, "Queueing v25 refresh commands");
+
+			if (this->bms_count_callbacks_v25_.size() > 0) {
+				command_item* item = new command_item;
+				item->description_ = std::string("read BMS count");
+				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadBmsCountRequest(this->address_, request); };
+				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_bms_count_response_v25(response); };
+				read_queue_.push(item);
+			}
 
 			// asking for analog info is always the first thing (here, and also in setup() if applicable) so that we can sniff the User Defined Value field to determine the protocol variant
 
@@ -668,6 +693,22 @@ void PaceBmsMaster::process_response_frame_(uint8_t* frame_bytes, uint16_t frame
 /*
 * read/write response frame received handlers, called via next_response_handler_ from process_response_frame
 */
+
+void PaceBmsMaster::handle_read_bms_count_response_v25(std::span<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	uint8_t bmsCount = -1;
+	bool result = this->pace_bms_v25_->ProcessReadBmsCountResponse(this->address_, this->responding_address_, response, bmsCount);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->bms_count_callbacks_v25_.size(); i++) {
+		bms_count_callbacks_v25_[i](bmsCount);
+	}
+}
 
 void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());

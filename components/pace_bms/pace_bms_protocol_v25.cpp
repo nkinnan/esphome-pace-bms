@@ -18,6 +18,39 @@ PaceBmsProtocolV25::PaceBmsProtocolV25(
 // 
 // ============================================================================
 
+static const uint8_t exampleReadBmsCountRequestV25[] = " ~250146900000FDA5\r";
+static const uint8_t exampleReadBmsCountResponseV25[] = "~25014600E00202FD35\r";
+
+bool CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request)
+{
+	CreateRequest(busId, CID2_ReadBmsCount, std::vector<uint8_t>(), request);
+	return true;
+}
+bool ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& bmsCount)
+{
+	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
+	if (payloadLen == -1)
+	{
+		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+
+	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
+	uint16_t byteOffset = 13;
+
+	if (payloadLen != 2)
+	{
+		std::string message = std::string("Read BMS Count should return a 2 byte payload, but payload length is ") + std::to_string(payloadLen);
+		LogError(message);
+		return false;
+	}
+
+	bmsCount = ReadHexEncodedByte(response, byteOffset);
+
+	return true;
+}
+
+
 const unsigned char PaceBmsProtocolV25::exampleReadAnalogInformationRequestV25[] = "~25014642E00201FD30\r";
 const unsigned char PaceBmsProtocolV25::exampleReadAnalogInformationResponseV25[] = "~25014600F07A0001100CC70CC80CC70CC70CC70CC50CC60CC70CC70CC60CC70CC60CC60CC70CC60CC7060B9B0B990B990B990BB30BBCFF1FCCCD12D303286A008C2710E1E4\r";
 
@@ -33,6 +66,7 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
+// todo: this and status info: flag to log to very-verbose when doing the debug slave discovery stuff
 bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));

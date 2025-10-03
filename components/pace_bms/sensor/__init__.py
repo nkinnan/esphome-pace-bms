@@ -29,6 +29,7 @@ DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_base_ns.class_("PaceBmsSensor", cg.Component)
 
+CONF_BMS_COUNT = "bms_count"
 CONF_CELL_COUNT = "cell_count"
 CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
 CONF_CELL_VOLTAGE_02 = "cell_voltage_02"
@@ -201,6 +202,12 @@ CONFIG_SCHEMA = cv.All(
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
         cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
+        cv.Optional(CONF_BMS_COUNT): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -757,6 +764,10 @@ async def to_code(config):
     parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(parent))
 
+
+    if bms_count_config := config.get(CONF_BMS_COUNT):
+        sens = await sensor.new_sensor(bms_count_config)
+        cg.add(var.set_bms_count_sensor(sens))
 
     if cell_count_config := config.get(CONF_CELL_COUNT):
         sens = await sensor.new_sensor(cell_count_config)

@@ -17,6 +17,17 @@ void PaceBmsSensor::setup() {
 		if (request_status_info_callback_ == true) {
 			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
 		}
+		if (this->bms_count_sensor_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_bms_count_callback_v25([this](uint8_t& bms_count) {
+					if (this->bms_count_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = bms_count]() { this->bms_count_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "BMS Count readout only supported for type=MASTER");
+			}
+		}
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (request_analog_info_callback_ == true) {
