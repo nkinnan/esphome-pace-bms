@@ -33,7 +33,12 @@ public:
 	// make accessible to sensors
 	int get_protocol_commandset() override;
 	// we don't push all updates in a single loop, that'd stall the ESP out
+	// this writes to the master device's queue
 	void queue_sensor_update(std::function<void()> update) override;
+	// currently the master will dispatch BMS updates to slaves through these two access points, could probably use an improved / cleaner 
+	// design such as having slaves process the payloads internally via a method such as "notify_analog_information" for example
+	std::function<void(PaceBmsProtocolV25::AnalogInformation&)> get_analog_information_callbacks_v25() { return analog_information_callbacks_v25_.push_back(std::move(callback));; };
+	std::function<void(PaceBmsProtocolV25::AnalogInformation&)> get_status_information_callbacks_v25() { return status_information_callbacks_v25_.push_back(std::move(callback));; };
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
@@ -93,6 +98,10 @@ public:
 
 protected:
 	pace_bms_master::PaceBmsMaster* parent_{ nullptr };
+
+	// child sensor requested callback lists
+	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
+	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>>                               status_information_callbacks_v25_;
 };
 
 }  // namespace pace_bms_slave
