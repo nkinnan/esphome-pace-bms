@@ -159,7 +159,7 @@ async def to_code(config):
         cg.add(var.set_responding_address(config[CONF_RESPONDING_ADDRESS]))
 
     bms_type = config[CONF_TYPE]
-    cg.add(var.set_bms_type(bms_type))
+    cg.add(var.set_bms_type(BMS_TYPE[bms_type]))
 
     if bms_type == CONF_TYPE_MASTER:
 

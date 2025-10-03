@@ -829,7 +829,7 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 
 	// dispatch to any child components that registered for a callback with the slave
 	for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
-		slave->analog_information_callbacks_v25_[i](analog_information_list.at(0));
+		slave->get_analog_information_callbacks_v25())[i](analog_information_list.at(0));
 	}
 }
 
@@ -845,7 +845,7 @@ void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<
 
 	// dispatch to any child components that registered for a callback with the slave
 	for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
-		slave->status_information_callbacks_v25_[i](status_information_list.at(0));
+		slave->get_status_information_callbacks_v25()[i](status_information_list.at(0));
 	}
 }
 
