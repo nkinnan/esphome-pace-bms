@@ -856,7 +856,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	int dispatchedCount = 0;
-	auto onPayload = [this, &dispatchedCount](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
+	auto onPayload = [this, &dispatchedCount](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
 		dispatchedCount++;
 		if(index == 0) {
 			// dispatch to any child components that registered for a callback with us
@@ -890,10 +890,10 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
+	auto onPayload = [this, slave](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with the slave
 		for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
-			slave->get_analog_information_callbacks_v25()[i](analog_information_list.at(0));
+			slave->get_analog_information_callbacks_v25()[i](payload);
 		}
 	};
 
@@ -907,10 +907,10 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
+	auto onPayload = [this, slave](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with the slave
 		for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
-			slave->get_status_information_callbacks_v25()[i](status_information_list.at(0));
+			slave->get_status_information_callbacks_v25()[i](payload);
 		}
 	};
 
