@@ -12,7 +12,8 @@ public:
 	};
 
 	// dependency injection
-	typedef void (*LogFuncPtr)(std::string message);
+	//typedef void (*LogFuncPtr)(std::string message);
+	typedef std::function<void(std::string)> LogFuncPtr;
 
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV25(
