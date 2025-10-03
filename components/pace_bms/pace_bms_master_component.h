@@ -137,6 +137,7 @@ protected:
 	SlaveQueryMode slave_query_mode_{ SLAVE_QUERY_MODE_BROADCAST };
 
 	// put into command_item as a pointer to handle the BMS response
+	void handle_read_bms_count_response_v25(std::span<uint8_t>& response);
 	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);
 	void handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response);
 	void handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
