@@ -194,6 +194,8 @@ def inherit_device_id(schema):
         if isinstance(value, dict):
             value[CONF_DEVICE_ID] = parent_device_id
 
+        print(f"Updated - Key: {key}, Value: {value}")
+
     return schema
 
 CONFIG_SCHEMA = cv.All(
