@@ -15,6 +15,11 @@ enum SlaveDiscoveryMode : uint8_t {
 	SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST = 3,
 };
 
+enum SlaveQueryMode : uint8_t {
+	SLAVE_QUERY_MODE_BROADCAST = 0,
+	SLAVE_QUERY_MODE_RELAY = 1,
+};
+
 // this class encapsulates an instance of PaceBmsProtocolV25 (which handles protocol version 0x25) and injects the logging dependencies into it
 //     in the future, other protocol versions may be supported
 class PaceBmsMaster : public pace_bms_base::PaceBmsBase, public PollingComponent, public uart::UARTDevice {

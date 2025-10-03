@@ -22,11 +22,6 @@ enum BmsType : uint8_t {
 	BMS_TYPE_SLAVE = 1,
 };
 
-enum SlaveQueryMode : uint8_t {
-	SLAVE_QUERY_MODE_BROADCAST = 0,
-	SLAVE_QUERY_MODE_RELAY = 1,
-};
-
 class PaceBmsBase {
 public:
 	// called by the codegen to set our YAML property values
