@@ -71,12 +71,12 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
-	LogFuncPtr logError = [this](std::string log) -> void { LogError("QuietMode: " + log); };
-	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning("QuietMode: " + log); };
-	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo("QuietMode: " + log); };
-	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug("QuietMode: " + log); };
-	LogFuncPtr logVerbose = [this](std::string log) -> void { LogVerbose("QuietMode: " + log); };
-	LogFuncPtr logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
+	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
+	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning(log); };
+	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo(log); };
+	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug(log); };
+	LogFuncPtr logVerbose = [this](std::string log) -> void { LogVerbose(log); };
+	LogFuncPtr logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose(log); };
 
 	if(quietMode == true) {
 		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
@@ -622,12 +622,12 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
-	LogFuncPtr logError = [this](std::string log) -> void { LogError("QuietMode: " + log); };
-	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning("QuietMode: " + log); };
-	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo("QuietMode: " + log); };
-	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug("QuietMode: " + log); };
-	LogFuncPtr logVerbose = [this](std::string log) -> void { LogVerbose("QuietMode: " + log); };
-	LogFuncPtr logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
+	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
+	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning(log); };
+	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo(log); };
+	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug(log); };
+	LogFuncPtr logVerbose = [this](std::string log) -> void { LogVerbose(log); };
+	LogFuncPtr logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose(log); };
 
 	if(quietMode == true) {
 		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
