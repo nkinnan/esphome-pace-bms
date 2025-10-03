@@ -730,7 +730,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 			else
 				ESP_LOGI(TAG, "No slaves discovered using broadcast Analog Information request");
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload, true);
 	if (result == false) {
@@ -750,7 +750,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 			else
 				ESP_LOGI(TAG, "No slaves discovered using broadcast Status Information request");
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload, true);
 	if (result == false) {
@@ -791,7 +791,7 @@ void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_
 		for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
 			this->analog_information_callbacks_v25_[i](payload);
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
@@ -808,7 +808,7 @@ void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_
 		for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
 			this->status_information_callbacks_v25_[i](payload);
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
@@ -838,7 +838,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 				slave_callbacks[i](payload);
 			}
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
@@ -873,7 +873,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 				slave_callbacks[i](payload);
 			}
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
 	if (result == false) {
@@ -895,7 +895,7 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 		for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
 			slave->get_analog_information_callbacks_v25()[i](analog_information_list.at(0));
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
@@ -912,7 +912,7 @@ void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<
 		for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
 			slave->get_status_information_callbacks_v25()[i](status_information_list.at(0));
 		}
-	}
+	};
 
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
 	if (result == false) {
