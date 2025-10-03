@@ -71,7 +71,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
-	LogFuncPtr logError = [this](std::string log) -> void { LogError("QuietMode: " + log); };
+	LogFuncPtr logError = (std::string log) -> void { LogError("QuietMode: " + log); };
 	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning("QuietMode: " + log); };
 	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo("QuietMode: " + log); };
 	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug("QuietMode: " + log); };
