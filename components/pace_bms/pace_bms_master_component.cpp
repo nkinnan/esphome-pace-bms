@@ -779,7 +779,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 		std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> slave_callbacks = slave->get_analog_information_callbacks_v25();
 
 		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->slave_callbacks.size(); i++) {
+		for (int i = 0; i < slave_callbacks.size(); i++) {
 			slave_callbacks[i](analog_information_list.at(s + 1));
 		}
 	}
@@ -811,7 +811,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 		std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> slave_callbacks = slave->get_status_information_callbacks_v25();
 
 		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->slave_callbacks.size(); i++) {
+		for (int i = 0; i < slave_callbacks.size(); i++) {
 			slave_callbacks[i](status_information_list.at(s + 1));
 		}
 	}
@@ -828,7 +828,7 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 	}
 
 	// dispatch to any child components that registered for a callback with the slave
-	for (int i = 0; i < slave->get_analog_information_callbacks_v25()).size(); i++) {
+	for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
 		slave->analog_information_callbacks_v25_[i](analog_information_list.at(0));
 	}
 }
@@ -844,7 +844,7 @@ void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<
 	}
 
 	// dispatch to any child components that registered for a callback with the slave
-	for (int i = 0; i < slave->get_status_information_callbacks_v25()).size(); i++) {
+	for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
 		slave->status_information_callbacks_v25_[i](status_information_list.at(0));
 	}
 }
