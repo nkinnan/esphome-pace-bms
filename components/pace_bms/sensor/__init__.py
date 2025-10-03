@@ -181,12 +181,23 @@ CONF_CURRENT_EVENT_VALUE      = "current_event_value"
 CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
-def inherit_device_id_outer(schema):
+def inherit_device_id(schema):
     print(f"======================= the OUTER schema is {schema}")
+
+    # if nothing to inherit, early exit
+    if parent_device_id := schema.get(CONF_DEVICE_ID) is None:
+        return schema
+    
+    for index, (key, value) in enumerate(my_dict.items()):
+        print(f"Index: {index}, Key: {key}, Value: {value}")
+
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
     return schema
 
 CONFIG_SCHEMA = cv.All(
-inherit_device_id_outer,
+inherit_device_id,
 cv.Schema(
     {
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
