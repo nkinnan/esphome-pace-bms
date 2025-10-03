@@ -4,6 +4,7 @@ from esphome.cpp_helpers import gpio_pin_expression
 from esphome.components import uart
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
     CONF_FLOW_CONTROL_PIN,
     CONF_ADDRESS,
     CONF_TYPE
@@ -85,6 +86,8 @@ DEFAULT_RX_BUFFER_SIZE = 256
 BASE_SCHEMA = cv.Schema({
     # todo why isn't default working for CONF_TYPE??????
     cv.Optional(CONF_TYPE, default=DEFAULT_CONF_TYPE): cv.enum(CONF_TYPE_ENUM, upper=False),
+    cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
+
     cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
