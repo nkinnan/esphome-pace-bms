@@ -714,7 +714,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, analog_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, analog_information_list, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -727,7 +727,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, status_information_list, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -740,7 +740,7 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_analog_information_respons
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, slaveAddress, this->responding_address_, response, analog_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, slaveAddress, this->responding_address_, response, analog_information_list, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -753,7 +753,7 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_status_information_respons
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, slaveAddress, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, slaveAddress, this->responding_address_, response, status_information_list, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;

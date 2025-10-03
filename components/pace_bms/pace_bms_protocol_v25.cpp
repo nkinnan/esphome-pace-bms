@@ -66,8 +66,9 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
+// todo: use callback method instead of instancing multiple decoded payloads
 // todo: this and status info: flag to log to very-verbose when doing the debug slave discovery stuff
-bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList)
+bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList, bool quietMode = false)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -602,7 +603,7 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t va
 	return str;
 }
 
-bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList)
+bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList, bool quietMode = false)
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
