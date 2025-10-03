@@ -59,8 +59,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
 
-    paren = await cg.get_variable(config[CONF_PACE_BMS_ID])
-    cg.add(var.set_parent(paren))
+    parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
+    cg.add(var.set_parent(parent))
 
     if warning_status_config := config.get(CONF_WARNING_STATUS):
         sens = await text_sensor.new_text_sensor(warning_status_config)

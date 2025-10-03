@@ -138,14 +138,14 @@ CONFIG_SCHEMA = cv.typed_schema({
 
 # todo why doesn't this work???????
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
-#FINAL_VALIDATE_SCHEMA = cv.typed_schema({
-#    CONF_TYPE_MASTER: cv.Schema({
-#        uart.final_validate_device_schema(CONF_PACE_BMS, baud_rate=9600, require_rx=True, require_tx=True, data_bits=8, parity="NONE", stop_bits=1),
-#    }),
-#
-#    CONF_TYPE_SLAVE: cv.Schema({
-#    })
-#},lower=True)
+FINAL_VALIDATE_SCHEMA = cv.typed_schema({
+    CONF_TYPE_MASTER: cv.Schema({
+        uart.final_validate_device_schema(CONF_PACE_BMS, baud_rate=9600, require_rx=True, require_tx=True, data_bits=8, parity="NONE", stop_bits=1),
+    }),
+
+    CONF_TYPE_SLAVE: cv.Schema({
+    })
+},lower=True)
 
 
 async def to_code(config):
@@ -187,5 +187,5 @@ async def to_code(config):
 
     if bms_type == CONF_TYPE_SLAVE:
 
-        paren = await cg.get_variable(config[CONF_MASTER_BMS_ID])
-        cg.add(var.set_parent(paren))
+        parent = await cg.get_variable(config[CONF_MASTER_BMS_ID])
+        cg.add(var.set_parent(parent))
