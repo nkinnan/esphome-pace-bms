@@ -106,7 +106,7 @@ BASE_SCHEMA = cv.Schema({
 })
 
 def inherit_device_id(schema):
-    print(schema)
+    print(f"the schema is {schema}")
     return schema
 
 CONFIG_SCHEMA = cv.All(
