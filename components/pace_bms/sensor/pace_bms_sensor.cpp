@@ -28,6 +28,17 @@ void PaceBmsSensor::setup() {
 				ESP_LOGE(TAG, "BMS Count readout only supported for type=MASTER");
 			}
 		}
+		if (this->payload_count_sensor_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_payload_count_callback_v25([this](uint8_t& payload_count) {
+					if (this->payload_count_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = payload_count]() { this->payload_count_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Payload Count readout only supported for type=MASTER");
+			}
+		}
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (request_analog_info_callback_ == true) {

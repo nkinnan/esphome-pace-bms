@@ -67,6 +67,7 @@ public:
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
 	//     periodically gather these updates for fan-out to the sensors the first place
 	void register_bms_count_callback_v25(std::function<void(uint8_t&)> callback) override { bms_count_callbacks_v25_.push_back(std::move(callback)); }
+	void register_payload_count_callback_v25(std::function<void(uint8_t&)> callback) override { payload_count_callbacks_v25_.push_back(std::move(callback)); }
 	void register_analog_information_callback_v25(std::function<void(PaceBmsProtocolV25::AnalogInformation&)> callback) override { analog_information_callbacks_v25_.push_back(std::move(callback)); }
 	void register_status_information_callback_v25(std::function<void(PaceBmsProtocolV25::StatusInformation&)> callback) override { status_information_callbacks_v25_.push_back(std::move(callback)); }
 	void register_hardware_version_callback_v25(std::function<void(std::string&)> callback) override { hardware_version_callbacks_v25_.push_back(std::move(callback)); }
@@ -184,6 +185,7 @@ protected:
 
 	// child sensor requested callback lists
 	std::vector<std::function<void(uint8_t&)>>                                                             bms_count_callbacks_v25_;
+	std::vector<std::function<void(uint8_t&)>>                                                             payload_count_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
 	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>>                               status_information_callbacks_v25_;
 	std::vector<std::function<void(std::string&)>>                                                         hardware_version_callbacks_v25_;

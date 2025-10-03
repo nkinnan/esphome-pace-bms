@@ -119,8 +119,7 @@ void PaceBmsMaster::setup() {
 
 	// currently no "setup" is done for 0x20 so there is no else block, and this is all optional anyway
 	if(this->protocol_version_ == 0x25) {
-		// always send the "Read BMS Count" command first thing, this is what PBmsTools does, it can't hurt, and the value could be useful
-		// later even if the user doesn't request the sensor
+		// always send the "Read BMS Count" command first thing, the value could be useful later even if the user doesn't request the sensor
 		if(this->get_bms_type() == pace_bms_base::BMS_TYPE_MASTER) {
 			command_item* item = new command_item;
 			item->description_ = std::string("read BMS count");
@@ -695,7 +694,6 @@ void PaceBmsMaster::process_response_frame_(uint8_t* frame_bytes, uint16_t frame
 * read/write response frame received handlers, called via next_response_handler_ from process_response_frame
 */
 
-// todo: add TWO new bms count readouts sourced from analog and status payload count... maybe, or maybe just logs
 void PaceBmsMaster::handle_read_bms_count_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
@@ -707,6 +705,7 @@ void PaceBmsMaster::handle_read_bms_count_response_v25(std::span<uint8_t>& respo
 	}
 
 	// if the sensor for this value is published, this handle_read_bms_count method may be called repeatedly to refresh the sensor
+	// so allow the sensor to update but also don't spam the logs
 	static bool haveLogged = false;
 	if(!haveLogged) {
 		ESP_LOGI(TAG, "Master BMS reports %i BMSes present including %i slaves, predicted (but unverified) slave address range: %i to %i", bmsCount, bmsCount - 1, this->get_address() + 1, this->get_address() + bmsCount - 1);
@@ -725,6 +724,10 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
 		bool haveLogged = false;
 		if(!haveLogged) {
+			// dispatch to any child components that registered for payload count
+			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
+				payload_count_callbacks_v25_[i](payloadCount);
+			}
 			if(payloadCount > 1)
 				ESP_LOGI(TAG, "Discovered %i slaves using broadcast Analog Information request, predicted (but unverified) slave address range: %i to %i", payloadCount - 1, this->get_address() + 1, this->get_address() + payloadCount - 1);
 			else
@@ -745,6 +748,10 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
 		bool haveLogged = false;
 		if(!haveLogged) {
+			// dispatch to any child components that registered for payload count
+			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
+				payload_count_callbacks_v25_[i](payloadCount);
+			}
 			if(payloadCount > 1)
 				ESP_LOGI(TAG, "Discovered %i slaves using broadcast Status Information request, predicted (but unverified) slave address range: %i to %i", payloadCount - 1, this->get_address() + 1, this->get_address() + payloadCount - 1);
 			else
@@ -824,6 +831,10 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 	auto onPayload = [this, &dispatchedCount](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
 		dispatchedCount++;
 		if(index == 0) {
+			// dispatch to any child components that registered for payload count
+			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
+				payload_count_callbacks_v25_[i](payloadCount);
+			}
 			// dispatch to any child components that registered for a callback with us
 			for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
 				this->analog_information_callbacks_v25_[i](payload);
@@ -859,6 +870,10 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 	auto onPayload = [this, &dispatchedCount](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
 		dispatchedCount++;
 		if(index == 0) {
+			// dispatch to any child components that registered for payload count
+			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
+				payload_count_callbacks_v25_[i](payloadCount);
+			}
 			// dispatch to any child components that registered for a callback with us
 			for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
 				this->status_information_callbacks_v25_[i](payload);

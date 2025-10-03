@@ -52,6 +52,7 @@ public:
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
 	//     periodically gather these updates for fan-out to the sensors the first place
 	virtual void register_bms_count_callback_v25(std::function<void(uint8_t&)> callback) = 0;
+	virtual void register_payload_count_callback_v25(std::function<void(uint8_t&)> callback) = 0;
 	virtual void register_analog_information_callback_v25(std::function<void(PaceBmsProtocolV25::AnalogInformation&)> callback) = 0;
 	virtual void register_status_information_callback_v25(std::function<void(PaceBmsProtocolV25::StatusInformation&)> callback) = 0;
 	virtual void register_hardware_version_callback_v25(std::function<void(std::string&)> callback) = 0;

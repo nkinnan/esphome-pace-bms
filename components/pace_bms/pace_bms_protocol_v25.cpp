@@ -66,7 +66,6 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
-// todo: use callback method instead of instancing multiple decoded payloads
 bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, AnalogInformation& payload)> onPayload, bool quietMode)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
@@ -621,7 +620,6 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t va
 	return str;
 }
 
-// todo: use callback method instead of instancing multiple decoded payloads
 bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, StatusInformation& payload)> onPayload, bool quietMode)
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));

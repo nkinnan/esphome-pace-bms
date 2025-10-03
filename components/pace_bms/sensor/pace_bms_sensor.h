@@ -13,6 +13,7 @@ public:
 	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 
 	void set_bms_count_sensor(sensor::Sensor* sens) { bms_count_sensor_ = sens; }
+	void set_payload_count_sensor(sensor::Sensor* sens) { payload_count_sensor_ = sens; }
 
 	// analog info
 	void set_cell_count_sensor(sensor::Sensor* sens) { cell_count_sensor_ = sens;            request_analog_info_callback_ = true; }
@@ -80,6 +81,7 @@ protected:
 	pace_bms_base::PaceBmsBase* parent_;
 
 	sensor::Sensor* bms_count_sensor_{ nullptr };
+	sensor::Sensor* payload_count_sensor_{ nullptr };
 
 	// analog info
 	sensor::Sensor* cell_count_sensor_{ nullptr };
@@ -143,6 +145,7 @@ protected:
 	bool request_status_info_callback_ = false;
 
 	void bms_count_callback_v25(uint8_t bms_count);
+	void payload_count_callback_v25(uint8_t payload_count);
 
 	void analog_information_callback_v25(PaceBmsProtocolV25::AnalogInformation& analog_information);
 	void status_information_callback_v25(PaceBmsProtocolV25::StatusInformation& status_information);
