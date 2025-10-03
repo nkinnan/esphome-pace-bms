@@ -133,7 +133,7 @@ CONFIG_SCHEMA = cv.typed_schema({
         # point back to master
         cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
     }).extend(cv.COMPONENT_SCHEMA),
-},lower=False)
+},lower=False, default_type=DEFAULT_BMS_TYPE)
 
 
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
@@ -147,7 +147,7 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
         {},
         extra=cv.ALLOW_EXTRA,
     )
-},lower=False)
+},lower=False, default_type=DEFAULT_BMS_TYPE)
 
 
 async def to_code(config):
