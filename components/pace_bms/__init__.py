@@ -105,15 +105,23 @@ BASE_SCHEMA = cv.Schema({
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
 
-def inherit_device_id(schema):
-    print(f"======================= the schema is {schema}")
+def inherit_device_id_outer(schema):
+    print(f"======================= the OUTER schema is {schema}")
+    return schema
+
+def inherit_device_id_master(schema):
+    print(f"======================= the MASTER schema is {schema}")
+    return schema
+
+def inherit_device_id_slave(schema):
+    print(f"======================= the SLAVE schema is {schema}")
     return schema
 
 CONFIG_SCHEMA = cv.All(
-inherit_device_id,
+inherit_device_id_outer,
 cv.typed_schema({
     CONF_TYPE_MASTER: cv.All(
-        inherit_device_id,
+        inherit_device_id_master,
         BASE_SCHEMA.extend({
         cv.GenerateID(): cv.declare_id(PaceBmsMaster),
 
@@ -137,7 +145,7 @@ cv.typed_schema({
     ),
 
     CONF_TYPE_SLAVE: cv.All(
-        inherit_device_id,
+        inherit_device_id_slave,
         BASE_SCHEMA.extend({
         cv.GenerateID(): cv.declare_id(PaceBmsSlave),
 
