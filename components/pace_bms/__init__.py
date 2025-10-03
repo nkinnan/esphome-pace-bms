@@ -136,7 +136,6 @@ CONFIG_SCHEMA = cv.typed_schema({
 },lower=False)
 
 
-# todo why doesn't this work???????
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
 FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     CONF_TYPE_MASTER: cv.Schema(
@@ -144,9 +143,9 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
         extra=cv.ALLOW_EXTRA,
     ),
 
-    #CONF_TYPE_SLAVE: cv.Schema(
-    #    extra=cv.ALLOW_EXTRA,
-    #)
+    CONF_TYPE_SLAVE: cv.Schema(
+        extra=cv.ALLOW_EXTRA,
+    )
 },lower=False)
 
 
