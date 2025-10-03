@@ -9,7 +9,7 @@ static const char* const TAG = "pace_bms_base.button";
 void PaceBmsButton::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (this->shutdown_button_ != nullptr) {
-			if(this->parent_->get_bms_type() == pace_bms_base::BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 				this->shutdown_button_->add_on_press_callback([this]() {
 					ESP_LOGD(TAG, "Sending shutdown");
 					this->parent_->write_shutdown_v25();
@@ -21,7 +21,7 @@ void PaceBmsButton::setup() {
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (this->shutdown_button_ != nullptr) {
-			if(this->parent_->get_bms_type() == pace_bms_base::BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 				this->shutdown_button_->add_on_press_callback([this]() {
 					ESP_LOGD(TAG, "Sending shutdown");
 					this->parent_->write_shutdown_v20();
