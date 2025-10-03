@@ -17,19 +17,28 @@
 namespace esphome {
 namespace pace_bms_base {
 
+enum BmsType : uint8_t {
+	BMS_TYPE_MASTER = 0,
+	BMS_TYPE_SLAVE = 1,
+};
+
 class PaceBmsBase {
 public:
 	// called by the codegen to set our YAML property values
 	void set_id_name(std::string id_name) { this->id_name_ = id_name; }
+	void set_bms_type(BmsType bms_type) { this->bms_type_ = bms_type; }
 	void set_address(uint8_t address) { this->address_ = address; }
 	void set_responding_address(uint8_t responding_address) { this->responding_address_ = responding_address; }
 
+	// make available
 	std::string get_id_name() const { return this->id_name_; }
+	BmsType get_bms_type() const { return this->bms_type_; }
 	uint8_t get_address() const { return this->address_; }
 
 protected:
 	// config values set in YAML
 	std::string id_name_;
+	BmsType bms_type_;
 	uint8_t address_{ 0 };
 	std::optional<uint8_t> responding_address_;
 

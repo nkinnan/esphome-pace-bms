@@ -756,15 +756,16 @@ async def to_code(config):
     # if parent BMS node has a device id
     if parent_device_id := parent.get(CONF_DEVICE_ID):
         # and this platform does not
-        if device_id := config.get(CONF_DEVICE_ID) is None:
+        if platform_device_id := config.get(CONF_DEVICE_ID) is None:
             # inherit device id from parent BMS node
             config[CONF_DEVICE_ID] = parent_device_id
 
-    platform_device_id = config[CONF_DEVICE_ID]
+    if CONF_DEVICE_ID in config:
+        platform_device_id = config[CONF_DEVICE_ID]
 
     if cell_count_config := config.get(CONF_CELL_COUNT):
         # if sensor does not have a device id, try to inherit platform-level device id 
-        if device_id := cell_count_config.get(CONF_DEVICE_ID) is None:
+        if cell_count_config.get(CONF_DEVICE_ID) is None and platform_device_id is not None:
             cell_count_config[CONF_DEVICE_ID] = platform_device_id
         sens = await sensor.new_sensor(cell_count_config)
         cg.add(var.set_cell_count_sensor(sens))

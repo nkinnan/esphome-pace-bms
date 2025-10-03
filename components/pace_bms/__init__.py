@@ -39,14 +39,17 @@ CONF_PACE_BMS    = "pace_bms"
 CONF_PACE_BMS_ID = "pace_bms_id"
 CONF_MASTER_BMS_ID = "master_bms_id"
 
-CONF_TYPE_MASTER = "master"
-CONF_TYPE_SLAVE = "slave"
 
-CONF_TYPE_ENUM = {
-    CONF_TYPE_MASTER: 0,
-    CONF_TYPE_SLAVE: 1,
+BmsType = pace_bms_base_ns.enum("BmsType")
+
+BMS_TYPE = {
+    "MASTER": BmsType.BMS_TYPE_MASTER,
+    "SLAVE": BmsType.BMS_TYPE_SLAVE,
 }
 
+
+CONF_TYPE_MASTER = "MASTER"
+CONF_TYPE_SLAVE = "SLAVE"
 
 CONF_RESPONDING_ADDRESS          = "responding_address"
 
@@ -63,7 +66,7 @@ CONF_SLAVE_DISCOVERY_MODE        = "slave_discovery_mode"
 CONF_RX_BUFFER_SIZE              = "rx_buffer_size"
 
 
-DEFAULT_CONF_TYPE = "master"
+DEFAULT_BMS_TYPE = "MASTER"
 
 DEFAULT_ADDRESS = 1
 #DEFAULT_RESPONDING_ADDRESS = 1
@@ -85,7 +88,7 @@ DEFAULT_RX_BUFFER_SIZE = 256
 
 BASE_SCHEMA = cv.Schema({
     # todo why isn't default working for CONF_TYPE??????
-    cv.Optional(CONF_TYPE, default=DEFAULT_CONF_TYPE): cv.enum(CONF_TYPE_ENUM, upper=False),
+    cv.Optional(CONF_TYPE, default=DEFAULT_BMS_TYPE): cv.enum(BMS_TYPE, upper=True),
     cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
     cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
@@ -145,6 +148,7 @@ async def to_code(config):
         cg.add(var.set_responding_address(config[CONF_RESPONDING_ADDRESS]))
 
     bms_type = config[CONF_TYPE]
+    cg.add(var.set_bms_type(bms_type))
 
     if bms_type == CONF_TYPE_MASTER:
 

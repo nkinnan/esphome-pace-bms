@@ -39,18 +39,26 @@ void PaceBmsTextSensor::setup() {
 			});
 		}
 		if (this->hardware_version_sensor_ != nullptr) {
-			this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
-				if (this->hardware_version_sensor_ != nullptr) {
-					this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+				this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
+					if (this->hardware_version_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Hardware Version readout only supported for type=MASTER");
+			}
 		}
 		if (this->serial_number_sensor_ != nullptr) {
-			this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
-				if (this->serial_number_sensor_ != nullptr) {
-					this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+				this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
+					if (this->serial_number_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Serial Number readout only supported for type=MASTER");
+			}
 		}
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
@@ -82,18 +90,26 @@ void PaceBmsTextSensor::setup() {
 			});
 		}
 		if (this->hardware_version_sensor_ != nullptr) {
-			this->parent_->register_hardware_version_callback_v20([this](std::string& hardware_version) {
-				if (this->hardware_version_sensor_ != nullptr) {
-					this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+				this->parent_->register_hardware_version_callback_v20([this](std::string& hardware_version) {
+					if (this->hardware_version_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Hardware Version readout only supported for type=MASTER");
+			}
 		}
 		if (this->serial_number_sensor_ != nullptr) {
-			this->parent_->register_serial_number_callback_v20([this](std::string& serial_number) {
-				if (this->serial_number_sensor_ != nullptr) {
-					this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+				this->parent_->register_serial_number_callback_v20([this](std::string& serial_number) {
+					if (this->serial_number_sensor_ != nullptr) {
+						this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Serial Number readout only supported for type=MASTER");
+			}
 		}
 	}
 	else {
