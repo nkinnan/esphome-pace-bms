@@ -875,7 +875,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -914,7 +914,7 @@ void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
