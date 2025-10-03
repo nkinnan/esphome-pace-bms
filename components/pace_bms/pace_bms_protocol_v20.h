@@ -502,7 +502,7 @@ public:
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningValue(const uint8_t val);
 
-	bool ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, this->address_, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
 
 protected:
 	// protocol variants
