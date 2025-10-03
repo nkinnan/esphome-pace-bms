@@ -183,15 +183,12 @@ CONF_FET_STATUS_VALUE         = "fet_status_value"
 
 def inherit_device_id(schema):
     parent_device_id = schema.get(CONF_DEVICE_ID)
-    print(f"parent_device_id: {parent_device_id}") ######################
     if(parent_device_id is None):
         return schema
         
     for index, (key, value) in enumerate(schema.items()):
-        print(f"(before) key: {key} value: {value}") ######################
         if isinstance(value, dict):
             value[CONF_DEVICE_ID] = parent_device_id
-            print(f"(after) key: {key} value: {value}") ######################
 
     return schema
 

@@ -25,7 +25,7 @@ def inherit_device_id(schema):
     if(parent_device_id is None):
         return schema
         
-    for (key, value) in enumerate(schema.items()):
+    for index, (key, value) in enumerate(schema.items()):
         if isinstance(value, dict):
             value[CONF_DEVICE_ID] = parent_device_id
 
