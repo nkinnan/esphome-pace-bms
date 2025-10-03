@@ -33,7 +33,7 @@ public:
 	void set_request_throttle(int request_throttle) { this->request_throttle_ = request_throttle; }
 	void set_response_timeout(int response_timeout) { this->response_timeout_ = response_timeout; }
 	void set_slave_discovery_mode(SlaveDiscoveryMode mode) { this->slave_discovery_mode_ = mode; }
-	void set_slave_query_mode(pace_bms_base::SlaveQueryMode mode) { this->slave_query_mode_ = mode; }
+	void set_slave_query_mode(SlaveQueryMode mode) { this->slave_query_mode_ = mode; }
 	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->rx_buffer_size_ = rx_buffer_size; }
 
 	// standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
@@ -134,7 +134,7 @@ protected:
 	int response_timeout_{ 0 };
 
 	SlaveDiscoveryMode slave_discovery_mode_{ SLAVE_DISCOVERY_MODE_NONE };
-	pace_bms_base::SlaveQueryMode slave_query_mode_{ pace_bms_base::SLAVE_QUERY_MODE_BROADCAST };
+	SlaveQueryMode slave_query_mode_{ SLAVE_QUERY_MODE_BROADCAST };
 
 	// put into command_item as a pointer to handle the BMS response
 	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);
