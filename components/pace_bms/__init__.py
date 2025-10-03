@@ -51,7 +51,7 @@ SLAVE_DISCOVERY_MODE = {
 }
 
 
-BmsType = pace_bms_base_ns.enum("SlaveQueryMode")
+BmsType = pace_bms_master_ns.enum("SlaveQueryMode")
 
 SLAVE_QUERY_MODE = {
     "BROADCAST": BmsType.SLAVE_QUERY_MODE_BROADCAST,
