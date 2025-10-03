@@ -722,7 +722,7 @@ void PaceBmsMaster::handle_read_bms_count_response_v25(std::span<uint8_t>& respo
 void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
 		bool haveLogged = false;
 		if(!haveLogged) {
 			if(payloadCount > 1)
@@ -742,7 +742,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
 		bool haveLogged = false;
 		if(!haveLogged) {
 			if(payloadCount > 1)
@@ -786,7 +786,7 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_status_information_respons
 void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with us
 		for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
 			this->analog_information_callbacks_v25_[i](payload);
@@ -803,7 +803,7 @@ void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_
 void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with us
 		for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
 			this->status_information_callbacks_v25_[i](payload);
@@ -890,7 +890,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, AnalogInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with the slave
 		for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
 			slave->get_analog_information_callbacks_v25()[i](analog_information_list.at(0));
@@ -907,7 +907,7 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
+	auto onPayload = [this](uint8_t payloadCount, uint8_t index, StatusInformation& payload) -> void {
 		// dispatch to any child components that registered for a callback with the slave
 		for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
 			slave->get_status_information_callbacks_v25()[i](status_information_list.at(0));
