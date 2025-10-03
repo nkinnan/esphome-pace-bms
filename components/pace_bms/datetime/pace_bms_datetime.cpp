@@ -15,7 +15,7 @@ static const char* const TAG = "pace_bms_base.datetime";
 void PaceBmsDatetime::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (this->system_date_and_time_datetime_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_system_datetime_callback_v25([this](PaceBmsProtocolV25::DateTime& dt) {
 					this->system_date_and_time_ = dt;
 					this->system_date_and_time_seen_ = true;
@@ -27,7 +27,7 @@ void PaceBmsDatetime::setup() {
 				ESP_LOGE(TAG, "Date/Time display/set only supported for type=MASTER");
 			}
 		}
-		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 			this->system_date_and_time_datetime_->add_on_control_callback([this](const datetime::DateTimeCall& value) {
 				if (!this->system_date_and_time_seen_) {
 					ESP_LOGE(TAG, "system_date_and_time cannot be set because the BMS hasn't responded to a get system time request");
@@ -46,7 +46,7 @@ void PaceBmsDatetime::setup() {
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (this->system_date_and_time_datetime_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_system_datetime_callback_v20([this](PaceBmsProtocolV20::DateTime& dt) {
 					this->system_date_and_time_ = dt;
 					this->system_date_and_time_seen_ = true;
@@ -58,7 +58,7 @@ void PaceBmsDatetime::setup() {
 				ESP_LOGE(TAG, "Date/Time display/set only supported for type=MASTER");
 			}
 		}
-		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 			this->system_date_and_time_datetime_->add_on_control_callback([this](const datetime::DateTimeCall& value) {
 				if (!this->system_date_and_time_seen_) {
 					ESP_LOGE(TAG, "system_date_and_time cannot be set because the BMS hasn't responded to a get system time request");

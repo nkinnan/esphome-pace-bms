@@ -128,7 +128,7 @@ protected:
 	int response_timeout_{ 0 };
 
 	SlaveDiscoveryMode slave_discovery_mode_{ SLAVE_DISCOVERY_MODE_NONE };
-	pace_bms_base::SlaveQueryMode slave_query_mode_{ SLAVE_QUERY_MODE_BROADCAST };
+	pace_bms_base::SlaveQueryMode slave_query_mode_{ pace_bms_base::SLAVE_QUERY_MODE_BROADCAST };
 
 	// put into command_item as a pointer to handle the BMS response
 	void handle_slave_discovery_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);

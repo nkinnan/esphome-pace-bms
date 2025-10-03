@@ -39,7 +39,7 @@ void PaceBmsTextSensor::setup() {
 			});
 		}
 		if (this->hardware_version_sensor_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_hardware_version_callback_v25([this](std::string& hardware_version) {
 					if (this->hardware_version_sensor_ != nullptr) {
 						this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
@@ -50,7 +50,7 @@ void PaceBmsTextSensor::setup() {
 			}
 		}
 		if (this->serial_number_sensor_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_serial_number_callback_v25([this](std::string& serial_number) {
 					if (this->serial_number_sensor_ != nullptr) {
 						this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
@@ -90,7 +90,7 @@ void PaceBmsTextSensor::setup() {
 			});
 		}
 		if (this->hardware_version_sensor_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_hardware_version_callback_v20([this](std::string& hardware_version) {
 					if (this->hardware_version_sensor_ != nullptr) {
 						this->parent_->queue_sensor_update([this, value = hardware_version]() { this->hardware_version_sensor_->publish_state(value); });
@@ -101,7 +101,7 @@ void PaceBmsTextSensor::setup() {
 			}
 		}
 		if (this->serial_number_sensor_ != nullptr) {
-			if(this->parent_->get_bms_mode() == BmsType.BMS_TYPE_MASTER) {
+			if(this->parent_->get_bms_type() == BmsType.BMS_TYPE_MASTER) {
 				this->parent_->register_serial_number_callback_v20([this](std::string& serial_number) {
 					if (this->serial_number_sensor_ != nullptr) {
 						this->parent_->queue_sensor_update([this, value = serial_number]() { this->serial_number_sensor_->publish_state(value); });
