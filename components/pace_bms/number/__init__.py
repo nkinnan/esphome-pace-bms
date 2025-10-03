@@ -118,6 +118,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
         cv.Optional(CONF_CELL_OVER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,

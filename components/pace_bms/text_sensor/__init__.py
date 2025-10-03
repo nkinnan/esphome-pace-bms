@@ -39,6 +39,7 @@ CONFIG_SCHEMA = cv.All(
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsTextSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
         cv.Optional(CONF_WARNING_STATUS): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_BALANCING_STATUS): text_sensor.text_sensor_schema(),
