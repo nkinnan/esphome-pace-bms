@@ -11,10 +11,6 @@ public:
 		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
 	};
 
-	// dependency injection
-	//typedef void (*LogFuncPtr)(std::string message);
-	typedef std::function<void(std::string)> LogFuncPtr;
-
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV25(
 		std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version_override, std::optional<uint8_t> batteryChemistry,

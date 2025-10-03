@@ -25,12 +25,13 @@ offset LENID+13, 2 bytes,  HexASCII, "FD2E": CHKSUM       - checksum
 offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '\r'
 */
 
+// dependency injection
+//typedef void (*LogFuncPtr)(std::string message);
+typedef std::function<void(std::string)> LogFuncPtr;
+
 class PaceBmsProtocolBase
 {
 public:
-	// dependency injection
-	typedef void (*LogFuncPtr)(std::string message);
-
 	PaceBmsProtocolBase(uint8_t protocol_commandset, std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version, std::optional<uint8_t> battery_chemistry,
 		                LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose)
 	{
