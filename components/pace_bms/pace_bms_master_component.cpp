@@ -115,7 +115,7 @@ void PaceBmsMaster::setup() {
 
 	// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
 	if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE /* todo: once I have implemented slave devices, only the master (with the uart) can do this */) {
-		// asking for analog info is always the first thing (here and in update()) so that we can sniff the User Defined Value field to determine the protocol variant
+		// asking for analog info is always the first thing (here and also in update()) so that we can sniff the User Defined Value field to determine the protocol variant
 		if(this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_BROADCAST || this->slave_discovery_mode_ == SLAVE_DISCOVERY_MODE_RELAY_AND_BROADCAST) {
 			command_item* item = new command_item;
 			item->description_ = std::string("slave discovery broadcast: query for analog information");
@@ -177,21 +177,107 @@ void PaceBmsMaster::update() {
 		if (this->pace_bms_v25_ != nullptr) {
 			ESP_LOGV(TAG, "Queueing v25 refresh commands");
 
-			// asking for analog info is always the first thing (here and in setup() if applicable) so that we can sniff the User Defined Value field to determine the protocol variant
-			if (this->analog_information_callbacks_v25_.size() > 0) {
-				command_item* item = new command_item;
-				item->description_ = std::string("read analog information");
-				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, this->address_, request); };
-				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
-				read_queue_.push(item);
+			// asking for analog info is always the first thing (here, and also in setup() if applicable) so that we can sniff the User Defined Value field to determine the protocol variant
+
+			// start analog info ====================
+			// if no slaves, or in relay (non-broadcast) mode anyway, do a direct query for this bms
+			if(this->slaves_.size() == 0 || this->slave_query_mode_ == SLAVE_QUERY_MODE_RELAY) {
+				// but only if needed
+				if (this->analog_information_callbacks_v25_.size() > 0) {
+					command_item* item = new command_item;
+					item->description_ = std::string("read analog information (direct)");
+					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, this->address_, request); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
+					read_queue_.push(item);
+				}
 			}
-			if (this->status_information_callbacks_v25_.size() > 0) {
-				command_item* item = new command_item;
-				item->description_ = std::string("read status information");
-				item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, this->address_, request); };
-				item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
-				read_queue_.push(item);
+			// if slaves exist
+			if(this->slaves_.size() > 0) { 
+				// see if we, or any slaves, need a query
+				bool masterAnalogInfoNeeded = this->analog_information_callbacks_v25_.size() > 0;
+				bool atLeastOneSlaveAnalogInfoNeeded = false;
+				for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
+					PaceBmsSlave* slave = this->slaves_[slaveIndex];
+					if (slave->analog_information_callbacks_v25_.size() > 0) {
+						atLeastOneSlaveAnalogInfoNeeded = true;
+					}
+				}
+				bool anyAnalogInfoNeededAtAll = masterAnalogInfoNeeded | atLeastOneSlaveAnalogInfoNeeded;
+				// if anyone at all wants analog info, and we're in broadcast mode, do a broadcast request
+				if(anyAnalogInfoNeededAtAll == true && this->slave_query_mode_ == SLAVE_QUERY_MODE_BROADCAST) {
+					command_item* item = new command_item;
+					item->description_ = std::string("read analog information (broadcast)");
+					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, 0xFF, request); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_broadcast_read_analog_information_response_v25(response); };
+					read_queue_.push(item);
+				}
+				// if any slaves need analog info and we're in relay mode, do a direct query for them (master was already checked and directly queried if needed)
+				if(atLeastOneSlaveAnalogInfoNeeded && this->slave_query_mode_ == SLAVE_QUERY_MODE_RELAY)
+					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
+						PaceBmsSlave* slave = this->slaves_[slaveIndex];
+						// but only if needed
+						if(slave->analog_information_callbacks_v25_.size() > 0)
+							command_item* item = new command_item;
+							item->description_ = std::string("read analog information (relay to slave address " + std::to_string(slave.get_address()) + ")");
+							item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slave->get_address(), request); };
+							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_analog_information_response_v25(response, slave); };
+							read_queue_.push(item);
+						}
+					}
+				}
 			}
+			// end analog info ====================
+
+			// start status info ====================
+			// if no slaves, or in relay (non-broadcast) mode anyway, do a direct query for this bms
+			if(this->slaves_.size() == 0 || this->slave_query_mode_ == SLAVE_QUERY_MODE_RELAY) {
+				// but only if needed
+				if (this->status_information_callbacks_v25_.size() > 0) {
+					command_item* item = new command_item;
+					item->description_ = std::string("read status information (direct)");
+					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, this->address_, request); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
+					read_queue_.push(item);
+				}
+			}
+			// if slaves exist
+			if(this->slaves_.size() > 0) { 
+				// see if we, or any slaves, need a query
+				bool masterStatusInfoNeeded = this->status_information_callbacks_v25_.size() > 0;
+				bool atLeastOneSlaveStatusInfoNeeded = false;
+				for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
+					PaceBmsSlave* slave = this->slaves_[slaveIndex];
+					if (slave->status_information_callbacks_v25_.size() > 0) {
+						atLeastOneSlaveStatusInfoNeeded = true;
+					}
+				}
+				bool anyStatusInfoNeededAtAll = masterStatusInfoNeeded | atLeastOneSlaveStatusInfoNeeded;
+				// if anyone at all wants status info, and we're in broadcast mode, do a broadcast request
+				if(anyStatusInfoNeededAtAll == true && this->slave_query_mode_ == SLAVE_QUERY_MODE_BROADCAST) {
+					command_item* item = new command_item;
+					item->description_ = std::string("read status information (broadcast)");
+					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, 0xFF, request); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_broadcast_read_status_information_response_v25(response); };
+					read_queue_.push(item);
+				}
+				// if any slaves need status info and we're in relay mode, do a direct query for them (master was already checked and directly queried if needed)
+				if(atLeastOneSlaveStatusInfoNeeded && this->slave_query_mode_ == SLAVE_QUERY_MODE_RELAY)
+					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
+						PaceBmsSlave* slave = this->slaves_[slaveIndex];
+						// but only if needed
+						if(slave->status_information_callbacks_v25_.size() > 0)
+							PaceBmsSlave* slave = this->slaves_[slaveIndex];
+							command_item* item = new command_item;
+							item->description_ = std::string("read status information (relay to slave address " + std::to_string(slave.get_address()) + ")");
+							item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slave->get_address(), request); };
+							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_status_information_response_v25(response, slave); };
+							read_queue_.push(item);
+						}
+					}
+				}
+			}
+			// end status info ====================
+
 			if (this->hardware_version_callbacks_v25_.size() > 0) {
 				command_item* item = new command_item;
 				item->description_ = std::string("read hardware version");
@@ -647,7 +733,7 @@ void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_
 
 	// dispatch to any child components that registered for a callback with us
 	for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
-		analog_information_callbacks_v25_[i](analog_information_list.at(0));
+		this->analog_information_callbacks_v25_[i](analog_information_list.at(0));
 	}
 }
 
@@ -663,7 +749,101 @@ void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_
 
 	// dispatch to any child components that registered for a callback with us
 	for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
-		status_information_callbacks_v25_[i](status_information_list.at(0));
+		this->status_information_callbacks_v25_[i](status_information_list.at(0));
+	}
+}
+
+void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, analog_information_list);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+
+	if(analog_information_list.size() != this->slaves_.size() + 1) {
+		ESP_LOGE(TAG, "%i Analog Information payloads were returned and decoded successfully, but %i BMSes are defined)", analog_information_list.size(), this->slaves_.size() + 1);
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
+		this->analog_information_callbacks_v25_[i](analog_information_list.at(0));
+	}
+
+	// enumerate additional analog info payloads and dispatch to slaves
+	for(int s = 0; s < this->slaves_.size(); s++) {
+		PaceBmsSlave* slave = this->slaves_[s]
+
+		// dispatch to any child components that registered for a callback with the slave
+		for (int i = 0; i < slave->analog_information_callbacks_v25_.size(); i++) {
+			slave->analog_information_callbacks_v25_[i](analog_information_list.at(s + 1));
+		}
+	}
+}
+
+void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::span<uint8_t>& response) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+
+	if(status_information_list.size() != this->slaves_.size() + 1) {
+		ESP_LOGE(TAG, "%i Status Information payloads were returned and decoded successfully, but %i BMSes are defined)", status_information_list.size(), this->slaves_.size() + 1);
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with us
+	for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
+		this->status_information_callbacks_v25_[i](status_information_list.at(0));
+	}
+
+	// enumerate additional status info payloads and dispatch to slaves
+	for(int s = 0; s < this->slaves_.size(); s++) {
+		PaceBmsSlave* slave = this->slaves_[s]
+
+		// dispatch to any child components that registered for a callback with the slave
+		for (int i = 0; i < slave->status_information_callbacks_v25_.size(); i++) {
+			slave->status_information_callbacks_v25_[i](status_information_list.at(s + 1));
+		}
+	}
+}
+
+void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, PaceBmsSlave* slave) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	std::vector<PaceBmsProtocolV25::AnalogInformation> analog_information_list;
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, analog_information_list);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with the slave
+	for (int i = 0; i < slave->analog_information_callbacks_v25_.size(); i++) {
+		slave->analog_information_callbacks_v25_[i](analog_information_list.at(0));
+	}
+}
+
+void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, PaceBmsSlave* slave) {
+	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
+
+	std::vector<PaceBmsProtocolV25::StatusInformation> status_information_list;
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, status_information_list);
+	if (result == false) {
+		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		return;
+	}
+
+	// dispatch to any child components that registered for a callback with the slave
+	for (int i = 0; i < slave->status_information_callbacks_v25_.size(); i++) {
+		slave->status_information_callbacks_v25_[i](status_information_list.at(0));
 	}
 }
 

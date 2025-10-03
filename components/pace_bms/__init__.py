@@ -25,6 +25,22 @@ PaceBmsMaster = pace_bms_master_ns.class_("PaceBmsMaster", PaceBmsBase, cg.Polli
 PaceBmsSlave = pace_bms_slave_ns.class_("PaceBmsSlave", PaceBmsBase, cg.Component)
 
 
+CONF_PACE_BMS    = "pace_bms"
+CONF_PACE_BMS_ID = "pace_bms_id" # pointer from child component platform (sensor, number, etc.) back to BMS
+CONF_MASTER_BMS_ID = "master_bms_id" # pointer from slave BMS back to master BMS
+
+
+BmsType = pace_bms_base_ns.enum("BmsType")
+
+BMS_TYPE = {
+    "MASTER": BmsType.BMS_TYPE_MASTER,
+    "SLAVE": BmsType.BMS_TYPE_SLAVE,
+}
+
+CONF_TYPE_MASTER = "MASTER"
+CONF_TYPE_SLAVE = "SLAVE"
+
+
 SlaveDiscoveryMode = pace_bms_master_ns.enum("SlaveDiscoveryMode")
 
 SLAVE_DISCOVERY_MODE = {
@@ -35,21 +51,13 @@ SLAVE_DISCOVERY_MODE = {
 }
 
 
-CONF_PACE_BMS    = "pace_bms"
-CONF_PACE_BMS_ID = "pace_bms_id"
-CONF_MASTER_BMS_ID = "master_bms_id"
+BmsType = pace_bms_base_ns.enum("SlaveQueryMode")
 
-
-BmsType = pace_bms_base_ns.enum("BmsType")
-
-BMS_TYPE = {
-    "MASTER": BmsType.BMS_TYPE_MASTER,
-    "SLAVE": BmsType.BMS_TYPE_SLAVE,
+SLAVE_QUERY_MODE = {
+    "BROADCAST": BmsType.SLAVE_QUERY_MODE_BROADCAST,
+    "RELAY": BmsType.SLAVE_QUERY_MODE_RELAY,
 }
 
-
-CONF_TYPE_MASTER = "MASTER"
-CONF_TYPE_SLAVE = "SLAVE"
 
 CONF_RESPONDING_ADDRESS          = "responding_address"
 
@@ -62,6 +70,7 @@ CONF_REQUEST_THROTTLE            = "request_throttle"
 CONF_RESPONSE_TIMEOUT            = "response_timeout"
 
 CONF_SLAVE_DISCOVERY_MODE        = "slave_discovery_mode"
+CONF_SLAVE_QUERY_MODE            = "slave_query_mode"
 
 CONF_RX_BUFFER_SIZE              = "rx_buffer_size"
 
@@ -82,6 +91,7 @@ DEFAULT_REQUEST_THROTTLE = "50ms"
 DEFAULT_RESPONSE_TIMEOUT = "200ms"
 
 DEFAULT_SLAVE_DISCOVERY_MODE = "NONE"
+DEFAULT_SLAVE_QUERY_MODE = "BROADCAST"
 
 DEFAULT_RX_BUFFER_SIZE = 256
 
@@ -95,7 +105,12 @@ BASE_SCHEMA = cv.Schema({
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
 
-CONFIG_SCHEMA = cv.typed_schema({
+async def inherit_device_id(schema):
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+inherit_device_id,
+cv.typed_schema({
     CONF_TYPE_MASTER: BASE_SCHEMA.extend({
         cv.GenerateID(): cv.declare_id(PaceBmsMaster),
 
@@ -110,6 +125,7 @@ CONFIG_SCHEMA = cv.typed_schema({
         cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
 
         cv.Optional(CONF_SLAVE_DISCOVERY_MODE, default=DEFAULT_SLAVE_DISCOVERY_MODE): cv.enum(SLAVE_DISCOVERY_MODE, upper=True),
+        cv.Optional(CONF_SLAVE_QUERY_MODE, default=DEFAULT_SLAVE_QUERY_MODE): cv.enum(SLAVE_QUERY_MODE, upper=True),
 
         cv.Optional(CONF_RX_BUFFER_SIZE, default=DEFAULT_RX_BUFFER_SIZE): cv.int_range(min=256, max=4096),
     })
@@ -123,6 +139,7 @@ CONFIG_SCHEMA = cv.typed_schema({
         cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
     }).extend(cv.COMPONENT_SCHEMA)
 },lower=False)
+)
 
 
 # todo why doesn't this work???????
@@ -170,6 +187,7 @@ async def to_code(config):
         cg.add(var.set_response_timeout(config[CONF_RESPONSE_TIMEOUT]))
 
         cg.add(var.set_slave_discovery_mode(SLAVE_DISCOVERY_MODE[config.get(CONF_SLAVE_DISCOVERY_MODE)]))
+        cg.add(var.set_slave_query_mode(SLAVE_QUERY_MODE[config.get(CONF_SLAVE_QUERY_MODE)]))
 
         cg.add(var.set_rx_buffer_size(config[CONF_RX_BUFFER_SIZE]))
 
