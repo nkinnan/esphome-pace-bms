@@ -212,14 +212,14 @@ void PaceBmsMaster::update() {
 					read_queue_.push(item);
 				}
 				// if any slaves need analog info and we're in relay mode, do a direct query for them (master was already checked and directly queried if needed)
-				if(atLeastOneSlaveAnalogInfoNeeded && this->slave_query_mode_ == pace_bms_base::SLAVE_QUERY_MODE_RELAY)
+				if(atLeastOneSlaveAnalogInfoNeeded && this->slave_query_mode_ == pace_bms_base::SLAVE_QUERY_MODE_RELAY) {
 					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 						pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 						// but only if needed
-						if(slave->get_analog_information_callbacks_v25()).size() > 0)
+						if(slave->get_analog_information_callbacks_v25().size() > 0) {
 							command_item* item = new command_item;
 							item->description_ = std::string("read analog information (relay to slave address " + std::to_string(slave.get_address()) + ")");
-							item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slave->get_address(), request); };
+							item->create_request_frame_ = [this, slave](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slave->get_address(), request); };
 							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_analog_information_response_v25(response, slave); };
 							read_queue_.push(item);
 						}
@@ -247,7 +247,7 @@ void PaceBmsMaster::update() {
 				bool atLeastOneSlaveStatusInfoNeeded = false;
 				for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 					pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
-					if (slave->get_status_information_callbacks_v25()).size() > 0) {
+					if (slave->get_status_information_callbacks_v25().size() > 0) {
 						atLeastOneSlaveStatusInfoNeeded = true;
 					}
 				}
@@ -261,15 +261,15 @@ void PaceBmsMaster::update() {
 					read_queue_.push(item);
 				}
 				// if any slaves need status info and we're in relay mode, do a direct query for them (master was already checked and directly queried if needed)
-				if(atLeastOneSlaveStatusInfoNeeded && this->slave_query_mode_ == pace_bms_base::SLAVE_QUERY_MODE_RELAY)
+				if(atLeastOneSlaveStatusInfoNeeded && this->slave_query_mode_ == pace_bms_base::SLAVE_QUERY_MODE_RELAY) {
 					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 						pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 						// but only if needed
-						if(slave->get_status_information_callbacks_v25()).size() > 0)
+						if(slave->get_status_information_callbacks_v25().size() > 0) {
 							pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 							command_item* item = new command_item;
 							item->description_ = std::string("read status information (relay to slave address " + std::to_string(slave.get_address()) + ")");
-							item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slave->get_address(), request); };
+							item->create_request_frame_ = [this, slave](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slave->get_address(), request); };
 							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_status_information_response_v25(response, slave); };
 							read_queue_.push(item);
 						}
