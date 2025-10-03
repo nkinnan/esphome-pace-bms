@@ -188,7 +188,7 @@ def inherit_device_id(schema):
     if parent_device_id := schema.get(CONF_DEVICE_ID) is None:
         return schema
     
-    for index, (key, value) in enumerate(my_dict.items()):
+    for index, (key, value) in enumerate(schema.items()):
         print(f"Index: {index}, Key: {key}, Value: {value}")
 
         if isinstance(value, dict):
