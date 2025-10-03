@@ -122,7 +122,7 @@ CONFIG_SCHEMA = cv.typed_schema({
         # point back to master
         cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
     }).extend(cv.COMPONENT_SCHEMA)
-},lower=True)
+},lower=False)
 
 
 # todo why doesn't this work???????
