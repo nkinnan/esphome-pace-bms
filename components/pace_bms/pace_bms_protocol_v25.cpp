@@ -33,7 +33,7 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
-bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList)
+bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -88,13 +88,13 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
 	// (I think, but need more examples to be sure this is the proper interpretation)
 	uint8_t responseCount = 1;
-	if(busId != 0xFF) // todo: add "targetBusId" to this function so we can check that instead
+	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
 		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
-		if (busIdResponding != busId)
+		if (busIdResponding != targetedBusId)
 		{
-			LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
+			LogError("Response from wrong bus Id in payload, expected " + std::to_string(targetedBusId) + " but got " + std::to_string(busIdResponding));
 			return false;
 		}
 	}
@@ -568,7 +568,7 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t va
 	return str;
 }
 
-bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList)
+bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList)
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
@@ -599,13 +599,13 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
 	// (I think, but need more examples to be sure this is the proper interpretation)
 	uint8_t responseCount = 1;
-	if(busId != 0xFF) // todo: add "targetBusId" to this function so we can check that instead
+	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
 		uint8_t busIdResponding = ReadHexEncodedByte(response, byteOffset);
-		if (busIdResponding != busId)
+		if (busIdResponding != targetedBusId)
 		{
-			LogError("Response from wrong bus Id in payload, expected " + std::to_string(busId) + " but got " + std::to_string(busIdResponding));
+			LogError("Response from wrong bus Id in payload, expected " + std::to_string(targetedBusId) + " but got " + std::to_string(busIdResponding));
 			return false;
 		}
 	}
@@ -1716,7 +1716,7 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 
 	CreateRequest(busId, CID2_WriteChargeOverCurrentConfiguration, payload, request);
 
-	// todo: (everywhere) check alignment of current byteOffset and payloadLen
+	// todo: (everywhere) check current byteOffset against payloadLen
 
 	return true;
 }

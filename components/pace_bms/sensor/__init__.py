@@ -21,7 +21,7 @@ from esphome.const import (
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
-UNIT_AMP_HOURS = "Ah" # todo: use existing
+UNIT_AMP_HOURS = "Ah" # todo: use existing once checked into esphome 
 
 CODEOWNERS = ["@nkinnan"]
 
