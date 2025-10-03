@@ -4,6 +4,7 @@
 #include <vector>
 #include <span>
 #include <optional>
+#include <functional>
 
 /*
 General format of requests/responses:
