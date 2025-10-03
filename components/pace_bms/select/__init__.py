@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import select
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
@@ -84,8 +85,20 @@ protocol_type_options = {
 	"Manual": 0x01, # 01d  Manual
 }
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+def inherit_device_id(schema):
+    parent_device_id = schema.get(CONF_DEVICE_ID)
+    if(parent_device_id is None):
+        return schema
+        
+    for (key, value) in enumerate(schema.items()):
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSelect),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
@@ -94,7 +107,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_PROTOCOL_CAN): select.select_schema(PaceBmsSelectImplementation),
         cv.Optional(CONF_PROTOCOL_RS485): select.select_schema(PaceBmsSelectImplementation),
         cv.Optional(CONF_PROTOCOL_TYPE): select.select_schema(PaceBmsSelectImplementation),
-    }
+    })
 )
 
 async def to_code(config):

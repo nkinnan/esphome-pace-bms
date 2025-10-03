@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import switch
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
@@ -19,8 +20,20 @@ CONF_CHARGE_CURRENT_LIMITER = "charge_current_limiter"
 CONF_CHARGE_MOSFET          = "charge_mosfet"
 CONF_DISCHARGE_MOSFET       = "discharge_mosfet"
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+def inherit_device_id(schema):
+    parent_device_id = schema.get(CONF_DEVICE_ID)
+    if(parent_device_id is None):
+        return schema
+        
+    for (key, value) in enumerate(schema.items()):
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
@@ -29,7 +42,7 @@ CONFIG_SCHEMA = cv.Schema(
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
         cv.Optional(CONF_CHARGE_MOSFET): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
         cv.Optional(CONF_DISCHARGE_MOSFET): switch.switch_schema(PaceBmsSwitchImplementation, default_restore_mode="DISABLED"),
-    }
+    })
 )
 
 async def to_code(config):

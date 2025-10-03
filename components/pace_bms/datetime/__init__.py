@@ -4,6 +4,7 @@ from esphome.components import datetime
 from esphome.const import (
     CONF_ID,
     CONF_TYPE,
+    CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
@@ -16,8 +17,20 @@ PaceBmsDatetimeImplementation = pace_bms_base_ns.class_("PaceBmsDatetimeImplemen
 
 CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+def inherit_device_id(schema):
+    parent_device_id = schema.get(CONF_DEVICE_ID)
+    if(parent_device_id is None):
+        return schema
+        
+    for (key, value) in enumerate(schema.items()):
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsDatetime),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
@@ -26,7 +39,7 @@ CONFIG_SCHEMA = cv.Schema(
         ).extend({ 
             cv.Optional(CONF_TYPE, default="DATETIME"): cv.one_of("DATETIME", upper=True),
         }),
-   }
+   })
 )
 
 async def to_code(config):

@@ -4,6 +4,7 @@ from esphome.components import number
 from esphome.components.number import NUMBER_MODES
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
     CONF_MODE,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_DURATION,
@@ -101,8 +102,20 @@ CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION          = "environment_over_temper
 CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION_RELEASE  = "environment_over_temperature_protection_release"
 
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+def inherit_device_id(schema):
+    parent_device_id = schema.get(CONF_DEVICE_ID)
+    if(parent_device_id is None):
+        return schema
+        
+    for (key, value) in enumerate(schema.items()):
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
@@ -440,8 +453,7 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_CELSIUS,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),        
-        
-   }
+    })
 )
 
 async def to_code(config):

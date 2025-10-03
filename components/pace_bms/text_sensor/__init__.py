@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import text_sensor
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 
@@ -22,8 +23,20 @@ CONF_FAULT_STATUS         = "fault_status"
 CONF_HARDWARE_VERSION     = "hardware_version"
 CONF_SERIAL_NUMBER        = "serial_number"
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+def inherit_device_id(schema):
+    parent_device_id = schema.get(CONF_DEVICE_ID)
+    if(parent_device_id is None):
+        return schema
+        
+    for (key, value) in enumerate(schema.items()):
+        if isinstance(value, dict):
+            value[CONF_DEVICE_ID] = parent_device_id
+
+    return schema
+
+CONFIG_SCHEMA = cv.All(
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsTextSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
 
@@ -36,7 +49,7 @@ CONFIG_SCHEMA = cv.Schema(
 
         cv.Optional(CONF_HARDWARE_VERSION): text_sensor.text_sensor_schema(),
         cv.Optional(CONF_SERIAL_NUMBER): text_sensor.text_sensor_schema(),
-    }
+    })
 )
 
 async def to_code(config):

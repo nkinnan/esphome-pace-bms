@@ -182,33 +182,22 @@ CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
 def inherit_device_id(schema):
-    print(f"The full schema is: {schema}")
-
-    # if nothing to inherit, early exit
-    parent_device_id = schema.get(CONF_DEVICE_ID, None)
+    parent_device_id = schema.get(CONF_DEVICE_ID)
     if(parent_device_id is None):
         return schema
-    
-    print(f"parent_device_id: {parent_device_id}")
-    
-    for index, (key, value) in enumerate(schema.items()):
-        print(f"Original - Key: {key}, Value: {value}")
-
+        
+    for (key, value) in enumerate(schema.items()):
         if isinstance(value, dict):
             value[CONF_DEVICE_ID] = parent_device_id
-            print(f"Updated -  Key: {key}, Value: {value}")
 
     return schema
 
 CONFIG_SCHEMA = cv.All(
-inherit_device_id,
-cv.Schema(
-    {
+    inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
-
         cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
-
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -431,7 +420,6 @@ cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -528,7 +516,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -565,7 +552,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -596,7 +582,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_BALANCING_STATUS_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -633,7 +618,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_STATUS1_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -664,7 +648,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING1_STATUS_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -725,7 +708,6 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_BALANCE_EVENT_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -762,9 +744,7 @@ cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
-    }
-)
+    })
 )
 
 async def to_code(config):
