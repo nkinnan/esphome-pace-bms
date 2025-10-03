@@ -21,12 +21,12 @@ PaceBmsProtocolV25::PaceBmsProtocolV25(
 static const uint8_t exampleReadBmsCountRequestV25[] = " ~250146900000FDA5\r";
 static const uint8_t exampleReadBmsCountResponseV25[] = "~25014600E00202FD35\r";
 
-bool CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request)
+bool PaceBmsProtocolV25::CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
 	CreateRequest(busId, CID2_ReadBmsCount, std::vector<uint8_t>(), request);
 	return true;
 }
-bool ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& bmsCount)
+bool PaceBmsProtocolV25::ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& bmsCount)
 {
 	int16_t payloadLen = ValidateResponseAndGetPayloadLength(busId, respondingBusId, response);
 	if (payloadLen == -1)
