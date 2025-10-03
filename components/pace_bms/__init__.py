@@ -106,13 +106,15 @@ BASE_SCHEMA = cv.Schema({
 })
 
 def inherit_device_id(schema):
-    print(f"the schema is {schema}")
+    print(f"======================= the schema is {schema}")
     return schema
 
 CONFIG_SCHEMA = cv.All(
 inherit_device_id,
 cv.typed_schema({
-    CONF_TYPE_MASTER: BASE_SCHEMA.extend({
+    CONF_TYPE_MASTER: cv.All(
+        inherit_device_id,
+        BASE_SCHEMA.extend({
         cv.GenerateID(): cv.declare_id(PaceBmsMaster),
 
         cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
@@ -131,14 +133,18 @@ cv.typed_schema({
         cv.Optional(CONF_RX_BUFFER_SIZE, default=DEFAULT_RX_BUFFER_SIZE): cv.int_range(min=256, max=4096),
     })
     .extend(cv.polling_component_schema("60s"))
-    .extend(uart.UART_DEVICE_SCHEMA),
+    .extend(uart.UART_DEVICE_SCHEMA)
+    ),
 
-    CONF_TYPE_SLAVE: BASE_SCHEMA.extend({
+    CONF_TYPE_SLAVE: cv.All(
+        inherit_device_id,
+        BASE_SCHEMA.extend({
         cv.GenerateID(): cv.declare_id(PaceBmsSlave),
 
         # point back to master
         cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
     }).extend(cv.COMPONENT_SCHEMA)
+    )
 },lower=False)
 )
 
