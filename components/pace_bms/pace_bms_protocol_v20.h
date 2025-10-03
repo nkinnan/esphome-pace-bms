@@ -107,7 +107,7 @@ public:
 	};
 
 	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadAnalogInformationResponse(const uint8_t busId, this->address_, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
 
 protected:
 	// protocol variants
