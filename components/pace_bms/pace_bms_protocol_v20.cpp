@@ -39,7 +39,7 @@ bool PaceBmsProtocolV20::CreateReadAnalogInformationRequest(const uint8_t busId,
 
 	return true;
 }
-bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
+bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse(const uint8_t busId, this->address_, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation)
 {
 	// save in order compare against what ProcessReadStatusInformationResponse sussed out
 	std::optional<std::string> previously_detected_variant = std::optional<std::string>(detected_variant.value());
@@ -1283,7 +1283,7 @@ void PaceBmsProtocolV20::StatusDecode_EG4::DecodeSystemStatus(const uint8_t val,
 	}
 }
 
-bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
+bool PaceBmsProtocolV20::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation)
 {
 	// save in order compare against what ProcessReadAnalogInformationResponse sussed out
 	std::optional<std::string> previously_detected_variant = std::optional<std::string>(detected_variant.value());
