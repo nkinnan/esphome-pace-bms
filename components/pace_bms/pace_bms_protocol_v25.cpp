@@ -67,7 +67,7 @@ bool PaceBmsProtocolV25::CreateReadAnalogInformationRequest(const uint8_t busId,
 	return true;
 }
 // todo: use callback method instead of instancing multiple decoded payloads
-bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList, bool quietMode)
+bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, AnalogInformation& payload)> onPayload, bool quietMode)
 {
 	//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
@@ -137,7 +137,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	// by default we expect a single response, but if the request was sent to the broadcast address 0xFF, then 
 	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
 	// (I think, but need more examples to be sure this is the proper interpretation)
-	uint8_t responseCount = 1;
+	uint8_t payloadCount = 1;
 	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
@@ -152,25 +152,25 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	{
 		bool error = false;
 
-		responseCount = ReadHexEncodedByte(response, byteOffset, quietMode);
-		if (responseCount < 1 || responseCount > 16)
+		payloadCount = ReadHexEncodedByte(response, byteOffset, quietMode);
+		if (payloadCount < 1 || payloadCount > 16)
 		{
-			logError("Response to AnalogInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
+			logError("Response to AnalogInformation broadcast request contains a payload count of " + std::to_string(payloadCount) + " which is outside the expected range of 1-16");
 			error = true;
 		}
 
 		int remainder = (payloadLen - 4 /* initial zero byte plus payload len byte */) % ((118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes));
 		if(remainder != 0)
 		{
-			logError("Response to AnalogInformation broadcast request contains a payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
+			logError("Response to AnalogInformation broadcast request contains a total payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
 			error = true;
 		}
 
-		int calculatedResponseCount = (payloadLen - 4 /* initial zero byte plus payload len byte */) / ((118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes));
-		if(calculatedResponseCount != responseCount)
+		int calculatedPayloadCount = (payloadLen - 4 /* initial zero byte plus payload len byte */) / ((118 /* standard analog info payload size */ + currentProtocolVariant->analogInformationExtraBytes));
+		if(calculatedPayloadCount != payloadCount)
 		{
-			logWarning("Response to AnalogInformation broadcast request contains a response count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
-			responseCount = calculatedResponseCount;
+			logWarning("Response to AnalogInformation broadcast request contains a payload count of " + std::to_string(payloadCount) + " but the total payload length indicates " + std::to_string(calculatedPayloadCount) + " payloads are present; using calculated value");
+			payloadCount = calculatedPayloadCount;
 		}
 
 		if(error)
@@ -179,14 +179,14 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		}
 	}
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
-	logVeryVerbose(std::to_string(responseCount) + " responses found in analog information payload");
+	logVeryVerbose(std::to_string(payloadCount) + " responses found in analog information payload");
 #endif
 
-	analogInformationList.resize(responseCount);
+	// todo: new sensor "detectedBmsCount" or something
 
-	for(int i = 0; i < responseCount; i++)
+	for(int i = 0; i < payloadCount; i++)
 	{
-		AnalogInformation& analogInformation = analogInformationList.at(i);
+		AnalogInformation analogInformation;
 		//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
 
 		analogInformation.cellCount = ReadHexEncodedByte(response, byteOffset, quietMode);
@@ -280,6 +280,9 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	
 		// skip any extra bytes that are part of this protocol variant
 		byteOffset += currentProtocolVariant->analogInformationExtraBytes;
+
+		if(onPayload != nullptr)
+			onPayload(payloadCount, i, analogInformation);
 	}
 
 	// this check remains valid with broadcast responses due to the loop above
@@ -618,7 +621,8 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t va
 	return str;
 }
 
-bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList, bool quietMode)
+// todo: use callback method instead of instancing multiple decoded payloads
+bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, StatusInformation& payload)> onPayload, bool quietMode)
 {
 	//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
@@ -664,7 +668,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	// by default we expect a single response, but if the request was sent to the broadcast address 0xFF, then 
 	// instead of the next byte being the (payload) busId it is instead a count of how many responses are included
 	// (I think, but need more examples to be sure this is the proper interpretation)
-	uint8_t responseCount = 1;
+	uint8_t payloadCount = 1;
 	if(targetedBusId != 0xFF) 
 	{
 		// note that this is the *payload* busId, not the header busId which was already validated
@@ -679,25 +683,25 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	{
 		bool error = false;
 
-		responseCount = ReadHexEncodedByte(response, byteOffset, quietMode);
-		if (responseCount < 1 || responseCount > 16)
+		payloadCount = ReadHexEncodedByte(response, byteOffset, quietMode);
+		if (payloadCount < 1 || payloadCount > 16)
 		{
-			logError("Response to StatusInformation broadcast request contains a response count of " + std::to_string(responseCount) + " which is outside the expected range of 1-16");
+			logError("Response to StatusInformation broadcast request contains a payload count of " + std::to_string(payloadCount) + " which is outside the expected range of 1-16");
 			error = true;
 		}
 
 		int remainder = (payloadLen - 4 /* initial zero byte plus payload len byte */) % ((72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes));
 		if(remainder != 0)
 		{
-			logError("Response to StatusInformation broadcast request contains a payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
+			logError("Response to StatusInformation broadcast request contains a total payload length that is not a multiple of the expected payload size, remainder " + std::to_string(remainder) + " bytes.");
 			error = true;
 		}
 
-		int calculatedResponseCount = (payloadLen - 4 /* initial zero byte plus payload len byte */) / ((72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes));
-		if(calculatedResponseCount != responseCount)
+		int calculatedPayloadCount = (payloadLen - 4 /* initial zero byte plus payload len byte */) / ((72 /* standard status info payload size */ + currentProtocolVariant->statusInformationExtraBytes));
+		if(calculatedPayloadCount != payloadCount)
 		{
-			logWarning("Response to StatusInformation broadcast request contains a payload count of " + std::to_string(responseCount) + " but the payload length indicates " + std::to_string(calculatedResponseCount) + " responses are present; using calculated value");
-			responseCount = calculatedResponseCount;
+			logWarning("Response to StatusInformation broadcast request contains a payload count of " + std::to_string(payloadCount) + " but the total payload length indicates " + std::to_string(calculatedPayloadCount) + " payloads are present; using calculated value");
+			payloadCount = calculatedPayloadCount;
 		}
 
 		if(error)
@@ -706,14 +710,14 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		}
 	}
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
-	logVeryVerbose(std::to_string(responseCount) + " responses found in status information payload");
+	logVeryVerbose(std::to_string(payloadCount) + " responses found in status information payload");
 #endif
 
-	statusInformationList.resize(responseCount);
+	// todo: new sensor "detectedBmsCount" or something
 
-	for(int i = 0; i < responseCount; i++)
+	for(int i = 0; i < payloadCount; i++)
 	{
-		StatusInformation& statusInformation = statusInformationList.at(i);
+		StatusInformation statusInformation;
 		//std::memset(&statusInformation, 0, sizeof(StatusInformation));
 
 		statusInformation.warningText.clear();
@@ -896,22 +900,25 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		// sanity checks to reject nonsensical responses
 		if(cellCount == 0)
 		{
-			logError("Sanity Check: Response contains zero cells, this looks like an invalid response.");
+			logError("Sanity Check: Payload contains zero cells, this looks like an invalid response.");
 			return false;
 		}
-		if(sanityCheck_cellsWithoutVoltageWarnings == 0 && protectState1 == 0 && warnState1 == 0) // both have multiple flags, some unrelated, but on an invalid response everything is zeroed anyway
+		if(sanityCheck_cellsWithoutVoltageWarnings == 0 && protectState1 == 0 && warnState1 == 0) // both state registers have multiple flags, some voltage related, some not, but on an invalid response everything is zeroed anyway (at least in the test data I've seen so far)
 		{
-			logError("Sanity Check: Response indicates all cells have a voltage warning yet there are no voltage protection flags set, this looks like an invalid response.");
+			logError("Sanity Check: Payload indicates all cells have a voltage warning, yet there are no voltage warning (or protection) flags set, this looks like an invalid response.");
 			return false;
 		}
-		if(sanityCheck_cellsWithoutTemperatureWarnings == 0 && protectState2 == 0 && warnState2 == 0) // both have multiple flags, some unrelated, but on an invalid response everything is zeroed anyway
+		if(sanityCheck_cellsWithoutTemperatureWarnings == 0 && protectState2 == 0 && warnState2 == 0) // both state registers have multiple flags, some temperature related, some not, but on an invalid response everything is zeroed anyway (at least in the test data I've seen so far)
 		{
-			logError("Sanity Check: Response indicates all cells have a temperature warning yet there are no temperature protection flags set, this looks like an invalid response.");
+			logError("Sanity Check: Payload indicates all cells have a temperature warning, yet there are no temperature warning (or protection) flags set, this looks like an invalid response.");
 			return false;
 		}
 
 		// skip any extra bytes that are part of this protocol variant
 		byteOffset += currentProtocolVariant->statusInformationExtraBytes;
+
+		if(onPayload != nullptr)
+			onPayload(payloadCount, i, statusInformation);
 	}
 
 	// this check remains valid with broadcast responses due to the loop above
