@@ -171,35 +171,6 @@ protected:
 	void handle_read_system_datetime_response_v20(std::span<uint8_t>& response);
 	void handle_write_system_datetime_response_v20(std::span<uint8_t>& response);
 
-	// child sensor requested callback lists
-	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>>                               analog_information_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>>                               status_information_callbacks_v25_;
-	std::vector<std::function<void(std::string&)>>                                                         hardware_version_callbacks_v25_;
-	std::vector<std::function<void(std::string&)>>                                                         serial_number_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::Protocols&)>>                                       protocols_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::CellOverVoltageConfiguration&)>>                    cell_over_voltage_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::PackOverVoltageConfiguration&)>>                    pack_over_voltage_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::CellUnderVoltageConfiguration&)>>                   cell_under_voltage_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::PackUnderVoltageConfiguration&)>>                   pack_under_voltage_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::ChargeOverCurrentConfiguration&)>>                  charge_over_current_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::DischargeOverCurrent1Configuration&)>>              discharge_over_current1_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::DischargeOverCurrent2Configuration&)>>              discharge_over_current2_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration&)>>             short_circuit_protection_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::CellBalancingConfiguration&)>>                      cell_balancing_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::SleepConfiguration&)>>                              sleep_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::FullChargeLowChargeConfiguration&)>>                full_charge_low_charge_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration&)>>  charge_and_discharge_over_temperature_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration&)>> charge_and_discharge_under_temperature_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration&)>>              mosfet_over_temperature_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration&)>>    environment_over_under_temperature_configuration_callbacks_v25_;
-	std::vector<std::function<void(PaceBmsProtocolV25::DateTime&)>>                                        system_datetime_callbacks_v25_;
-
-	std::vector<std::function<void(PaceBmsProtocolV20::AnalogInformation&)>>                               analog_information_callbacks_v20_;
-	std::vector<std::function<void(PaceBmsProtocolV20::StatusInformation&)>>                               status_information_callbacks_v20_;
-	std::vector<std::function<void(std::string&)>>                                                         hardware_version_callbacks_v20_;
-	std::vector<std::function<void(std::string&)>>                                                         serial_number_callbacks_v20_;
-	std::vector<std::function<void(PaceBmsProtocolV20::DateTime&)>>                                        system_datetime_callbacks_v20_;
-
 	// along with loop() this is the "engine" of BMS communications
 	//     - send_next_request_frame_ will pop a command_item from the queue and dispatch a frame to the BMS
 	//     - process_response_frame_ will call next_response_handler_ (which was saved from the command_item popped in 
