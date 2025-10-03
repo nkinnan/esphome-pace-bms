@@ -141,10 +141,12 @@ CONFIG_SCHEMA = cv.typed_schema({
 FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     CONF_TYPE_MASTER: cv.Schema(
         uart.final_validate_device_schema(CONF_PACE_BMS, baud_rate=9600, require_rx=True, require_tx=True, data_bits=8, parity="NONE", stop_bits=1),
+        extra=cv.ALLOW_EXTRA,
     ),
 
-    CONF_TYPE_SLAVE: cv.Schema({
-    })
+    CONF_TYPE_SLAVE: cv.Schema(
+        extra=cv.ALLOW_EXTRA,
+    )
 },lower=False)
 
 
