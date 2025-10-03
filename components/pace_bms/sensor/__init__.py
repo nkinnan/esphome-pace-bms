@@ -198,7 +198,7 @@ CONFIG_SCHEMA = cv.All(
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
         cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
-        
+
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -755,27 +755,8 @@ async def to_code(config):
     parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(parent))
 
-    # if parent BMS node has a device id
-    if parent_device_id := parent.get(CONF_DEVICE_ID):
-        # and this platform does not
-        if platform_device_id := config.get(CONF_DEVICE_ID) is None:
-            # inherit device id from parent BMS node
-            config[CONF_DEVICE_ID] = parent_device_id
-
-    if CONF_DEVICE_ID in config:
-        platform_device_id = config[CONF_DEVICE_ID]
-
-    print(platform_device_id) 
-
-    if platform_device_id is None:
-        raise Exception(f"platform_device_id is None")
-    if platform_device_id is not None:
-        raise Exception(f"platform_device_id has value {platform_device_id}")
 
     if cell_count_config := config.get(CONF_CELL_COUNT):
-        # if sensor does not have a device id, try to inherit platform-level device id 
-        if cell_count_config.get(CONF_DEVICE_ID) is None and platform_device_id is not None:
-            cell_count_config[CONF_DEVICE_ID] = platform_device_id
         sens = await sensor.new_sensor(cell_count_config)
         cg.add(var.set_cell_count_sensor(sens))
 
