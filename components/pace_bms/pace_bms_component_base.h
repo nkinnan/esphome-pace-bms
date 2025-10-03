@@ -22,7 +22,7 @@ enum BmsType : uint8_t {
 	BMS_TYPE_SLAVE = 1,
 };
 
-enum SlaveQuerymode : uint8_t {
+enum SlaveQueryMode : uint8_t {
 	SLAVE_QUERY_MODE_BROADCAST = 0,
 	SLAVE_QUERY_MODE_RELAY = 1,
 };
