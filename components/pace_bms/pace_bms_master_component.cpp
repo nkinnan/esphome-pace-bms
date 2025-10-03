@@ -198,7 +198,7 @@ void PaceBmsMaster::update() {
 				bool atLeastOneSlaveAnalogInfoNeeded = false;
 				for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 					pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
-					if (slave->analog_information_callbacks_v25_.size() > 0) {
+					if (slave->get_analog_information_callbacks_v25().size() > 0) {
 						atLeastOneSlaveAnalogInfoNeeded = true;
 					}
 				}
@@ -216,7 +216,7 @@ void PaceBmsMaster::update() {
 					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 						pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 						// but only if needed
-						if(slave->analog_information_callbacks_v25_.size() > 0)
+						if(slave->get_analog_information_callbacks_v25()).size() > 0)
 							command_item* item = new command_item;
 							item->description_ = std::string("read analog information (relay to slave address " + std::to_string(slave.get_address()) + ")");
 							item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slave->get_address(), request); };
@@ -247,7 +247,7 @@ void PaceBmsMaster::update() {
 				bool atLeastOneSlaveStatusInfoNeeded = false;
 				for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 					pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
-					if (slave->status_information_callbacks_v25_.size() > 0) {
+					if (slave->get_status_information_callbacks_v25()).size() > 0) {
 						atLeastOneSlaveStatusInfoNeeded = true;
 					}
 				}
@@ -265,7 +265,7 @@ void PaceBmsMaster::update() {
 					for(int slaveIndex = 0; slaveIndex < this->slaves_.size(); slaveIndex++) {
 						pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 						// but only if needed
-						if(slave->status_information_callbacks_v25_.size() > 0)
+						if(slave->get_status_information_callbacks_v25()).size() > 0)
 							pace_bms_slave::PaceBmsSlave* slave = this->slaves_[slaveIndex];
 							command_item* item = new command_item;
 							item->description_ = std::string("read status information (relay to slave address " + std::to_string(slave.get_address()) + ")");
@@ -775,11 +775,12 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 
 	// enumerate additional analog info payloads and dispatch to slaves
 	for(int s = 0; s < this->slaves_.size(); s++) {
-		pace_bms_slave::PaceBmsSlave* slave = this->slaves_[s]
+		pace_bms_slave::PaceBmsSlave* slave = this->slaves_[s];
+		std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> slave_callbacks = slave->get_analog_information_callbacks_v25();
 
 		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->analog_information_callbacks_v25_.size(); i++) {
-			slave->analog_information_callbacks_v25_[i](analog_information_list.at(s + 1));
+		for (int i = 0; i < slave->slave_callbacks.size(); i++) {
+			slave_callbacks[i](analog_information_list.at(s + 1));
 		}
 	}
 }
@@ -806,11 +807,12 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 
 	// enumerate additional status info payloads and dispatch to slaves
 	for(int s = 0; s < this->slaves_.size(); s++) {
-		pace_bms_slave::PaceBmsSlave* slave = this->slaves_[s]
+		pace_bms_slave::PaceBmsSlave* slave = this->slaves_[s];
+		std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> slave_callbacks = slave->get_status_information_callbacks_v25();
 
 		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->status_information_callbacks_v25_.size(); i++) {
-			slave->status_information_callbacks_v25_[i](status_information_list.at(s + 1));
+		for (int i = 0; i < slave->slave_callbacks.size(); i++) {
+			slave_callbacks[i](status_information_list.at(s + 1));
 		}
 	}
 }
