@@ -763,6 +763,8 @@ async def to_code(config):
     if CONF_DEVICE_ID in config:
         platform_device_id = config[CONF_DEVICE_ID]
 
+    print(platform_device_id) 
+
     if platform_device_id is None:
         raise Exception(f"platform_device_id is None")
     if platform_device_id is not None:
