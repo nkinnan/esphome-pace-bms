@@ -144,9 +144,9 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
         extra=cv.ALLOW_EXTRA,
     ),
 
-    CONF_TYPE_SLAVE: cv.Schema(
-        extra=cv.ALLOW_EXTRA,
-    )
+    #CONF_TYPE_SLAVE: cv.Schema(
+    #    extra=cv.ALLOW_EXTRA,
+    #)
 },lower=False)
 
 
