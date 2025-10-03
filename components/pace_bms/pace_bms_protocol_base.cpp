@@ -107,14 +107,10 @@ uint16_t PaceBmsProtocolBase::CalculateRequestOrResponseChecksum(const std::span
 }
 
 // helper for WriteHexEncoded----
-uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte, bool quietMode)
+uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if ((nibbleByte & 0xF0) != 0)
-		logError("Nibble Byte has high nibble bits set");
+		LogError("Nibble Byte has high nibble bits set");
 
 	uint8_t nibble = nibbleByte & 0x0F;
 
