@@ -185,7 +185,8 @@ def inherit_device_id(schema):
     print(f"The full schema is: {schema}")
 
     # if nothing to inherit, early exit
-    if parent_device_id := schema.get(CONF_DEVICE_ID) is None:
+    parent_device_id = schema.get(CONF_DEVICE_ID, None)
+    if(parent_device_id is None):
         return schema
     
     print(f"parent_device_id: {parent_device_id}")
