@@ -181,8 +181,6 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	logVeryVerbose(std::to_string(payloadCount) + " responses found in analog information payload");
 #endif
 
-	// todo: new sensor "detectedBmsCount" or something
-
 	for(int i = 0; i < payloadCount; i++)
 	{
 		AnalogInformation analogInformation;
@@ -710,8 +708,6 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 #if ESPHOME_LOG_LEVEL >= ESPHOME_LOG_LEVEL_VERY_VERBOSE
 	logVeryVerbose(std::to_string(payloadCount) + " responses found in status information payload");
 #endif
-
-	// todo: new sensor "detectedBmsCount" or something
 
 	for(int i = 0; i < payloadCount; i++)
 	{

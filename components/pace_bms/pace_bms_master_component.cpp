@@ -127,7 +127,6 @@ void PaceBmsMaster::setup() {
 			item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_bms_count_response_v25(response); };
 			read_queue_.push(item);
 		}
-// todo: check addressing
 		// if slave discovery mode is enabled, queue the commands as the first thing that will be done, before the first update() call can queue anything else
 		if(this->slave_discovery_mode_ != SLAVE_DISCOVERY_MODE_NONE && this->get_bms_type() == pace_bms_base::BMS_TYPE_MASTER) {
 			// asking for analog info is always the first thing (here and also in update()) so that we can sniff the User Defined Value field to determine the protocol variant
@@ -202,7 +201,6 @@ void PaceBmsMaster::update() {
 			}
 
 			// asking for analog info is always the first thing (here, and also in setup() if applicable) so that we can sniff the User Defined Value field to determine the protocol variant
-// todo: check addressing
 
 			// start analog info ====================
 			// if no slaves, or in relay (non-broadcast) mode anyway, do a direct query for this bms
@@ -851,7 +849,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -890,7 +888,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -912,7 +910,7 @@ void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, slave->get_address(), this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -929,7 +927,7 @@ void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, slave->get_address(), this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
