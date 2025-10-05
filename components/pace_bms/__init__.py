@@ -10,7 +10,7 @@ from esphome.const import (
     CONF_TYPE
 )
 from esphome import pins
-#import globals
+from esphome.components import globals
 
 
 CODEOWNERS = ["@nkinnan"]
