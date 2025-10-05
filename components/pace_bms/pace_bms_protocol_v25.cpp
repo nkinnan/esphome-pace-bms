@@ -103,7 +103,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	}
 	// this check is explicitly done in several places as we go since different protocol variants behave differently here
 	//if (payloadLen != 2) {
-	//	LogError("ProcessReadAnalogInformationResponse expected payload length of 2 but got " + to_string(payloadLen));
+	//	LogError("ProcessReadAnalogInformationResponse expected payload length of 2 but got " + std::to_string(payloadLen));
 	//	return false;
 	//}
 
@@ -345,7 +345,7 @@ const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val, std:
 	}
 	if (val == WV_OtherFaultValue)
 	{
-		LogWarning(from + ": 'Other Fault'")
+		LogWarning(from + ": 'Other Fault'");
 		return std::string("Other Fault");
 	}
 
@@ -401,7 +401,7 @@ const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t
 	{
 		// ********************* based on (poor) documentation and inference, /possibly/ this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
 		str.append("'Fully' protect bit???; ");
-		LogWarning(from + ": 'Fully' protect bit? Might mean fully charged?")
+		LogWarning(from + ": 'Fully' protect bit? Might mean fully charged?");
 	}
 	if ((val & P2F_LowEnvironmentalTemperatureProtect2Bit) != 0)
 	{
@@ -482,7 +482,7 @@ const std::string PaceBmsProtocolV25::DecodeConfigurationStatusValue(const uint8
 	if ((val & CF_UndefinedConfigurationStatusBit8) != 0)
 	{
 		str.append("Undefined ConfigurationStatus Bit8 Set; ");
-		LogWarning(from + ": Undefined ConfigurationStatus Bit8 Set")
+		LogWarning(from + ": Undefined ConfigurationStatus Bit8 Set");
 	}
 	if ((val & CF_StaticBalanceBit) != 0)
 	{
@@ -563,12 +563,12 @@ const std::string PaceBmsProtocolV25::DecodeWarningStatus1Value(const uint8_t va
 	if ((val & W1F_UndefinedWarning1Bit8) != 0)
 	{
 		str.append("Undefined WarnState1 Bit7 Warning; ");
-		LogWarning(from + ": Undefined WarnState1 Bit7 Warning")
+		LogWarning(from + ": Undefined WarnState1 Bit7 Warning");
 	}
 	if ((val & W1F_UndefinedWarning1Bit7) != 0)
 	{
 		str.append("Undefined WarnState1 Bit6 Warning; ");
-		LogWarning(from + ": Undefined WarnState1 Bit6 Warning")
+		LogWarning(from + ": Undefined WarnState1 Bit6 Warning");
 	}
 	if ((val & W1F_DischargeCurrentBit) != 0)
 	{
@@ -666,7 +666,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	}
 	// this check is explicitly done in several places as we go since different protocol variants behave differently here
 	//if (payloadLen != 2) {
-	//	LogError("ProcessReadStatusInformationResponse expected payload length of 2 but got " + to_string(payloadLen));
+	//	LogError("ProcessReadStatusInformationResponse expected payload length of 2 but got " + std::to_string(payloadLen));
 	//	return false;
 	//}
 
@@ -970,7 +970,7 @@ bool PaceBmsProtocolV25::ProcessReadHardwareVersionResponse(const uint8_t busId,
 		return false;
 	}
 	if (payloadLen != 40) {
-		LogError("ProcessReadHardwareVersionResponse expected payload length of 40 but got " + to_string(payloadLen));
+		LogError("ProcessReadHardwareVersionResponse expected payload length of 40 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1013,7 +1013,7 @@ bool PaceBmsProtocolV25::ProcessReadSerialNumberResponse(const uint8_t busId, st
 		return false;
 	}
 	if (payloadLen != 40 && payloadLen != 80) {
-		LogError("ProcessReadSerialNumberResponse expected payload length is 40 or 80 but got " + to_string(payloadLen));
+		LogError("ProcessReadSerialNumberResponse expected payload length is 40 or 80 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1090,7 +1090,7 @@ bool PaceBmsProtocolV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, 
 	// documented as 2 (decoded) bytes but the meaning of them is undocumented
 	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
 	if (payloadLen != 4) {
-		LogError("ProcessWriteSwitchCommandResponse expected payload length of 4 but got " + to_string(payloadLen));
+		LogError("ProcessWriteSwitchCommandResponse expected payload length of 4 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1201,7 +1201,7 @@ bool PaceBmsProtocolV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t b
 	// documented as 1 (decoded) byte but the meaning of it is undocumented
 	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
 	if (payloadLen != 2) {
-		LogError("ProcessWriteMosfetSwitchCommandResponse expected payload length of 2 but got " + to_string(payloadLen));
+		LogError("ProcessWriteMosfetSwitchCommandResponse expected payload length of 2 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1271,7 +1271,7 @@ bool PaceBmsProtocolV25::ProcessWriteShutdownCommandResponse(const uint8_t busId
 		return false;
 	}
 	if (payloadLen != 0) {
-		LogError("ProcessWriteShutdownCommandResponse expected payload length of 0 but got " + to_string(payloadLen));
+		LogError("ProcessWriteShutdownCommandResponse expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1313,7 +1313,7 @@ bool PaceBmsProtocolV25::ProcessReadSystemDateTimeResponse(const uint8_t busId, 
 		return false;
 	}
 	if (payloadLen != 12) {
-		LogError("ProcessReadSystemDateTimeResponse expected payload length of 12 but got " + to_string(payloadLen));
+		LogError("ProcessReadSystemDateTimeResponse expected payload length of 12 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1359,7 +1359,7 @@ bool PaceBmsProtocolV25::ProcessWriteSystemDateTimeResponse(const uint8_t busId,
 		return false;
 	}
 	if (payloadLen != 0) {
-		LogError("ProcessWriteSystemDateTimeResponse expected payload length of 0 but got " + to_string(payloadLen));
+		LogError("ProcessWriteSystemDateTimeResponse expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1392,7 +1392,7 @@ bool PaceBmsProtocolV25::ProcessWriteConfigurationResponse(const uint8_t busId, 
 		return false;
 	}
 	if (payloadLen != 0) {
-		LogError("ProcessWriteConfigurationResponse (empty) expected payload length of 0 but got " + to_string(payloadLen));
+		LogError("ProcessWriteConfigurationResponse (empty) expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1418,7 +1418,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 16) {
-		LogError("ProcessReadConfigurationResponse (CellOverVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (CellOverVoltageConfiguration) expected payload length of 16 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1517,7 +1517,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 16) {
-		LogError("ProcessReadConfigurationResponse (PackOverVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (PackOverVoltageConfiguration) expected payload length of 16 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1616,7 +1616,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 16) {
-		LogError("ProcessReadConfigurationResponse (CellUnderVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (CellUnderVoltageConfiguration) expected payload length of 16 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1715,7 +1715,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 16) {
-		LogError("ProcessReadConfigurationResponse (PackUnderVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (PackUnderVoltageConfiguration) expected payload length of 16 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1814,7 +1814,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 12) {
-		LogError("ProcessReadConfigurationResponse (ChargeOverCurrentConfiguration) expected payload length of 12 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (ChargeOverCurrentConfiguration) expected payload length of 12 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1891,7 +1891,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 12) {
-		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent1Configuration) expected payload length of 12 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent1Configuration) expected payload length of 12 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -1969,7 +1969,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	}
 	// accept the "correct" and the "seen" value in case they fix their firmware at some point
 	if (payloadLen != 6 && payloadLen != 12) {
-		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent2Configuration) expected payload length of 6 or 12 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent2Configuration) expected payload length of 6 or 12 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2047,7 +2047,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 2) {
-		LogError("ProcessReadConfigurationResponse (ShortCircuitProtectionConfiguration) expected payload length of 2 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (ShortCircuitProtectionConfiguration) expected payload length of 2 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2101,7 +2101,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 8) {
-		LogError("ProcessReadConfigurationResponse (CellBalancingConfiguration) expected payload length of 8 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (CellBalancingConfiguration) expected payload length of 8 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2162,7 +2162,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 8) {
-		LogError("ProcessReadConfigurationResponse (SleepConfiguration) expected payload length of 8 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (SleepConfiguration) expected payload length of 8 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2231,7 +2231,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 10) {
-		LogError("ProcessReadConfigurationResponse (FullChargeLowChargeConfiguration) expected payload length of 10 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (FullChargeLowChargeConfiguration) expected payload length of 10 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2304,7 +2304,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 26) {
-		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeOverTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeOverTemperatureConfiguration) expected payload length of 26 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2397,7 +2397,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 26) {
-		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeUnderTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeUnderTemperatureConfiguration) expected payload length of 26 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2490,7 +2490,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 14) {
-		LogError("ProcessReadConfigurationResponse (MosfetOverTemperatureConfiguration) expected payload length of 14 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (MosfetOverTemperatureConfiguration) expected payload length of 14 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2562,7 +2562,7 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		return false;
 	}
 	if (payloadLen != 26) {
-		LogError("ProcessReadConfigurationResponse (EnvironmentOverUnderTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
+		LogError("ProcessReadConfigurationResponse (EnvironmentOverUnderTemperatureConfiguration) expected payload length of 26 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2668,7 +2668,7 @@ bool PaceBmsProtocolV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(con
 		return false;
 	}
 	if (payloadLen != 4) {
-		LogError("ProcessReadChargeCurrentLimiterStartCurrentResponse expected payload length of 4 but got " + to_string(payloadLen));
+		LogError("ProcessReadChargeCurrentLimiterStartCurrentResponse expected payload length of 4 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2720,7 +2720,7 @@ bool PaceBmsProtocolV25::ProcessWriteChargeCurrentLimiterStartCurrentResponse(co
 		return false;
 	}
 	if (payloadLen != 0) {
-		LogError("ProcessWriteChargeCurrentLimiterStartCurrentResponse expected payload length of 0 but got " + to_string(payloadLen));
+		LogError("ProcessWriteChargeCurrentLimiterStartCurrentResponse expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2749,7 +2749,7 @@ bool PaceBmsProtocolV25::ProcessReadRemainingCapacityResponse(const uint8_t busI
 		return false;
 	}
 	if (payloadLen != 12) {
-		LogError("ProcessReadRemainingCapacityResponse expected payload length of 12 but got " + to_string(payloadLen));
+		LogError("ProcessReadRemainingCapacityResponse expected payload length of 12 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2787,7 +2787,7 @@ bool PaceBmsProtocolV25::ProcessReadProtocolsResponse(const uint8_t busId, std::
 		return false;
 	}
 	if (payloadLen != 6) {
-		LogError("ProcessReadProtocolsResponse expected payload length of 6 but got " + to_string(payloadLen));
+		LogError("ProcessReadProtocolsResponse expected payload length of 6 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
@@ -2827,7 +2827,7 @@ bool PaceBmsProtocolV25::ProcessWriteProtocolsResponse(const uint8_t busId, std:
 		return false;
 	}
 	if (payloadLen != 0) {
-		LogError("ProcessWriteProtocolsResponse expected payload length of 0 but got " + to_string(payloadLen));
+		LogError("ProcessWriteProtocolsResponse expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
 	}
 
