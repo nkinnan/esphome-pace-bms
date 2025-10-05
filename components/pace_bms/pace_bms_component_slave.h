@@ -3,7 +3,7 @@
 #include "pace_bms_component_base.h"
 
 // forward declaration to avoid circular dependency, code using PaceBmsMaster is in the .cpp where the actual header is included
-//#include "../pace_bms/pace_bms_master_component.h"
+//#include "../pace_bms/pace_bms_component_master.h"
 namespace esphome {
 	namespace pace_bms_master {
 		class PaceBmsMaster;
