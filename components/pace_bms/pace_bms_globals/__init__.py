@@ -3,7 +3,9 @@ from esphome.const import (
     CONF_ID,
     CONF_DEVICE_ID,
 )
-from .. import CONF_PACE_BMS_ID
+# circular reference
+#from .. import CONF_PACE_BMS_ID
+CONF_PACE_BMS_ID = "pace_bms_id" # pointer from child component platform (sensor, number, etc.) back to BMS
 
 pace_bms_schemas = []
 
