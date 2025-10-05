@@ -106,7 +106,7 @@ BASE_SCHEMA = cv.Schema({
 })
 
 def save_pace_bms_schema(schema):
-
+    print(f"============= {schema}")
     return schema
 
 
