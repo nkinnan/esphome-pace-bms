@@ -10,7 +10,7 @@ from esphome.const import (
     CONF_TYPE
 )
 from esphome import pins
-#from esphome.components import pace_bms_globals
+from esphome.components import pace_bms_globals
 
 
 CODEOWNERS = ["@nkinnan"]
