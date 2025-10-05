@@ -349,7 +349,7 @@ const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val, std:
 		return std::string("Other Fault");
 	}
 
-	LogWarning(from + ": Unknown Fault Value")
+	LogWarning(from + ": Unknown Fault Value");
 	return std::string("Unknown Fault Value");
 }
 // helper for: ProcessStatusInformationResponse
@@ -1363,11 +1363,6 @@ bool PaceBmsProtocolV25::ProcessWriteSystemDateTimeResponse(const uint8_t busId,
 		return false;
 	}
 
-	// we expect to be exactly at the end of the payload now
-	if (byteOffset != payloadLen + 13 /* frame header length */) {
-		LogError("Length mismatch reading ProcessWriteSystemDateTimeResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
-	}
-
 	return true;
 }
 
@@ -1394,11 +1389,6 @@ bool PaceBmsProtocolV25::ProcessWriteConfigurationResponse(const uint8_t busId, 
 	if (payloadLen != 0) {
 		LogError("ProcessWriteConfigurationResponse (empty) expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
-	}
-
-	// we expect to be exactly at the end of the payload now
-	if (byteOffset != payloadLen + 13 /* frame header length */) {
-		LogError("Length mismatch reading ProcessWriteConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
@@ -2724,11 +2714,6 @@ bool PaceBmsProtocolV25::ProcessWriteChargeCurrentLimiterStartCurrentResponse(co
 		return false;
 	}
 
-	// we expect to be exactly at the end of the payload now
-	if (byteOffset != payloadLen + 13 /* frame header length */) {
-		LogError("Length mismatch reading ProcessWriteChargeCurrentLimiterStartCurrentResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
-	}
-
 	return true;
 }
 
@@ -2829,11 +2814,6 @@ bool PaceBmsProtocolV25::ProcessWriteProtocolsResponse(const uint8_t busId, std:
 	if (payloadLen != 0) {
 		LogError("ProcessWriteProtocolsResponse expected payload length of 0 but got " + std::to_string(payloadLen));
 		return false;
-	}
-
-	// we expect to be exactly at the end of the payload now
-	if (byteOffset != payloadLen + 13 /* frame header length */) {
-		LogError("Length mismatch reading ProcessWriteProtocolsResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
