@@ -34,6 +34,10 @@ bool PaceBmsProtocolV25::ProcessReadBmsCountResponse(const uint8_t busId, std::o
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 2) {
+		LogError("ProcessReadBmsCountResponse expected payload length of 2 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -46,6 +50,11 @@ bool PaceBmsProtocolV25::ProcessReadBmsCountResponse(const uint8_t busId, std::o
 	}
 
 	bmsCount = ReadHexEncodedByte(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadBmsCountResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -92,6 +101,11 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	// this check is explicitly done in several places as we go since different protocol variants behave differently here
+	//if (payloadLen != 2) {
+	//	LogError("ProcessReadAnalogInformationResponse expected payload length of 2 but got " + to_string(payloadLen));
+	//	return false;
+	//}
 
 	if(payloadLen < 122)
 	{
@@ -310,7 +324,7 @@ bool PaceBmsProtocolV25::CreateReadStatusInformationRequest(const uint8_t busId,
 }
 
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val)
+const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val, std::string from)
 {
 	if (val == 0)
 	{
@@ -331,9 +345,11 @@ const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val)
 	}
 	if (val == WV_OtherFaultValue)
 	{
+		LogWarning(from + ": 'Other Fault'")
 		return std::string("Other Fault");
 	}
 
+	LogWarning(from + ": Unknown Fault Value")
 	return std::string("Unknown Fault Value");
 }
 // helper for: ProcessStatusInformationResponse
@@ -385,6 +401,7 @@ const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t
 	{
 		// ********************* based on (poor) documentation and inference, /possibly/ this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
 		str.append("'Fully' protect bit???; ");
+		LogWarning(from + ": 'Fully' protect bit? Might mean fully charged?")
 	}
 	if ((val & P2F_LowEnvironmentalTemperatureProtect2Bit) != 0)
 	{
@@ -458,13 +475,14 @@ const std::string PaceBmsProtocolV25::DecodeStatusValue(const uint8_t val)
 	return str;
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBmsProtocolV25::DecodeConfigurationStatusValue(const uint8_t val)
+const std::string PaceBmsProtocolV25::DecodeConfigurationStatusValue(const uint8_t val, std::string from)
 {
 	std::string str;
 
 	if ((val & CF_UndefinedConfigurationStatusBit8) != 0)
 	{
 		str.append("Undefined ConfigurationStatus Bit8 Set; ");
+		LogWarning(from + ": Undefined ConfigurationStatus Bit8 Set")
 	}
 	if ((val & CF_StaticBalanceBit) != 0)
 	{
@@ -538,17 +556,19 @@ const std::string PaceBmsProtocolV25::DecodeFaultStatusValue(const uint8_t val)
 	return str;
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBmsProtocolV25::DecodeWarningStatus1Value(const uint8_t val)
+const std::string PaceBmsProtocolV25::DecodeWarningStatus1Value(const uint8_t val, std::string from)
 {
 	std::string str;
 
 	if ((val & W1F_UndefinedWarning1Bit8) != 0)
 	{
 		str.append("Undefined WarnState1 Bit7 Warning; ");
+		LogWarning(from + ": Undefined WarnState1 Bit7 Warning")
 	}
 	if ((val & W1F_UndefinedWarning1Bit7) != 0)
 	{
 		str.append("Undefined WarnState1 Bit6 Warning; ");
+		LogWarning(from + ": Undefined WarnState1 Bit6 Warning")
 	}
 	if ((val & W1F_DischargeCurrentBit) != 0)
 	{
@@ -644,6 +664,11 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	// this check is explicitly done in several places as we go since different protocol variants behave differently here
+	//if (payloadLen != 2) {
+	//	LogError("ProcessReadStatusInformationResponse expected payload length of 2 but got " + to_string(payloadLen));
+	//	return false;
+	//}
 
 	if(payloadLen < 76)
 	{
@@ -926,7 +951,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadHardwareVersionRequestV25[] = "~250146C10000FD9A\r";
+const unsigned char PaceBmsProtocolV25::exampleReadHardwareVersionRequestV25[]  = "~250146C10000FD9A\r";
 const unsigned char PaceBmsProtocolV25::exampleReadHardwareVersionResponseV25[] = "~25014600602850313653313030412D313831322D312E30302000F58E\r";
 
 bool PaceBmsProtocolV25::CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -944,16 +969,13 @@ bool PaceBmsProtocolV25::ProcessReadHardwareVersionResponse(const uint8_t busId,
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 40) {
+		LogError("ProcessReadHardwareVersionResponse expected payload length of 40 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
-
-	if (payloadLen != 40)
-	{
-		std::string message = std::string("Documentation indicates a hardware version request should return a 40 byte payload in the response, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
-		return false;
-	}
 
 	hardwareVersion.resize(20);
 	for (int i = 0; i < 20; i++)
@@ -962,9 +984,13 @@ bool PaceBmsProtocolV25::ProcessReadHardwareVersionResponse(const uint8_t busId,
 	}
 
 	// remove trailing spaces
-	while (hardwareVersion.length() > 0 && (hardwareVersion[hardwareVersion.length() - 1] == ' ' || hardwareVersion[hardwareVersion.length() - 1] == 0))
-	{
+	while (hardwareVersion.length() > 0 && (hardwareVersion[hardwareVersion.length() - 1] == ' ' || hardwareVersion[hardwareVersion.length() - 1] == 0)){
 		hardwareVersion.pop_back();
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadHardwareVersionResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
@@ -986,16 +1012,13 @@ bool PaceBmsProtocolV25::ProcessReadSerialNumberResponse(const uint8_t busId, st
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 40 && payloadLen != 80) {
+		LogError("ProcessReadSerialNumberResponse expected payload length is 40 or 80 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
-
-	if (payloadLen != 80 && payloadLen != 40)
-	{
-		std::string message = std::string("Documentation indicates a serial number information request should return either a 40 or 80 byte payload in the response, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
-		return false;
-	}
 
 	serialNumber.resize(payloadLen / 2);
 	for (int i = 0; i < payloadLen / 2; i++)
@@ -1009,6 +1032,11 @@ bool PaceBmsProtocolV25::ProcessReadSerialNumberResponse(const uint8_t busId, st
 		serialNumber.pop_back();
 	}
 
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadSerialNumberResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
+
 	return true;
 }
 
@@ -1019,24 +1047,24 @@ bool PaceBmsProtocolV25::ProcessReadSerialNumberResponse(const uint8_t busId, st
 // 
 // ============================================================================
 
-const unsigned char PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandRequestV25[] = "~25004699E0020DFD12\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandRequestV25[]  = "~25004699E0020DFD12\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteDisableBuzzerSwitchCommandResponseV25[] = "~25004600C0040D01FCC3\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandRequestV25[] = "~25004699E0020CFD13\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandResponseV25[] = "~25004600C0040C00FCC5\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandRequestV25[]   = "~25004699E0020CFD13\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableBuzzerSwitchCommandResponseV25[]  = "~25004600C0040C00FCC5\r";
 
-const unsigned char PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandRequestV25[] = "~25004699E00206FD20\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandRequestV25[]  = "~25004699E00206FD20\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteDisableLedWarningSwitchCommandResponseV25[] = "~25004600C0040602FCD0\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandRequestV25[] = "~25004699E00207FD1F\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandResponseV25[] = "~25004600C0040722FCCD\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandRequestV25[]   = "~25004699E00207FD1F\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableLedWarningSwitchCommandResponseV25[]  = "~25004600C0040722FCCD\r";
 
-const unsigned char PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020AFD15\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandRequestV25[]  = "~25004699E0020AFD15\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteDisableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040A22FCC3\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25[] = "~25004699E0020BFD14\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25[] = "~25004600C0040B32FCC1\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandRequestV25[]   = "~25004699E0020BFD14\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnableChargeCurrentLimiterSwitchCommandResponseV25[]  = "~25004600C0040B32FCC1\r";
 
-const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25[] = "~25004699E00209FD1D\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25[] = "~25004600C0040938FCC4\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25[] = "~25004699E00208FD1E\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandRequestV25[]   = "~25004699E00209FD1D\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitLowGearSwitchCommandResponseV25[]  = "~25004600C0040938FCC4\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandRequestV25[]  = "~25004699E00208FD1E\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteSetChargeCurrentLimiterCurrentLimitHighGearSwitchCommandResponseV25[] = "~25004600C0040830FCCD\r";
 
 bool PaceBmsProtocolV25::CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request)
@@ -1059,18 +1087,15 @@ bool PaceBmsProtocolV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, 
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	// documented as 2 (decoded) bytes but the meaning of them is undocumented
+	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
+	if (payloadLen != 4) {
+		LogError("ProcessWriteSwitchCommandResponse expected payload length of 4 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
-
-	// documented as 2 (decoded) bytes but the meaning of them is undocumented
-	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
-	if (payloadLen != 4)
-	{
-		std::string message = std::string("Documentation indicates a switch command should return a 4 byte payload in the response, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
-		return false;
-	}
 
 	uint8_t commandEcho = ReadHexEncodedByte(response, byteOffset);
 
@@ -1135,6 +1160,11 @@ bool PaceBmsProtocolV25::ProcessWriteSwitchCommandResponse(const uint8_t busId, 
 		break;
 	}
 
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteSwitchCommandResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
+
 	return true;
 }
 
@@ -1168,18 +1198,15 @@ bool PaceBmsProtocolV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t b
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	// documented as 1 (decoded) byte but the meaning of it is undocumented
+	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
+	if (payloadLen != 2) {
+		LogError("ProcessWriteMosfetSwitchCommandResponse expected payload length of 2 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
-
-	// documented as 1 (decoded) byte but the meaning of it is undocumented
-	// in any case this is the only thing I can be certain enough about to elevate to error status and return failure
-	if (payloadLen != 2)
-	{
-		std::string message = std::string("Documentation indicates a MOSFET command should return a 2 byte payload in the response, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
-		return false;
-	}
 
 	// this is behavior I have observed but is not documented
 	uint8_t unknown = ReadHexEncodedByte(response, byteOffset);
@@ -1212,10 +1239,15 @@ bool PaceBmsProtocolV25::ProcessWriteMosfetSwitchCommandResponse(const uint8_t b
 		}
 	}
 
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteMosfetSwitchCommandResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
+
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleWriteRebootCommandRequestV25[] = "~2500469CE00201FD1B\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteRebootCommandRequestV25[]  = "~2500469CE00201FD1B\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteRebootCommandResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -1238,18 +1270,20 @@ bool PaceBmsProtocolV25::ProcessWriteShutdownCommandResponse(const uint8_t busId
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 0) {
+		LogError("ProcessWriteShutdownCommandResponse expected payload length of 0 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
-	if (payloadLen != 0)
-	{
-		std::string message = std::string("Documentation indicates a shutdown command should return no payload, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
-		return false;
-	}
-
 	// according to documentation, if the RTN code is 0 (this is checked by ValidateResponseAndGetPayloadLength) then it worked, no need to check response payload
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteShutdownCommandResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1260,9 +1294,9 @@ bool PaceBmsProtocolV25::ProcessWriteShutdownCommandResponse(const uint8_t busId
 // 
 // ============================================================================
 
-const unsigned char PaceBmsProtocolV25::exampleReadSystemTimeRequestV25[] = "~250046B10000FD9C\r";
-const unsigned char PaceBmsProtocolV25::exampleReadSystemTimeResponseV25[] = "~25004600400C180815051D1FFB10\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteSystemTimeRequestV25[] = "~250046B2400C1808140E0F25FAFC\r";
+const unsigned char PaceBmsProtocolV25::exampleReadSystemTimeRequestV25[]   = "~250046B10000FD9C\r";
+const unsigned char PaceBmsProtocolV25::exampleReadSystemTimeResponseV25[]  = "~25004600400C180815051D1FFB10\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteSystemTimeRequestV25[]  = "~250046B2400C1808140E0F25FAFC\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteSystemTimeResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -1278,6 +1312,10 @@ bool PaceBmsProtocolV25::ProcessReadSystemDateTimeResponse(const uint8_t busId, 
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 12) {
+		LogError("ProcessReadSystemDateTimeResponse expected payload length of 12 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -1288,6 +1326,11 @@ bool PaceBmsProtocolV25::ProcessReadSystemDateTimeResponse(const uint8_t busId, 
 	dateTime.Hour = ReadHexEncodedByte(response, byteOffset);
 	dateTime.Minute = ReadHexEncodedByte(response, byteOffset);
 	dateTime.Second = ReadHexEncodedByte(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadSystemDateTimeResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1315,12 +1358,14 @@ bool PaceBmsProtocolV25::ProcessWriteSystemDateTimeResponse(const uint8_t busId,
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-
-	if (payloadLen != 0)
-	{
-		std::string message = std::string("Documentation indicates a write system time response should return no payload, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
+	if (payloadLen != 0) {
+		LogError("ProcessWriteSystemDateTimeResponse expected payload length of 0 but got " + to_string(payloadLen));
 		return false;
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteSystemDateTimeResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
@@ -1346,20 +1391,22 @@ bool PaceBmsProtocolV25::ProcessWriteConfigurationResponse(const uint8_t busId, 
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-
-	if (payloadLen != 0)
-	{
-		std::string message = std::string("Documentation indicates a write configuration response should return no payload, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
+	if (payloadLen != 0) {
+		LogError("ProcessWriteConfigurationResponse (empty) expected payload length of 0 but got " + to_string(payloadLen));
 		return false;
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationRequestV25[] = "~250046D10000FD9A\r";
-const unsigned char PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationResponseV25[] = "~25004600F010010E100E740D340AFA35\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationRequestV25[] = "~250046D0F010010E100E740D340AFA21\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationRequestV25[]   = "~250046D10000FD9A\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellOverVoltageConfigurationResponseV25[]  = "~25004600F010010E100E740D340AFA35\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationRequestV25[]  = "~250046D0F010010E100E740D340AFA21\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteCellOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellOverVoltageConfiguration& config)
@@ -1370,7 +1417,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-	// todo: (everywhere) check payload length is what's expected
+	if (payloadLen != 16) {
+		LogError("ProcessReadConfigurationResponse (CellOverVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -1386,6 +1436,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1448,9 +1503,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationRequestV25[] = "~250046D50000FD96\r";
-const unsigned char PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationResponseV25[] = "~25004600F01001E100E740D2F00AFA24\r";
-const unsigned char PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25[] = "~250046D4F01001E10AE740D2F00AF9FB\r";
+const unsigned char PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationRequestV25[]   = "~250046D50000FD96\r";
+const unsigned char PaceBmsProtocolV25::exampleReadPackOverVoltageConfigurationResponseV25[]  = "~25004600F01001E100E740D2F00AFA24\r";
+const unsigned char PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationRequestV25[]  = "~250046D4F01001E10AE740D2F00AF9FB\r";
 const unsigned char PaceBmsProtocolV25::exampleWritePackOverVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackOverVoltageConfiguration& config)
@@ -1459,6 +1514,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 16) {
+		LogError("ProcessReadConfigurationResponse (PackOverVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1476,6 +1535,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1538,9 +1602,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationRequestV25[] = "~250046D30000FD98\r";
-const unsigned char PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationResponseV25[] = "~25004600F010010AF009C40B540AFA24\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationRequestV25[] = "~250046D2F010010AF009C40B540AFA0E\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationRequestV25[]   = "~250046D30000FD98\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellUnderVoltageConfigurationResponseV25[]  = "~25004600F010010AF009C40B540AFA24\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationRequestV25[]  = "~250046D2F010010AF009C40B540AFA0E\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteCellUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellUnderVoltageConfiguration& config)
@@ -1549,6 +1613,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 16) {
+		LogError("ProcessReadConfigurationResponse (CellUnderVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1566,6 +1634,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1628,9 +1701,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationRequestV25[] = "~250046D70000FD94\r";
-const unsigned char PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationResponseV25[] = "~25004600F01001AF009C40B5400AFA24\r";
-const unsigned char PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationRequestV25[] = "~250046D6F01001AF009C40B5400AFA0A\r";
+const unsigned char PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationRequestV25[]   = "~250046D70000FD94\r";
+const unsigned char PaceBmsProtocolV25::exampleReadPackUnderVoltageConfigurationResponseV25[]  = "~25004600F01001AF009C40B5400AFA24\r";
+const unsigned char PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationRequestV25[]  = "~250046D6F01001AF009C40B5400AFA0A\r";
 const unsigned char PaceBmsProtocolV25::exampleWritePackUnderVoltageConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackUnderVoltageConfiguration& config)
@@ -1639,6 +1712,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 16) {
+		LogError("ProcessReadConfigurationResponse (PackUnderVoltageConfiguration) expected payload length of 16 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1656,6 +1733,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.ProtectionMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionReleaseMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1718,9 +1800,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationRequestV25[] = "~250046D90000FD92\r";
-const unsigned char PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationResponseV25[] = "~25004600400C010068006E0AFB1D\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationRequestV25[] = "~250046D8400C010068006E0AFB01\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationRequestV25[]   = "~250046D90000FD92\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeOverCurrentConfigurationResponseV25[]  = "~25004600400C010068006E0AFB1D\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationRequestV25[]  = "~250046D8400C010068006E0AFB01\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteChargeOverCurrentConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeOverCurrentConfiguration& config)
@@ -1729,6 +1811,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 12) {
+		LogError("ProcessReadConfigurationResponse (ChargeOverCurrentConfiguration) expected payload length of 12 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1745,6 +1831,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.AlarmAmperage = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionAmperage = ReadHexEncodedUShort(response, byteOffset);
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1783,14 +1874,12 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 
 	CreateRequest(busId, CID2_WriteChargeOverCurrentConfiguration, payload, request);
 
-	// todo: (everywhere) check current byteOffset against payloadLen
-
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25[] = "~250046DB0000FD89\r";
-const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25[] = "~25004600400C01FF97FF920AFAD3\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25[] = "~250046DA400C010069006E0AFAF7\r";
+const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationRequestV25[]   = "~250046DB0000FD89\r";
+const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent1ConfigurationResponseV25[]  = "~25004600400C01FF97FF920AFAD3\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationRequestV25[]  = "~250046DA400C010069006E0AFAF7\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent1ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent1Configuration& config)
@@ -1799,6 +1888,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 12) {
+		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent1Configuration) expected payload length of 12 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1815,6 +1908,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.AlarmAmperage = ReadHexEncodedSShort(response, byteOffset) * -1;
 	config.ProtectionAmperage = ReadHexEncodedSShort(response, byteOffset) * -1;
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 100;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1856,9 +1954,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25[] = "~250046E30000FD97\r";
-const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25[] = "~25004600400C009604009604FB32\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25[] = "~250046E2A006009604FC4E\r";
+const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationRequestV25[]   = "~250046E30000FD97\r";
+const unsigned char PaceBmsProtocolV25::exampleReadDishargeOverCurrent2ConfigurationResponseV25[]  = "~25004600400C009604009604FB32\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationRequestV25[]  = "~250046E2A006009604FC4E\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteDishargeOverCurrent2ConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent2Configuration& config)
@@ -1867,6 +1965,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	// accept the "correct" and the "seen" value in case they fix their firmware at some point
+	if (payloadLen != 6 && payloadLen != 12) {
+		LogError("ProcessReadConfigurationResponse (DischargeOverCurrent2Configuration) expected payload length of 6 or 12 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -1884,6 +1987,12 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.ProtectionDelayMilliseconds = ReadHexEncodedByte(response, byteOffset) * 25;
 
 	// ignore the garbage tail, likely firmware bug since it's not sent on the write
+	byteOffset += 6;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1924,9 +2033,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationRequestV25[] = "~250046E50000FD95\r";
-const unsigned char PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationResponseV25[] = "~25004600E0020CFD25\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationRequestV25[] = "~250046E4E0020CFD0C\r";
+const unsigned char PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationRequestV25[]   = "~250046E50000FD95\r";
+const unsigned char PaceBmsProtocolV25::exampleReadShortCircuitProtectionConfigurationResponseV25[]  = "~25004600E0020CFD25\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationRequestV25[]  = "~250046E4E0020CFD0C\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteShortCircuitProtectionConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ShortCircuitProtectionConfiguration& config)
@@ -1937,11 +2046,20 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 2) {
+		LogError("ProcessReadConfigurationResponse (ShortCircuitProtectionConfiguration) expected payload length of 2 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
 	config.ProtectionDelayMicroseconds = ReadHexEncodedByte(response, byteOffset) * 25;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -1969,9 +2087,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadCellBalancingConfigurationRequestV25[] = "~250046B60000FD97\r";
-const unsigned char PaceBmsProtocolV25::exampleReadCellBalancingConfigurationResponseV25[] = "~2500460080080D48001EFBE9\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationRequestV25[] = "~250046B580080D48001EFBD2\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellBalancingConfigurationRequestV25[]   = "~250046B60000FD97\r";
+const unsigned char PaceBmsProtocolV25::exampleReadCellBalancingConfigurationResponseV25[]  = "~2500460080080D48001EFBE9\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationRequestV25[]  = "~250046B580080D48001EFBD2\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteCellBalancingConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellBalancingConfiguration& config)
@@ -1982,12 +2100,21 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 8) {
+		LogError("ProcessReadConfigurationResponse (CellBalancingConfiguration) expected payload length of 8 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
 
 	config.ThresholdMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.DeltaCellMillivolts = ReadHexEncodedUShort(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2021,9 +2148,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadSleepConfigurationRequestV25[] = "~250046A00000FD9E\r";
-const unsigned char PaceBmsProtocolV25::exampleReadSleepConfigurationResponseV25[] = "~2500460080080C1C0005FBF3\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteSleepConfigurationRequestV25[] = "~250046A880080C1C0005FBDA\r";
+const unsigned char PaceBmsProtocolV25::exampleReadSleepConfigurationRequestV25[]   = "~250046A00000FD9E\r";
+const unsigned char PaceBmsProtocolV25::exampleReadSleepConfigurationResponseV25[]  = "~2500460080080C1C0005FBF3\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteSleepConfigurationRequestV25[]  = "~250046A880080C1C0005FBDA\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteSleepConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, SleepConfiguration& config)
@@ -2032,6 +2159,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 8) {
+		LogError("ProcessReadConfigurationResponse (SleepConfiguration) expected payload length of 8 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -2046,6 +2177,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	{
 		LogError("Unknown2 value in payload is not zero");
 		return false;
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
@@ -2081,9 +2217,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationRequestV25[] = "~250046AF0000FD88\r";
-const unsigned char PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationResponseV25[] = "~25004600600ADAC007D005FB60\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationRequestV25[] = "~250046AE600ADAC007D005FB3A\r";
+const unsigned char PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationRequestV25[]   = "~250046AF0000FD88\r";
+const unsigned char PaceBmsProtocolV25::exampleReadFullChargeLowChargeConfigurationResponseV25[]  = "~25004600600ADAC007D005FB60\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationRequestV25[]  = "~250046AE600ADAC007D005FB3A\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteFullChargeLowChargeConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, FullChargeLowChargeConfiguration& config)
@@ -2094,6 +2230,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 10) {
+		LogError("ProcessReadConfigurationResponse (FullChargeLowChargeConfiguration) expected payload length of 10 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -2101,6 +2241,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.FullChargeMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	config.FullChargeMilliamps = ReadHexEncodedUShort(response, byteOffset);
 	config.LowChargeAlarmPercent = ReadHexEncodedByte(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2145,9 +2290,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DD0000FD87\r";
-const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~25004600501A010CA80CD00C9E0CDA0D020CD0F7BE\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[] = "~250046DC501A010CA80CD00C9E0CDA0D020CD0F797\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationRequestV25[]   = "~250046DD0000FD87\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeOverTemperatureConfigurationResponseV25[]  = "~25004600501A010CA80CD00C9E0CDA0D020CD0F7BE\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationRequestV25[]  = "~250046DC501A010CA80CD00C9E0CDA0D020CD0F797\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeOverTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeOverTemperatureConfiguration& config)
@@ -2156,6 +2301,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 26) {
+		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeOverTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -2175,6 +2324,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.DischargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.DischargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2229,9 +2383,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DF0000FD85\r";
-const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~25004600501A010AAA0A780AAA0A1409E20A14F7E5\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[] = "~250046DE501A010AAA0A780AAA0A1409E20A14F7BC\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationRequestV25[]   = "~250046DF0000FD85\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeAndDischargeUnderTemperatureConfigurationResponseV25[]  = "~25004600501A010AAA0A780AAA0A1409E20A14F7E5\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationRequestV25[]  = "~250046DE501A010AAA0A780AAA0A1409E20A14F7BC\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteChargeAndDischargeUnderTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config)
@@ -2240,6 +2394,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 26) {
+		LogError("ProcessReadConfigurationResponse (ChargeAndDischargeUnderTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -2259,6 +2417,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.DischargeAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.DischargeProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.DischargeProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2313,9 +2476,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadMosfetOverTemperatureConfigurationRequestV25[] = "~250046E10000FD99\r";
-const unsigned char PaceBmsProtocolV25::exampleReadMosfetOverTemperatureConfigurationResponseV25[] = "~25004600200E010E2E0EF60DFCFA5D\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteMosfetOverTemperatureConfigurationRequestV25[] = "~250046E0200E010E2E0EF60DFCFA48\r";
+const unsigned char PaceBmsProtocolV25::exampleReadMosfetOverTemperatureConfigurationRequestV25[]   = "~250046E10000FD99\r";
+const unsigned char PaceBmsProtocolV25::exampleReadMosfetOverTemperatureConfigurationResponseV25[]  = "~25004600200E010E2E0EF60DFCFA5D\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteMosfetOverTemperatureConfigurationRequestV25[]  = "~250046E0200E010E2E0EF60DFCFA48\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteMosfetOverTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, MosfetOverTemperatureConfiguration& config)
@@ -2324,6 +2487,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 14) {
+		LogError("ProcessReadConfigurationResponse (MosfetOverTemperatureConfiguration) expected payload length of 14 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -2340,6 +2507,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.Alarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.Protection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.ProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2376,9 +2548,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadEnvironmentOverUnderTemperatureConfigurationRequestV25[] = "~250046E70000FD93\r";
-const unsigned char PaceBmsProtocolV25::exampleReadEnvironmentOverUnderTemperatureConfigurationResponseV25[] = "~25004600501A0109E209B009E20D340D660D34F806\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteEnvironmentOverUnderTemperatureConfigurationRequestV25[] = "~250046E6501A0109E209B009E20D340D660D34F7EB\r";
+const unsigned char PaceBmsProtocolV25::exampleReadEnvironmentOverUnderTemperatureConfigurationRequestV25[]   = "~250046E70000FD93\r";
+const unsigned char PaceBmsProtocolV25::exampleReadEnvironmentOverUnderTemperatureConfigurationResponseV25[]  = "~25004600501A0109E209B009E20D340D660D34F806\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteEnvironmentOverUnderTemperatureConfigurationRequestV25[]  = "~250046E6501A0109E209B009E20D340D660D34F7EB\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteEnvironmentOverUnderTemperatureConfigurationResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config)
@@ -2387,6 +2559,10 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	if (payloadLen == -1)
 	{
 		// failed to validate, the call would have done it's own logging
+		return false;
+	}
+	if (payloadLen != 26) {
+		LogError("ProcessReadConfigurationResponse (EnvironmentOverUnderTemperatureConfiguration) expected payload length of 26 but got " + to_string(payloadLen));
 		return false;
 	}
 
@@ -2406,6 +2582,11 @@ bool PaceBmsProtocolV25::ProcessReadConfigurationResponse(const uint8_t busId, s
 	config.OverAlarm = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.OverProtection = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
 	config.OverProtectionRelease = (ReadHexEncodedUShort(response, byteOffset) - 2730) / 10;
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadConfigurationResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2468,9 +2649,9 @@ bool PaceBmsProtocolV25::CreateWriteConfigurationRequest(const uint8_t busId, co
 
 // note: "Charge Current Limiter Current Limit Gear Switch" is in this page in PBmsTools but I moved it to the SwitchCommand section above because it uses the same CID2 and fits in nicely with that code
 
-const unsigned char PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25[] = "~250046ED0000FD86\r";
-const unsigned char PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25[] = "~25004600C0040064FCCE\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25[] = "~250046EEC0040064FCA4\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentRequestV25[]   = "~250046ED0000FD86\r";
+const unsigned char PaceBmsProtocolV25::exampleReadChargeCurrentLimiterStartCurrentResponseV25[]  = "~25004600C0040064FCCE\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentRequestV25[]  = "~250046EEC0040064FCA4\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCurrentResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -2486,6 +2667,10 @@ bool PaceBmsProtocolV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(con
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 4) {
+		LogError("ProcessReadChargeCurrentLimiterStartCurrentResponse expected payload length of 4 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -2499,6 +2684,11 @@ bool PaceBmsProtocolV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(con
 	}
 
 	current = ReadHexEncodedByte(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadChargeCurrentLimiterStartCurrentResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2529,18 +2719,20 @@ bool PaceBmsProtocolV25::ProcessWriteChargeCurrentLimiterStartCurrentResponse(co
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-
-	if (payloadLen != 0)
-	{
-		std::string message = std::string("Documentation indicates a write charge current limiter start current response should return no payload, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
+	if (payloadLen != 0) {
+		LogError("ProcessWriteChargeCurrentLimiterStartCurrentResponse expected payload length of 0 but got " + to_string(payloadLen));
 		return false;
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteChargeCurrentLimiterStartCurrentResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadRemainingCapacityRequestV25[] = "~250046A60000FD98\r";
+const unsigned char PaceBmsProtocolV25::exampleReadRemainingCapacityRequestV25[]  = "~250046A60000FD98\r";
 const unsigned char PaceBmsProtocolV25::exampleReadRemainingCapacityResponseV25[] = "~25004600400C183C286A2710FB0E\r";
 
 bool PaceBmsProtocolV25::CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -2556,6 +2748,10 @@ bool PaceBmsProtocolV25::ProcessReadRemainingCapacityResponse(const uint8_t busI
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 12) {
+		LogError("ProcessReadRemainingCapacityResponse expected payload length of 12 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -2564,12 +2760,17 @@ bool PaceBmsProtocolV25::ProcessReadRemainingCapacityResponse(const uint8_t busI
 	actualCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 	designCapacityMilliampHours = ReadHexEncodedUShort(response, byteOffset) * 10;
 
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadRemainingCapacityResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
+
 	return true;
 }
 
-const unsigned char PaceBmsProtocolV25::exampleReadProtocolsRequestV25[] = "~250046EB0000FD88\r";
-const unsigned char PaceBmsProtocolV25::exampleReadProtocolsResponseV25[] = "~25004600A006131400FC6F\r";
-const unsigned char PaceBmsProtocolV25::exampleWriteProtocolsRequestV25[] = "~250046ECA006131400FC47\r";
+const unsigned char PaceBmsProtocolV25::exampleReadProtocolsRequestV25[]   = "~250046EB0000FD88\r";
+const unsigned char PaceBmsProtocolV25::exampleReadProtocolsResponseV25[]  = "~25004600A006131400FC6F\r";
+const unsigned char PaceBmsProtocolV25::exampleWriteProtocolsRequestV25[]  = "~250046ECA006131400FC47\r";
 const unsigned char PaceBmsProtocolV25::exampleWriteProtocolsResponseV25[] = "~250046000000FDAF\r";
 
 bool PaceBmsProtocolV25::CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request)
@@ -2585,6 +2786,10 @@ bool PaceBmsProtocolV25::ProcessReadProtocolsResponse(const uint8_t busId, std::
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
+	if (payloadLen != 6) {
+		LogError("ProcessReadProtocolsResponse expected payload length of 6 but got " + to_string(payloadLen));
+		return false;
+	}
 
 	// payload starts here, everything else was validated by the initial call to ValidateResponseAndGetPayloadLength
 	uint16_t byteOffset = 13;
@@ -2592,6 +2797,11 @@ bool PaceBmsProtocolV25::ProcessReadProtocolsResponse(const uint8_t busId, std::
 	protocols.CAN = (ProtocolList_CAN)ReadHexEncodedByte(response, byteOffset);
 	protocols.RS485 = (ProtocolList_RS485)ReadHexEncodedByte(response, byteOffset);
 	protocols.Type = (ProtocolList_Type)ReadHexEncodedByte(response, byteOffset);
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessReadProtocolsResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
+	}
 
 	return true;
 }
@@ -2616,12 +2826,14 @@ bool PaceBmsProtocolV25::ProcessWriteProtocolsResponse(const uint8_t busId, std:
 		// failed to validate, the call would have done it's own logging
 		return false;
 	}
-
-	if (payloadLen != 0)
-	{
-		std::string message = std::string("Write protocols response should include no payload, but this response's payload length is ") + std::to_string(payloadLen);
-		LogError(message);
+	if (payloadLen != 0) {
+		LogError("ProcessWriteProtocolsResponse expected payload length of 0 but got " + to_string(payloadLen));
 		return false;
+	}
+
+	// we expect to be exactly at the end of the payload now
+	if (byteOffset != payloadLen + 13 /* frame header length */) {
+		logError("Length mismatch reading ProcessWriteProtocolsResponse response: " + std::to_string(payloadLen + 13 - byteOffset) + " bytes off. Accuracy of readouts may be compromised. Please file an issue report with full logs at VERY_VERBOSE level.");
 	}
 
 	return true;
