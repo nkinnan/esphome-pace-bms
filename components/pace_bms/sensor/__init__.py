@@ -20,7 +20,7 @@ from esphome.const import (
     UNIT_PERCENT,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components import pace_bms_globals
+from ..pace_bms_globals import pace_bms_globals
 
 UNIT_AMP_HOURS = "Ah" # todo: use existing once checked into esphome 
 
