@@ -10,7 +10,7 @@ from esphome.const import (
     CONF_TYPE
 )
 from esphome import pins
-from esphome.components import globals
+from esphome.components import pace_bms_globals
 
 
 CODEOWNERS = ["@nkinnan"]
@@ -105,46 +105,43 @@ BASE_SCHEMA = cv.Schema({
     cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
 
-def save_pace_bms_schema(schema):
-    print(f"============= {schema}")
-    return schema
+CONFIG_SCHEMA = cv.All(
+    pace_bms_globals.save_pace_bms_schema, 
+    cv.typed_schema({
+        CONF_TYPE_MASTER: BASE_SCHEMA.extend({
+            cv.GenerateID(): cv.declare_id(PaceBmsMaster),
 
+            cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
 
-CONFIG_SCHEMA = cv.All(save_pace_bms_schema, cv.typed_schema({
-    CONF_TYPE_MASTER: BASE_SCHEMA.extend({
-        cv.GenerateID(): cv.declare_id(PaceBmsMaster),
+            cv.Optional(CONF_PROTOCOL_COMMANDSET, default=DEFAULT_PROTOCOL_COMMANDSET): cv.int_range(min=0x20, max=0x25),
+            cv.Optional(CONF_PROTOCOL_VARIANT): cv.string_strict,
+            cv.Optional(CONF_PROTOCOL_VERSION): cv.int_range(min=0, max=255),
+            cv.Optional(CONF_CHEMISTRY): cv.int_range(min=0, max=255),
 
-        cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
+            cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
 
-        cv.Optional(CONF_PROTOCOL_COMMANDSET, default=DEFAULT_PROTOCOL_COMMANDSET): cv.int_range(min=0x20, max=0x25),
-        cv.Optional(CONF_PROTOCOL_VARIANT): cv.string_strict,
-        cv.Optional(CONF_PROTOCOL_VERSION): cv.int_range(min=0, max=255),
-        cv.Optional(CONF_CHEMISTRY): cv.int_range(min=0, max=255),
+            cv.Optional(CONF_SLAVE_DISCOVERY_MODE, default=DEFAULT_SLAVE_DISCOVERY_MODE): cv.enum(SLAVE_DISCOVERY_MODE, upper=True),
+            cv.Optional(CONF_SLAVE_QUERY_MODE, default=DEFAULT_SLAVE_QUERY_MODE): cv.enum(SLAVE_QUERY_MODE, upper=True),
 
-        cv.Optional(CONF_REQUEST_THROTTLE, default=DEFAULT_REQUEST_THROTTLE): cv.positive_time_period_milliseconds,
-        cv.Optional(CONF_RESPONSE_TIMEOUT, default=DEFAULT_RESPONSE_TIMEOUT): cv.positive_time_period_milliseconds,
+            cv.Optional(CONF_RX_BUFFER_SIZE, default=DEFAULT_RX_BUFFER_SIZE): cv.int_range(min=256, max=4096),
+        })
+        .extend(cv.polling_component_schema("60s"))
+        .extend(uart.UART_DEVICE_SCHEMA),
 
-        cv.Optional(CONF_SLAVE_DISCOVERY_MODE, default=DEFAULT_SLAVE_DISCOVERY_MODE): cv.enum(SLAVE_DISCOVERY_MODE, upper=True),
-        cv.Optional(CONF_SLAVE_QUERY_MODE, default=DEFAULT_SLAVE_QUERY_MODE): cv.enum(SLAVE_QUERY_MODE, upper=True),
+        CONF_TYPE_SLAVE: BASE_SCHEMA.extend({
+            cv.GenerateID(): cv.declare_id(PaceBmsSlave),
 
-        cv.Optional(CONF_RX_BUFFER_SIZE, default=DEFAULT_RX_BUFFER_SIZE): cv.int_range(min=256, max=4096),
-    })
-    .extend(cv.polling_component_schema("60s"))
-    .extend(uart.UART_DEVICE_SCHEMA),
-
-    CONF_TYPE_SLAVE: BASE_SCHEMA.extend({
-        cv.GenerateID(): cv.declare_id(PaceBmsSlave),
-
-        # point back to master
-        cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
-    }).extend(cv.COMPONENT_SCHEMA),
-},lower=False, default_type=DEFAULT_BMS_TYPE)
+            # point back to master
+            cv.GenerateID(CONF_MASTER_BMS_ID): cv.use_id(PaceBmsMaster),
+        }).extend(cv.COMPONENT_SCHEMA),
+    },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
 FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     CONF_TYPE_MASTER: cv.Schema(
-        # we can enforce a lot here, but the dump_config() override will print an error if any of the other settings are not as expected,
+        # we can enforce a lot here, but the dump_config() override will output a warning if any of the other settings are not as expected,
         # and not enforcing them here leaves the door open to weird BMSes with unusual rates even being possible to specify in the yaml at all
         #uart.final_validate_device_schema(CONF_PACE_BMS, baud_rate=9600, require_rx=True, require_tx=True, data_bits=8, parity="NONE", stop_bits=1),
         uart.final_validate_device_schema(CONF_PACE_BMS, require_rx=True, require_tx=True),

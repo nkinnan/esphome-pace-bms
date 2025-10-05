@@ -7,6 +7,7 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
+from esphome.components import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 
@@ -17,21 +18,8 @@ PaceBmsDatetimeImplementation = pace_bms_base_ns.class_("PaceBmsDatetimeImplemen
 
 CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
 
-def inherit_device_id(schema):
-    parent_device_id = schema.get(CONF_DEVICE_ID)
-    if(parent_device_id is None):
-        return schema
-        
-    for index, (key, value) in enumerate(schema.items()):
-        if isinstance(value, dict):
-            child_device_id = value.get(CONF_DEVICE_ID)
-            if(child_device_id is None):
-                value[CONF_DEVICE_ID] = parent_device_id
-
-    return schema
-
 CONFIG_SCHEMA = cv.All(
-    inherit_device_id,
+    pace_bms_globals.inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsDatetime),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
