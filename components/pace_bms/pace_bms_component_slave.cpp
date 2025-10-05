@@ -1,8 +1,8 @@
 
-#include "pace_bms_slave_component.h"
+#include "pace_bms_component_slave.h"
 
 // had to do a forard declaration in the header to avoid circular dependency
-#include "pace_bms_master_component.h"
+#include "pace_bms_component_master.h"
 
 namespace esphome {
 namespace pace_bms_slave {

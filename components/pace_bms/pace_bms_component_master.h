@@ -3,7 +3,7 @@
 #include "esphome/components/uart/uart.h"
 
 #include "pace_bms_component_base.h"
-#include "pace_bms_slave_component.h"
+#include "pace_bms_component_slave.h"
 
 namespace esphome {
 namespace pace_bms_master {
