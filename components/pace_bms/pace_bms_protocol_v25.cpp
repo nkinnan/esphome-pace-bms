@@ -35,7 +35,7 @@ bool PaceBmsProtocolV25::ProcessReadBmsCountResponse(const uint8_t busId, std::o
 		return false;
 	}
 	if (payloadLen != 2) {
-		LogError("ProcessReadBmsCountResponse expected payload length of 2 but got " + to_string(payloadLen));
+		LogError("ProcessReadBmsCountResponse expected payload length of 2 but got " + std::to_string(payloadLen));
 		return false;
 	}
 

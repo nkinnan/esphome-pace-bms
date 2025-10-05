@@ -386,25 +386,25 @@ public:
 
 protected:
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningValue(const uint8_t val);
+	const std::string DecodeWarningValue(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeProtectionStatus1Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeProtectionStatus2Value(const uint8_t val);
+	const std::string DecodeProtectionStatus2Value(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeStatusValue(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeConfigurationStatusValue(const uint8_t val);
+	const std::string DecodeConfigurationStatusValue(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeFaultStatusValue(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningStatus1Value(const uint8_t val);
+	const std::string DecodeWarningStatus1Value(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningStatus2Value(const uint8_t val);
