@@ -185,7 +185,7 @@ CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.inherit_device_id,
+    globals.inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
