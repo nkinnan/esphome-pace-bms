@@ -21,7 +21,7 @@ from esphome.const import (
     ENTITY_CATEGORY_CONFIG,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components import pace_bms_globals
+from esphome.components.pace_bms import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 

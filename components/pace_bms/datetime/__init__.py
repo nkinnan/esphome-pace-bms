@@ -7,7 +7,7 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components import pace_bms_globals
+from esphome.components.pace_bms import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 
