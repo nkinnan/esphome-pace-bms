@@ -10,7 +10,7 @@ from esphome.const import (
     CONF_TYPE
 )
 from esphome import pins
-#from esphome.components.pace_bms import pace_bms_globals
+from esphome.components.pace_bms import pace_bms_globals
 
 
 CODEOWNERS = ["@nkinnan"]
@@ -106,7 +106,7 @@ BASE_SCHEMA = cv.Schema({
 })
 
 CONFIG_SCHEMA = cv.All(
-    #pace_bms_globals.save_pace_bms_schema, 
+    pace_bms_globals.save_pace_bms_schema, 
     cv.typed_schema({
         CONF_TYPE_MASTER: BASE_SCHEMA.extend({
             cv.GenerateID(): cv.declare_id(PaceBmsMaster),
