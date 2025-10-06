@@ -22,8 +22,8 @@ pace_bms_master_ns = cg.esphome_ns.namespace("pace_bms_master")
 pace_bms_slave_ns = cg.esphome_ns.namespace("pace_bms_slave")
 
 PaceBmsBase = pace_bms_base_ns.class_("PaceBmsBase")
-PaceBmsMaster = pace_bms_master_ns.class_("PaceBmsMaster")
-PaceBmsSlave = pace_bms_slave_ns.class_("PaceBmsSlave")
+PaceBmsMaster = pace_bms_master_ns.class_("PaceBmsMaster", "PaceBmsBase")
+PaceBmsSlave = pace_bms_slave_ns.class_("PaceBmsSlave", "PaceBmsBase")
 PaceBmsMaster = pace_bms_master_ns.class_("PaceBmsMaster", PaceBmsMaster, cg.PollingComponent, uart.UARTDevice)
 PaceBmsSlave = pace_bms_slave_ns.class_("PaceBmsSlave", PaceBmsSlave, cg.Component)
 
