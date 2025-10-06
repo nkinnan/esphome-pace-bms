@@ -759,7 +759,7 @@ async def to_code(config):
     parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(parent))
 
-    return
+
     if bms_count_config := config.get(CONF_BMS_COUNT):
         sens = await sensor.new_sensor(bms_count_config)
         cg.add(var.set_bms_count_sensor(sens))
