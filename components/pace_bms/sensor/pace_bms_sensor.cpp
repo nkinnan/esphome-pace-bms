@@ -12,7 +12,7 @@ static const char* const TAG = "pace_bms_base.sensor";
 void PaceBmsSensor::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (request_analog_info_callback_ == true) {
-			this->parent_->register_analog_information_callback_v25([this](PaceBmsProtocolV25::AnalogInformation& analog_information) { this->analog_information_callback_v25(analog_information); });
+			//this->parent_->register_analog_information_callback_v25([this](PaceBmsProtocolV25::AnalogInformation& analog_information) { this->analog_information_callback_v25(analog_information); });
 		}
 		if (request_status_info_callback_ == true) {
 			this->parent_->register_status_information_callback_v25([this](PaceBmsProtocolV25::StatusInformation& status_information) { this->status_information_callback_v25(status_information); });
