@@ -16,7 +16,7 @@ public:
 	void set_payload_count_sensor(sensor::Sensor* sens) { payload_count_sensor_ = sens; }
 
 	// analog info
-	void set_cell_count_sensor(sensor::Sensor* sens) { /*cell_count_sensor_ = sens;            request_analog_info_callback_ = true;*/ }
+	void set_cell_count_sensor(sensor::Sensor* sens) { cell_count_sensor_ = sens;            /*request_analog_info_callback_ = true;*/ }
 	void set_cell_voltage_sensor(int index, sensor::Sensor* sens) { cell_voltage_sensor_[index] = sens;   request_analog_info_callback_ = true; }
 	void set_temperature_count_sensor(sensor::Sensor* sens) { temperature_count_sensor_ = sens;     request_analog_info_callback_ = true; }
 	void set_temperature_sensor(int index, sensor::Sensor* sens) { temperature_sensor_[index] = sens;    request_analog_info_callback_ = true; }
