@@ -5,9 +5,9 @@
 #include "pace_bms_datetime.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.datetime";
+static const char* const TAG = "pace_bms_base.datetime";
 
 /*
 * wire up all the lambda callbacks
@@ -15,15 +15,19 @@ static const char* const TAG = "pace_bms.datetime";
 void PaceBmsDatetime::setup() {
 	if (this->parent_->get_protocol_commandset() == 0x25) {
 		if (this->system_date_and_time_datetime_ != nullptr) {
-			this->parent_->register_system_datetime_callback_v25([this](PaceBmsProtocolV25::DateTime& dt) {
-				this->system_date_and_time_ = dt;
-				this->system_date_and_time_seen_ = true;
-				ESP_LOGV(TAG, "'bms_date_and_time': Publishing state due to update from the hardware: %04i:%02i:%02i %02i:%02i:%02i", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
-				this->system_date_and_time_datetime_->set_datetime(dt);
-				this->parent_->queue_sensor_update([this]() { this->system_date_and_time_datetime_->publish_state(); });
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_system_datetime_callback_v25([this](PaceBmsProtocolV25::DateTime& dt) {
+					this->system_date_and_time_ = dt;
+					this->system_date_and_time_seen_ = true;
+					ESP_LOGV(TAG, "'bms_date_and_time': Publishing state due to update from the hardware: %04i:%02i:%02i %02i:%02i:%02i", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+					this->system_date_and_time_datetime_->set_datetime(dt);
+					this->parent_->queue_sensor_update([this]() { this->system_date_and_time_datetime_->publish_state(); });
+				});
+			} else {
+				ESP_LOGE(TAG, "Date/Time display/set only supported for type=MASTER");
+			}
 		}
-		if (this->system_date_and_time_datetime_ != nullptr) {
+		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->system_date_and_time_datetime_->add_on_control_callback([this](const datetime::DateTimeCall& value) {
 				if (!this->system_date_and_time_seen_) {
 					ESP_LOGE(TAG, "system_date_and_time cannot be set because the BMS hasn't responded to a get system time request");
@@ -42,15 +46,19 @@ void PaceBmsDatetime::setup() {
 	}
 	else if (this->parent_->get_protocol_commandset() == 0x20) {
 		if (this->system_date_and_time_datetime_ != nullptr) {
-			this->parent_->register_system_datetime_callback_v20([this](PaceBmsProtocolV20::DateTime& dt) {
-				this->system_date_and_time_ = dt;
-				this->system_date_and_time_seen_ = true;
-				ESP_LOGV(TAG, "'bms_date_and_time': Publishing state due to update from the hardware: %04i:%02i:%02i %02i:%02i:%02i", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
-				this->system_date_and_time_datetime_->set_datetime(dt);
-				this->parent_->queue_sensor_update([this]() { this->system_date_and_time_datetime_->publish_state(); });
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_system_datetime_callback_v20([this](PaceBmsProtocolV20::DateTime& dt) {
+					this->system_date_and_time_ = dt;
+					this->system_date_and_time_seen_ = true;
+					ESP_LOGV(TAG, "'bms_date_and_time': Publishing state due to update from the hardware: %04i:%02i:%02i %02i:%02i:%02i", dt.Year, dt.Month, dt.Day, dt.Hour, dt.Minute, dt.Second);
+					this->system_date_and_time_datetime_->set_datetime(dt);
+					this->parent_->queue_sensor_update([this]() { this->system_date_and_time_datetime_->publish_state(); });
 				});
+			} else {
+				ESP_LOGE(TAG, "Date/Time display/set only supported for type=MASTER");
+			}
 		}
-		if (this->system_date_and_time_datetime_ != nullptr) {
+		if (this->system_date_and_time_datetime_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->system_date_and_time_datetime_->add_on_control_callback([this](const datetime::DateTimeCall& value) {
 				if (!this->system_date_and_time_seen_) {
 					ESP_LOGE(TAG, "system_date_and_time cannot be set because the BMS hasn't responded to a get system time request");
@@ -64,7 +72,7 @@ void PaceBmsDatetime::setup() {
 				this->system_date_and_time_.Minute = value.get_minute().value();
 				this->system_date_and_time_.Second = value.get_second().value();
 				this->parent_->write_system_datetime_v20(this->system_date_and_time_);
-				});
+			});
 		}
 	}
 	else {
@@ -77,7 +85,7 @@ void PaceBmsDatetime::dump_config() {
 	LOG_DATETIME_DATETIME("  ", "System Date and Time", this->system_date_and_time_datetime_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 
 

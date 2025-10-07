@@ -5,9 +5,9 @@
 #include "pace_bms_number.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.number";
+static const char* const TAG = "pace_bms_base.number";
 
 /*
 * wire up all the lambda callbacks
@@ -18,32 +18,36 @@ void PaceBmsNumber::setup() {
 			this->cell_over_voltage_protection_number_ != nullptr ||
 			this->cell_over_voltage_protection_release_number_ != nullptr ||
 			this->cell_over_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_cell_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellOverVoltageConfiguration& configuration) {
-				this->cell_over_voltage_configuration_ = configuration;
-				this->cell_over_voltage_configuration_seen_ = true;
-				if (this->cell_over_voltage_alarm_number_ != nullptr) {
-					float state = configuration.AlarmMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_alarm_number_->publish_state(value); });
-				}
-				if (this->cell_over_voltage_protection_number_ != nullptr) {
-					float state = configuration.ProtectionMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_number_->publish_state(value); });
-				}
-				if (this->cell_over_voltage_protection_release_number_ != nullptr) {
-					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_release_number_->publish_state(value); });
-				}
-				if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'cell_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_cell_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellOverVoltageConfiguration& configuration) {
+					this->cell_over_voltage_configuration_ = configuration;
+					this->cell_over_voltage_configuration_seen_ = true;
+					if (this->cell_over_voltage_alarm_number_ != nullptr) {
+						float state = configuration.AlarmMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_alarm_number_->publish_state(value); });
+					}
+					if (this->cell_over_voltage_protection_number_ != nullptr) {
+						float state = configuration.ProtectionMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_number_->publish_state(value); });
+					}
+					if (this->cell_over_voltage_protection_release_number_ != nullptr) {
+						float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_release_number_->publish_state(value); });
+					}
+					if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'cell_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_over_voltage_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Cell Over Voltage settings only supported for type=MASTER");
+			}
 		}
-		if (this->cell_over_voltage_alarm_number_ != nullptr) {
+		if (this->cell_over_voltage_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_over_voltage_alarm_number_->add_on_control_callback([this](float value) {
 				if (!cell_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_over_voltage_alarm cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
@@ -54,7 +58,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 			});
 		}
-		if (this->cell_over_voltage_protection_number_ != nullptr) {
+		if (this->cell_over_voltage_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_over_voltage_protection_number_->add_on_control_callback([this](float value) {
 				if (!cell_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_over_voltage_protection cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
@@ -65,7 +69,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 			});
 		}
-		if (this->cell_over_voltage_protection_release_number_ != nullptr) {
+		if (this->cell_over_voltage_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_over_voltage_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!cell_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_over_voltage_protection_release cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
@@ -76,7 +80,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_over_voltage_configuration_v25(this->cell_over_voltage_configuration_);
 			});
 		}
-		if (this->cell_over_voltage_protection_delay_number_ != nullptr) {
+		if (this->cell_over_voltage_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_over_voltage_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!cell_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_over_voltage_protection_delay cannot be set because the BMS hasn't responded to a get cell over voltage configuration request");
@@ -92,32 +96,36 @@ void PaceBmsNumber::setup() {
 			this->pack_over_voltage_protection_number_ != nullptr ||
 			this->pack_over_voltage_protection_release_number_ != nullptr ||
 			this->pack_over_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_pack_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackOverVoltageConfiguration& configuration) {
-				this->pack_over_voltage_configuration_ = configuration;
-				this->pack_over_voltage_configuration_seen_ = true;
-				if (this->pack_over_voltage_alarm_number_ != nullptr) {
-					float state = configuration.AlarmMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_alarm_number_->publish_state(value); });
-				}
-				if (this->pack_over_voltage_protection_number_ != nullptr) {
-					float state = configuration.ProtectionMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_number_->publish_state(value); });
-				}
-				if (this->pack_over_voltage_protection_release_number_ != nullptr) {
-					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_release_number_->publish_state(value); });
-				}
-				if (this->pack_over_voltage_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'pack_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_pack_over_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackOverVoltageConfiguration& configuration) {
+					this->pack_over_voltage_configuration_ = configuration;
+					this->pack_over_voltage_configuration_seen_ = true;
+					if (this->pack_over_voltage_alarm_number_ != nullptr) {
+						float state = configuration.AlarmMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_over_voltage_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_alarm_number_->publish_state(value); });
+					}
+					if (this->pack_over_voltage_protection_number_ != nullptr) {
+						float state = configuration.ProtectionMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_over_voltage_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_number_->publish_state(value); });
+					}
+					if (this->pack_over_voltage_protection_release_number_ != nullptr) {
+						float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_over_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_release_number_->publish_state(value); });
+					}
+					if (this->pack_over_voltage_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'pack_over_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_over_voltage_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Pack Over Voltage settings only supported for type=MASTER");
+			}
 		}
-		if (this->pack_over_voltage_alarm_number_ != nullptr) {
+		if (this->pack_over_voltage_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_over_voltage_alarm_number_->add_on_control_callback([this](float value) {
 				if (!pack_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_over_voltage_alarm cannot be set because the BMS hasn't responded to a get pack over voltage configuration request");
@@ -128,7 +136,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 			});
 		}
-		if (this->pack_over_voltage_protection_number_ != nullptr) {
+		if (this->pack_over_voltage_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_over_voltage_protection_number_->add_on_control_callback([this](float value) {
 				if (!pack_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_over_voltage_protection cannot be set because the BMS hasn't responded to a get pack over voltage configuration request");
@@ -139,7 +147,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 			});
 		}
-		if (this->pack_over_voltage_protection_release_number_ != nullptr) {
+		if (this->pack_over_voltage_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_over_voltage_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!pack_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_over_voltage_protection_release cannot be set because the BMS hasn't responded to a get pack over voltage configuration request");
@@ -150,7 +158,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_over_voltage_configuration_v25(this->pack_over_voltage_configuration_);
 			});
 		}
-		if (this->pack_over_voltage_protection_delay_number_ != nullptr) {
+		if (this->pack_over_voltage_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_over_voltage_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!pack_over_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_over_voltage_protection_delay cannot be set because the BMS hasn't responded to a get pack over voltage configuration request");
@@ -166,32 +174,36 @@ void PaceBmsNumber::setup() {
 			this->cell_under_voltage_protection_number_ != nullptr ||
 			this->cell_under_voltage_protection_release_number_ != nullptr ||
 			this->cell_under_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_cell_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellUnderVoltageConfiguration& configuration) {
-				this->cell_under_voltage_configuration_ = configuration;
-				this->cell_under_voltage_configuration_seen_ = true;
-				if (this->cell_under_voltage_alarm_number_ != nullptr) {
-					float state = configuration.AlarmMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_alarm_number_->publish_state(value); });
-				}
-				if (this->cell_under_voltage_protection_number_ != nullptr) {
-					float state = configuration.ProtectionMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_number_->publish_state(value); });
-				}
-				if (this->cell_under_voltage_protection_release_number_ != nullptr) {
-					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_release_number_->publish_state(value); });
-				}
-				if (this->cell_under_voltage_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'cell_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_cell_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::CellUnderVoltageConfiguration& configuration) {
+					this->cell_under_voltage_configuration_ = configuration;
+					this->cell_under_voltage_configuration_seen_ = true;
+					if (this->cell_under_voltage_alarm_number_ != nullptr) {
+						float state = configuration.AlarmMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_alarm_number_->publish_state(value); });
+					}
+					if (this->cell_under_voltage_protection_number_ != nullptr) {
+						float state = configuration.ProtectionMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_number_->publish_state(value); });
+					}
+					if (this->cell_under_voltage_protection_release_number_ != nullptr) {
+						float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_release_number_->publish_state(value); });
+					}
+					if (this->cell_under_voltage_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'cell_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_under_voltage_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Cell Under Voltage settings only supported for type=MASTER");
+			}
 		}
-		if (this->cell_under_voltage_alarm_number_ != nullptr) {
+		if (this->cell_under_voltage_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_under_voltage_alarm_number_->add_on_control_callback([this](float value) {
 				if (!cell_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_under_voltage_alarm cannot be set because the BMS hasn't responded to a get cell under voltage configuration request");
@@ -202,7 +214,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 			});
 		}
-		if (this->cell_under_voltage_protection_number_ != nullptr) {
+		if (this->cell_under_voltage_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_under_voltage_protection_number_->add_on_control_callback([this](float value) {
 				if (!cell_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_under_voltage_protection cannot be set because the BMS hasn't responded to a get cell under voltage configuration request");
@@ -213,7 +225,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 			});
 		}
-		if (this->cell_under_voltage_protection_release_number_ != nullptr) {
+		if (this->cell_under_voltage_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_under_voltage_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!cell_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_under_voltage_protection_release cannot be set because the BMS hasn't responded to a get cell under voltage configuration request");
@@ -224,7 +236,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_under_voltage_configuration_v25(this->cell_under_voltage_configuration_);
 			});
 		}
-		if (this->cell_under_voltage_protection_delay_number_ != nullptr) {
+		if (this->cell_under_voltage_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_under_voltage_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!cell_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_under_voltage_protection_delay cannot be set because the BMS hasn't responded to a get cell under voltage configuration request");
@@ -240,32 +252,36 @@ void PaceBmsNumber::setup() {
 			this->pack_under_voltage_protection_number_ != nullptr ||
 			this->pack_under_voltage_protection_release_number_ != nullptr ||
 			this->pack_under_voltage_protection_delay_number_ != nullptr) {
-			this->parent_->register_pack_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackUnderVoltageConfiguration& configuration) {
-				this->pack_under_voltage_configuration_ = configuration;
-				this->pack_under_voltage_configuration_seen_ = true;
-				if (this->pack_under_voltage_alarm_number_ != nullptr) {
-					float state = configuration.AlarmMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_alarm_number_->publish_state(value); });
-				}
-				if (this->pack_under_voltage_protection_number_ != nullptr) {
-					float state = configuration.ProtectionMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_number_->publish_state(value); });
-				}
-				if (this->pack_under_voltage_protection_release_number_ != nullptr) {
-					float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'pack_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_release_number_->publish_state(value); });
-				}
-				if (this->pack_under_voltage_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'pack_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_pack_under_voltage_configuration_callback_v25([this](PaceBmsProtocolV25::PackUnderVoltageConfiguration& configuration) {
+					this->pack_under_voltage_configuration_ = configuration;
+					this->pack_under_voltage_configuration_seen_ = true;
+					if (this->pack_under_voltage_alarm_number_ != nullptr) {
+						float state = configuration.AlarmMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_under_voltage_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_alarm_number_->publish_state(value); });
+					}
+					if (this->pack_under_voltage_protection_number_ != nullptr) {
+						float state = configuration.ProtectionMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_under_voltage_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_number_->publish_state(value); });
+					}
+					if (this->pack_under_voltage_protection_release_number_ != nullptr) {
+						float state = configuration.ProtectionReleaseMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'pack_under_voltage_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_release_number_->publish_state(value); });
+					}
+					if (this->pack_under_voltage_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'pack_under_voltage_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->pack_under_voltage_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Pack Under Voltage settings only supported for type=MASTER");
+			}
 		}
-		if (this->pack_under_voltage_alarm_number_ != nullptr) {
+		if (this->pack_under_voltage_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_under_voltage_alarm_number_->add_on_control_callback([this](float value) {
 				if (!pack_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_under_voltage_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -276,7 +292,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 			});
 		}
-		if (this->pack_under_voltage_protection_number_ != nullptr) {
+		if (this->pack_under_voltage_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_under_voltage_protection_number_->add_on_control_callback([this](float value) {
 				if (!pack_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_under_voltage_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -287,7 +303,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 			});
 		}
-		if (this->pack_under_voltage_protection_release_number_ != nullptr) {
+		if (this->pack_under_voltage_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_under_voltage_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!pack_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_under_voltage_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -298,7 +314,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_pack_under_voltage_configuration_v25(this->pack_under_voltage_configuration_);
 			});
 		}
-		if (this->pack_under_voltage_protection_delay_number_ != nullptr) {
+		if (this->pack_under_voltage_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->pack_under_voltage_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!pack_under_voltage_configuration_seen_) {
 					ESP_LOGE(TAG, "pack_under_voltage_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -313,27 +329,31 @@ void PaceBmsNumber::setup() {
 		if (this->charge_over_current_alarm_number_ != nullptr ||
 			this->charge_over_current_protection_number_ != nullptr ||
 			this->charge_over_current_protection_delay_number_ != nullptr) {
-			this->parent_->register_charge_over_current_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeOverCurrentConfiguration& configuration) {
-				this->charge_over_current_configuration_ = configuration;
-				this->charge_over_current_configuration_seen_ = true;
-				if (this->charge_over_current_alarm_number_ != nullptr) {
-					float state = configuration.AlarmAmperage;
-					ESP_LOGV(TAG, "'charge_over_current_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_alarm_number_->publish_state(value); });
-				}
-				if (this->charge_over_current_protection_number_ != nullptr) {
-					float state = configuration.ProtectionAmperage;
-					ESP_LOGV(TAG, "'charge_over_current_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_number_->publish_state(value); });
-				}
-				if (this->charge_over_current_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'charge_over_current_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_charge_over_current_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeOverCurrentConfiguration& configuration) {
+					this->charge_over_current_configuration_ = configuration;
+					this->charge_over_current_configuration_seen_ = true;
+					if (this->charge_over_current_alarm_number_ != nullptr) {
+						float state = configuration.AlarmAmperage;
+						ESP_LOGV(TAG, "'charge_over_current_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_alarm_number_->publish_state(value); });
+					}
+					if (this->charge_over_current_protection_number_ != nullptr) {
+						float state = configuration.ProtectionAmperage;
+						ESP_LOGV(TAG, "'charge_over_current_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_number_->publish_state(value); });
+					}
+					if (this->charge_over_current_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'charge_over_current_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_current_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Charge Over Current settings only supported for type=MASTER");
+			}
 		}
-		if (this->charge_over_current_alarm_number_ != nullptr) {
+		if (this->charge_over_current_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_current_alarm_number_->add_on_control_callback([this](float value) {
 				if (!charge_over_current_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_current_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -344,7 +364,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_over_current_configuration_v25(this->charge_over_current_configuration_);
 			});
 		}
-		if (this->charge_over_current_protection_number_ != nullptr) {
+		if (this->charge_over_current_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_current_protection_number_->add_on_control_callback([this](float value) {
 				if (!charge_over_current_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_current_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -355,7 +375,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_over_current_configuration_v25(this->charge_over_current_configuration_);
 			});
 		}
-		if (this->charge_over_current_protection_delay_number_ != nullptr) {
+		if (this->charge_over_current_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_current_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!charge_over_current_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_current_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -370,27 +390,31 @@ void PaceBmsNumber::setup() {
 		if (this->discharge_over_current1_alarm_number_ != nullptr ||
 			this->discharge_over_current1_protection_number_ != nullptr ||
 			this->discharge_over_current1_protection_delay_number_ != nullptr) {
-			this->parent_->register_discharge_over_current1_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent1Configuration& configuration) {
-				this->discharge_over_current1_configuration_ = configuration;
-				this->discharge_over_current1_configuration_seen_ = true;
-				if (this->discharge_over_current1_alarm_number_ != nullptr) {
-					float state = configuration.AlarmAmperage;
-					ESP_LOGV(TAG, "'discharge_over_current1_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_alarm_number_->publish_state(value); });
-				}
-				if (this->discharge_over_current1_protection_number_ != nullptr) {
-					float state = configuration.ProtectionAmperage;
-					ESP_LOGV(TAG, "'discharge_over_current1_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_number_->publish_state(value); });
-				}
-				if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'discharge_over_current1_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_discharge_over_current1_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent1Configuration& configuration) {
+					this->discharge_over_current1_configuration_ = configuration;
+					this->discharge_over_current1_configuration_seen_ = true;
+					if (this->discharge_over_current1_alarm_number_ != nullptr) {
+						float state = configuration.AlarmAmperage;
+						ESP_LOGV(TAG, "'discharge_over_current1_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_alarm_number_->publish_state(value); });
+					}
+					if (this->discharge_over_current1_protection_number_ != nullptr) {
+						float state = configuration.ProtectionAmperage;
+						ESP_LOGV(TAG, "'discharge_over_current1_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_number_->publish_state(value); });
+					}
+					if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'discharge_over_current1_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current1_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Discharge Over Current 1 settings only supported for type=MASTER");
+			}
 		}
-		if (this->discharge_over_current1_alarm_number_ != nullptr) {
+		if (this->discharge_over_current1_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_current1_alarm_number_->add_on_control_callback([this](float value) {
 				if (!discharge_over_current1_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_current1_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -401,7 +425,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_discharge_over_current1_configuration_v25(this->discharge_over_current1_configuration_);
 			});
 		}
-		if (this->discharge_over_current1_protection_number_ != nullptr) {
+		if (this->discharge_over_current1_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_current1_protection_number_->add_on_control_callback([this](float value) {
 				if (!discharge_over_current1_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_current1_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -412,7 +436,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_discharge_over_current1_configuration_v25(this->discharge_over_current1_configuration_);
 			});
 		}
-		if (this->discharge_over_current1_protection_delay_number_ != nullptr) {
+		if (this->discharge_over_current1_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_current1_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!discharge_over_current1_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_current1_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -426,22 +450,26 @@ void PaceBmsNumber::setup() {
 
 		if (this->discharge_over_current2_protection_number_ != nullptr ||
 			this->discharge_over_current2_protection_delay_number_ != nullptr) {
-			this->parent_->register_discharge_over_current2_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent2Configuration& configuration) {
-				this->discharge_over_current2_configuration_ = configuration;
-				this->discharge_over_current2_configuration_seen_ = true;
-				if (this->discharge_over_current2_protection_number_ != nullptr) {
-					float state = configuration.ProtectionAmperage;
-					ESP_LOGV(TAG, "'discharge_over_current2_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_number_->publish_state(value); });
-				}
-				if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
-					ESP_LOGV(TAG, "'discharge_over_current2_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_discharge_over_current2_configuration_callback_v25([this](PaceBmsProtocolV25::DischargeOverCurrent2Configuration& configuration) {
+					this->discharge_over_current2_configuration_ = configuration;
+					this->discharge_over_current2_configuration_seen_ = true;
+					if (this->discharge_over_current2_protection_number_ != nullptr) {
+						float state = configuration.ProtectionAmperage;
+						ESP_LOGV(TAG, "'discharge_over_current2_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_number_->publish_state(value); });
+					}
+					if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMilliseconds / 1000.0f;
+						ESP_LOGV(TAG, "'discharge_over_current2_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_current2_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Discharge Over Current 2 settings only supported for type=MASTER");
+			}
 		}
-		if (this->discharge_over_current2_protection_number_ != nullptr) {
+		if (this->discharge_over_current2_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_current2_protection_number_->add_on_control_callback([this](float value) {
 				if (!discharge_over_current2_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_current2_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -452,7 +480,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_discharge_over_current2_configuration_v25(this->discharge_over_current2_configuration_);
 			});
 		}
-		if (this->discharge_over_current2_protection_delay_number_ != nullptr) {
+		if (this->discharge_over_current2_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_current2_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!discharge_over_current2_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_current2_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -465,18 +493,22 @@ void PaceBmsNumber::setup() {
 		}
 
 		if (this->short_circuit_protection_delay_number_ != nullptr) {
-			this->parent_->register_short_circuit_protection_configuration_callback_v25([this](PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& configuration) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_short_circuit_protection_configuration_callback_v25([this](PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& configuration) {
 
-				this->short_circuit_protection_configuration_ = configuration;
-				this->short_circuit_protection_configuration_seen_ = true;
-				if (this->short_circuit_protection_delay_number_ != nullptr) {
-					float state = configuration.ProtectionDelayMicroseconds / 1000.0f;
-					ESP_LOGV(TAG, "'short_circuit_protection_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->short_circuit_protection_delay_number_->publish_state(value); });
-				}
-			});
+					this->short_circuit_protection_configuration_ = configuration;
+					this->short_circuit_protection_configuration_seen_ = true;
+					if (this->short_circuit_protection_delay_number_ != nullptr) {
+						float state = configuration.ProtectionDelayMicroseconds / 1000.0f;
+						ESP_LOGV(TAG, "'short_circuit_protection_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->short_circuit_protection_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Short Circuit Protection settings only supported for type=MASTER");
+			}
 		}
-		if (this->short_circuit_protection_delay_number_ != nullptr) {
+		if (this->short_circuit_protection_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->short_circuit_protection_delay_number_->add_on_control_callback([this](float value) {
 				if (!short_circuit_protection_configuration_seen_) {
 					ESP_LOGE(TAG, "short_circuit_protection_delay cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -490,23 +522,27 @@ void PaceBmsNumber::setup() {
 
 		if (this->cell_balancing_threshold_number_ != nullptr ||
 			this->cell_balancing_delta_number_ != nullptr) {
-			this->parent_->register_cell_balancing_configuration_callback_v25([this](PaceBmsProtocolV25::CellBalancingConfiguration& configuration) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_cell_balancing_configuration_callback_v25([this](PaceBmsProtocolV25::CellBalancingConfiguration& configuration) {
 
-				this->cell_balancing_configuration_ = configuration;
-				this->cell_balancing_configuration_seen_ = true;
-				if (this->cell_balancing_threshold_number_ != nullptr) {
-					float state = configuration.ThresholdMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_balancing_threshold': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_threshold_number_->publish_state(value); });
-				}
-				if (this->cell_balancing_delta_number_ != nullptr) {
-					float state = configuration.DeltaCellMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'cell_balancing_delta': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_delta_number_->publish_state(value); });
-				}
-			});
+					this->cell_balancing_configuration_ = configuration;
+					this->cell_balancing_configuration_seen_ = true;
+					if (this->cell_balancing_threshold_number_ != nullptr) {
+						float state = configuration.ThresholdMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_balancing_threshold': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_threshold_number_->publish_state(value); });
+					}
+					if (this->cell_balancing_delta_number_ != nullptr) {
+						float state = configuration.DeltaCellMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'cell_balancing_delta': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->cell_balancing_delta_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Cell Balancing settings only supported for type=MASTER");
+			}
 		}
-		if (this->cell_balancing_threshold_number_ != nullptr) {
+		if (this->cell_balancing_threshold_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_balancing_threshold_number_->add_on_control_callback([this](float value) {
 				if (!cell_balancing_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_balancing_threshold cannot be set because the BMS hasn't responded to a get cell balancing configuration request");
@@ -517,7 +553,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_cell_balancing_configuration_v25(this->cell_balancing_configuration_);
 			});
 		}
-		if (this->cell_balancing_delta_number_ != nullptr) {
+		if (this->cell_balancing_delta_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->cell_balancing_delta_number_->add_on_control_callback([this](float value) {
 				if (!cell_balancing_configuration_seen_) {
 					ESP_LOGE(TAG, "cell_balancing_delta cannot be set because the BMS hasn't responded to a get cell balancing configuration request");
@@ -531,22 +567,26 @@ void PaceBmsNumber::setup() {
 
 		if (this->sleep_cell_voltage_number_ != nullptr ||
 			this->sleep_delay_number_ != nullptr) {
-			this->parent_->register_sleep_configuration_callback_v25([this](PaceBmsProtocolV25::SleepConfiguration& configuration) {
-				this->sleep_configuration_ = configuration;
-				this->sleep_configuration_seen_ = true;
-				if (this->sleep_cell_voltage_number_ != nullptr) {
-					float state = configuration.CellMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'sleep_cell_voltage': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->sleep_cell_voltage_number_->publish_state(value); });
-				}
-				if (this->sleep_delay_number_ != nullptr) {
-					float state = configuration.DelayMinutes;
-					ESP_LOGV(TAG, "'sleep_delay': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->sleep_delay_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_sleep_configuration_callback_v25([this](PaceBmsProtocolV25::SleepConfiguration& configuration) {
+					this->sleep_configuration_ = configuration;
+					this->sleep_configuration_seen_ = true;
+					if (this->sleep_cell_voltage_number_ != nullptr) {
+						float state = configuration.CellMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'sleep_cell_voltage': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->sleep_cell_voltage_number_->publish_state(value); });
+					}
+					if (this->sleep_delay_number_ != nullptr) {
+						float state = configuration.DelayMinutes;
+						ESP_LOGV(TAG, "'sleep_delay': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->sleep_delay_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Sleep settings only supported for type=MASTER");
+			}
 		}
-		if (this->sleep_cell_voltage_number_ != nullptr) {
+		if (this->sleep_cell_voltage_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->sleep_cell_voltage_number_->add_on_control_callback([this](float value) {
 				if (!sleep_configuration_seen_) {
 					ESP_LOGE(TAG, "sleep_cell_voltage cannot be set because the BMS hasn't responded to a get sleep configuration request");
@@ -557,7 +597,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_sleep_configuration_v25(this->sleep_configuration_);
 			});
 		}
-		if (this->sleep_delay_number_ != nullptr) {
+		if (this->sleep_delay_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->sleep_delay_number_->add_on_control_callback([this](float value) {
 				if (!sleep_configuration_seen_) {
 					ESP_LOGE(TAG, "sleep_delay cannot be set because the BMS hasn't responded to a get sleep configuration request");
@@ -572,27 +612,31 @@ void PaceBmsNumber::setup() {
 		if (this->full_charge_voltage_number_ != nullptr ||
 			this->full_charge_amps_number_ != nullptr ||
 			this->low_charge_alarm_percent_number_ != nullptr) {
-			this->parent_->register_full_charge_low_charge_configuration_callback_v25([this](PaceBmsProtocolV25::FullChargeLowChargeConfiguration& configuration) {
-				this->full_charge_low_charge_configuration_ = configuration;
-				this->full_charge_low_charge_configuration_seen_ = true;
-				if (this->full_charge_voltage_number_ != nullptr) {
-					float state = configuration.FullChargeMillivolts / 1000.0f;
-					ESP_LOGV(TAG, "'full_charge_voltage': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_voltage_number_->publish_state(value); });
-				}
-				if (this->full_charge_amps_number_ != nullptr) {
-					float state = configuration.FullChargeMilliamps / 1000.0f;
-					ESP_LOGV(TAG, "'full_charge_amps': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_amps_number_->publish_state(value); });
-				}
-				if (this->low_charge_alarm_percent_number_ != nullptr) {
-					float state = configuration.LowChargeAlarmPercent;
-					ESP_LOGV(TAG, "'low_charge_alarm_percent': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->low_charge_alarm_percent_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_full_charge_low_charge_configuration_callback_v25([this](PaceBmsProtocolV25::FullChargeLowChargeConfiguration& configuration) {
+					this->full_charge_low_charge_configuration_ = configuration;
+					this->full_charge_low_charge_configuration_seen_ = true;
+					if (this->full_charge_voltage_number_ != nullptr) {
+						float state = configuration.FullChargeMillivolts / 1000.0f;
+						ESP_LOGV(TAG, "'full_charge_voltage': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_voltage_number_->publish_state(value); });
+					}
+					if (this->full_charge_amps_number_ != nullptr) {
+						float state = configuration.FullChargeMilliamps / 1000.0f;
+						ESP_LOGV(TAG, "'full_charge_amps': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->full_charge_amps_number_->publish_state(value); });
+					}
+					if (this->low_charge_alarm_percent_number_ != nullptr) {
+						float state = configuration.LowChargeAlarmPercent;
+						ESP_LOGV(TAG, "'low_charge_alarm_percent': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->low_charge_alarm_percent_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Full/Low Charge settings only supported for type=MASTER");
+			}
 		}
-		if (this->full_charge_voltage_number_ != nullptr) {
+		if (this->full_charge_voltage_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->full_charge_voltage_number_->add_on_control_callback([this](float value) {
 				if (!full_charge_low_charge_configuration_seen_) {
 					ESP_LOGE(TAG, "full_charge_voltage cannot be set because the BMS hasn't responded to a get full charge / low charge configuration request");
@@ -603,7 +647,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_full_charge_low_charge_configuration_v25(this->full_charge_low_charge_configuration_);
 			});
 		}
-		if (this->full_charge_amps_number_ != nullptr) {
+		if (this->full_charge_amps_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->full_charge_amps_number_->add_on_control_callback([this](float value) {
 				if (!full_charge_low_charge_configuration_seen_) {
 					ESP_LOGE(TAG, "full_charge_amps cannot be set because the BMS hasn't responded to a get full charge / low charge configuration request");
@@ -614,7 +658,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_full_charge_low_charge_configuration_v25(this->full_charge_low_charge_configuration_);
 			});
 		}
-		if (this->low_charge_alarm_percent_number_ != nullptr) {
+		if (this->low_charge_alarm_percent_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->low_charge_alarm_percent_number_->add_on_control_callback([this](float value) {
 				if (!full_charge_low_charge_configuration_seen_) {
 					ESP_LOGE(TAG, "low_charge_alarm_percent cannot be set because the BMS hasn't responded to a get full charge / low charge configuration request");
@@ -632,42 +676,46 @@ void PaceBmsNumber::setup() {
 			this->discharge_over_temperature_alarm_number_ != nullptr ||
 			this->discharge_over_temperature_protection_number_ != nullptr ||
 			this->discharge_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_charge_and_discharge_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
-				this->charge_and_discharge_over_temperature_configuration_ = configuration;
-				this->charge_and_discharge_over_temperature_configuration_seen_ = true;
-				if (this->charge_over_temperature_alarm_number_ != nullptr) {
-					float state = configuration.ChargeAlarm;
-					ESP_LOGV(TAG, "'charge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->charge_over_temperature_protection_number_ != nullptr) {
-					float state = configuration.ChargeProtection;
-					ESP_LOGV(TAG, "'charge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->charge_over_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.ChargeProtectionRelease;
-					ESP_LOGV(TAG, "'charge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_release_number_->publish_state(value); });
-				}
-				if (this->discharge_over_temperature_alarm_number_ != nullptr) {
-					float state = configuration.DischargeAlarm;
-					ESP_LOGV(TAG, "'discharge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->discharge_over_temperature_protection_number_ != nullptr) {
-					float state = configuration.DischargeProtection;
-					ESP_LOGV(TAG, "'discharge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->discharge_over_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.DischargeProtectionRelease;
-					ESP_LOGV(TAG, "'discharge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_release_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_charge_and_discharge_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& configuration) {
+					this->charge_and_discharge_over_temperature_configuration_ = configuration;
+					this->charge_and_discharge_over_temperature_configuration_seen_ = true;
+					if (this->charge_over_temperature_alarm_number_ != nullptr) {
+						float state = configuration.ChargeAlarm;
+						ESP_LOGV(TAG, "'charge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->charge_over_temperature_protection_number_ != nullptr) {
+						float state = configuration.ChargeProtection;
+						ESP_LOGV(TAG, "'charge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->charge_over_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.ChargeProtectionRelease;
+						ESP_LOGV(TAG, "'charge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_over_temperature_protection_release_number_->publish_state(value); });
+					}
+					if (this->discharge_over_temperature_alarm_number_ != nullptr) {
+						float state = configuration.DischargeAlarm;
+						ESP_LOGV(TAG, "'discharge_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->discharge_over_temperature_protection_number_ != nullptr) {
+						float state = configuration.DischargeProtection;
+						ESP_LOGV(TAG, "'discharge_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->discharge_over_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.DischargeProtectionRelease;
+						ESP_LOGV(TAG, "'discharge_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_over_temperature_protection_release_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Charge/Discharge Over Temperature settings only supported for type=MASTER");
+			}
 		}
-		if (this->charge_over_temperature_alarm_number_ != nullptr) {
+		if (this->charge_over_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -678,7 +726,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 			});
 		}
-		if (this->charge_over_temperature_protection_number_ != nullptr) {
+		if (this->charge_over_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -689,7 +737,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 			});
 		}
-		if (this->charge_over_temperature_protection_release_number_ != nullptr) {
+		if (this->charge_over_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -700,7 +748,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 			});
 		}
-		if (this->discharge_over_temperature_alarm_number_ != nullptr) {
+		if (this->discharge_over_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -711,7 +759,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 			});
 		}
-		if (this->discharge_over_temperature_protection_number_ != nullptr) {
+		if (this->discharge_over_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -722,7 +770,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_over_temperature_configuration_v25(this->charge_and_discharge_over_temperature_configuration_);
 			});
 		}
-		if (this->discharge_over_temperature_protection_release_number_ != nullptr) {
+		if (this->discharge_over_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -740,42 +788,46 @@ void PaceBmsNumber::setup() {
 			this->discharge_under_temperature_alarm_number_ != nullptr ||
 			this->discharge_under_temperature_protection_number_ != nullptr ||
 			this->discharge_under_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_charge_and_discharge_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
-				this->charge_and_discharge_under_temperature_configuration_ = configuration;
-				this->charge_and_discharge_under_temperature_configuration_seen_ = true;
-				if (this->charge_under_temperature_alarm_number_ != nullptr) {
-					float state = configuration.ChargeAlarm;
-					ESP_LOGV(TAG, "'charge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->charge_under_temperature_protection_number_ != nullptr) {
-					float state = configuration.ChargeProtection;
-					ESP_LOGV(TAG, "'charge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->charge_under_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.ChargeProtectionRelease;
-					ESP_LOGV(TAG, "'charge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_release_number_->publish_state(value); });
-				}
-				if (this->discharge_under_temperature_alarm_number_ != nullptr) {
-					float state = configuration.DischargeAlarm;
-					ESP_LOGV(TAG, "'discharge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->discharge_under_temperature_protection_number_ != nullptr) {
-					float state = configuration.DischargeProtection;
-					ESP_LOGV(TAG, "'discharge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.DischargeProtectionRelease;
-					ESP_LOGV(TAG, "'discharge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_release_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_charge_and_discharge_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& configuration) {
+					this->charge_and_discharge_under_temperature_configuration_ = configuration;
+					this->charge_and_discharge_under_temperature_configuration_seen_ = true;
+					if (this->charge_under_temperature_alarm_number_ != nullptr) {
+						float state = configuration.ChargeAlarm;
+						ESP_LOGV(TAG, "'charge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->charge_under_temperature_protection_number_ != nullptr) {
+						float state = configuration.ChargeProtection;
+						ESP_LOGV(TAG, "'charge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->charge_under_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.ChargeProtectionRelease;
+						ESP_LOGV(TAG, "'charge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->charge_under_temperature_protection_release_number_->publish_state(value); });
+					}
+					if (this->discharge_under_temperature_alarm_number_ != nullptr) {
+						float state = configuration.DischargeAlarm;
+						ESP_LOGV(TAG, "'discharge_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->discharge_under_temperature_protection_number_ != nullptr) {
+						float state = configuration.DischargeProtection;
+						ESP_LOGV(TAG, "'discharge_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.DischargeProtectionRelease;
+						ESP_LOGV(TAG, "'discharge_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->discharge_under_temperature_protection_release_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Charge/Discharge Under Temperature settings only supported for type=MASTER");
+			}
 		}
-		if (this->charge_under_temperature_alarm_number_ != nullptr) {
+		if (this->charge_under_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_under_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_under_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -786,7 +838,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 		}
-		if (this->charge_under_temperature_protection_number_ != nullptr) {
+		if (this->charge_under_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_under_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_under_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -797,7 +849,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 		}
-		if (this->charge_under_temperature_protection_release_number_ != nullptr) {
+		if (this->charge_under_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->charge_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "charge_under_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -808,7 +860,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 		}
-		if (this->discharge_under_temperature_alarm_number_ != nullptr) {
+		if (this->discharge_under_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_under_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_under_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -819,7 +871,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 		}
-		if (this->discharge_under_temperature_protection_number_ != nullptr) {
+		if (this->discharge_under_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_under_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_under_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -830,7 +882,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_charge_and_discharge_under_temperature_configuration_v25(this->charge_and_discharge_under_temperature_configuration_);
 			});
 		}
-		if (this->discharge_under_temperature_protection_release_number_ != nullptr) {
+		if (this->discharge_under_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->discharge_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!charge_and_discharge_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "discharge_under_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -845,27 +897,31 @@ void PaceBmsNumber::setup() {
 		if (this->mosfet_over_temperature_alarm_number_ != nullptr ||
 			this->mosfet_over_temperature_protection_number_ != nullptr ||
 			this->mosfet_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_mosfet_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& configuration) {
-				this->mosfet_over_temperature_configuration_ = configuration;
-				this->mosfet_over_temperature_configuration_seen_ = true;
-				if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
-					float state = configuration.Alarm;
-					ESP_LOGV(TAG, "'mosfet_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->mosfet_over_temperature_protection_number_ != nullptr) {
-					float state = configuration.Protection;
-					ESP_LOGV(TAG, "'mosfet_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.ProtectionRelease;
-					ESP_LOGV(TAG, "'mosfet_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_release_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_mosfet_over_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& configuration) {
+					this->mosfet_over_temperature_configuration_ = configuration;
+					this->mosfet_over_temperature_configuration_seen_ = true;
+					if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
+						float state = configuration.Alarm;
+						ESP_LOGV(TAG, "'mosfet_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->mosfet_over_temperature_protection_number_ != nullptr) {
+						float state = configuration.Protection;
+						ESP_LOGV(TAG, "'mosfet_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.ProtectionRelease;
+						ESP_LOGV(TAG, "'mosfet_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->mosfet_over_temperature_protection_release_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "MOSFET Over Temperature settings only supported for type=MASTER");
+			}
 		}
-		if (this->mosfet_over_temperature_alarm_number_ != nullptr) {
+		if (this->mosfet_over_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->mosfet_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!mosfet_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "mosfet_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -876,7 +932,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_mosfet_over_temperature_configuration_v25(this->mosfet_over_temperature_configuration_);
 			});
 		}
-		if (this->mosfet_over_temperature_protection_number_ != nullptr) {
+		if (this->mosfet_over_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->mosfet_over_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!mosfet_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "mosfet_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -887,7 +943,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_mosfet_over_temperature_configuration_v25(this->mosfet_over_temperature_configuration_);
 			});
 		}
-		if (this->mosfet_over_temperature_protection_release_number_ != nullptr) {
+		if (this->mosfet_over_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->mosfet_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!mosfet_over_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "mosfet_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -905,42 +961,46 @@ void PaceBmsNumber::setup() {
 			this->environment_over_temperature_alarm_number_ != nullptr ||
 			this->environment_over_temperature_protection_number_ != nullptr ||
 			this->environment_over_temperature_protection_release_number_ != nullptr) {
-			this->parent_->register_environment_over_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
-				this->environment_over_under_temperature_configuration_ = configuration;
-				this->environment_over_under_temperature_configuration_seen_ = true;
-				if (this->environment_under_temperature_alarm_number_ != nullptr) {
-					float state = configuration.UnderAlarm;
-					ESP_LOGV(TAG, "'environment_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->environment_under_temperature_protection_number_ != nullptr) {
-					float state = configuration.UnderProtection;
-					ESP_LOGV(TAG, "'environment_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->environment_under_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.UnderProtectionRelease;
-					ESP_LOGV(TAG, "'environment_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_release_number_->publish_state(value); });
-				}
-				if (this->environment_over_temperature_alarm_number_ != nullptr) {
-					float state = configuration.OverAlarm;
-					ESP_LOGV(TAG, "'environment_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_alarm_number_->publish_state(value); });
-				}
-				if (this->environment_over_temperature_protection_number_ != nullptr) {
-					float state = configuration.OverProtection;
-					ESP_LOGV(TAG, "'environment_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_number_->publish_state(value); });
-				}
-				if (this->environment_over_temperature_protection_release_number_ != nullptr) {
-					float state = configuration.OverProtectionRelease;
-					ESP_LOGV(TAG, "'environment_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
-					this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_release_number_->publish_state(value); });
-				}
-			});
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->parent_->register_environment_over_under_temperature_configuration_callback_v25([this](PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& configuration) {
+					this->environment_over_under_temperature_configuration_ = configuration;
+					this->environment_over_under_temperature_configuration_seen_ = true;
+					if (this->environment_under_temperature_alarm_number_ != nullptr) {
+						float state = configuration.UnderAlarm;
+						ESP_LOGV(TAG, "'environment_under_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->environment_under_temperature_protection_number_ != nullptr) {
+						float state = configuration.UnderProtection;
+						ESP_LOGV(TAG, "'environment_under_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->environment_under_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.UnderProtectionRelease;
+						ESP_LOGV(TAG, "'environment_under_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_under_temperature_protection_release_number_->publish_state(value); });
+					}
+					if (this->environment_over_temperature_alarm_number_ != nullptr) {
+						float state = configuration.OverAlarm;
+						ESP_LOGV(TAG, "'environment_over_temperature_alarm': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_alarm_number_->publish_state(value); });
+					}
+					if (this->environment_over_temperature_protection_number_ != nullptr) {
+						float state = configuration.OverProtection;
+						ESP_LOGV(TAG, "'environment_over_temperature_protection': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_number_->publish_state(value); });
+					}
+					if (this->environment_over_temperature_protection_release_number_ != nullptr) {
+						float state = configuration.OverProtectionRelease;
+						ESP_LOGV(TAG, "'environment_over_temperature_protection_release': Publishing state due to update from the hardware: %f", state);
+						this->parent_->queue_sensor_update([this, value = state]() { this->environment_over_temperature_protection_release_number_->publish_state(value); });
+					}
+				});
+			} else {
+				ESP_LOGE(TAG, "Environment Over/Under Temperature settings only supported for type=MASTER");
+			}
 		}
-		if (this->environment_under_temperature_alarm_number_ != nullptr) {
+		if (this->environment_under_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_under_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_under_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -951,7 +1011,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 		}
-		if (this->environment_under_temperature_protection_number_ != nullptr) {
+		if (this->environment_under_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_under_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_under_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -962,7 +1022,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 		}
-		if (this->environment_under_temperature_protection_release_number_ != nullptr) {
+		if (this->environment_under_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_under_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_under_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -973,7 +1033,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 		}
-		if (this->environment_over_temperature_alarm_number_ != nullptr) {
+		if (this->environment_over_temperature_alarm_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_over_temperature_alarm_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_over_temperature_alarm cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -984,7 +1044,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 		}
-		if (this->environment_over_temperature_protection_number_ != nullptr) {
+		if (this->environment_over_temperature_protection_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_over_temperature_protection_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_over_temperature_protection cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -995,7 +1055,7 @@ void PaceBmsNumber::setup() {
 				this->parent_->write_environment_over_under_temperature_configuration_v25(this->environment_over_under_temperature_configuration_);
 			});
 		}
-		if (this->environment_over_temperature_protection_release_number_ != nullptr) {
+		if (this->environment_over_temperature_protection_release_number_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
 			this->environment_over_temperature_protection_release_number_->add_on_control_callback([this](float value) {
 				if (!environment_over_under_temperature_configuration_seen_) {
 					ESP_LOGE(TAG, "environment_over_temperature_protection_release cannot be set because the BMS hasn't responded to a get pack under voltage configuration request");
@@ -1069,5 +1129,5 @@ void PaceBmsNumber::dump_config() {
 	LOG_NUMBER("  ", "Environment Over Temperature Protection Release", this->environment_over_temperature_protection_release_number_);
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
