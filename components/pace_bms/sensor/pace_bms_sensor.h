@@ -3,14 +3,17 @@
 #include "esphome/core/component.h"
 #include "esphome/components/sensor/sensor.h"
 
-#include "esphome/components/pace_bms/pace_bms_component.h"
+#include "esphome/components/pace_bms/pace_bms_component_base.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSensor : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
+
+	void set_bms_count_sensor(sensor::Sensor* sens) { bms_count_sensor_ = sens; }
+	void set_payload_count_sensor(sensor::Sensor* sens) { payload_count_sensor_ = sens; }
 
 	// analog info
 	void set_cell_count_sensor(sensor::Sensor* sens) { cell_count_sensor_ = sens;            request_analog_info_callback_ = true; }
@@ -75,7 +78,10 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
+
+	sensor::Sensor* bms_count_sensor_{ nullptr };
+	sensor::Sensor* payload_count_sensor_{ nullptr };
 
 	// analog info
 	sensor::Sensor* cell_count_sensor_{ nullptr };
@@ -138,6 +144,9 @@ protected:
 	bool request_analog_info_callback_ = false;
 	bool request_status_info_callback_ = false;
 
+	void bms_count_callback_v25(uint8_t bms_count);
+	void payload_count_callback_v25(uint8_t payload_count);
+
 	void analog_information_callback_v25(PaceBmsProtocolV25::AnalogInformation& analog_information);
 	void status_information_callback_v25(PaceBmsProtocolV25::StatusInformation& status_information);
 
@@ -145,5 +154,5 @@ protected:
 	void status_information_callback_v20(PaceBmsProtocolV20::StatusInformation& status_information);
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

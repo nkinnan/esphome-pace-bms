@@ -4,9 +4,9 @@
 #include "pace_bms_datetime_implementation.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.datetime_impl";
+static const char* const TAG = "pace_bms_base.datetime_impl";
 
 void PaceBmsDatetimeImplementation::add_on_control_callback(std::function<void(const datetime::DateTimeCall&)>&& callback) {
 	this->control_callbacks_.add(std::move(callback));
@@ -22,7 +22,7 @@ void PaceBmsDatetimeImplementation::set_datetime(PaceBmsProtocolV25::DateTime& d
 }
 
 void PaceBmsDatetimeImplementation::control(const datetime::DateTimeCall& call) {
-	ESP_LOGD(TAG, "control: new value %04i:%02i:%02i %02i:%02i:%02i", call.get_year(), call.get_month(), call.get_day(), call.get_hour(), call.get_minute(), call.get_second());
+	ESP_LOGD(TAG, "control: new value %04hu:%02hu:%02hu %02hu:%02hu:%02hu", call.get_year(), call.get_month(), call.get_day(), call.get_hour(), call.get_minute(), call.get_second());
 
 	// callbacks
 	this->control_callbacks_.call(call);
@@ -38,5 +38,5 @@ void PaceBmsDatetimeImplementation::control(const datetime::DateTimeCall& call) 
 	this->publish_state();
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

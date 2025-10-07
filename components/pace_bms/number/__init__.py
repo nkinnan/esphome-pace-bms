@@ -4,6 +4,7 @@ from esphome.components import number
 from esphome.components.number import NUMBER_MODES
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
     CONF_MODE,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_DURATION,
@@ -19,14 +20,15 @@ from esphome.const import (
     UNIT_CELSIUS,
     ENTITY_CATEGORY_CONFIG,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
+from esphome.components.pace_bms import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsNumber = pace_bms_ns.class_("PaceBmsNumber", cg.Component)
-PaceBmsNumberImplementation = pace_bms_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
+PaceBmsNumber = pace_bms_base_ns.class_("PaceBmsNumber", cg.Component)
+PaceBmsNumberImplementation = pace_bms_base_ns.class_("PaceBmsNumberImplementation", cg.Component, number.Number)
 
 NUMBER_MODE_BOX = "BOX"
 
@@ -101,10 +103,12 @@ CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION          = "environment_over_temper
 CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION_RELEASE  = "environment_over_temperature_protection_release"
 
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+CONFIG_SCHEMA = cv.All(
+    pace_bms_globals.inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
         cv.Optional(CONF_CELL_OVER_VOLTAGE_ALARM): number.number_schema(
             PaceBmsNumberImplementation,
@@ -440,8 +444,7 @@ CONFIG_SCHEMA = cv.Schema(
             unit_of_measurement=UNIT_CELSIUS,
             entity_category=ENTITY_CATEGORY_CONFIG,
         ).extend({ cv.Optional(CONF_MODE, default=NUMBER_MODE_BOX): cv.enum(NUMBER_MODES, upper=True), }),        
-        
-   }
+    })
 )
 
 async def to_code(config):

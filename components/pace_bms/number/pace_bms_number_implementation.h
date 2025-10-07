@@ -4,7 +4,7 @@
 #include "esphome/components/number/number.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsNumberImplementation : public Component, public number::Number {
 public:
@@ -18,5 +18,5 @@ protected:
 	CallbackManager<void(float)> control_callbacks_{};
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

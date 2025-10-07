@@ -4,7 +4,7 @@
 #include "esphome/components/switch/switch.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSwitchImplementation : public Component, public switch_::Switch {
 public:
@@ -19,5 +19,5 @@ protected:
 	CallbackManager<void(bool)> write_state_callback_{};
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

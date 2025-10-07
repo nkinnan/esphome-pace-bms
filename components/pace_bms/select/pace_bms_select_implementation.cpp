@@ -3,9 +3,9 @@
 #include "pace_bms_select_implementation.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
-static const char* const TAG = "pace_bms.select_impl";
+static const char* const TAG = "pace_bms_base.select_impl";
 
 void PaceBmsSelectImplementation::control(const std::string& text) {
 	uint8_t value = value_from_option(text);
@@ -47,5 +47,5 @@ std::string PaceBmsSelectImplementation::option_from_value(uint8_t value) {
 	return text;
 }
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

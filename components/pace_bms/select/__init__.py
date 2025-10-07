@@ -3,15 +3,17 @@ import esphome.config_validation as cv
 from esphome.components import select
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
+from esphome.components.pace_bms import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSelect = pace_bms_ns.class_("PaceBmsSelect", cg.Component)
-PaceBmsSelectImplementation = pace_bms_ns.class_("PaceBmsSelectImplementation", cg.Component, select.Select)
+PaceBmsSelect = pace_bms_base_ns.class_("PaceBmsSelect", cg.Component)
+PaceBmsSelectImplementation = pace_bms_base_ns.class_("PaceBmsSelectImplementation", cg.Component, select.Select)
 
 CONF_CHARGE_CURRENT_LIMITER_GEAR           = "charge_current_limiter_gear"
 charge_current_limiter_gear_options = {
@@ -84,17 +86,19 @@ protocol_type_options = {
 	"Manual": 0x01, # 01d  Manual
 }
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+CONFIG_SCHEMA = cv.All(
+    pace_bms_globals.inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSelect),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
         cv.Optional(CONF_CHARGE_CURRENT_LIMITER_GEAR): select.select_schema(PaceBmsSelectImplementation),
 
         cv.Optional(CONF_PROTOCOL_CAN): select.select_schema(PaceBmsSelectImplementation),
         cv.Optional(CONF_PROTOCOL_RS485): select.select_schema(PaceBmsSelectImplementation),
         cv.Optional(CONF_PROTOCOL_TYPE): select.select_schema(PaceBmsSelectImplementation),
-    }
+    })
 )
 
 async def to_code(config):

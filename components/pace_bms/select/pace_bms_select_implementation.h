@@ -7,7 +7,7 @@
 #include "esphome/components/select/select.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSelectImplementation : public Component, public select::Select {
 public:
@@ -29,5 +29,5 @@ protected:
 	std::vector<uint8_t> values_;
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome

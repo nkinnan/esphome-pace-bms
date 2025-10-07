@@ -3,6 +3,7 @@ import esphome.config_validation as cv
 from esphome.components import sensor
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
     CONF_POWER,
     DEVICE_CLASS_VOLTAGE,
     DEVICE_CLASS_TEMPERATURE,
@@ -18,16 +19,19 @@ from esphome.const import (
     UNIT_WATT,
     UNIT_PERCENT,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
+from esphome.components.pace_bms import pace_bms_globals
 
-UNIT_AMP_HOURS = "Ah" # todo: use existing
+UNIT_AMP_HOURS = "Ah" # todo: use existing once checked into esphome 
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsSensor = pace_bms_ns.class_("PaceBmsSensor", cg.Component)
+PaceBmsSensor = pace_bms_base_ns.class_("PaceBmsSensor", cg.Component)
 
+CONF_BMS_COUNT = "bms_count"
+CONF_PAYLOAD_COUNT = "payload_count"
 CONF_CELL_COUNT = "cell_count"
 CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
 CONF_CELL_VOLTAGE_02 = "cell_voltage_02"
@@ -180,12 +184,25 @@ CONF_CURRENT_EVENT_VALUE      = "current_event_value"
 CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
-
-CONFIG_SCHEMA = cv.Schema(
-    {
+CONFIG_SCHEMA = cv.All(
+    pace_bms_globals.inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
+        cv.Optional(CONF_BMS_COUNT): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
+        cv.Optional(CONF_PAYLOAD_COUNT): sensor.sensor_schema(
+            #unit_of_measurement=,
+            accuracy_decimals=0,
+            #device_class=,
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
         cv.Optional(CONF_CELL_COUNT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -408,7 +425,6 @@ CONFIG_SCHEMA = cv.Schema(
             device_class=DEVICE_CLASS_VOLTAGE,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_CELL_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -505,7 +521,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_TEMP_01): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -542,7 +557,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING_STATUS_VALUE_CHARGE_CURRENT): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -573,7 +587,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_BALANCING_STATUS_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -610,7 +623,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_STATUS1_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -641,7 +653,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_WARNING1_STATUS_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -702,7 +713,6 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
         cv.Optional(CONF_BALANCE_EVENT_VALUE): sensor.sensor_schema(
             #unit_of_measurement=,
             accuracy_decimals=0,
@@ -739,8 +749,7 @@ CONFIG_SCHEMA = cv.Schema(
             #device_class=,
             state_class=STATE_CLASS_MEASUREMENT,
         ),
-
-    }
+    })
 )
 
 async def to_code(config):
@@ -749,6 +758,15 @@ async def to_code(config):
 
     parent = await cg.get_variable(config[CONF_PACE_BMS_ID])
     cg.add(var.set_parent(parent))
+
+
+    if bms_count_config := config.get(CONF_BMS_COUNT):
+        sens = await sensor.new_sensor(bms_count_config)
+        cg.add(var.set_bms_count_sensor(sens))
+
+    if payload_count_config := config.get(CONF_PAYLOAD_COUNT):
+        sens = await sensor.new_sensor(payload_count_config)
+        cg.add(var.set_payload_count_sensor(sens))
 
     if cell_count_config := config.get(CONF_CELL_COUNT):
         sens = await sensor.new_sensor(cell_count_config)

@@ -3,25 +3,29 @@ import esphome.config_validation as cv
 from esphome.components import button
 from esphome.const import (
     CONF_ID,
+    CONF_DEVICE_ID,
 )
-from .. import pace_bms_ns, CONF_PACE_BMS_ID, PaceBms
+from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
+from esphome.components.pace_bms import pace_bms_globals
 
 CODEOWNERS = ["@nkinnan"]
 
 DEPENDENCIES = ["pace_bms"]
 
-PaceBmsButton = pace_bms_ns.class_("PaceBmsButton", cg.Component)
-PaceBmsButtonImplementation = pace_bms_ns.class_("PaceBmsButtonImplementation", cg.Component, button.Button)
+PaceBmsButton = pace_bms_base_ns.class_("PaceBmsButton", cg.Component)
+PaceBmsButtonImplementation = pace_bms_base_ns.class_("PaceBmsButtonImplementation", cg.Component, button.Button)
 
 CONF_SHUTDOWN = "shutdown"
 
-CONFIG_SCHEMA = cv.Schema(
-    {
+CONFIG_SCHEMA = cv.All(
+    pace_bms_globals.inherit_device_id,
+    cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsButton),
-        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBms),
+        cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
+        cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
         cv.Optional(CONF_SHUTDOWN): button.button_schema(PaceBmsButtonImplementation),
-    }
+    })
 )
 
 async def to_code(config):

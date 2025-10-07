@@ -2,18 +2,18 @@
 
 #include "esphome/core/component.h"
 
-#include "esphome/components/pace_bms/pace_bms_component.h"
+#include "esphome/components/pace_bms/pace_bms_component_base.h"
 
 #include "pace_bms_select_implementation.h"
 
 #include "../pace_bms_protocol_v25.h"
 
 namespace esphome {
-namespace pace_bms {
+namespace pace_bms_base {
 
 class PaceBmsSelect : public Component {
 public:
-	void set_parent(PaceBms* parent) { parent_ = parent; }
+	void set_parent(PaceBmsBase* parent) { parent_ = parent; }
 
 	void set_charge_current_limiter_gear_select(PaceBmsSelectImplementation* select) { this->charge_current_limiter_gear_select_ = select; }
 
@@ -26,17 +26,17 @@ public:
 	void dump_config() override;
 
 protected:
-	pace_bms::PaceBms* parent_;
+	pace_bms_base::PaceBmsBase* parent_;
 
-	pace_bms::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* charge_current_limiter_gear_select_{ nullptr };
 
 	PaceBmsProtocolV25::Protocols protocols_;
 	bool protocols_seen_ = false;
-	pace_bms::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
-	pace_bms::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };
-	pace_bms::PaceBmsSelectImplementation* protocol_type_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_can_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_rs485_select_{ nullptr };
+	pace_bms_base::PaceBmsSelectImplementation* protocol_type_select_{ nullptr };
 };
 
-}  // namespace pace_bms
+}  // namespace pace_bms_base
 }  // namespace esphome
 
