@@ -1,14 +1,11 @@
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <vector>
 #include <span>
-
-// uncomment the std version if using a C++17 compiler, otherwise esphome provides an equivalent implementation
-//#include "esphome/core/optional.h"
-//#define OPTIONAL_NS esphome
 #include <optional>
-#define OPTIONAL_NS std
+#include <functional>
 
 /*
 General format of requests/responses:
@@ -29,13 +26,14 @@ offset LENID+13, 2 bytes,  HexASCII, "FD2E": CHKSUM       - checksum
 offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '\r'
 */
 
+// dependency injection
+//typedef void (*LogFuncPtr)(std::string message);
+typedef std::function<void(std::string)> LogFuncPtr;
+
 class PaceBmsProtocolBase
 {
 public:
-	// dependency injection
-	typedef void (*LogFuncPtr)(std::string message);
-
-	PaceBmsProtocolBase(uint8_t protocol_commandset, OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version, OPTIONAL_NS::optional<uint8_t> battery_chemistry,
+	PaceBmsProtocolBase(uint8_t protocol_commandset, std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version, std::optional<uint8_t> battery_chemistry,
 		                LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose)
 	{
 		this->protocol_commandset = protocol_commandset;
@@ -66,12 +64,12 @@ public:
 
 protected:
 	uint8_t protocol_commandset;
-	OPTIONAL_NS::optional<std::string> protocol_variant;
-	OPTIONAL_NS::optional<uint8_t> protocol_version;
+	std::optional<std::string> protocol_variant;
+	std::optional<uint8_t> protocol_version;
 	// battery chemistry
 	uint8_t cid1;
 
-	OPTIONAL_NS::optional<std::string> detected_variant;
+	std::optional<std::string> detected_variant;
 
 	// dependency injection
 	LogFuncPtr LogErrorPtr;
@@ -102,23 +100,23 @@ protected:
 
 	// helper for WriteHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	uint8_t NibbleToHex(const uint8_t nibbleByte);
+	uint8_t NibbleToHex(const uint8_t nibbleByte, bool quietMode = false);
 
 	// helper for ReadHexEncoded----
 	// Works with ASCII encoding, not portable, but then that's what the protocol uses
-	uint8_t HexToNibble(const uint8_t hex);
+	uint8_t HexToNibble(const uint8_t hex, bool quietMode = false);
 
 	// decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-	uint8_t ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset);
+	uint8_t ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode = false);
 
 	// decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-	uint16_t ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset);
+	uint16_t ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode = false);
 
 	// decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-	int16_t ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset);
+	int16_t ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode = false);
 
 	// decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
-	uint32_t ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset);
+	uint32_t ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode = false);
 
 	// encode a 'real' byte to the stream by writing two ASCII hex encoded bytes
 	void WriteHexEncodedByte(std::vector<uint8_t>& data, uint16_t& dataOffset, uint8_t byte);
@@ -133,6 +131,6 @@ protected:
 
 	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
 
-	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t> response);
+	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response, bool quietMode = false);
 };
 

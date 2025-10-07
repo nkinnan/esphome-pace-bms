@@ -37,7 +37,7 @@ public:
 
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV20(
-		OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> batteryChemistry,
+		std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version_override, std::optional<uint8_t> batteryChemistry,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 protected:
@@ -107,13 +107,13 @@ public:
 	};
 
 	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
 
 protected:
 	// protocol variants
-	bool ProcessReadAnalogInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
-	bool ProcessReadAnalogInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
-	bool ProcessReadAnalogInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse_PYLON(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse_SEPLOS(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
+	bool ProcessReadAnalogInformationResponse_EG4(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, AnalogInformation& analogInformation);
 
 public:
 	// ==== Read Status Information
@@ -502,13 +502,13 @@ public:
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningValue(const uint8_t val);
 
-	bool ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
 
 protected:
 	// protocol variants
-	bool ProcessReadStatusInformationResponse_PYLON(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
-	bool ProcessReadStatusInformationResponse_SEPLOS(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
-	bool ProcessReadStatusInformationResponse_EG4(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse_PYLON(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse_SEPLOS(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
+	bool ProcessReadStatusInformationResponse_EG4(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, StatusInformation& statusInformation);
 
 public:
 	// ==== Read Hardware Version
@@ -521,7 +521,7 @@ public:
 	static const uint8_t exampleReadHardwareVersionResponseV20[];
 
 	bool CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadHardwareVersionResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion);
+	bool ProcessReadHardwareVersionResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion);
 
 	// ==== Read Serial Number
 	// 1 Serial Number string (?)
@@ -532,7 +532,7 @@ public:
 	static const uint8_t exampleReadSerialNumberResponseV20[];
 
 	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadSerialNumberResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber);
+	bool ProcessReadSerialNumberResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber);
 
 	// ==== Shutdown (if the BMS is active charge/discharging it will immediately reboot after shutdown)
 	// x: unknown payload, this may be a command code and there may be more but I'm not going to test that due to potentially unknown consequences
@@ -544,7 +544,7 @@ public:
 	static const uint8_t exampleWriteRebootCommandResponseV20[];
 
 	bool CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 	// ==== System Time
 	// 1 Year:   read: 2024 write: 2024 (add 2000) apparently the engineers at pace are sure all of these batteries will be gone by Y2.1K or are too young to remember Y2K :)
@@ -565,8 +565,8 @@ public:
 	static const uint8_t exampleWriteSystemTimeResponseV20[];
 
 	bool CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime);
+	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime);
 	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
-	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 };
 
