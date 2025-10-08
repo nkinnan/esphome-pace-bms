@@ -27,6 +27,7 @@ I strongly encourage you to read through this entire document, but here's a tabl
     - [All read-only values](#All-read-only-values)
     - [Read-write values](#Read-write-values)
     - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
+  - [Support for multiple battery packs](#Support-for-multiple-battery-packs)
   - [Example Config Files](#Example-Config-Files)
 - [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 - [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to)
@@ -82,14 +83,16 @@ Example protocol version 25 BMS front-panel:
 
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome already has native support for MODBUS, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.
 
-# Supported BMS Sensors (read only)
+# Supported BMS Sensors (read only) All Protocol Versions
+
+These read-only settings are supported by both `type=MASTER` and type=`SLAVE` BMSes
 
 - All "Analog Information"
 	- **Cell Count**
 	- **Cell Voltage** (V) - up to x16 depending on your battery pack
 	- **Temperature Count**
-	- **Temperature** (°C) - up to x6 depending on your battery pack, typically this will be:
-		-  *Cell Temperature* 1-4 
+	- **Temperature** (°C) - up to x6 depending on your battery pack (but there is one brand that has 8), typically this will be:
+		- *Cell Temperature* 1-4 
 		- *MOSFET Temperature* 
 		- *Environment Temperature*
 	- **Total Voltage** (V)
@@ -105,6 +108,7 @@ Some BMS firmwares also support reading data via MODBUS protocol over the RS485 
 	- **Maximum Cell Voltage** (V)
 	- **Average Cell Voltage** (V)
 	- **Max Cell Differential** (V) - difference between minimum and maximum cell voltage
+  
 - All "Status Information" decoded to human-readable text format
 	- **Warning Text** - A list of any warnings reported by the BMS
 	- **Protection Text** - If the BMS has protected itself or the batteries, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
@@ -113,17 +117,30 @@ Some BMS firmwares also support reading data via MODBUS protocol over the RS485 
 	- **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
 	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.
+
+These read-only settings are supported by `type=MASTER` BMSes only
+
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
 # Supported BMS Configuration (read / write)
 
-- **System Date and Time** - Allows access to the BMS internal real-time clock 
+These writable settings are supported by `type=MASTER` BMSes only
+
+- **System Date and Time** - Allows access to the BMS internal real-time clock
 - **Shutdown** - A button which sends the shutdown command to the BMS
 
 # Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**
 
-It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
+It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for reading/setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
+
+These *read-only* settings are supported by `type=MASTER` BMSes only
+
+- Multi-pack information
+  - **bms_count** - How many BMSes in total are reported by the Master BMS
+  - **payload_count** - How many data payloads are returned by the Master BMS (another way to get **bms_count**)
+
+These writable toggles and selects are supported by both `type=MASTER` and `type=SLAVE` BMSes, but for `type=SLAVE` they *become read-only*
 
 - Toggles (switches) that turn various features on/off
 	- **Buzzer Alarm**
@@ -131,8 +148,13 @@ It is difficult to find good documentation on either of these protocols.  All th
 	- **Charge Current Limiter**
 	- **Charge MOSFET**
 	- **Discharge MOSFET**
+
 - Selects (drop-lists) that allow configuring various features
 	- **Charge Current Limiter Gear** - set to High or Low
+
+These writable settings are supported by `type=MASTER` BMSes only
+
+- Selects (drop-lists) that allow configuring various features
 	- **Protocol (CAN)** - Allows selection of various protocols spoken on the CAN bus, typically to match your inverter
 	- **Protocol (RS485)** - Allows selection of various protocols spoken on the RS485 bus, typically to match your inverter
 	- **Protocol Type** - Auto or Manual
@@ -210,7 +232,7 @@ It is difficult to find good documentation on either of these protocols.  All th
 
 **As far as I know, many/most.**  Any not listed should simply require a slightly different configuration (or might re-use one of the existing ones).  
 
-However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me with the configuration settings required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
+However, I'd like to keep a full list here if only for search engine discoverability, so if you find that it does work with your battery pack, please contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) with the configuration settings required, the make/model of battery pack (and a link to the exact model on the manufacturer's website if possible), and what it reports for the hardware version.
 
 **If not listed**, for help figuring out the required settings to get your battery pack working, see [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
 
@@ -378,11 +400,12 @@ sub-sections:
   - [All read-only values](#All-read-only-values)
   - [Read-write values](#Read-write-values)
   - [Read-write values - Protocol Version 25 ONLY](#Read-write-values---Protocol-Version-25-ONLY)
+- [Support for multiple battery packs](#Support-for-multiple-battery-packs)
 - [Example Config Files (in full)](#Example-Config-Files-in-full)
 
 ## A note on logging
 
-While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE as that will include the actual strings sent to/from the BMS over the UART.  You might want to remove many/most of the sensors when running at the VERY_VERBOSE level however, as a sensors publishing new values generates a **lot** of log output, and it's mainly the component logs that are important, not the sensor logs.
+While initially setting up this component, I'd strongly recommend setting log level to VERY_VERBOSE.  You can reduce that back to INFO or higher once you confirm everything is working.  If you want to submit logs on an issue report, please gather them with log level VERY_VERBOSE (*but* also reduce the number of sensors to a minimum, or the log will just be a mess!) as VERY_VERBOSE will include the actual strings sent to/from the BMS over the UART which is important for debugging.
 
 ```yaml
 logger:
@@ -444,12 +467,14 @@ uart:
 ```
 * **baud_rate:** The most common value for baud_rate is 9600, but some BMSes are reported to use 19200 as well.  You should know what this value is from previously communicating with the BMS using the manufacturer's recommended software.
 * **tx_pin / rx_pin:** Self-explanatory, see previous sections on wiring your ESP to the RS232 or RS485 port. 
-* **rx_buffer_size:** A minimum size of 256 is required for this component to function reliably.
+* **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `pace_bms` component.  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 ```yaml
 pace_bms:
   id: pace_bms_at_address_1
   address: 1
   responding_address: 1
+  device_id: 
+
   uart_id: uart_0
   flow_control_pin: GPIO0 
   update_interval: 5s
@@ -460,16 +485,34 @@ pace_bms:
   protocol_variant: "EG4"   # example only
   protocol_version: 0x20    # example only
   battery_chemistry: 0x4A   # example only
+
+  # multi-pack configuration only (ignore/omit if you have only a single battery pack, or one ESP per pack)
+  type: MASTER
+  master_bms_id: pace_bms_at_address_1
+  slave_discovery_mode: NONE
+  slave_query_mode: BROADCAST
+  rx_buffer_size: 256
 ```
-* **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the value of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using something like a toothpick or push-pin to depress the recessed reset button.  The most common address values are 0 and 1, unless your battery packs are daisy chained.
-* **responding_address:** Do not include this by default. It should only be added if you need it. If you see an error log that looks like: `Response from wrong bus Id in header, expected 2 but got 1` that means you asked for data from the BMS at address 2, but the BMS at address 1 responded. This happens when your BMSes are daisy-chained together since only the master BMS will respond; it relays requests to the appropriate slave, but then responds "as itself" from it's own address, returning the slave data that you asked for. You will need to set `responding_address: 1` (or as appropriate, given the error log) to indicate that this is not actually an error. This can also happen if the BMS "thinks" it's a slave; if you're talking to a BMS on the RS232 port and it has its DIP switches set to an address greater than 1, it might respond "as if" it expects to be relayed by putting address 1 in the response header.
-* **uart_id:** The ID of the UART you configured.  This component currently requires one UART per BMS, though I'm considering a design change that would allow it to read "daisy chained" BMSes in the future.
-* **flow_control_pin:** If using RS232 this setting should be omitted.  If using RS485, this is required to be set, as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.
+Most of these settings are only applicable if you have a single battery pack (or if you have one ESP per pack).  That would be considered a `type=MASTER` BMS.  To configure a slave BMS in a multi-pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs).  
+
+* **address:** This is the address of your BMS, set with the DIP switches on the front next to the RS232 and RS485 ports.  **Important:** If you change the setting of the DIP switches, you'll need to reset the BMS for the new address to take effect.  Either by flipping the breaker, or using something like a toothpick or push-pin to depress the recessed reset button.  The lights on the front panel will flicker or "dance" if you have reset correctly.  You probably want to configure your pack as address 1, unless your battery packs are daisy chained in which case see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
+* **responding_address:** Do not include this by default. It should only be added if you need it. If you see an error log that looks like: `Response from wrong bus Id in header, expected 2 but got 1` that means you asked for data from the BMS at address 2, but the BMS at address 1 responded (or at least appeared to). This can happen in certain multi-pack setups or in case of a BMS firmware bug. If you know that the response you are getting is correct, and from the correct BMS, you can ignore the error by setting this value appropriately based on the error log. An example where you might want to do this: you're talking to a BMS on the RS232 port that is part of a master/slave setup, and it has its DIP switches set to an address greater than 1; it might respond "as if" it expects to be relayed by the master BMS by putting address 1 in the response header instead of it's own address.
+* **device_id:** This has nothing to do with the BMS, it is actually to support the [sub-devices](https://esphome.io/components/esphome/#sub-devices) functionality of esphome.  This can be important in multi-pack setups, but for a single battery pack (or if you have one ESP per pack) this can (and should) be omitted.  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.  
+  * Note that, contrary to esphome spec, and implemented via custom yaml config processing implemented by this component, the `device_id` property is propagated down to each sensor platform which points back to this `pace_bms` entry, and then subsequently down to the individual sensors.  This just makes things easier, so that you don't have to mark each and every sensor with the `device_id` of the sub-device you would like it assigned to.  For this to work however, the `pace_bms` configuration entry must come prior to the sensor configuration entries in your device yaml.
+* **uart_id:** The ID of the UART you configured which is connected to either the RS232 or RS485 port of the BMS.
+* **flow_control_pin:** If NOT using RS485, this setting should be omitted.  If using RS485, this is required to be set (usually), as it controls the direction of communication on the RS485 bus.  It should be connected to *both* the **DE** (Driver Output Enable) and **R̅E̅** (Receiver Output Enable, active low) pins on the RS485 adapter / breakout board.  If you are using a RS485 adapter / breakout board which does not have **DE** and **R̅E̅** pins (or possibly just a single pin labeled "write" or something similar) then it may be a chip that snoops on bus activity and performs this function automatically, in which case this setting can be omitted.  Enabling this setting requires the ESP to halt all processing while data is sent to the BMS, so it should not be specified unless it is actually needed.
 * **update_interval:** How often to query the BMS and publish whatever updated values are read back.  What queries are sent to the BMS is determined by what values you have requested to be published in [the rest of your configuration](#Exposing-the-sensors-this-is-the-good-part).
 * **request_throttle:** Minimum interval between sending requests to the BMS.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
-* **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.
+* **response_timeout:** Maximum time to wait for a response before "giving up" and sending the next.  Increasing this may help if your BMS "locks up" after a while, it's probably getting overwhelmed.  Multi-pack setups will require a significantly larger value for this setting since querying the master BMS for all data requires it to then query all the slaves before responding (depending on `slave_query_mode`).  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
+
 * **protocol_commandset, protocol_variant, protocol_version,** and **battery_chemistry:** 
    - Consider these as a set.  Use values from the [known supported list](#What-Battery-Packs-are-Supported), or determine them manually by following the steps in [How to configure a battery pack that's not in the supported list (yet)](#how-to-configure-a-battery-pack-thats-not-in-the-supported-list-yet)
+
+* **type:** Defaults to `MASTER`, can be either `MASTER` or `SLAVE`.  Should be omitted if you only have a single battery pack (or if you have one ESP per pack).  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.  
+* **master_bms_id:** For a `type=SLAVE` BMS only, this is the `id` of the `type=MASTER` BMS that this is slaved to.
+* **slave_discovery_mode:** Defaults to `NONE`, can be one of: `NONE`, `RELAY`, `BROADCAST`, or `RELAY_AND_BROADCAST`.  Should be omitted ~~if you only have a single battery pack (or if you have one ESP per pack)~~ unless you are debugging issues with a multi-pack setup.  It does not do anything useful in a working config, but it might be something that I ask you to get logs from in order to help troubleshoot.  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.  
+* **slave_query_mode:** Defaults to `BROADCAST`, can be either: `BROADCAST`, or `RELAY`.  Should be omitted if you only have a single battery pack (or if you have one ESP per pack).  This determines how slave battery packs are queried in a multi-pack setup.  See FIXME LINK multi-pack configuration for more information.
+* **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `uart` component.  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 
 ## Exposing the sensors (this is the good part!)
 
@@ -480,6 +523,13 @@ Next, lets go over making things available to the web_server dashboard, homeassi
 sensor:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
+
+    # (`type=MASTER` BMSes only)
+    bms_count:
+      name: "BMS Count"
+    # (`type=MASTER` BMSes only)
+    payload_count:
+      name: "Payload Count"
 
     cell_count:
       name: "Cell Count"
@@ -569,8 +619,10 @@ text_sensor:
   - platform: pace_bms
     pace_bms_id: pace_bms_at_address_1
 
+    # (`type=MASTER` BMSes only)
     hardware_version:
       name: "Hardware Version"
+    # (`type=MASTER` BMSes only)
     serial_number: # not available on EG4 protocol 0x20 variant
       name: "Serial Number"
 
@@ -591,6 +643,8 @@ text_sensor:
 ```
 
 ### Read-write values
+
+All of these writable settings are supported by `type=MASTER` BMSes only
 
 ```yaml
 datetime:
@@ -770,6 +824,149 @@ number:
     environment_under_temperature_protection_release:
       name: "Environment Under Temperature Protection Release"
 ```
+
+## Support for multiple battery packs
+
+This section will describe the changes you need to make, to move from a single battery pack to a multiple battery pack setup.  If you don't have a single pack (master BMS, at address 1) working already, you should go back and do that first.  Then you can return here to see how to add additional slave packs into your config.
+
+The first thing to do is mark your BMS as MASTER.  This is the default, but it's good practice anyway to make it explicit.  Makes the yaml easier to read.
+```yaml
+pace_bms:
+  type: MASTER
+```
+
+Next, you need to decide whether to query the slave BMSes in "broadcast" or "relay" mode.  Broadcast means that this component will send a request for information to a special 0xFF address which means "return data for all packs in a single response".  Relay means that this component will ask the master BMS to forward requests for information to each slave one at a time.  Differences:
+1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason (maybe you're running LVGL on it or something).
+2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.
+
+Both modes are fully supported, but my recommendation is to use broadcast mode unless you have a reason not to do so:
+
+```yaml
+pace_bms:
+  type: MASTER
+  slave_query_mode: BROADCAST
+```
+
+Next, we need to calculate how big to make the receive buffers.  As mentioned this is 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024. For example:
+
+```yaml
+uart:
+  id: uart_0
+  rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
+
+pace_bms:
+  type: MASTER
+  uart_id: uart_0
+  rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
+```
+
+Next, lets define a slave BMS.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list using the "-" list item indicator and increasing the indentation:
+
+```yaml
+pace_bms:
+  - id: master_pace_bms_at_address_1
+    type: MASTER
+    address: 1
+    # the rest of the master BMS settings are omitted for brevity
+
+  - id: slave_pace_bms_at_address_2
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
+    address: 2
+
+  - id: slave_pace_bms_at_address_3
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
+    address: 3
+
+  - id: slave_pace_bms_at_address_4
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
+    address: 4
+```
+
+That's pretty much it as far as slave BMSes go.  All of the configuration is done through the entry for the master BMS.  Just make sure you have the address settings correct, matching the DIP switch settings on the front panel of the battery pack.
+
+You'll want to be sure to make use of ESPHome's [sub-device functionality](https://esphome.io/components/esphome/#sub-devices).  By specifying a sub-device name, you can copy / paste the sensor configuration for your master BMS to your slaves without having to change the sensor names.  Otherwise something like "Total Voltage" on both the master, and a slave, would "collide" and fail to compile.  By specifying a "sub-device name" for each of the BMSes, those sensor names will be prefixed and end up looking something like "Master BMS Address 1 Total Voltage" and "Slave BMS Address 2 Total Voltage" so there is no naming collision.  The exact naming of the sensors depends on how you define your sub-devices.  You can do that like this:
+
+```yaml
+esphome:
+  devices:
+    - id: device_group_master_bms_address_1
+      name: "Master BMS Address 1"
+    - id: device_group_slave_bms_address_2
+      name: "Slave BMS Address 2"
+    - id: device_group_slave_bms_address_3
+      name: "Slave BMS Address 3"
+    - id: device_group_slave_bms_address_4
+      name: "Slave BMS Address 4"
+
+pace_bms:
+  - id: master_pace_bms_at_address_1
+    type: MASTER
+    address: 1
+    # the rest of the master BMS settings are omitted for brevity
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+
+  - id: slave_pace_bms_at_address_2
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1
+    address: 2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+
+  - id: slave_pace_bms_at_address_3
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1
+    address: 3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+
+  - id: slave_pace_bms_at_address_4
+    type: SLAVE
+    master_bms_id: master_pace_bms_at_address_1
+    address: 4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+```
+
+Normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented for this component, that allows you to specify it only at the root `pace_bms` node.  The specified device_id will "flow down" to all the sensors and other components that reference it directly or indirectly.  The only catch is that you must specify the `pace_bms` section in yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
+
+Finally, just copy/paste all the relevant sensors etc that you'd like to have exposed for each of the slave BMSes.  Just point the new section to the slave BMS id instead of the master BMS id.
+
+```yaml
+sensor:
+  # sensors for the master BMS at address 1
+  - platform: pace_bms
+    pace_bms_id: master_pace_bms_at_address_1
+
+    total_voltage:
+      name: "Total Voltage" # this will look like "Master BMS Address 1 Total Voltage" because we used sub-device grouping
+
+  # sensors for the slave BMS at address 2
+  - platform: pace_bms
+    pace_bms_id: slave_pace_bms_at_address_2
+
+    total_voltage:
+      name: "Total Voltage" # this will look like "Slave BMS Address 2 Total Voltage" because we used sub-device grouping
+
+  # sensors for the slave BMS at address 3
+  - platform: pace_bms
+    pace_bms_id: slave_pace_bms_at_address_3
+
+    total_voltage:
+      name: "Total Voltage" # this will look like "Slave BMS Address 3 Total Voltage" because we used sub-device grouping
+
+  # sensors for the slave BMS at address 4
+  - platform: pace_bms
+    pace_bms_id: slave_pace_bms_at_address_4
+
+    total_voltage:
+      name: "Total Voltage" # this will look like "Slave BMS Address 4 Total Voltage" because we used sub-device grouping
+```
+
+Each of the platforms: select, sensor, switch, text_sensor, will work the same way.  
+
+Only certain sensors/components are supported for slave BMSes.  You can't set the time, or configure alarms on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
+
+
 ## Example Config Files
 
 If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific preamble](#8266-specific-preamble))
@@ -866,7 +1063,7 @@ text_sensor:
       name: "Serial Number"
 ```
 
-If you get reasonable values back for the two text sensors, you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+If you get reasonable values back for the two text sensors, you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 If it didn't work, no worries, continue reading.
 
@@ -918,7 +1115,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
 ```  
 
-If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+If your commandset value is 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 Step 4: If the BMS is lying
 -
@@ -954,7 +1151,7 @@ text_sensor:
       name: "Serial Number"
 ```
 
-Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+Once again, if your "true" commandset value is determined to be 0x25 then you're basically done.  Just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section.  Please contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 Step 5: An extra step for commandset 20
 -
@@ -1001,7 +1198,7 @@ If you only got the yellow highlighted line, you're going to have to guess.  Try
 
 The problem areas are going to be the last of the analog values such as Cycle Count, State of Charge and State of Health, and all of the status values.  If those don't make sense, or the BMS doesn't respond, it's the wrong protocol variant.  
 
-Once you've figured out the proper protocol variant that returns sensible status values, just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section. Please contact me with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
+Once you've figured out the proper protocol variant that returns sensible status values, just fill out your YAML with [the rest of the settings / readouts you want exposed](#Exposing-the-sensors-this-is-the-good-part) and you can skip the rest of this section. Please contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) with your make/model/hardware version as well as the settings you used so that I can add it to the known supported list.
 
 If it didn't work
 -
@@ -2021,20 +2218,22 @@ Contains bitflags.  These flags contain mixed status information on current stat
 
 Did you read this entire document?  If not, please do that first to make sure you understand how everything works.  You might be able to figure it out on your own!
 
-If you still have an issue, or are seeing some "strange data" or log output, you can create an issue report. 
+If you still have an issue, or are seeing some "strange data" or log output, you can create an [issue report](https://github.com/nkinnan/esphome-pace-bms/issues). 
 
 # Miscellaneous Notes
  
 - My personal preference is for the [C# Style Guidelines](https://learn.microsoft.com/en-us/dotnet/standard/design-guidelines/) but the idea is to get this into ESPHome and [their guidelines](https://esphome.io/guides/contributing.html#codebase-standards) are different.  It's currently a bit of a mishmash until I can refactor over to ESPHome's style completely.
 
-- Huge shout-out to https://github.com/syssi/esphome-seplos-bms who implemented an initial basic decode letting me know this was possible, and also compiled some documentation which was immensely useful.  Without which I might never have gotten started on, or been motivated to finish, this more complete reverse-engineering and implementation of the protocol.
+- Huge shout-out to [Syssi](https://github.com/syssi/esphome-seplos-bms) who implemented an initial basic decode letting me know this was possible, and also compiled some documentation which was immensely useful.  Without their work, I might never have gotten started on, or been motivated to finish, this more complete reverse-engineering and implementation of the protocol.
+
+- Huge shout-out to Rogan whos help was invaluable in adding multi-pack support. Gathering uart logs and packet captures for me, testing out changes, and most importantly: I don't currently have a multi-pack setup (at least not all of the same brand/type) - he was able to give me remote access to his system which enabled me to test and verify this new feature.
 
 # Helping Out
 
-- I would like to make additions to the [known supported battery packs](#What-Battery-Packs-are-Supported) section.  If you have a pack that works, please share!
+- I would like to make additions to the [known supported battery packs](#What-Battery-Packs-are-Supported) section.  If you have a pack that works, please share by [filing an issue](https://github.com/nkinnan/esphome-pace-bms/issues)!
 
-- If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please let me know!
+- If you can locate any new [documentation](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation) on the protocol, particularly for version 20 variants, or if you find a variation on version 25 (I'm not aware of any at this time), please [let me know](https://github.com/nkinnan/esphome-pace-bms/issues)! 
 
-- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant. 
+- Want to contribute more directly? Found a bug? Submit a PR! Could be helpful to discuss it with me first if it's non-trivial design change, or adding a new variant. I'm on discord as nkinnan_63071 or you can [file an issue](https://github.com/nkinnan/esphome-pace-bms/issues) to get in touch if needed.
 
 - And of course, if you appreciate the work that went into this, you can always [buy me a coffee](https://www.buymeacoffee.com/nkinnan) :)
