@@ -11,17 +11,16 @@ public:
 		CID1_LithiumIon = 0x4F,  // not used by PBmsTools 2.4, but reported by someone using a rebadged version of it on a 14s 48v pack which also exposes protocol version 0x25
 	};
 
-	// dependency injection
-	typedef void (*LogFuncPtr)(std::string message);
-
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV25(
-		OPTIONAL_NS::optional<std::string> protocol_variant, OPTIONAL_NS::optional<uint8_t> protocol_version_override, OPTIONAL_NS::optional<uint8_t> batteryChemistry,
+		std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version_override, std::optional<uint8_t> batteryChemistry,
 		LogFuncPtr logError, LogFuncPtr logWarning, LogFuncPtr logInfo, LogFuncPtr logDebug, LogFuncPtr logVerbose, LogFuncPtr logVeryVerbose);
 
 protected:
 	enum CID2 : uint8_t
 	{
+		CID2_ReadBmsCount                                         = 0x90, // not documented anywhere, but appears to be how PBmsTools detects how many BMSes are present on the RS485 "relay bus"
+
 		// Main "Realtime Monitoring" tab of PBmsTools 2.4
 		// These are the commands sent in a loop to fill out the display
 		CID2_ReadAnalogInformation                                = 0x42,
@@ -148,6 +147,18 @@ public:
 // 
 // ============================================================================
 
+	// ==== Read BMS Count - this is not documented anywhere, but appears to be the command to request a BMS count (master + all slaves connected)
+	// 1 Count of BMSes linked together (including the master)
+	// req:   ~250146900000FDA5.
+	// resp:  ~25014600E00202FD35.
+	//                     11
+
+	static const uint8_t exampleReadBmsCountRequestV25[];
+	static const uint8_t exampleReadBmsCountResponseV25[];
+
+	bool CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& bmsCount);
+
 	// ==== Read Analog Information
 	// 0 Responding Bus Id
 	// 1 Cell Count (this example has 16 cells)
@@ -166,8 +177,6 @@ public:
 	//                     00001122222222222222222222222222222222222222222222222222222222222222223344444444444444444444444455556666777788999900001111
 	// Greenrich U-P5000: 
 	//        ~25014600D07C0001100CCB0CCC0CCB0CCC0CCB0CCB0CCB0CCB0CCA0CCA0CCB0CCB0CCB0CCB0CCB0CCC060B9F0B9F0B9E0BA40BA10BB9FE25CCB11E280226AC02EB26AC4EE086
-	//multi:  ~25014600D0F40002100CCC0CCD0CCC0CCC0CCC0CCC0CCC0CCC0CCB0CCC0CCC0CCC0CCC0CCC0CCD0CCC060B950B930B910B990B9A0BAFFE80CCC11C730226AC038826AC4A
-	//multi:                   100CCD0CCE0CCD0CCD0CCE0CCD0CCD0CCD0CCD0CCD0CCD0CCD0CCD0CCC0CCD0CCE060B980B900B910B970B9D0BB0FE8DCD0617A70226AC038226AC3DC4AC
 	//multi:  ~25014600D0F40002100CC30CC30CC20CC10CC30CC40CC30CC40CC40CC60CC10CC20CC50CC40CC30CC2060B850B790B840B790B940B92FEA0CC321772024DFC00C74E201E
 	//multi:                   100CC20CC20CC30CC40CC40CC40CC30CC40CC20CC40CC30CC40CC40CC30CC30CC2060B670B6B0B6B0B690B610B73FE02CC341A450350DC000E4E2020C70E\r
 	// FSP PS5120E (same UserDefinedValue constant as the U-P5000):
@@ -201,8 +210,8 @@ public:
 		uint16_t maxCellDifferentialMillivolts{ 0 };
 	};
 
-	bool CreateReadAnalogInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadAnalogInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<AnalogInformation>& analogInformationList);
+	bool CreateReadAnalogInformationRequest(const uint8_t busId, const uint8_t targetId, std::vector<uint8_t>& request);
+	bool ProcessReadAnalogInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, AnalogInformation& payload)> onPayload, bool quietMode = false);
 
 	// ==== Read Status Information
 	// 0 Responding Bus Id
@@ -229,8 +238,6 @@ public:
 	//        ~25014600E04E000110000000000000000000000000000000000600000000000000000000000E00000000000000EEC3.
 	// Greenrich U-P5000: 
 	//        ~25014600E04E000110000000000000000000000000000000000600000000000000000000000E00000000000011EEC1
-	//multi:  ~25014600F098000210000000000000000000000000000000000600000000000000000000000E00000000000011
-	//multi:                   10000000000000000000000000000000000600000000000000000000000E00000000000000E0CB
 	//multi:  ~25014600F098000210000000000000000000000000000000000600000000000000000000000E00000000000008
 	//multi:                   10000000000000000000000000000000000600000000000000000000000E48000000000000E0B9
 	// Eenovance (rebadged Sunsynk from South Africa)
@@ -375,35 +382,35 @@ public:
 		uint8_t     fault_value{ 0 };                        // DecodeFaultStatusValue / enum StatusInformation_FaultFlags
 	};
 
-	bool CreateReadStatusInformationRequest(const uint8_t busId, std::vector<uint8_t>& request);
+	bool CreateReadStatusInformationRequest(const uint8_t busId, const uint8_t targetId, std::vector<uint8_t>& request);
 
 protected:
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningValue(const uint8_t val);
+	const std::string DecodeWarningValue(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeProtectionStatus1Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeProtectionStatus2Value(const uint8_t val);
+	const std::string DecodeProtectionStatus2Value(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeStatusValue(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeConfigurationStatusValue(const uint8_t val);
+	const std::string DecodeConfigurationStatusValue(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeFaultStatusValue(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeWarningStatus1Value(const uint8_t val);
+	const std::string DecodeWarningStatus1Value(const uint8_t val, std::string from);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeWarningStatus2Value(const uint8_t val);
 
 public:
-	bool ProcessReadStatusInformationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::vector<StatusInformation>& statusInformationList);
+	bool ProcessReadStatusInformationResponse(const uint8_t busId, const uint8_t targetedBusId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::function<void(uint8_t payloadCount, uint8_t index, StatusInformation& payload)> onPayload, bool quietMode = false);
 
 	// ==== Read Hardware Version
 	// 1 Hardware Version string (may be ' ' padded at the end), the length header value will tell you how long it is, should be 20 'actual character' bytes (40 ASCII hex chars)
@@ -415,7 +422,7 @@ public:
 	static const uint8_t exampleReadHardwareVersionResponseV25[];
 
 	bool CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadHardwareVersionResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion);
+	bool ProcessReadHardwareVersionResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion);
 
 	// ==== Read Serial Number
 	// 1 Serial Number string (may be ' ' padded at the end), the length header value will tell you how long it is, should be 20 or 40 'actual character' bytes (40 or 80 ASCII hex chars)
@@ -427,7 +434,7 @@ public:
 	static const uint8_t exampleReadSerialNumberResponseV25[];
 
 	bool CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadSerialNumberResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber);
+	bool ProcessReadSerialNumberResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber);
 
 	// ============================================================================
 	// 
@@ -520,7 +527,7 @@ public:
 	};
 
 	bool CreateWriteSwitchCommandRequest(const uint8_t busId, const SwitchCommand command, std::vector<uint8_t>& request);
-	bool ProcessWriteSwitchCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const SwitchCommand command, const std::span<uint8_t>& response);
+	bool ProcessWriteSwitchCommandResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const SwitchCommand command, const std::span<uint8_t>& response);
 
 	// ==== Charge MOSFET Switch
 	// note: I have seen the BMS enforce that at least one of Charge MOSFET or Discharge MOSFET must always be on, 
@@ -573,7 +580,7 @@ public:
 	};
 
 	bool CreateWriteMosfetSwitchCommandRequest(const uint8_t busId, const MosfetType type, const MosfetState command, std::vector<uint8_t>& request);
-	bool ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const MosfetType type, const MosfetState command, const std::span<uint8_t>& response);
+	bool ProcessWriteMosfetSwitchCommandResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const MosfetType type, const MosfetState command, const std::span<uint8_t>& response);
 
 	// ==== Shutdown (if the BMS is active charge/discharging it will immediately reboot after shutdown)
 	// x: unknown payload, this may be a command code and there may be more but I'm not going to test that due to potentially unknown consequences
@@ -585,7 +592,7 @@ public:
 	static const uint8_t exampleWriteRebootCommandResponseV25[];
 
 	bool CreateWriteShutdownCommandRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteShutdownCommandResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 // ============================================================================
 // 
@@ -648,9 +655,9 @@ public:
 	static const uint8_t exampleWriteSystemTimeResponseV25[];
 
 	bool CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime);
+	bool ProcessReadSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime);
 	bool CreateWriteSystemDateTimeRequest(const uint8_t busId, const DateTime dateTime, std::vector<uint8_t>& request);
-	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 // ============================================================================
 // 
@@ -680,7 +687,7 @@ public:
 	// process response / create write request are differentiated via parameter overload, taking or returning one of 
 	// the configuration structs
 	bool CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request);
-	bool ProcessWriteConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 	// ==== Cell Over Voltage Configuration
 	// 1 Cell OV Alarm (V): 3.60 - stored as v * 1000, so 3.6 is 3600 - valid range reported by PBmsTools as 2.5-4.5 in steps of 0.01
@@ -706,7 +713,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellOverVoltageConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellOverVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const CellOverVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Pack Over Voltage Configuration
@@ -733,7 +740,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackOverVoltageConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackOverVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const PackOverVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Cell Under Voltage Configuration
@@ -760,7 +767,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellUnderVoltageConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellUnderVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const CellUnderVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Pack Under Voltage Configuration
@@ -787,7 +794,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackUnderVoltageConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, PackUnderVoltageConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const PackUnderVoltageConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Charge Over Current Configuration
@@ -812,7 +819,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeOverCurrentConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeOverCurrentConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeOverCurrentConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Discharge Over Current 1 Configuration
@@ -838,7 +845,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent1Configuration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent1Configuration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent1Configuration& config, std::vector<uint8_t>& request);
 
 	// ==== Dicharge Over Current 2 Configuration
@@ -862,7 +869,7 @@ public:
 		uint16_t ProtectionDelayMilliseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent2Configuration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DischargeOverCurrent2Configuration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const DischargeOverCurrent2Configuration& config, std::vector<uint8_t>& request);
 
 	// ==== Short Circuit Protection Configuration
@@ -883,7 +890,7 @@ public:
 		uint16_t ProtectionDelayMicroseconds;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ShortCircuitProtectionConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ShortCircuitProtectionConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ShortCircuitProtectionConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Cell Balancing Configuration
@@ -906,7 +913,7 @@ public:
 		uint16_t DeltaCellMillivolts;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellBalancingConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, CellBalancingConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const CellBalancingConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Sleep Configuration
@@ -929,7 +936,7 @@ public:
 		uint8_t DelayMinutes;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, SleepConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, SleepConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const SleepConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Full Charge and Low Charge
@@ -954,7 +961,7 @@ public:
 		uint8_t LowChargeAlarmPercent;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, FullChargeLowChargeConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, FullChargeLowChargeConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const FullChargeLowChargeConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Charge / Discharge Over Temperature Protection Configuration
@@ -985,7 +992,7 @@ public:
 		uint8_t DischargeProtectionRelease;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeOverTemperatureConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeOverTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeOverTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Charge / Discharge Under Temperature Protection Configuration   
@@ -1016,7 +1023,7 @@ public:
 		int8_t DischargeProtectionRelease;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, ChargeAndDischargeUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const ChargeAndDischargeUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Mosfet Over Temperature Protection Configuration
@@ -1041,7 +1048,7 @@ public:
 		int8_t ProtectionRelease;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, MosfetOverTemperatureConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, MosfetOverTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const MosfetOverTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
 	// ==== Environment Over/Under Temperature Protection Configuration
@@ -1072,7 +1079,7 @@ public:
 		int8_t OverProtectionRelease;
 	};
 
-	bool ProcessReadConfigurationResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config);
+	bool ProcessReadConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, EnvironmentOverUnderTemperatureConfiguration& config);
 	bool CreateWriteConfigurationRequest(const uint8_t busId, const EnvironmentOverUnderTemperatureConfiguration& config, std::vector<uint8_t>& request);
 
 // ============================================================================
@@ -1099,9 +1106,9 @@ public:
 	static const uint8_t exampleWriteChargeCurrentLimiterStartCurrentResponseV25[];
 
 	bool CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& current);
+	bool ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& current);
 	bool CreateWriteChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, const uint8_t current, std::vector<uint8_t>& request);
-	bool ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 	// ==== Read Remaining Capacity
 	// 1 Remaining Capacity (mAh): 62040 - stored in 10mAh hours, so 62040 is 6204
@@ -1115,7 +1122,7 @@ public:
 	static const uint8_t exampleReadRemainingCapacityResponseV25[];
 
 	bool CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
+	bool ProcessReadRemainingCapacityResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours);
 
 	// ==== Protocol
 	// 1 - CAN protocol, see enum, this example is "AFORE"
@@ -1205,9 +1212,9 @@ public:
 	};
 
 	bool CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request);
-	bool ProcessReadProtocolsResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, Protocols& protocols);
+	bool ProcessReadProtocolsResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, Protocols& protocols);
 	bool CreateWriteProtocolsRequest(const uint8_t busId, const Protocols& protocols, std::vector<uint8_t>& request);
-	bool ProcessWriteProtocolsResponse(const uint8_t busId, OPTIONAL_NS::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
+	bool ProcessWriteProtocolsResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response);
 
 
 	// There are many other settings in "System Configuration" that can be written and/or calibrated here, 
