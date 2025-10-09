@@ -930,7 +930,7 @@ pace_bms:
     master_bms_id: master_pace_bms_at_address_1
     address: 2
     device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
-
+ 
   - id: slave_pace_bms_at_address_3
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
