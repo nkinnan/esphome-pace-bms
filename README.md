@@ -944,9 +944,9 @@ pace_bms:
     device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 ```
 
-Note that normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented in this component.  This special processing allows you to specify it only at the root `pace_bms` node.  The device_id will "flow down" to each sensor/control platform entry, and then to all the individual sensors and controls.  The only catch is that you must specify the `pace_bms` section in your device yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
+Note that normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented in this component.  This special processing allows you to specify the `device_id:` only at the root `pace_bms` node.  The device_id will "flow down" to each sensor/control platform entry, and then to all the individual sensors and controls.  The only catch is that you must specify the `pace_bms` section in your device yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
 
-Finally, just copy/paste all the relevant sensors etc that you'd like to have exposed for each of the slave BMSes.  Just point the new section to the slave BMS id instead of the master BMS id.
+Finally, just copy/paste all the relevant sensors etc that you'd like to have exposed for each of the slave BMSes.  Point the new section to the slave BMS id instead of the master BMS id.
 
 ```yaml
 sensor:
