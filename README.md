@@ -842,7 +842,14 @@ Next, you need to decide whether to query the slave BMSes in "broadcast" or "rel
 1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason (maybe you're running LVGL on it or something).
 2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.  But it's still a valid method, and available to select if you have some reason to do so.
 
-Both modes are fully supported, but my recommendation is to use broadcast mode.  
+Both modes are fully supported, but my recommendation is to use broadcast mode:
+
+```yaml
+pace_bms:
+  # the rest of the master BMS settings are omitted for brevity
+  type: MASTER
+  slave_query_mode: BROADCAST
+```
 
 In broadcast mode, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms`:
 
@@ -854,7 +861,7 @@ pace_bms:
   response_timeout: 8000ms # 2000 * 4, for four battery packs in this system
 ```
 
-Next, we need to calculate how big to make the receive buffers.  As mentioned this is 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024. For example:
+Next, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024:
 
 ```yaml
 uart:
