@@ -829,20 +829,24 @@ number:
 
 This section will describe the changes you need to make, to move from a single battery pack to a multiple battery pack setup.  If you don't have a single pack (master BMS, at address 1) working already, you should go back and do that first.  Then you can return here to see how to add additional slave packs into your config.
 
+Multiple battery packs is currently only supported for protocol 0x25.  It is unlikely I will add multi-pack support for 0x20 due to the fact that it's older, most of the issues / requests that I get are about 0x25, and there are a number of 0x20 variants (with wildly different protocol formats) so the test burden would be high.  If you have a setup with multiple battery packs speaking a 0x20 protocol variant, you can still get data from all of them by using one ESP per BMS.
+
 The first thing to do is mark your BMS as MASTER.  This is the default, but it's good practice anyway to make it explicit.  Makes the yaml easier to read.
 ```yaml
 pace_bms:
+  # the rest of the master BMS settings are omitted for brevity
   type: MASTER
 ```
 
 Next, you need to decide whether to query the slave BMSes in "broadcast" or "relay" mode.  Broadcast means that this component will send a request for information to a special 0xFF address which means "return data for all packs in a single response".  Relay means that this component will ask the master BMS to forward requests for information to each slave one at a time.  Differences:
 1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason (maybe you're running LVGL on it or something).
-2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.
+2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.  But it's still a valid method, and available to select if you have some reason to do so.
 
-Both modes are fully supported, but my recommendation is to use broadcast mode unless you have a reason not to do so:
+Both modes are fully supported, but my recommendation is to use broadcast mode:
 
 ```yaml
 pace_bms:
+  # the rest of the master BMS settings are omitted for brevity
   type: MASTER
   slave_query_mode: BROADCAST
 ```
@@ -855,12 +859,14 @@ uart:
   rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 
 pace_bms:
+  # the rest of the master BMS settings are omitted for brevity
   type: MASTER
+  slave_query_mode: BROADCAST
   uart_id: uart_0
   rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 ```
 
-Next, lets define a slave BMS.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list using the "-" list item indicator and increasing the indentation:
+Next, lets define a slave BMS.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
 
 ```yaml
 pace_bms:
@@ -887,7 +893,7 @@ pace_bms:
 
 That's pretty much it as far as slave BMSes go.  All of the configuration is done through the entry for the master BMS.  Just make sure you have the address settings correct, matching the DIP switch settings on the front panel of the battery pack.
 
-You'll want to be sure to make use of ESPHome's [sub-device functionality](https://esphome.io/components/esphome/#sub-devices).  By specifying a sub-device name, you can copy / paste the sensor configuration for your master BMS to your slaves without having to change the sensor names.  Otherwise something like "Total Voltage" on both the master, and a slave, would "collide" and fail to compile.  By specifying a "sub-device name" for each of the BMSes, those sensor names will be prefixed and end up looking something like "Master BMS Address 1 Total Voltage" and "Slave BMS Address 2 Total Voltage" so there is no naming collision.  The exact naming of the sensors depends on how you define your sub-devices.  You can do that like this:
+You'll also want to be sure to make use of ESPHome's [sub-device functionality](https://esphome.io/components/esphome/#sub-devices).  By specifying a sub-device name, you can copy / paste the sensor configuration for your master BMS to your slaves without having to change the sensor names.  Otherwise something like "Total Voltage" on both the master, and a slave, would "collide" and fail to compile.  By specifying a "sub-device name" for each of the BMSes, those sensor names will be prefixed and end up looking something like "Master BMS Address 1 Total Voltage" and "Slave BMS Address 2 Total Voltage" and so on, so there is no naming collision.  The exact naming of the sensors depends on how you define your sub-devices.  You can do that like this:
 
 ```yaml
 esphome:
@@ -940,12 +946,16 @@ sensor:
     total_voltage:
       name: "Total Voltage" # this will look like "Master BMS Address 1 Total Voltage" because we used sub-device grouping
 
+    #<... more sensors ...>
+
   # sensors for the slave BMS at address 2
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
 
     total_voltage:
       name: "Total Voltage" # this will look like "Slave BMS Address 2 Total Voltage" because we used sub-device grouping
+
+    #<... more sensors ...>
 
   # sensors for the slave BMS at address 3
   - platform: pace_bms
@@ -954,59 +964,49 @@ sensor:
     total_voltage:
       name: "Total Voltage" # this will look like "Slave BMS Address 3 Total Voltage" because we used sub-device grouping
 
+    #<... more sensors ...>
+
   # sensors for the slave BMS at address 4
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
 
     total_voltage:
       name: "Total Voltage" # this will look like "Slave BMS Address 4 Total Voltage" because we used sub-device grouping
+
+    #<... more sensors ...>
 ```
 
 Each of the platforms: select, sensor, switch, text_sensor, will work the same way.  
 
 Only certain sensors/components are supported for slave BMSes.  You can't set the time, or configure alarms on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
 
-
 ## Example Config Files
 
 If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific preamble](#8266-specific-preamble))
 
+Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.
+
+Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting supporting this component, but it can be done if you trim down the config enough - remove webserver and anything else that's "extra", and probably remove some of the sensors you don't need as well.  I was able to get it running an an 8266 board with 1MB flash, but it was a stretch.
+
 ### Protocol 25
 
 - ESP8266
-	- [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensor values, plus BMS configuration settings
+	- [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensors, plus BMS configuration settings
 		- This will fail in a boot loop due to out of memory on the 8266 with it's limited resources.  You will need to trim down the number of sensors before uploading.  This is the only example config file with this issue.
-	- [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensor values only
+	- [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensors only
 - ESP32
-	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensor values, plus BMS configuration settings
-	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensor values only
-- ESP32-C3
-	- [esp32-c3-0x25-full.yaml](esp32-c3-0x25-full.yaml) - all sensor values, plus BMS configuration settings
-	- [esp32-c3-0x25-sensors_only.yaml](esp32-c3-0x25-sensors_only.yaml) - sensor values only
-- ESP32-S2
-	- [esp32-s2-0x25-full.yaml](esp32-s2-0x25-full.yaml) - all sensor values, plus BMS configuration settings
-	- [esp32-s2-0x25-sensors_only.yaml](esp32-s2-0x25-sensors_only.yaml) - sensor values only
-- ESP32-S3
-	- [esp32-s3-0x25-full.yaml](esp32-s3-0x25-full.yaml) - all sensor values, plus BMS configuration settings
-	- [esp32-s3-0x25-sensors_only.yaml](esp32-s3-0x25-sensors_only.yaml) - sensor values only
-- RP2040
-	- [rp2040-0x25-full.yaml](rp2040-0x25-full.yaml) - all sensor values, plus BMS configuration settings
-	- [rp2040-0x25-sensors_only.yaml](rp2040-0x25-sensors_only.yaml) - sensor values only
+	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensors, plus BMS configuration settings
+	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensors only
+- ESP32 multi-pack
+	- [esp32-0x25-full-multi-pack.yaml](esp32-0x25-full-multi-pack.yaml) - all sensors, plus BMS configuration settings (configuration settings for MASTER only! SLAVEs do not support configuration, but do support most sensors)
+	- [esp32-0x25-sensors_only-multi-pack.yaml](esp32-0x25-sensors_only-multi-pack.yaml) - sensors only, for both MASTER and SLAVE (all sensors for master, most sensors are supported for SLAVEs)
 
 ### Protocol 20, EG4 variant
-
+[[]]
 - ESP8266
 	- [esp8266-0x20-EG4.yaml](esp8266-0x20-EG4.yaml)
 - ESP32
 	- [esp32-0x20-EG4.yaml](esp32-0x20-EG4.yaml)
-- ESP32-C3
-	- [esp32-c3-0x20-EG4.yaml](esp32-c3-0x20-EG4.yaml)
-- ESP32-S2
-	- [esp32-s2-0x20-EG4.yaml](esp32-s2-0x20-EG4.yaml)
-- ESP32-S3
-	- [esp32-s3-0x20-EG4.yaml](esp32-s3-0x20-EG4.yaml)
-- RP2040
-	- [rp2040-0x20-EG4.yaml](rp2040-0x20-EG4.yaml)
 
 ### Protocol 20, SEPLOS variant
 
@@ -1014,14 +1014,6 @@ If you already have a config for your board, you should use that, and then copy/
 	- [esp8266-0x20-SEPLOS.yaml](esp8266-0x20-SEPLOS.yaml)
 - ESP32
 	- [esp32-0x20-SEPLOS.yaml](esp32-0x20-SEPLOS.yaml)
-- ESP32-C3
-	- [esp32-c3-0x20-SEPLOS.yaml](esp32-c3-0x20-SEPLOS.yaml)
-- ESP32-S2
-	- [esp32-s2-0x20-SEPLOS.yaml](esp32-s2-0x20-SEPLOS.yaml)
-- ESP32-S3
-	- [esp32-s3-0x20-SEPLOS.yaml](esp32-s3-0x20-SEPLOS.yaml)
-- RP2040
-	- [rp2040-0x20-SEPLOS.yaml](rp2040-0x20-SEPLOS.yaml)
 
 ### Protocol 20, PYLON variant
 
@@ -1029,14 +1021,6 @@ If you already have a config for your board, you should use that, and then copy/
 	- [esp8266-0x20-PYLON.yaml](esp8266-0x20-PYLON.yaml)
 - ESP32
 	- [esp32-0x20-PYLON.yaml](esp32-0x20-PYLON.yaml)
-- ESP32-C3
-	- [esp32-c3-0x20-PYLON.yaml](esp32-c3-0x20-PYLON.yaml)
-- ESP32-S2
-	- [esp32-s2-0x20-PYLON.yaml](esp32-s2-0x20-PYLON.yaml)
-- ESP32-S3
-	- [esp32-s3-0x20-PYLON.yaml](esp32-s3-0x20-PYLON.yaml)
-- RP2040
-	- [rp2040-0x20-PYLON.yaml](rp2040-0x20-PYLON.yaml)
 
 # How to configure a battery pack that's not in the supported list (yet)
 
