@@ -989,7 +989,7 @@ sensor:
 
 Each of the platforms: select, sensor, switch, text_sensor, will work the same way.  
 
-Only certain sensors/components are supported for slave BMSes.  You can't set the time, or configure alarms on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
+Only certain sensors/components are supported for slave BMSes.  You can't set the time, or configure alarm voltage levels on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
 
 ## Example Config Files
 
