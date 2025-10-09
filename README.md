@@ -994,9 +994,11 @@ Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting 
 	- [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensors, plus BMS configuration settings
 		- This will fail in a boot loop due to out of memory on the 8266 with it's limited resources.  You will need to trim down the number of sensors before uploading.  This is the only example config file with this issue.
 	- [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensors only
+
 - ESP32
 	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensors, plus BMS configuration settings
 	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensors only
+  
 - ESP32 multi-pack
 	- [esp32-0x25-full-multi-pack.yaml](esp32-0x25-full-multi-pack.yaml) - all sensors, plus BMS configuration settings (configuration settings for MASTER only! SLAVEs do not support configuration, but do support most sensors)
 	- [esp32-0x25-sensors_only-multi-pack.yaml](esp32-0x25-sensors_only-multi-pack.yaml) - sensors only, for both MASTER and SLAVE (all sensors for master, most sensors are supported for SLAVEs)
