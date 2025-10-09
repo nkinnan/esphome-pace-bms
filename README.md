@@ -999,7 +999,7 @@ Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting 
 	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensors, plus BMS configuration settings
 	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensors only
   
-- ESP32 multi-pack
+- ESP32 (1 Master, 3 Slaves)
 	- [esp32-0x25-full-multi-pack.yaml](esp32-0x25-full-multi-pack.yaml) - all sensors, plus BMS configuration settings (configuration settings for MASTER only! SLAVEs do not support configuration, but do support most sensors)
 	- [esp32-0x25-sensors_only-multi-pack.yaml](esp32-0x25-sensors_only-multi-pack.yaml) - sensors only, for both MASTER and SLAVE (all sensors for master, most sensors are supported for SLAVEs)
 
