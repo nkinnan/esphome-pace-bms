@@ -28,7 +28,6 @@ public:
 	void set_id_name(std::string id_name) { this->id_name_ = id_name; }
 	void set_bms_type(BmsType bms_type) { this->bms_type_ = bms_type; }
 	void set_address(uint8_t address) { this->address_ = address; }
-	void set_responding_address(uint8_t responding_address) { this->responding_address_ = responding_address; }
 
 	// make available
 	std::string get_id_name() const { return this->id_name_; }
@@ -40,7 +39,6 @@ protected:
 	std::string id_name_;
 	BmsType bms_type_;
 	uint8_t address_{ 0 };
-	std::optional<uint8_t> responding_address_;
 
 public:
 	// make accessible to sensors

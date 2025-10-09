@@ -217,11 +217,11 @@ text_sensor:
       name: "Balancing Status"
 
 datetime:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
-   system_date_and_time:
-     name: "System Date and Time"
+    system_date_and_time:
+      name: "System Date and Time"
 
 button:
   - platform: pace_bms
@@ -231,19 +231,19 @@ button:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
   
 switch:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
-   buzzer_alarm:
-     name: "Buzzer Alarm"
-   led_alarm:
-     name: "Led Alarm"
-   charge_current_limiter:
-     name: "Charge Current Limiter"
-   charge_mosfet:
-     name: "Charge Mosfet"
-   discharge_mosfet:
-     name: "Discharge Mosfet"
+    buzzer_alarm:
+      name: "Buzzer Alarm"
+    led_alarm:
+      name: "Led Alarm"
+    charge_current_limiter:
+      name: "Charge Current Limiter"
+    charge_mosfet:
+      name: "Charge Mosfet"
+    discharge_mosfet:
+      name: "Discharge Mosfet"
 
 select:
   - platform: pace_bms

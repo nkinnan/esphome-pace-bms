@@ -299,11 +299,11 @@ text_sensor:
       name: "Balancing Status"
 
 datetime:
- - platform: pace_bms
-   pace_bms_id: pace_bms_at_address_1
+  - platform: pace_bms
+    pace_bms_id: pace_bms_at_address_1
 
-   system_date_and_time:
-     name: "System Date and Time"
+    system_date_and_time:
+      name: "System Date and Time"
 
 button:
   - platform: pace_bms

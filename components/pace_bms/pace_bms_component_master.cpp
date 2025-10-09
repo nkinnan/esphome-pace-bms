@@ -211,7 +211,7 @@ void PaceBmsMaster::update() {
 					command_item* item = new command_item;
 					item->description_ = std::string("read analog information (direct for master)");
 					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, this->address_, request); };
-					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response, this); };
 					read_queue_.push(item);
 				}
 			}
@@ -244,7 +244,7 @@ void PaceBmsMaster::update() {
 							command_item* item = new command_item;
 							item->description_ = std::string("read analog information (relay to slave address " + std::to_string(slave->get_address()) + ")");
 							item->create_request_frame_ = [this, slave](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadAnalogInformationRequest(this->address_, slave->get_address(), request); };
-							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_analog_information_response_v25(response, slave); };
+							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_read_analog_information_response_v25(response, slave); };
 							read_queue_.push(item);
 						}
 					}
@@ -260,7 +260,7 @@ void PaceBmsMaster::update() {
 					command_item* item = new command_item;
 					item->description_ = std::string("read status information (direct for master)");
 					item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, this->address_, request); };
-					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response); };
+					item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response, this); };
 					read_queue_.push(item);
 				}
 			}
@@ -294,7 +294,7 @@ void PaceBmsMaster::update() {
 							command_item* item = new command_item;
 							item->description_ = std::string("read status information (relay to slave address " + std::to_string(slave->get_address()) + ")");
 							item->create_request_frame_ = [this, slave](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateReadStatusInformationRequest(this->address_, slave->get_address(), request); };
-							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_relay_read_status_information_response_v25(response, slave); };
+							item->process_response_frame_ = [this, slave](std::span<uint8_t>& response) -> void { this->handle_read_status_information_response_v25(response, slave); };
 							read_queue_.push(item);
 						}
 					}
@@ -735,6 +735,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 		}
 	};
 
+	// note that we're executing a callback but it is syncronous
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
@@ -759,6 +760,7 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 		}
 	};
 
+	// note that we're executing a callback but it is syncronous
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload, true);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
@@ -790,34 +792,36 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_status_information_respons
 	ESP_LOGI(TAG, "Discovered slave at address %i using relay Status Information request", slaveAddress);
 }
 
-void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_base::PaceBmsBase* target) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
-		// dispatch to any child components that registered for a callback with us
-		for (int i = 0; i < this->analog_information_callbacks_v25_.size(); i++) {
-			this->analog_information_callbacks_v25_[i](payload);
+	auto onPayload = [this, target](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
+		// dispatch to any child components that registered for a callback with the bms
+		for (int i = 0; i < target->get_analog_information_callbacks_v25().size(); i++) {
+			target->get_analog_information_callbacks_v25()[i](payload);
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	// note that we're executing a callback but it is syncronous
+	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, target->get_address(), this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
 	}
 }
 
-void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_t>& response) {
+void PaceBmsMaster::handle_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_base::PaceBmsBase* target) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
-		// dispatch to any child components that registered for a callback with us
-		for (int i = 0; i < this->status_information_callbacks_v25_.size(); i++) {
-			this->status_information_callbacks_v25_[i](payload);
+	auto onPayload = [this, target](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
+		// dispatch to any child components that registered for a callback with the bms
+		for (int i = 0; i < target->get_status_information_callbacks_v25().size(); i++) {
+			target->get_status_information_callbacks_v25()[i](payload);
 		}
 	};
 
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, this->address_, this->responding_address_, response, onPayload);
+	// note that we're executing a callback but it is syncronous
+	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, target->get_address(), this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
 		return;
@@ -841,7 +845,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 			}
 		} else {
 			if(index > this->slaves_.size()) {
-				ESP_LOGE(TAG, "Received more payloads than BMSes are defined in yaml, payloadCount: %i, index: %i, slaveCount: %i (total BMS Count in yaml: %i)", payloadCount, index, this->slaves_.size(), this->slaves_.size() + 1);
+				// logging of mismatch happens after ProcessReadAnalogInformationResponse completes
 				return;
 			}
 
@@ -856,6 +860,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 		}
 	};
 
+	// note that we're executing a callback but it is syncronous
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
@@ -885,7 +890,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 			}
 		} else {
 			if(index > this->slaves_.size()) {
-				ESP_LOGE(TAG, "Received more payloads than BMSes are defined in yaml, payloadCount: %i, index: %i, slaveCount: %i (total BMS Count in yaml: %i)", payloadCount, index, this->slaves_.size(), this->slaves_.size() + 1);
+				// logging of mismatch happens after ProcessReadAnalogInformationResponse completes
 				return;
 			}
 
@@ -900,6 +905,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 		}
 	};
 
+	// note that we're executing a callback but it is syncronous
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, 0xFF, this->responding_address_, response, onPayload);
 	if (result == false) {
 		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
@@ -912,39 +918,10 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 	}
 }
 
-void PaceBmsMaster::handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
-	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this, slave](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
-		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->get_analog_information_callbacks_v25().size(); i++) {
-			slave->get_analog_information_callbacks_v25()[i](payload);
-		}
-	};
 
-	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, slave->get_address(), this->responding_address_, response, onPayload);
-	if (result == false) {
-		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
-		return;
-	}
-}
 
-void PaceBmsMaster::handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave) {
-	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
-	auto onPayload = [this, slave](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
-		// dispatch to any child components that registered for a callback with the slave
-		for (int i = 0; i < slave->get_status_information_callbacks_v25().size(); i++) {
-			slave->get_status_information_callbacks_v25()[i](payload);
-		}
-	};
-
-	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, slave->get_address(), this->responding_address_, response, onPayload);
-	if (result == false) {
-		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
-		return;
-	}
-}
 
 void PaceBmsMaster::handle_read_hardware_version_response_v25(std::span<uint8_t>& response) {
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());

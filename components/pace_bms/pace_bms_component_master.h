@@ -25,6 +25,7 @@ enum SlaveQueryMode : uint8_t {
 class PaceBmsMaster : public pace_bms_base::PaceBmsBase, public PollingComponent, public uart::UARTDevice {
 public:
 	// called by the codegen to set our YAML property values
+	void set_responding_address(uint8_t responding_address) { this->responding_address_ = responding_address; }
 	void set_flow_control_pin(GPIOPin* flow_control_pin) { this->flow_control_pin_ = flow_control_pin; }
 	void set_protocol_commandset(int protocol_commandset) { this->protocol_commandset_ = protocol_commandset; }
 	void set_protocol_variant(std::string protocol_variant) { this->protocol_variant_ = protocol_variant; }
@@ -124,6 +125,7 @@ public:
 
 protected:
 	// config values set in YAML
+	std::optional<uint8_t> responding_address_;
 	GPIOPin* flow_control_pin_{ nullptr };
 
 	int protocol_commandset_{ 0 };
@@ -143,12 +145,10 @@ protected:
 	void handle_slave_discovery_broadcast_read_status_information_response_v25(std::span<uint8_t>& response);
 	void handle_slave_discovery_relay_read_analog_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
 	void handle_slave_discovery_relay_read_status_information_response_v25(uint8_t slaveAddress, std::span<uint8_t>& response);
-	void handle_read_analog_information_response_v25(std::span<uint8_t>& response);
-	void handle_read_status_information_response_v25(std::span<uint8_t>& response);
+	void handle_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_base::PaceBmsBase* target);
+	void handle_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_base::PaceBmsBase* target);
 	void handle_broadcast_read_analog_information_response_v25(std::span<uint8_t>& response);
 	void handle_broadcast_read_status_information_response_v25(std::span<uint8_t>& response);
-	void handle_relay_read_analog_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave);
-	void handle_relay_read_status_information_response_v25(std::span<uint8_t>& response, pace_bms_slave::PaceBmsSlave* slave);
 	void handle_read_hardware_version_response_v25(std::span<uint8_t>& response);
 	void handle_read_serial_number_response_v25(std::span<uint8_t>& response);
 	void handle_write_switch_command_response_v25(PaceBmsProtocolV25::SwitchCommand, std::span<uint8_t>& response);

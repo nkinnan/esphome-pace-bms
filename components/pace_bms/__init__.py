@@ -102,7 +102,6 @@ BASE_SCHEMA = cv.Schema({
     cv.Optional(CONF_DEVICE_ID): cv.sub_device_id,
 
     cv.Optional(CONF_ADDRESS, default=DEFAULT_ADDRESS): cv.int_range(min=0, max=15),
-    cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 })
 
 CONFIG_SCHEMA = cv.All(
@@ -110,6 +109,8 @@ CONFIG_SCHEMA = cv.All(
     cv.typed_schema({
         CONF_TYPE_MASTER: BASE_SCHEMA.extend({
             cv.GenerateID(): cv.declare_id(PaceBmsMaster),
+
+            cv.Optional(CONF_RESPONDING_ADDRESS): cv.int_range(min=0, max=15),
 
             cv.Optional(CONF_FLOW_CONTROL_PIN): pins.gpio_output_pin_schema,
 
