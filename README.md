@@ -839,7 +839,7 @@ pace_bms:
 ```
 
 Next, you need to decide whether to query the slave BMSes in "broadcast" or "relay" mode.  Broadcast means that this component will send a request for information to a special 0xFF address which means "return data for all packs in a single response".  Relay means that this component will ask the master BMS to forward requests for information to each slave one at a time.  Differences:
-1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason (maybe you're running LVGL on it or something).
+1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason.
 2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.  But it's still a valid method, and available to select if you have some reason to do so.
 
 Both modes are fully supported, but my recommendation is to use broadcast mode:
@@ -877,7 +877,7 @@ pace_bms:
   rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 ```
 
-Next, lets define a slave BMS.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
+Next, lets define some slave BMSes.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
 
 ```yaml
 pace_bms:
@@ -923,28 +923,28 @@ pace_bms:
     type: MASTER
     address: 1
     # the rest of the master BMS settings are omitted for brevity
-    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
     address: 2
-    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_3
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
     address: 3
-    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
     address: 4
-    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 ```
 
-Normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented for this component, that allows you to specify it only at the root `pace_bms` node.  The specified device_id will "flow down" to all the sensors and other components that reference it directly or indirectly.  The only catch is that you must specify the `pace_bms` section in yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
+Note that normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented in this component.  This special processing allows you to specify it only at the root `pace_bms` node.  The device_id will "flow down" to each sensor/control platform entry, and then to all the individual sensors and controls.  The only catch is that you must specify the `pace_bms` section in your device yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
 
 Finally, just copy/paste all the relevant sensors etc that you'd like to have exposed for each of the slave BMSes.  Just point the new section to the slave BMS id instead of the master BMS id.
 

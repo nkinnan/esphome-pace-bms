@@ -119,25 +119,25 @@ pace_bms:
     slave_query_mode: BROADCAST
     rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 
-    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
-    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_3
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
-    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
-    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid naming collisions
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
 sensor:
   - platform: pace_bms

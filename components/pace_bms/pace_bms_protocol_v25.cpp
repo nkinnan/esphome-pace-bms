@@ -195,7 +195,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 	logVeryVerbose(std::to_string(payloadCount) + " responses found in analog information payload");
 #endif
 
-	for(int i = 0; i < payloadCount; i++)
+	for(int index = 0; index < payloadCount; index++)
 	{
 		AnalogInformation analogInformation;
 		//std::memset(&analogInformation, 0, sizeof(AnalogInformation));
@@ -293,7 +293,7 @@ bool PaceBmsProtocolV25::ProcessReadAnalogInformationResponse(const uint8_t busI
 		byteOffset += currentProtocolVariant->analogInformationExtraBytes;
 
 		if(onPayload != nullptr)
-			onPayload(payloadCount, i, analogInformation);
+			onPayload(payloadCount, index, analogInformation);
 	}
 
 	// this check remains valid with broadcast responses due to the loop above
@@ -734,7 +734,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 	logVeryVerbose(std::to_string(payloadCount) + " responses found in status information payload");
 #endif
 
-	for(int i = 0; i < payloadCount; i++)
+	for(int index = 0; index < payloadCount; index++)
 	{
 		StatusInformation statusInformation;
 		//std::memset(&statusInformation, 0, sizeof(StatusInformation));
@@ -937,7 +937,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		byteOffset += currentProtocolVariant->statusInformationExtraBytes;
 
 		if(onPayload != nullptr)
-			onPayload(payloadCount, i, statusInformation);
+			onPayload(payloadCount, index, statusInformation);
 	}
 
 	// this check remains valid with broadcast responses due to the loop above
