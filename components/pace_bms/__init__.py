@@ -173,15 +173,11 @@ def final_validate_slave_bms_schema(slave_config):
     button_platforms = full_config.get(CONF_BUTTON)
     if(button_platforms is not None):
         for button_platform in button_platforms:
-            print("for button_platform")
             platform = button_platform.get(CONF_PLATFORM)
-            if(platform == CONF_PACE_BMS):
-                print("button platform is pace_bms")
-                parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
-                if(str(parent_bms_id) == str(slave_id)):
-                    print("found button for slave")
-                print(f"slave_id: {slave_id}")
-                print(f"parent_bms_id: {parent_bms_id}")
+            parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == strslave_id):
+                # we now know that this is the platform for the slave we are validating, now check for unwanted components
+                print("found button for slave")
 
         #print(f"==================== button_platforms: {button_platforms}")
 
