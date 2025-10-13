@@ -7,10 +7,25 @@ from esphome.const import (
     CONF_DEVICE_ID,
     CONF_FLOW_CONTROL_PIN,
     CONF_ADDRESS,
-    CONF_TYPE
+    CONF_TYPE,
+
+    CONF_BUTTON,
+    CONF_DATETIME,
+    CONF_NUMBER,
+    CONF_SENSOR,
+    CONF_SWITCH,
+
+    CONF_PLATFORM,
 )
 from esphome import pins
+import esphome.final_validate as fv
+
 from esphome.components.pace_bms import pace_bms_globals
+
+
+# bizarrely these are not in esphome const.py
+CONF_SELECT = "select"
+CONF_TEXT_SENSOR = "text_sensor"
 
 
 CODEOWNERS = ["@nkinnan"]
@@ -139,6 +154,49 @@ CONFIG_SCHEMA = cv.All(
     },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
+def final_validate_slave_bms_schema(config):
+
+    print(f"final validate config: {config}")
+
+    full_config = fv.full_config.get()
+    print(f"final validate full_config: {full_config}")
+
+    #def find_pace_bms_config(pace_bms_id):
+    #    fixme
+    
+    #def is_pace_bms_platform(platforms):
+    #    platform = platforms.get(CONF_PLATFORM)
+    #    if(platform)
+
+    button_platform = schema.get(CONF_BUTTON)
+    if(button_platform is not None):
+        print(f"button_platform: {button_platform}")
+
+    datetime_platform = schema.get(CONF_DATETIME)
+    if(datetime_platform is not None):
+        print(f"datetime_platform: {datetime_platform}")
+
+    number_platform = schema.get(CONF_NUMBER)
+    if(number_platform is not None):
+        print(f"number_platform: {number_platform}")
+
+    sensor_platform = schema.get(CONF_SENSOR)
+    if(sensor_platform is not None):
+        print(f"sensor_platform: {sensor_platform}")
+
+    switch_platform = schema.get(CONF_SWITCH)
+    if(switch_platform is not None):
+        print(f"switch_platform: {switch_platform}")
+
+    select_platform = schema.get(CONF_SELECT)
+    if(select_platform is not None):
+        print(f"select_platform: {select_platform}")
+
+    text_sensor_platform = schema.get(CONF_TEXT_SENSOR)
+    if(text_sensor_platform is not None):
+        print(f"text_sensor_platform: {text_sensor_platform}")
+
+
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
 FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     CONF_TYPE_MASTER: cv.Schema(
@@ -150,7 +208,7 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     ),
 
     CONF_TYPE_SLAVE: cv.Schema(
-        {},
+        final_validate_slave_bms_schema(),
         extra=cv.ALLOW_EXTRA,
     )
 },lower=False, default_type=DEFAULT_BMS_TYPE)
