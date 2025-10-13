@@ -38,6 +38,12 @@ from .pace_bms_globals import (
     # sensor
     CONF_BMS_COUNT, 
     CONF_PAYLOAD_COUNT,
+
+    # switch
+
+    # text_sensor
+    CONF_HARDWARE_VERSION,
+    CONF_SERIAL_NUMBER,
 )
 
 # bizarrely these are not in esphome const.py
@@ -250,15 +256,21 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=SLAVE.")
 
-    switch_platforms = full_config.get(CONF_SWITCH)
-    if(switch_platforms is not None):
-        print("switch_platforms found")
-        #print(f"==================== switch_platforms: {switch_platforms}")
+    # the switches just go read-only for slaves, nothing to exclude
+    #switch_platforms = full_config.get(CONF_SWITCH)
+    #if(switch_platforms is not None):
 
     text_sensor_platforms = full_config.get(CONF_TEXT_SENSOR)
     if(text_sensor_platforms is not None):
-         print("text_sensor_platforms found")
-       #print(f"==================== text_sensor_platforms: {text_sensor_platforms}")
+        for text_sensor_platform in text_sensor_platforms:
+            platform = text_sensor_platform.get(CONF_PLATFORM)
+            parent_bms_id = text_sensor_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                if CONF_HARDWARE_VERSION in text_sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_HARDWARE_VERSION}' text_sensor is not available for a BMS with type=SLAVE.")
+                if CONF_SERIAL_NUMBER in text_sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_SERIAL_NUMBER}' text_sensor is not available for a BMS with type=SLAVE.")
 
     return slave_config
 
