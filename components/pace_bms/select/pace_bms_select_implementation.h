@@ -20,6 +20,8 @@ public:
 	uint8_t value_from_option(std::string str);
 	std::string option_from_value(uint8_t number);
 
+	void set_readonly() { this->readonly_ = true; }
+
 protected:
 	// the primary purpose of this class is to simply fill in this pure virtual and call the parent container component on user initiated state change request
 	void control(const std::string& text) override;
@@ -27,6 +29,8 @@ protected:
 	CallbackManager<void(const std::string&, uint8_t value)> control_callback_{};
 
 	std::vector<uint8_t> values_;
+
+	bool readonly_{false};
 };
 
 }  // namespace pace_bms_base

@@ -8,6 +8,9 @@ namespace pace_bms_base {
 static const char* const TAG = "pace_bms_base.select_impl";
 
 void PaceBmsSelectImplementation::control(const std::string& text) {
+	if(readonly_ == true)
+		return;
+
 	uint8_t value = value_from_option(text);
 
 	this->control_callback_.call(text, value);
