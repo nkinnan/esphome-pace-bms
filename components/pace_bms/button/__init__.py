@@ -6,7 +6,7 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components.pace_bms import inherit_device_id, CONF_SHUTDOWN
+from ..pace_bms_globals import inherit_device_id, CONF_SHUTDOWN
 
 CODEOWNERS = ["@nkinnan"]
 DEPENDENCIES = ["pace_bms"]
