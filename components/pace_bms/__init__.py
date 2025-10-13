@@ -22,7 +22,7 @@ import esphome.final_validate as fv
 
 from esphome.components.pace_bms import pace_bms_globals
 
-from button import CONF_SHUTDOWN
+from .button import CONF_SHUTDOWN
 
 
 # bizarrely these are not in esphome const.py
