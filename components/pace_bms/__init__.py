@@ -22,10 +22,6 @@ import esphome.final_validate as fv
 
 from .pace_bms_globals import save_pace_bms_schema, CONF_SHUTDOWN
 
-#from .button import CONF_SHUTDOWN
-#import .button
-from . import button
-
 
 # bizarrely these are not in esphome const.py
 CONF_SELECT = "select"
