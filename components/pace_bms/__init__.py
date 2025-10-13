@@ -157,7 +157,7 @@ CONFIG_SCHEMA = cv.All(
 def final_validate_slave_bms_schema(slave_config):
 
     full_config = fv.full_config.get()
-    slave_id = slave_config.get("CONF_ID")
+    slave_id = slave_config.get(CONF_ID)
 
     #print(f"==================== final validate given config: {slave_config}")
 
