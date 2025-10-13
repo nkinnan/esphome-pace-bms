@@ -33,7 +33,11 @@ from .pace_bms_globals import (
     # select
     CONF_PROTOCOL_CAN, 
     CONF_PROTOCOL_RS485, 
-    CONF_PROTOCOL_TYPE
+    CONF_PROTOCOL_TYPE,
+
+    # sensor
+    CONF_BMS_COUNT, 
+    CONF_PAYLOAD_COUNT,
 )
 
 # bizarrely these are not in esphome const.py
@@ -226,12 +230,8 @@ def final_validate_slave_bms_schema(slave_config):
             platform = select_platform.get(CONF_PLATFORM)
             parent_bms_id = select_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
-                print(f"parent_bms_id: {parent_bms_id}")
-                print(f"slave_id: {slave_id}")
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 if CONF_PROTOCOL_CAN in select_platform:
-                    can = select_platform.get(CONF_PROTOCOL_CAN)
-                    print(f"CONF_PROTOCOL_CAN: {can}")
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_CAN}' select is not available for a BMS with type=SLAVE.")
                 if CONF_PROTOCOL_RS485 in select_platform:
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_RS485}' select is not available for a BMS with type=SLAVE.")
@@ -245,8 +245,10 @@ def final_validate_slave_bms_schema(slave_config):
             parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
-                if CONF_SYSTEM_DATE_AND_TIME in sensor_platform:
-                    raise cv.Invalid(f"The '{CONF_SYSTEM_DATE_AND_TIME}' sensor is not available for a BMS with type=SLAVE.")
+                if CONF_BMS_COUNT in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_BMS_COUNT}' sensor is not available for a BMS with type=SLAVE.")
+                if CONF_PAYLOAD_COUNT in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=SLAVE.")
 
     switch_platforms = full_config.get(CONF_SWITCH)
     if(switch_platforms is not None):

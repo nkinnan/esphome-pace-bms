@@ -20,7 +20,7 @@ from esphome.const import (
     UNIT_PERCENT,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from ..pace_bms_globals import inherit_device_id
+from ..pace_bms_globals import inherit_device_id, CONF_BMS_COUNT, CONF_PAYLOAD_COUNT
 
 UNIT_AMP_HOURS = "Ah" # todo: use existing once checked into esphome 
 
@@ -29,8 +29,6 @@ DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_base_ns.class_("PaceBmsSensor", cg.Component)
 
-CONF_BMS_COUNT = "bms_count"
-CONF_PAYLOAD_COUNT = "payload_count"
 CONF_CELL_COUNT = "cell_count"
 CONF_CELL_VOLTAGE_01 = "cell_voltage_01"
 CONF_CELL_VOLTAGE_02 = "cell_voltage_02"

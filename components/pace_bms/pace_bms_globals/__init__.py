@@ -72,3 +72,7 @@ CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
 CONF_PROTOCOL_CAN           = "protocol_can"
 CONF_PROTOCOL_RS485           = "protocol_rs485"
 CONF_PROTOCOL_TYPE           = "protocol_type"
+
+# sensor
+CONF_BMS_COUNT = "bms_count"
+CONF_PAYLOAD_COUNT = "payload_count"
