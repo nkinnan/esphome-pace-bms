@@ -31,7 +31,7 @@ void PaceBmsSelect::setup() {
 					this->parent_->write_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
 				});
 			} else {
-				this->charge_current_limiter_gear_select_.set_readonly();
+				this->charge_current_limiter_gear_select_->set_readonly();
 			}
 		}
 

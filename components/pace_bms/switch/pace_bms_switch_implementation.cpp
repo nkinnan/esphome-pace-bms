@@ -8,7 +8,7 @@ namespace pace_bms_base {
 static const char* const TAG = "pace_bms_base.switch_impl";
 
 void PaceBmsSwitchImplementation::write_state(bool state) {
-	if(readonly == true)
+	if(readonly_ == true)
 		return;
 
 	this->write_state_callback_.call(state);
