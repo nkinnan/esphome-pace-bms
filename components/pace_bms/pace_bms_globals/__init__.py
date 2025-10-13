@@ -65,3 +65,5 @@ def inherit_device_id(schema):
 # button
 CONF_SHUTDOWN = "shutdown"
 
+# datetime
+CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"

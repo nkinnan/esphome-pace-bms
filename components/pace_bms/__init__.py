@@ -20,7 +20,7 @@ from esphome.const import (
 from esphome import pins
 import esphome.final_validate as fv
 
-from .pace_bms_globals import save_pace_bms_schema, CONF_SHUTDOWN
+from .pace_bms_globals import save_pace_bms_schema, CONF_SHUTDOWN, CONF_SYSTEM_DATE_AND_TIME
 
 
 # bizarrely these are not in esphome const.py
@@ -176,19 +176,22 @@ def final_validate_slave_bms_schema(slave_config):
             platform = button_platform.get(CONF_PLATFORM)
             parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
-                # we now know that this is the platform for the slave we are validating, now check for unwanted components
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 shutdown = button_platform.get(CONF_SHUTDOWN)
                 if CONF_SHUTDOWN in button_platform:
                     raise cv.Invalid(f"The '{CONF_SHUTDOWN}' button is not available for a BMS with type=SLAVE.")
 
 
-
-        #print(f"==================== button_platforms: {button_platforms}")
-
     datetime_platforms = full_config.get(CONF_DATETIME)
     if(datetime_platforms is not None):
-        print("datetime_platforms found")
-        #print(f"==================== datetime_platforms: {datetime_platforms}")
+        for datetime_platform in datetime_platforms:
+            platform = datetime_platform.get(CONF_PLATFORM)
+            parent_bms_id = datetime_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                shutdown = datetime_platform.get(CONF_SYSTEM_DATE_AND_TIME)
+                if CONF_SYSTEM_DATE_AND_TIME in datetime_platform:
+                    raise cv.Invalid(f"The '{CONF_SYSTEM_DATE_AND_TIME}' datetime is not available for a BMS with type=SLAVE.")
 
     number_platforms = full_config.get(CONF_NUMBER)
     if(number_platforms is not None):
