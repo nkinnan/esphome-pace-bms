@@ -22,6 +22,8 @@ import esphome.final_validate as fv
 
 from esphome.components.pace_bms import pace_bms_globals
 
+from button import CONF_SHUTDOWN
+
 
 # bizarrely these are not in esphome const.py
 CONF_SELECT = "select"
@@ -177,7 +179,11 @@ def final_validate_slave_bms_schema(slave_config):
             parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
                 # we now know that this is the platform for the slave we are validating, now check for unwanted components
-                print("found button for slave")
+                shutdown = button_platform.get(CONF_SHUTDOWN)
+                if CONF_SHUTDOWN in button_platform:
+                    raise cv.Invalid(f"The {CONF_SHUTDOWN} button is not available when BMS type=SLAVE.")
+
+
 
         #print(f"==================== button_platforms: {button_platforms}")
 
