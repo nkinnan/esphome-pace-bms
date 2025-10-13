@@ -38,8 +38,8 @@ public:
 	void queue_sensor_update(std::function<void()> update) override;
 	// currently the master will dispatch BMS updates to slaves through these two access points, could probably use an improved / cleaner 
 	// design such as having slaves process the payloads internally via a method such as "notify_analog_information" for example
-	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() { return analog_information_callbacks_v25_; };
-	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() { return status_information_callbacks_v25_; };
+	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() { return analog_information_callbacks_v25_; } override;
+	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() { return status_information_callbacks_v25_; } override;
 
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, in the case of
 	// slave BMSes this is analog and status information *only*, other methods do nothing but log an error
