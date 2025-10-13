@@ -37,6 +37,11 @@ public:
 	void set_slave_query_mode(SlaveQueryMode mode) { this->slave_query_mode_ = mode; }
 	void set_rx_buffer_size(uint16_t rx_buffer_size) { this->rx_buffer_size_ = rx_buffer_size; }
 
+	// currently the master will dispatch BMS updates to slaves (or itself) through these two access points, could probably use an improved / cleaner 
+	// design such as having slaves (or itself) process the payloads internally via a method such as "notify_analog_information" for example
+	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() override { return analog_information_callbacks_v25_; };
+	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() override { return status_information_callbacks_v25_; };
+
 	// standard overrides to implement component behavior, update() queues periodic commands to request updates from the BMS
 	void dump_config() override;
 	void setup() override;

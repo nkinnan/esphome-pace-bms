@@ -36,8 +36,8 @@ public:
 	// we don't push all updates in a single loop, that'd stall the ESP out
 	// this writes to the master device's queue
 	void queue_sensor_update(std::function<void()> update) override;
-	// currently the master will dispatch BMS updates to slaves through these two access points, could probably use an improved / cleaner 
-	// design such as having slaves process the payloads internally via a method such as "notify_analog_information" for example
+	// currently the master will dispatch BMS updates to slaves (or itself) through these two access points, could probably use an improved / cleaner 
+	// design such as having slaves (or itself) process the payloads internally via a method such as "notify_analog_information" for example
 	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() override { return analog_information_callbacks_v25_; };
 	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() override { return status_information_callbacks_v25_; };
 

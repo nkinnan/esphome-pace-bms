@@ -46,6 +46,8 @@ public:
 	// we don't push all updates in a single loop, that'd stall the ESP out
 	virtual void queue_sensor_update(std::function<void()> update) = 0;
 
+	// currently the master will dispatch BMS updates to slaves (or itself) through these two access points, could probably use an improved / cleaner 
+	// design such as having slaves (or itself) process the payloads internally via a method such as "notify_analog_information" for example
 	virtual std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() = 0;
 	virtual std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() = 0;
 
