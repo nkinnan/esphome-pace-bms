@@ -207,7 +207,7 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
     ),
 
     CONF_TYPE_SLAVE: cv.Schema(
-        final_validate_slave_bms_schema(),
+        final_validate_slave_bms_schema,
         extra=cv.ALLOW_EXTRA,
     )
 },lower=False, default_type=DEFAULT_BMS_TYPE)
