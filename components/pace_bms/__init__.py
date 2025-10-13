@@ -179,7 +179,7 @@ def final_validate_slave_bms_schema(slave_config):
                 # we now know that this is the platform for the slave we are validating, now check for unwanted components
                 shutdown = button_platform.get(CONF_SHUTDOWN)
                 if CONF_SHUTDOWN in button_platform:
-                    raise cv.Invalid(f"The {CONF_SHUTDOWN} button is not available when BMS type=SLAVE.")
+                    raise cv.Invalid(f"The '{CONF_SHUTDOWN}' button is not available for a BMS with type=SLAVE.")
 
 
 
