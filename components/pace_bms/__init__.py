@@ -20,7 +20,7 @@ from esphome.const import (
 from esphome import pins
 import esphome.final_validate as fv
 
-from esphome.components.pace_bms import save_pace_bms_schema, CONF_BUTTON
+from .pace_bms_globals import save_pace_bms_schema, CONF_BUTTON
 
 #from .button import CONF_SHUTDOWN
 #import .button
