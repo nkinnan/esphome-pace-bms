@@ -168,6 +168,10 @@ def final_validate_slave_bms_schema(config):
     #    platform = platforms.get(CONF_PLATFORM)
     #    if(platform)
 
+    pace_bms_config = full_config.get(CONF_PACE_BMS)
+    if(pace_bms_config is not None):
+        print(f"==================== pace_bms_config: {pace_bms_config}")
+
     button_platform = full_config.get(CONF_BUTTON)
     if(button_platform is not None):
         print(f"==================== button_platform: {button_platform}")
