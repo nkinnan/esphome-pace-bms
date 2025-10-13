@@ -20,7 +20,7 @@ from esphome.const import (
 from esphome import pins
 import esphome.final_validate as fv
 
-from esphome.components.pace_bms import pace_bms_globals
+from esphome.components.pace_bms import save_pace_bms_schema, CONF_BUTTON
 
 #from .button import CONF_SHUTDOWN
 #import .button
@@ -124,7 +124,7 @@ BASE_SCHEMA = cv.Schema({
 })
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.save_pace_bms_schema, 
+    save_pace_bms_schema, 
     cv.typed_schema({
         CONF_TYPE_MASTER: BASE_SCHEMA.extend({
             cv.GenerateID(): cv.declare_id(PaceBmsMaster),

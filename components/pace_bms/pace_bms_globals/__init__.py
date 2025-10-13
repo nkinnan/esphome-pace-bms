@@ -3,6 +3,7 @@ from esphome.const import (
     CONF_ID,
     CONF_DEVICE_ID,
 )
+import esphome.config_validation as cv
 # circular reference
 #from .. import CONF_PACE_BMS_ID
 CONF_PACE_BMS_ID = "pace_bms_id" # pointer from child component platform (sensor, number, etc.) back to BMS
@@ -17,6 +18,11 @@ def save_pace_bms_schema(schema):
 
 # called upon intercept of processing of all platforms (button, datetime, number, select, sensor, switch, text_sensor)
 def inherit_device_id(schema):
+
+    if(len(pace_bms_schemas) == 0):
+        raise cv.Invalid(
+            "The pace_bms node must be declared before any button/datetime/number/sensor/switch/select/text_sensor nodes in the device config."
+        )
 
     platform_device_id = schema.get(CONF_DEVICE_ID)
     if(platform_device_id is None):
@@ -54,3 +60,8 @@ def inherit_device_id(schema):
                 value[CONF_DEVICE_ID] = platform_device_id
 
     return schema
+
+
+# button
+CONF_SHUTDOWN = "shutdown"
+
