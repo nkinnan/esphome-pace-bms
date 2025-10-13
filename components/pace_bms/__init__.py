@@ -156,10 +156,10 @@ CONFIG_SCHEMA = cv.All(
 
 def final_validate_slave_bms_schema(config):
 
-    print(f"final validate given config: {config}")
+    print(f"==================== final validate given config: {config}")
 
     full_config = fv.full_config.get()
-    print(f"final validate full_config: {full_config}")
+    print(f"==================== final validate full_config: {full_config}")
 
     #def find_pace_bms_config(pace_bms_id):
     #    fixme
