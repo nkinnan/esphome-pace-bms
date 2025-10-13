@@ -204,7 +204,7 @@ def final_validate_slave_bms_schema(slave_config):
                     if isinstance(value, dict):
                         name = value.get(CONF_NAME)
                         if(name is not None):
-                            raise cv.Invalid(f"The '{name}' number is not available for a BMS with type=SLAVE. In fact no numbers are valid for SLAVE BMSes.")
+                            raise cv.Invalid(f"The '{name}' number is not available for a BMS with type=SLAVE. No numbers components are valid for SLAVE BMSes.")
 
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
