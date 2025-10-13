@@ -10,7 +10,6 @@ from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
 from ..pace_bms_globals import inherit_device_id, CONF_SYSTEM_DATE_AND_TIME
 
 CODEOWNERS = ["@nkinnan"]
-
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsDatetime = pace_bms_base_ns.class_("PaceBmsDatetime", cg.Component)

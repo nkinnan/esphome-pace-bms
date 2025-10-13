@@ -21,8 +21,20 @@ from esphome.const import (
 from esphome import pins
 import esphome.final_validate as fv
 
-from .pace_bms_globals import save_pace_bms_schema, CONF_SHUTDOWN, CONF_SYSTEM_DATE_AND_TIME
-
+from .pace_bms_globals import (
+    save_pace_bms_schema, 
+    
+    # button
+    CONF_SHUTDOWN, 
+    
+    # datetime
+    CONF_SYSTEM_DATE_AND_TIME, 
+    
+    # select
+    CONF_PROTOCOL_CAN, 
+    CONF_PROTOCOL_RS485, 
+    CONF_PROTOCOL_TYPE
+)
 
 # bizarrely these are not in esphome const.py
 CONF_SELECT = "select"
@@ -205,21 +217,37 @@ def final_validate_slave_bms_schema(slave_config):
                         name = value.get(CONF_NAME)
                         if(name is not None):
                             raise cv.Invalid(f"The '{name}' number is not available for a BMS with type=SLAVE. No numbers components are valid for SLAVE BMSes.")
+                        else:
+                            raise cv.Invalid(f"The '<unnamed>' number is not available for a BMS with type=SLAVE. No numbers components are valid for SLAVE BMSes.")
+
+    select_platforms = full_config.get(CONF_SELECT)
+    if(select_platforms is not None):
+        for select_platform in select_platforms:
+            platform = select_platform.get(CONF_PLATFORM)
+            parent_bms_id = select_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                if CONF_PROTOCOL_CAN in select_platform:
+                    raise cv.Invalid(f"The '{CONF_PROTOCOL_CAN}' select is not available for a BMS with type=SLAVE.")
+                if CONF_PROTOCOL_RS485 in select_platform:
+                    raise cv.Invalid(f"The '{CONF_PROTOCOL_RS485}' select is not available for a BMS with type=SLAVE.")
+                if CONF_PROTOCOL_TYPE in select_platform:
+                    raise cv.Invalid(f"The '{CONF_PROTOCOL_TYPE}' select is not available for a BMS with type=SLAVE.")
 
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
-        print("sensor_platforms found")
-        #print(f"==================== sensor_platforms: {sensor_platforms}")
+        for sensor_platform in sensor_platforms:
+            platform = sensor_platform.get(CONF_PLATFORM)
+            parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                if CONF_SYSTEM_DATE_AND_TIME in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_SYSTEM_DATE_AND_TIME}' sensor is not available for a BMS with type=SLAVE.")
 
     switch_platforms = full_config.get(CONF_SWITCH)
     if(switch_platforms is not None):
         print("switch_platforms found")
         #print(f"==================== switch_platforms: {switch_platforms}")
-
-    select_platforms = full_config.get(CONF_SELECT)
-    if(select_platforms is not None):
-        print("select_platforms found")
-        #print(f"==================== select_platforms: {select_platforms}")
 
     text_sensor_platforms = full_config.get(CONF_TEXT_SENSOR)
     if(text_sensor_platforms is not None):

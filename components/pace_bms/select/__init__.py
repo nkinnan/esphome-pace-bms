@@ -6,10 +6,9 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components.pace_bms import pace_bms_globals
+from ..pace_bms_globals import inherit_device_id, CONF_PROTOCOL_CAN, CONF_PROTOCOL_RS485, CONF_PROTOCOL_TYPE
 
 CODEOWNERS = ["@nkinnan"]
-
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSelect = pace_bms_base_ns.class_("PaceBmsSelect", cg.Component)
@@ -21,7 +20,6 @@ charge_current_limiter_gear_options = {
     "High Gear": 0x09, # SC_SetChargeCurrentLimiterCurrentLimitLowGear
 }
 
-CONF_PROTOCOL_CAN           = "protocol_can"
 protocol_can_options = {
 	"":                                                                                          0xFF, # 255d <blank entry> I believe this means "turned off"
 	"PACE":                                                                                      0x00, # 00d  PACE
@@ -49,7 +47,6 @@ protocol_can_options = {
 	"Sofar V21003":                                                                              0x16, # 22d  Sofar_V21003
 }
 
-CONF_PROTOCOL_RS485           = "protocol_rs485"
 protocol_rs485_options = {
 	"":                                     0xFF, # 255d <blank entry> I believe this means "turned off"
 	"Pace Modbus":                          0x00, # 00d  Pace Modbus
@@ -79,7 +76,6 @@ protocol_rs485_options = {
 	"Leoch_V106":                           0x18, # 24d  Leoch_V106
 }
 
-CONF_PROTOCOL_TYPE           = "protocol_type"
 protocol_type_options = {
 	""      : 0xFF, # 255d <blank entry>
 	"Auto"  : 0x00, # 00d  Auto
@@ -87,7 +83,7 @@ protocol_type_options = {
 }
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.inherit_device_id,
+    inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSelect),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),

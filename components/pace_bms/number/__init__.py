@@ -21,10 +21,9 @@ from esphome.const import (
     ENTITY_CATEGORY_CONFIG,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components.pace_bms import pace_bms_globals
+from ..pace_bms_globals import inherit_device_id
 
 CODEOWNERS = ["@nkinnan"]
-
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsNumber = pace_bms_base_ns.class_("PaceBmsNumber", cg.Component)
@@ -104,7 +103,7 @@ CONF_ENVIRONMENT_OVER_TEMPERATURE_PROTECTION_RELEASE  = "environment_over_temper
 
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.inherit_device_id,
+    inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsNumber),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),

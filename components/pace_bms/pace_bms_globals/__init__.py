@@ -67,3 +67,8 @@ CONF_SHUTDOWN = "shutdown"
 
 # datetime
 CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
+
+# select
+CONF_PROTOCOL_CAN           = "protocol_can"
+CONF_PROTOCOL_RS485           = "protocol_rs485"
+CONF_PROTOCOL_TYPE           = "protocol_type"

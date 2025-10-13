@@ -6,10 +6,9 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components.pace_bms import pace_bms_globals
+from ..pace_bms_globals import inherit_device_id
 
 CODEOWNERS = ["@nkinnan"]
-
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSwitch = pace_bms_base_ns.class_("PaceBmsSwitch", cg.Component)
@@ -22,7 +21,7 @@ CONF_CHARGE_MOSFET          = "charge_mosfet"
 CONF_DISCHARGE_MOSFET       = "discharge_mosfet"
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.inherit_device_id,
+    inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSwitch),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),

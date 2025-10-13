@@ -20,12 +20,11 @@ from esphome.const import (
     UNIT_PERCENT,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from esphome.components.pace_bms import pace_bms_globals
+from ..pace_bms_globals import inherit_device_id
 
 UNIT_AMP_HOURS = "Ah" # todo: use existing once checked into esphome 
 
 CODEOWNERS = ["@nkinnan"]
-
 DEPENDENCIES = ["pace_bms"]
 
 PaceBmsSensor = pace_bms_base_ns.class_("PaceBmsSensor", cg.Component)
@@ -185,7 +184,7 @@ CONF_REMAINING_CAPACITY_VALUE = "remaining_capacity_value"
 CONF_FET_STATUS_VALUE         = "fet_status_value"
 
 CONFIG_SCHEMA = cv.All(
-    pace_bms_globals.inherit_device_id,
+    inherit_device_id,
     cv.Schema({
         cv.GenerateID(): cv.declare_id(PaceBmsSensor),
         cv.GenerateID(CONF_PACE_BMS_ID): cv.use_id(PaceBmsBase),
