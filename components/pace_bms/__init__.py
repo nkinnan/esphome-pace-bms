@@ -230,6 +230,8 @@ def final_validate_slave_bms_schema(slave_config):
                 print(f"slave_id: {slave_id}")
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 if CONF_PROTOCOL_CAN in select_platform:
+                    can = select_platform.get(CONF_PROTOCOL_CAN)
+                    print(f"CONF_PROTOCOL_CAN: {can}")
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_CAN}' select is not available for a BMS with type=SLAVE.")
                 if CONF_PROTOCOL_RS485 in select_platform:
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_RS485}' select is not available for a BMS with type=SLAVE.")
