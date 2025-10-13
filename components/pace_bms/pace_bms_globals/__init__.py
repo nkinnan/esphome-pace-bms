@@ -76,3 +76,9 @@ CONF_PROTOCOL_TYPE           = "protocol_type"
 # sensor
 CONF_BMS_COUNT = "bms_count"
 CONF_PAYLOAD_COUNT = "payload_count"
+
+# switch
+
+# text_sensor
+CONF_HARDWARE_VERSION     = "hardware_version"
+CONF_SERIAL_NUMBER        = "serial_number"

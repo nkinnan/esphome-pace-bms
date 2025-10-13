@@ -6,7 +6,7 @@ from esphome.const import (
     CONF_DEVICE_ID,
 )
 from .. import pace_bms_base_ns, CONF_PACE_BMS_ID, PaceBmsBase
-from ..pace_bms_globals import inherit_device_id
+from ..pace_bms_globals import inherit_device_id, CONF_HARDWARE_VERSION, CONF_SERIAL_NUMBER
 
 CODEOWNERS = ["@nkinnan"]
 DEPENDENCIES = ["pace_bms"]
@@ -19,9 +19,6 @@ CONF_SYSTEM_STATUS        = "system_status"
 CONF_CONFIGURATION_STATUS = "configuration_status"
 CONF_PROTECTION_STATUS    = "protection_status"
 CONF_FAULT_STATUS         = "fault_status"
-
-CONF_HARDWARE_VERSION     = "hardware_version"
-CONF_SERIAL_NUMBER        = "serial_number"
 
 CONFIG_SCHEMA = cv.All(
     inherit_device_id,
