@@ -791,17 +791,29 @@ select:
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
 
-    # the select settings are not available for a slave BMS
+    # this select becomes read-only on a slave BMS
+    charge_current_limiter_gear:
+      name: "Charge Current Limiter Gear"
+
+    # the other select settings are not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
 
-    # the select settings are not available for a slave BMS
+    # this select becomes read-only on a slave BMS
+    charge_current_limiter_gear:
+      name: "Charge Current Limiter Gear"
+
+    # the other select settings are not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
 
-    # the select settings are not available for a slave BMS
+    # this select becomes read-only on a slave BMS
+    charge_current_limiter_gear:
+      name: "Charge Current Limiter Gear"
+
+    # the other select settings are not available for a slave BMS
 
 
 number:

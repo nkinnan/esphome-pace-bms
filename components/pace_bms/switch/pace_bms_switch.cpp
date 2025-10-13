@@ -44,30 +44,50 @@ void PaceBmsSwitch::setup() {
 				}
 			});
 		}
-		if (this->buzzer_alarm_switch_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->buzzer_alarm_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableBuzzer : PaceBmsProtocolV25::SC_DisableBuzzer);
-			});
+		if (this->buzzer_alarm_switch_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->buzzer_alarm_switch_->add_on_write_state_callback([this](bool state) {
+					this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableBuzzer : PaceBmsProtocolV25::SC_DisableBuzzer);
+				});
+			} else {
+				this->buzzer_alarm_switch_.set_readonly();
+			}
 		}
-		if (this->led_alarm_switch_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->led_alarm_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableLedWarning : PaceBmsProtocolV25::SC_DisableLedWarning);
-			});
+		if (this->led_alarm_switch_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->led_alarm_switch_->add_on_write_state_callback([this](bool state) {
+					this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableLedWarning : PaceBmsProtocolV25::SC_DisableLedWarning);
+				});
+			} else {
+				this->led_alarm_switch_.set_readonly();
+			}
 		}
-		if (this->charge_current_limiter_switch_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->charge_current_limiter_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableChargeCurrentLimiter : PaceBmsProtocolV25::SC_DisableChargeCurrentLimiter);
-			});
+		if (this->charge_current_limiter_switch_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->charge_current_limiter_switch_->add_on_write_state_callback([this](bool state) {
+					this->parent_->write_switch_state_v25(state ? PaceBmsProtocolV25::SC_EnableChargeCurrentLimiter : PaceBmsProtocolV25::SC_DisableChargeCurrentLimiter);
+				});
+			} else {
+				this->charge_current_limiter_switch_.set_readonly();
+			}
 		}
-		if (this->charge_mosfet_switch_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->charge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Charge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
-			});
+		if (this->charge_mosfet_switch_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->charge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
+					this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Charge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
+				});
+			} else {
+				this->charge_mosfet_switch_.set_readonly();
+			}
 		}
-		if (this->discharge_mosfet_switch_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->discharge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
-				this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Discharge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
-			});
+		if (this->discharge_mosfet_switch_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->discharge_mosfet_switch_->add_on_write_state_callback([this](bool state) {
+					this->parent_->write_mosfet_state_v25(PaceBmsProtocolV25::MT_Discharge, state ? PaceBmsProtocolV25::MS_Close : PaceBmsProtocolV25::MS_Open);
+				});
+			} else {
+				this->discharge_mosfet_switch_.set_readonly();
+			}
 		}
 	}
 	else {

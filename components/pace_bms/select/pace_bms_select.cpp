@@ -24,11 +24,15 @@ void PaceBmsSelect::setup() {
 				}
 			});
 		}
-		if (this->charge_current_limiter_gear_select_ != nullptr && this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
-			this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
-				ESP_LOGD(TAG, "Setting Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
-				this->parent_->write_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
-			});
+		if (this->charge_current_limiter_gear_select_ != nullptr) {
+			if(this->parent_->get_bms_type() == BMS_TYPE_MASTER) {
+				this->charge_current_limiter_gear_select_->add_on_control_callback([this](std::string text, uint8_t value) {
+					ESP_LOGD(TAG, "Setting Charge Current Limiter Gear user selected value %s = %02X", text.c_str(), value);
+					this->parent_->write_switch_state_v25((PaceBmsProtocolV25::SwitchCommand)value);
+				});
+			} else {
+				this->charge_current_limiter_gear_select_.set_readonly();
+			}
 		}
 
 		if (this->protocol_can_select_ != nullptr ||
