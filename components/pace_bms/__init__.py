@@ -196,6 +196,8 @@ def final_validate_slave_bms_schema(config):
     if(text_sensor_platform is not None):
         print(f"text_sensor_platform: {text_sensor_platform}")
 
+    return config
+
 
 
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
