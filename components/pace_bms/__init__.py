@@ -154,51 +154,56 @@ CONFIG_SCHEMA = cv.All(
     },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
-def final_validate_slave_bms_schema(config):
-
-    print(f"==================== final validate given config: {config}")
+def final_validate_slave_bms_schema(slave_config):
 
     full_config = fv.full_config.get()
-    print(f"==================== final validate full_config: {full_config}")
+    slave_id = slave_config.get("CONF_ID")
+
+    #print(f"==================== final validate given config: {slave_config}")
+
+    #print(f"==================== final validate full_config: {full_config}")
 
     #def find_pace_bms_config(pace_bms_id):
     #    fixme
     
-    #def is_pace_bms_platform(platforms):
+    #def is_pace_bms_platforms(platforms):
     #    platform = platforms.get(CONF_PLATFORM)
     #    if(platform)
 
-    pace_bms_config = full_config.get(CONF_PACE_BMS)
-    if(pace_bms_config is not None):
-        print(f"==================== pace_bms_config: {pace_bms_config}")
+    button_platforms = full_config.get(CONF_BUTTON)
+    if(button_platforms is not None):
+        for button_platform in button_platforms:
+            platform = button_platform.get(CONF_PLATFORM)
+            if(platform == CONF_PACE_BMS):
+                parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
+                if(parent_bms_id == slave_id):
+                    print("found button for slave")
 
-    button_platform = full_config.get(CONF_BUTTON)
-    if(button_platform is not None):
-        print(f"==================== button_platform: {button_platform}")
+        print(f"==================== button_platforms: {button_platforms}")
 
-    datetime_platform = full_config.get(CONF_DATETIME)
-    if(datetime_platform is not None):
-        print(f"==================== datetime_platform: {datetime_platform}")
+    datetime_platforms = full_config.get(CONF_DATETIME)
+    if(datetime_platforms is not None):
+        print(f"==================== datetime_platforms: {datetime_platforms}")
 
-    number_platform = full_config.get(CONF_NUMBER)
-    if(number_platform is not None):
-        print(f"==================== number_platform: {number_platform}")
+    number_platforms = full_config.get(CONF_NUMBER)
+    if(number_platforms is not None):
+        print(f"==================== number_platforms: {number_platforms}")
 
-    sensor_platform = full_config.get(CONF_SENSOR)
-    if(sensor_platform is not None):
-        print(f"==================== sensor_platform: {sensor_platform}")
+    sensor_platforms = full_config.get(CONF_SENSOR)
+    if(sensor_platforms is not None):
+        print(f"==================== sensor_platforms: {sensor_platforms}")
 
-    switch_platform = full_config.get(CONF_SWITCH)
-    if(switch_platform is not None):
-        print(f"==================== switch_platform: {switch_platform}")
+    switch_platforms = full_config.get(CONF_SWITCH)
+    if(switch_platforms is not None):
+        print(f"==================== switch_platforms: {switch_platforms}")
 
-    select_platform = full_config.get(CONF_SELECT)
-    if(select_platform is not None):
-        print(f"==================== select_platform: {select_platform}")
+    select_platforms = full_config.get(CONF_SELECT)
+    if(select_platforms is not None):
+        print(f"==================== select_platforms: {select_platforms}")
 
-    text_sensor_platform = full_config.get(CONF_TEXT_SENSOR)
-    if(text_sensor_platform is not None):
-        print(f"==================== text_sensor_platform: {text_sensor_platform}")
+    text_sensor_platforms = full_config.get(CONF_TEXT_SENSOR)
+    if(text_sensor_platforms is not None):
+        print(f"==================== text_sensor_platforms: {text_sensor_platforms}")
 
     return config
 
