@@ -46,6 +46,9 @@ public:
 	// we don't push all updates in a single loop, that'd stall the ESP out
 	virtual void queue_sensor_update(std::function<void()> update) = 0;
 
+	std::vector<std::function<void(PaceBmsProtocolV25::AnalogInformation&)>> get_analog_information_callbacks_v25() = 0;
+	std::vector<std::function<void(PaceBmsProtocolV25::StatusInformation&)>> get_status_information_callbacks_v25() = 0;
+
 	// child sensors call these to register for notification upon reciept of various types of data from the BMS, and the 
 	//     callbacks lists not being empty is what prompts update() to queue command_items for BMS communication in order to 
 	//     periodically gather these updates for fan-out to the sensors the first place
