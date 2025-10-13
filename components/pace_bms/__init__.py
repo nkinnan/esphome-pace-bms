@@ -166,31 +166,31 @@ def final_validate_slave_bms_schema():
     #    platform = platforms.get(CONF_PLATFORM)
     #    if(platform)
 
-    button_platform = schema.get(CONF_BUTTON)
+    button_platform = full_config.get(CONF_BUTTON)
     if(button_platform is not None):
         print(f"button_platform: {button_platform}")
 
-    datetime_platform = schema.get(CONF_DATETIME)
+    datetime_platform = full_config.get(CONF_DATETIME)
     if(datetime_platform is not None):
         print(f"datetime_platform: {datetime_platform}")
 
-    number_platform = schema.get(CONF_NUMBER)
+    number_platform = full_config.get(CONF_NUMBER)
     if(number_platform is not None):
         print(f"number_platform: {number_platform}")
 
-    sensor_platform = schema.get(CONF_SENSOR)
+    sensor_platform = full_config.get(CONF_SENSOR)
     if(sensor_platform is not None):
         print(f"sensor_platform: {sensor_platform}")
 
-    switch_platform = schema.get(CONF_SWITCH)
+    switch_platform = full_config.get(CONF_SWITCH)
     if(switch_platform is not None):
         print(f"switch_platform: {switch_platform}")
 
-    select_platform = schema.get(CONF_SELECT)
+    select_platform = full_config.get(CONF_SELECT)
     if(select_platform is not None):
         print(f"select_platform: {select_platform}")
 
-    text_sensor_platform = schema.get(CONF_TEXT_SENSOR)
+    text_sensor_platform = full_config.get(CONF_TEXT_SENSOR)
     if(text_sensor_platform is not None):
         print(f"text_sensor_platform: {text_sensor_platform}")
 
