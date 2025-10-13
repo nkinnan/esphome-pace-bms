@@ -179,33 +179,39 @@ def final_validate_slave_bms_schema(slave_config):
                 if(parent_bms_id == slave_id):
                     print("found button for slave")
 
-        print(f"==================== button_platforms: {button_platforms}")
+        #print(f"==================== button_platforms: {button_platforms}")
 
     datetime_platforms = full_config.get(CONF_DATETIME)
     if(datetime_platforms is not None):
-        print(f"==================== datetime_platforms: {datetime_platforms}")
+        print("datetime_platforms found")
+        #print(f"==================== datetime_platforms: {datetime_platforms}")
 
     number_platforms = full_config.get(CONF_NUMBER)
     if(number_platforms is not None):
-        print(f"==================== number_platforms: {number_platforms}")
+        print("number_platforms found")
+        #print(f"==================== number_platforms: {number_platforms}")
 
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
-        print(f"==================== sensor_platforms: {sensor_platforms}")
+        print("sensor_platforms found")
+        #print(f"==================== sensor_platforms: {sensor_platforms}")
 
     switch_platforms = full_config.get(CONF_SWITCH)
     if(switch_platforms is not None):
-        print(f"==================== switch_platforms: {switch_platforms}")
+        print("switch_platforms found")
+        #print(f"==================== switch_platforms: {switch_platforms}")
 
     select_platforms = full_config.get(CONF_SELECT)
     if(select_platforms is not None):
-        print(f"==================== select_platforms: {select_platforms}")
+        print("select_platforms found")
+        #print(f"==================== select_platforms: {select_platforms}")
 
     text_sensor_platforms = full_config.get(CONF_TEXT_SENSOR)
     if(text_sensor_platforms is not None):
-        print(f"==================== text_sensor_platforms: {text_sensor_platforms}")
+         print("text_sensor_platforms found")
+       #print(f"==================== text_sensor_platforms: {text_sensor_platforms}")
 
-    return config
+    return slave_config
 
 
 
