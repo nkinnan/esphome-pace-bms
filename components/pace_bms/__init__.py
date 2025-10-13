@@ -16,6 +16,7 @@ from esphome.const import (
     CONF_SWITCH,
 
     CONF_PLATFORM,
+    CONF_NAME,
 )
 from esphome import pins
 import esphome.final_validate as fv
@@ -177,7 +178,6 @@ def final_validate_slave_bms_schema(slave_config):
             parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
-                shutdown = button_platform.get(CONF_SHUTDOWN)
                 if CONF_SHUTDOWN in button_platform:
                     raise cv.Invalid(f"The '{CONF_SHUTDOWN}' button is not available for a BMS with type=SLAVE.")
 
@@ -189,14 +189,22 @@ def final_validate_slave_bms_schema(slave_config):
             parent_bms_id = datetime_platform.get(CONF_PACE_BMS_ID)
             if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
-                shutdown = datetime_platform.get(CONF_SYSTEM_DATE_AND_TIME)
                 if CONF_SYSTEM_DATE_AND_TIME in datetime_platform:
                     raise cv.Invalid(f"The '{CONF_SYSTEM_DATE_AND_TIME}' datetime is not available for a BMS with type=SLAVE.")
 
     number_platforms = full_config.get(CONF_NUMBER)
     if(number_platforms is not None):
-        print("number_platforms found")
-        #print(f"==================== number_platforms: {number_platforms}")
+        for number_platform in number_platforms:
+            platform = number_platform.get(CONF_PLATFORM)
+            parent_bms_id = number_platform.get(CONF_PACE_BMS_ID)
+            if(platform == CONF_PACE_BMS and parent_bms_id == slave_id):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                # don't want to check each individual number here, so just check for any child components at all
+                for index, (key, value) in enumerate(number_platform.items()):
+                    if isinstance(value, dict):
+                        name = value.get(CONF_NAME)
+                        if(name is not None):
+                            raise cv.Invalid(f"The '{name}' number is not available for a BMS with type=SLAVE. In fact no numbers are valid for SLAVE BMSes.")
 
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
