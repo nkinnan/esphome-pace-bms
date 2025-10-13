@@ -154,9 +154,7 @@ CONFIG_SCHEMA = cv.All(
     },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
-def final_validate_slave_bms_schema(config):
-
-    print(f"final validate config: {config}")
+def final_validate_slave_bms_schema():
 
     full_config = fv.full_config.get()
     print(f"final validate full_config: {full_config}")
@@ -195,6 +193,7 @@ def final_validate_slave_bms_schema(config):
     text_sensor_platform = schema.get(CONF_TEXT_SENSOR)
     if(text_sensor_platform is not None):
         print(f"text_sensor_platform: {text_sensor_platform}")
+
 
 
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml
