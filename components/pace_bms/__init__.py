@@ -180,6 +180,8 @@ def final_validate_slave_bms_schema(slave_config):
                 parent_bms_id = button_platform.get(CONF_PACE_BMS_ID)
                 if(str(parent_bms_id) == str(slave_id)):
                     print("found button for slave")
+                print(f"slave_id: {slave_id}")
+                print(f"parent_bms_id: {parent_bms_id}")
 
         #print(f"==================== button_platforms: {button_platforms}")
 
