@@ -182,17 +182,6 @@ def final_validate_slave_bms_schema(slave_config):
     full_config = fv.full_config.get()
     slave_id = slave_config.get(CONF_ID)
 
-    #print(f"==================== final validate given config: {slave_config}")
-
-    #print(f"==================== final validate full_config: {full_config}")
-
-    #def find_pace_bms_config(pace_bms_id):
-    #    fixme
-    
-    #def is_pace_bms_platforms(platforms):
-    #    platform = platforms.get(CONF_PLATFORM)
-    #    if(platform)
-
     button_platforms = full_config.get(CONF_BUTTON)
     if(button_platforms is not None):
         for button_platform in button_platforms:
@@ -202,7 +191,6 @@ def final_validate_slave_bms_schema(slave_config):
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 if CONF_SHUTDOWN in button_platform:
                     raise cv.Invalid(f"The '{CONF_SHUTDOWN}' button is not available for a BMS with type=SLAVE.")
-
 
     datetime_platforms = full_config.get(CONF_DATETIME)
     if(datetime_platforms is not None):
@@ -244,6 +232,7 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_PROTOCOL_TYPE in select_platform:
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_TYPE}' select is not available for a BMS with type=SLAVE.")
 
+    # todo: exclude all the raw underlying status sensors not allowed depending on protocol commandset and variant
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
@@ -273,7 +262,6 @@ def final_validate_slave_bms_schema(slave_config):
                     raise cv.Invalid(f"The '{CONF_SERIAL_NUMBER}' text_sensor is not available for a BMS with type=SLAVE.")
 
     return slave_config
-
 
 
 # once the schema is fully constructed, run any final checks, for example on values pulled in from the yaml

@@ -19,8 +19,6 @@ void PaceBmsSlave::dump_config() {
 	ESP_LOGCONFIG(TAG, "  pace_bms master address: %i", this->parent_->get_address());
 	ESP_LOGCONFIG(TAG, "  yaml id: %s", this->get_id_name().c_str());
 	ESP_LOGCONFIG(TAG, "  Address: %i", this->address_);
-	if(this->responding_address_.has_value())
-		ESP_LOGCONFIG(TAG, "  RespondingAddress: %i", this->responding_address_.value());
 }
 
 /*
