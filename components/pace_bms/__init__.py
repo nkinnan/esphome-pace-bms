@@ -154,7 +154,9 @@ CONFIG_SCHEMA = cv.All(
     },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
-def final_validate_slave_bms_schema():
+def final_validate_slave_bms_schema(config):
+
+    print(f"final validate given config: {config}")
 
     full_config = fv.full_config.get()
     print(f"final validate full_config: {full_config}")
