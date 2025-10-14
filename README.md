@@ -857,7 +857,7 @@ pace_bms:
   slave_query_mode: BROADCAST
 ```
 
-In broadcast mode, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms`:
+For `slave_query_mode: BROADCAST`, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms`:
 
 ```yaml
 pace_bms:
@@ -867,7 +867,7 @@ pace_bms:
   response_timeout: 8000ms # 2000 * 4, for four battery packs in this system
 ```
 
-Next, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024:
+Next, again for `slave_query_mode: BROADCAST` only, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024:
 
 ```yaml
 uart:
@@ -882,6 +882,8 @@ pace_bms:
   uart_id: uart_0
   rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 ```
+
+If you've set `slave_query_mode: BROADCAST` then I would set the `response_timeout` to `2000ms`.
 
 Next, lets define some slave BMSes.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
 
