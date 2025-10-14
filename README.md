@@ -89,7 +89,7 @@ Using modbus for your pack means you will not be able to set any configuration v
 
 # Supported BMS Sensors (read only) All Protocol Versions
 
-These read-only settings are supported for both master and slave type BMSes unless otherwise *** noted.
+These *read-only* settings are supported for all protocol versions and variants, for both master and slave type BMSes unless otherwise noted.
 
 - Multi-pack information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
 	- **BMS Count** - How many packs in total the master BMS reports being connected
@@ -126,14 +126,14 @@ These read-only settings are supported for both master and slave type BMSes unle
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
 	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.
 
-These read-only settings are only available for `type=MASTER`
+These *read-only* settings are only available for `type=MASTER`
 
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
 # Supported BMS Configuration (read / write)
 
-These writable settings are only available for `type=MASTER`
+These *writable* settings are only available for `type=MASTER`
 
 - **System Date and Time** - Allows access to the BMS internal real-time clock
 - **Shutdown** - A button which sends the shutdown command to the BMS
