@@ -72,7 +72,7 @@ These BMSes speaking paceic version 25 will invariably use PbmsTools for their B
 
 ![PbmsTools Screenshot](images/PbmsTools.jpg)
 
-The exact look isn't important, just that the tabs and general layout looks like this.  This is PbmsTools regardless of any specific brand badging or interface tweaks, and indicates that your BMS supports protocol version 25.  
+The exact look (or whether it has "pretty colors" like this) isn't important, just that the tabs and layout look the same.  This is PbmsTools regardless of any specific brand badging or interface tweaks, and indicates that your BMS supports protocol version 25.  
 
 The default password to unlock all settings is "123456" incidentally.  But there are legitimately some settings you shouldn't mess with (I didn't implement those in this component - basically just the calibration stuff under the System Config tab).
 
