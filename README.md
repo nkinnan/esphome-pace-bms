@@ -17,7 +17,7 @@ I strongly encourage you to read through this entire document if you plan to use
 - [Supported BMS Configuration (read / write)](#Supported-BMS-Configuration-read--write)
 - [Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**](#Supported-BMS-Configuration-read--write---Protocol-Version-25-ONLY)
 - [What Battery Packs are Supported?](#What-Battery-Packs-are-Supported)
-- [What ESPs and RPs are Supported?](#What-ESPs-and-RPs-are-Supported)
+- [What ESPs and RPs (and others) are Supported?](#What-ESPs-and-RPs-and-others-are-Supported)
 - [How do I wire my ESP to the RS485 port?](#How-do-I-wire-my-ESP-to-the-RS485-port)
 - [How do I wire my ESP to the RS232 port?](#How-do-I-wire-my-ESP-to-the-RS232-port)
 - [ESPHome configuration YAML](#ESPHome-configuration-YAML)
@@ -324,9 +324,9 @@ However, I'd like to keep a full list here if only for search engine discoverabi
     - Thank you johnmsole for reporting.
     - The MANA line appears to be a Sunsynk rebadge.  The Eenovance MANA 10.6 appears to be a rebadged Sunsunk SUN-BATT-10.65 for example.
 
-# What ESPs and RPs are Supported?
+# What ESPs and RPs (and others) are Supported?
 
-Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.
+Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.  Other SOCs supported by ESPHome (they keep expanding) may work but are untested.
 
 Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is *not recommended* and will likely result in dropped or corrupted messages.  
 
