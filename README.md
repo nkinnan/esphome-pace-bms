@@ -414,13 +414,13 @@ logger:
   #level: VERBOSE
   level: VERY_VERBOSE
 ```
-Additionally, if you want to get serial logs over USB on a C3, S2 or S3, you should add this to your logger config:
+Additionally, if you want to get serial logs over USB on *some boards* (different boards may or may not contain a USB-to-serial bridge chip) with *some ESP32 variants* (some variants have a software usb stack, some are dual-stack including a built-in hardware jtag option which functions similarly, but not the same, as a hardware USB-to-serial bridge chip), etc, then you may need to add something like this to your logger config. 
 
 ```yaml
 logger:
-  # needed for C3, S2 and S3 (and possibly others) to read logs via USB, depending on framework used
   hardware_uart: USB_CDC 
 ```
+On boards with two USB ports, this will depend on which port you're plugged into. This will also depend on whether you are using the Arduino or (recommended) ESP-IDF framework/platform. Usually the defaults work, but if you see no logs then you should double check the [esphome logger documentation](https://esphome.io/components/logger/#default-hardware-interfaces) for more details.
 
 ## 8266-specific preamble
 
@@ -995,7 +995,7 @@ Only certain sensors/components are supported for slave BMSes.  You can't set th
 
 If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific preamble](#8266-specific-preamble))
 
-Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.
+Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.  You may also need to modify the 
 
 Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting supporting this component, but it can be done if you trim down the config enough - remove webserver and anything else that's "extra", and probably remove some of the sensors you don't need as well.  I was able to get it running an an 8266 board with 1MB flash, but it was a stretch.
 
