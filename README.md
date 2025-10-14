@@ -996,13 +996,13 @@ sensor:
 
 Each of the platforms: select, sensor, switch, text_sensor, will work the same way.  
 
-Only certain sensors/components are supported for slave BMSes.  You can't set the time, or configure alarm voltage levels on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
+Only certain sensors/controls are supported for slave BMSes.  You can't set the time, or configure alarm voltage levels on a slave BMS for example.  This is all documented in the [exposing the sensors](#Exposing-the-sensors-this-is-the-good-part) section.  If you add a sensor/component to a slave BMS that is not supported, you will just get a compile error.  Remove the unsupported entry and you're good to go.  All the important monitoring sensors and status readouts are supported for slaves, but due to inherent protocol limitations, the writable entries in particular simply will not work without a direct connection.  If you need to set alarm voltage levels, etc. then you'll have to connect an ESP directly to the slave BMS for that.  Afterward, you can go back to the master/slave configuration for ongoing monitoring.
 
 ## Example Config Files
 
 If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific settings](#8266-specific-settings))
 
-Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.  You may also need to modify the 
+Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.  
 
 Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting supporting this component, but it can be done if you trim down the config enough - remove webserver and anything else that's "extra", and probably remove some of the sensors you don't need as well.  I was able to get it running an an 8266 board with 1MB flash, but it was a stretch.
 
@@ -1093,7 +1093,7 @@ We need at least one and as many as four configuration values to speak with the 
     * SEPLOS
     * EG4
 
-    Protocol 25 has no variants I am aware of.
+    Protocol 25 has no variants I am aware of.  (It can have some slight differences in response payload, usually extra values tacked onto the end of the get analog/status information commands, but doesn't require special code paths like the version 20 variants.)
 4) **`battery_chemistry`** - In almost all cases this will be 0x46, but some manufacturers who intentionally break compatibility will use a different value (or actually legitimately have a different chemistry in some cases).
 
 Step 3: the commandset
@@ -1195,7 +1195,7 @@ pace_bms:
   battery_chemistry: 0x4A # only if not 46
   protocol_variant: "EG4"
 ```
-If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you the most "correct" data: 
+If you only got the yellow highlighted line, you're going to have to guess.  Try the following values and see which one gives you "correct" data: 
 * PYLON
 * SEPLOS
 * EG4
@@ -1206,7 +1206,7 @@ Once you've figured out the proper protocol variant that returns sensible status
 
 If it didn't work
 -
-If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You may have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please file an issue and provide me with whatever data you can, including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or from the manufacturer's recommended BMS software if not), and VERY_VERBOSE level logs.  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
+If none of the protocol variants work properly, or you have a different issue following these steps, I'd be interested to hear about it.  You may have a BMS speaking a protocol variant I haven't come across or found documentation for.  Please [file an issue](https://github.com/nkinnan/esphome-pace-bms/issues) and provide me with whatever data you can, including make/model/hardware version (in particular the hardware version reported by pace_bms if you can get it to respond to that request, or from the manufacturer's recommended BMS software if not), and VERY_VERBOSE level logs.  Even better if you can provide me some COM port traces between the manufacturer's software and the BMS or even a protocol spec doc you found by googling your hardware.  I might be able to implement the new variant for you.
 
 
 # Decoding the Status Values (but you probably don't want to)
