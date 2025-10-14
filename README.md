@@ -3,7 +3,7 @@
 
 This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount and wall-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in Asia for the consumer market.  Version 20 of this protocol is also sometimes called "PYLON" or "PylonTech".  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
 
-![EG4 LIFEPOWER4](images/EG4-0x20-320.png) ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png)
+![EG4 LIFEPOWER4](images/EG4-0x20-320.png) ![EG4 LIFEPOWER4](images/Jakiper-0x25-320.png) ![Easun Powerwall](images/easun-powerwall-240.png)
 
 The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers (usually) either "**20**", "**21**", "**25**", or "**26**" and ending with a '**\r**' (carriage return) character.  
 
