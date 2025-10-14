@@ -92,39 +92,39 @@ Using modbus for your pack means you will not be able to set any configuration v
 These *read-only* settings are supported for all protocol versions and variants, for both master and slave type BMSes unless otherwise noted.
 
 - Multi-pack information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
-	- **BMS Count** - How many packs in total the master BMS reports being connected
-	- **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem)
+  - **BMS Count** - How many packs in total the master BMS reports being connected
+  - **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem)
 
 - All "Analog Information"
-	- **Cell Count**
-	- **Cell Voltage** (V) - up to x16 depending on your battery pack
-	- **Temperature Count**
-	- **Temperature** (°C) - up to x6 depending on your battery pack (there is one brand that has 8), order is not guaranteed and varies by manufacturer but a typical setup might be:
-		- *Cell Temperature* 1-4 
-		- *MOSFET Temperature* 
-		- *Environment Temperature*
-	- **Total Voltage** (V)
-	- **Current** (A) - positive or negative for charge/discharge
-	- **Power** (W) - positive or negative for charge/discharge
-	- **Remaining Capacity** (Ah)
-	- **Full Capacity** (Ah)
-	- **Design Capacity** (Ah)
-	- **State of Charge** (%)
-	- **State of Health** (%)
-	- **Cycle Count**
-	- **Minimum Cell Voltage** (V)
-	- **Maximum Cell Voltage** (V)
-	- **Average Cell Voltage** (V)
-	- **Max Cell Differential** (V) - difference between minimum and maximum cell voltage
+  - **Cell Count**
+  - **Cell Voltage** (V) - up to x16 depending on your battery pack
+  - **Temperature Count**
+  - **Temperature** (°C) - up to x6 depending on your battery pack (there is one brand that has 8), order is not guaranteed and varies by manufacturer but a typical setup might be:
+    - *Cell Temperature* 1-4 
+    - *MOSFET Temperature* 
+    - *Environment Temperature*
+  - **Total Voltage** (V)
+  - **Current** (A) - positive or negative for charge/discharge
+  - **Power** (W) - positive or negative for charge/discharge
+  - **Remaining Capacity** (Ah)
+  - **Full Capacity** (Ah)
+  - **Design Capacity** (Ah)
+  - **State of Charge** (%)
+  - **State of Health** (%)
+  - **Cycle Count**
+  - **Minimum Cell Voltage** (V)
+  - **Maximum Cell Voltage** (V)
+  - **Average Cell Voltage** (V)
+  - **Max Cell Differential** (V) - difference between minimum and maximum cell voltage
   
 - All "Status Information" decoded to human-readable text format
-	- **Warning Text** - A list of any warnings reported by the BMS
-	- **Protection Text** - If the BMS has protected itself or the cells, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
-	- **Fault Text** - A list of any faults reported by the BMS
-	- **System Text** - Current system status such as "Charging"
-	- **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
-	- **Balancing Text** - If any cells are currently balancing, they will be listed here
-	- **(individual status flag values)** - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.  See [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to) for more information on that.
+  - **Warning Text** - A list of any warnings reported by the BMS
+  - **Protection Text** - If the BMS has protected itself or the cells, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
+  - **Fault Text** - A list of any faults reported by the BMS
+  - **System Text** - Current system status such as "Charging"
+  - **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
+  - **Balancing Text** - If any cells are currently balancing, they will be listed here
+  - **(individual status flag values)** - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.  See [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to) for more information on that.
 
 These *read-only* settings are only available for `type=MASTER`
 
@@ -145,90 +145,90 @@ It is difficult to find good documentation on either of these protocols.  All th
 These writable toggles and selects are supported by both `type=MASTER` and `type=SLAVE` BMSes, but for `type=SLAVE` they *become read-only*
 
 - Toggles (switches) that turn various features on/off
-	- **Buzzer Alarm**
-	- **LED Alarm**
-	- **Charge Current Limiter**
-	- **Charge MOSFET**
-	- **Discharge MOSFET**
+  - **Buzzer Alarm**
+  - **LED Alarm**
+  - **Charge Current Limiter**
+  - **Charge MOSFET**
+  - **Discharge MOSFET**
 
 - Selects (drop-lists) that allow configuring various features
-	- **Charge Current Limiter Gear** - set to High or Low
+  - **Charge Current Limiter Gear** - set to High or Low
 
 These writable settings are supported by `type=MASTER` BMSes only
 
 - Selects (drop-lists) that allow configuring various features
-	- **Protocol (CAN)** - Allows selection of various protocols spoken on the CAN bus, typically to match your inverter
-	- **Protocol (RS485)** - Allows selection of various protocols spoken on the RS485 bus, typically to match your inverter
-	- **Protocol Type** - Auto or Manual
+  - **Protocol (CAN)** - Allows selection of various protocols spoken on the CAN bus, typically to match your inverter
+  - **Protocol (RS485)** - Allows selection of various protocols spoken on the RS485 bus, typically to match your inverter
+  - **Protocol Type** - Auto or Manual
 - Configuration (editable numbers)
   - Cell Over Voltage
-	- **Cell Over Voltage Alarm** (V)
-	- **Cell Over Voltage Protection** (V)
-	- **Cell Over Voltage Protection Release** (V)
-	- **Cell Over Voltage Delay** (seconds)
+  - **Cell Over Voltage Alarm** (V)
+  - **Cell Over Voltage Protection** (V)
+  - **Cell Over Voltage Protection Release** (V)
+  - **Cell Over Voltage Delay** (seconds)
   - Pack Over Voltage
-	- **Pack Over Voltage Alarm** (V)
-	- **Pack Over Voltage Protection** (V)
-	- **Pack Over Voltage Protection Release** (V)
-	- **Pack Over Voltage Delay** (seconds)
+  - **Pack Over Voltage Alarm** (V)
+  - **Pack Over Voltage Protection** (V)
+  - **Pack Over Voltage Protection Release** (V)
+  - **Pack Over Voltage Delay** (seconds)
   - Cell Under Voltage
-	- **Cell Under Voltage Alarm** (V)
-	- **Cell Under Voltage Protection** (V)
-	- **Cell Under Voltage Protection Release** (V)
-	- **Cell Under Voltage Delay** (seconds)
+  - **Cell Under Voltage Alarm** (V)
+  - **Cell Under Voltage Protection** (V)
+  - **Cell Under Voltage Protection Release** (V)
+  - **Cell Under Voltage Delay** (seconds)
   - Pack Under Voltage
-	- **Pack Under Voltage Alarm** (V)
-	- **Pack Under Voltage Protection** (V)
-	- **Pack Under Voltage Protection Release** (V)
-	- **Pack Under Voltage Delay** (seconds)
+  - **Pack Under Voltage Alarm** (V)
+  - **Pack Under Voltage Protection** (V)
+  - **Pack Under Voltage Protection Release** (V)
+  - **Pack Under Voltage Delay** (seconds)
   - Discharge Over Current 1
-	- **Discharge Over Current 1 Alarm** (A)
-	- **Discharge Over Current 1 Protection** (A)
-	- **Discharge Over Current 1 Delay** (seconds)
+  - **Discharge Over Current 1 Alarm** (A)
+  - **Discharge Over Current 1 Protection** (A)
+  - **Discharge Over Current 1 Delay** (seconds)
   - Discharge Over Current 2
-	- **Discharge Over Current 2 Protection** (A)
-	- **Discharge Over Current 2 Delay** (seconds)
+  - **Discharge Over Current 2 Protection** (A)
+  - **Discharge Over Current 2 Delay** (seconds)
   - Discharge Short Circuit
-	- **Discharge Short Circuit Protection Delay** (milliseconds)
+  - **Discharge Short Circuit Protection Delay** (milliseconds)
   - Cell Balancing
-	- **Cell Balancing Threshold** (V)
-	- **Cell Balancing Delta** (V)
+  - **Cell Balancing Threshold** (V)
+  - **Cell Balancing Delta** (V)
   - Sleep
-	- **Sleep Cell Voltage** (V)
-	- **Sleep Delay** (minutes)
+  - **Sleep Cell Voltage** (V)
+  - **Sleep Delay** (minutes)
   - Full Charge
-	- **Full Charge Voltage** (V)
-	- **Full Charge Amps** (A)
+  - **Full Charge Voltage** (V)
+  - **Full Charge Amps** (A)
   - Low Charge
-	- **Low Charge Alarm** (%)
+  - **Low Charge Alarm** (%)
   - Charge Over Temperature
-	- **Charge Over Temperature Alarm** (°C)
-	- **Charge Over Temperature Protection** (°C)
-	- **Charge Over Temperature Protection Release** (°C)
+  - **Charge Over Temperature Alarm** (°C)
+  - **Charge Over Temperature Protection** (°C)
+  - **Charge Over Temperature Protection Release** (°C)
   - Discharge Over Temperature
-	- **Discharge Over Temperature Alarm** (°C)
-	- **Discharge Over Temperature Protection** (°C)
-	- **Discharge Over Temperature Protection Release** (°C)
+  - **Discharge Over Temperature Alarm** (°C)
+  - **Discharge Over Temperature Protection** (°C)
+  - **Discharge Over Temperature Protection Release** (°C)
   - Charge Under Temperature
-	- **Charge Under Temperature Alarm** (°C)
-	- **Charge Under Temperature Protection** (°C)
-	- **Charge Under Temperature Protection Release** (°C)
+  - **Charge Under Temperature Alarm** (°C)
+  - **Charge Under Temperature Protection** (°C)
+  - **Charge Under Temperature Protection Release** (°C)
   - Discharge Under Temperature
-	- **Discharge Under Temperature Alarm** (°C)
-	- **Discharge Under Temperature Protection** (°C)
-	- **Discharge Under Temperature Protection Release** (°C)
+  - **Discharge Under Temperature Alarm** (°C)
+  - **Discharge Under Temperature Protection** (°C)
+  - **Discharge Under Temperature Protection Release** (°C)
   - MOSFET Over Temperature
-	- **MOSFET Over Temperature Alarm** (°C)
-	- **MOSFET Over Temperature Protection** (°C)
-	- **MOSFET Over Temperature Protection Release** (°C)
+  - **MOSFET Over Temperature Alarm** (°C)
+  - **MOSFET Over Temperature Protection** (°C)
+  - **MOSFET Over Temperature Protection Release** (°C)
   - Environment Over Temperature
-	- **Environment Over Temperature Alarm** (°C)
-	- **Environment Over Temperature Protection** (°C)
-	- **Environment Over Temperature Protection Release** (°C)
+  - **Environment Over Temperature Alarm** (°C)
+  - **Environment Over Temperature Protection** (°C)
+  - **Environment Over Temperature Protection Release** (°C)
   - Environment Under Temperature
-	- **Environment Under Temperature Alarm** (°C)
-	- **Environment Under Temperature Protection** (°C)
-	- **Environment Under Temperature Protection Release** (°C)
+  - **Environment Under Temperature Alarm** (°C)
+  - **Environment Under Temperature Protection** (°C)
+  - **Environment Under Temperature Protection Release** (°C)
 
 # What Battery Packs are Supported?
 
@@ -1009,38 +1009,38 @@ Multi-pack is not recommended on an ESP8266.  The 8266 already has difficulting 
 ### Protocol 25
 
 - ESP8266
-	- [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensors, plus BMS configuration settings
-		- This will fail in a boot loop due to out of memory on the 8266 with it's limited resources.  You will need to trim down the number of sensors before uploading.  This is the only example config file with this issue.
-	- [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensors only
+  - [esp8266-0x25-full.yaml](esp8266-0x25-full.yaml) - all sensors, plus BMS configuration settings
+    - This will fail in a boot loop due to out of memory on the 8266 with it's limited resources.  You will need to trim down the number of sensors before uploading.  This is the only example config file with this issue.
+  - [esp8266-0x25-sensors_only.yaml](esp8266-0x25-sensors_only.yaml) - sensors only
 
 - ESP32
-	- [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensors, plus BMS configuration settings
-	- [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensors only
+  - [esp32-0x25-full.yaml](esp32-0x25-full.yaml) - all sensors, plus BMS configuration settings
+  - [esp32-0x25-sensors_only.yaml](esp32-0x25-sensors_only.yaml) - sensors only
   
 - ESP32 (1 Master, 3 Slaves)
-	- [esp32-0x25-full-multi-pack.yaml](esp32-0x25-full-multi-pack.yaml) - all sensors, plus BMS configuration settings (configuration settings for MASTER only! SLAVEs do not support configuration, but do support most sensors)
-	- [esp32-0x25-sensors_only-multi-pack.yaml](esp32-0x25-sensors_only-multi-pack.yaml) - sensors only, for both MASTER and SLAVE (all sensors for master, most sensors are supported for SLAVEs)
+  - [esp32-0x25-full-multi-pack.yaml](esp32-0x25-full-multi-pack.yaml) - all sensors, plus BMS configuration settings (configuration settings for MASTER only! SLAVEs do not support configuration, but do support most sensors)
+  - [esp32-0x25-sensors_only-multi-pack.yaml](esp32-0x25-sensors_only-multi-pack.yaml) - sensors only, for both MASTER and SLAVE (all sensors for master, most sensors are supported for SLAVEs)
 
 ### Protocol 20, EG4 variant
 
 - ESP8266
-	- [esp8266-0x20-EG4.yaml](esp8266-0x20-EG4.yaml)
+  - [esp8266-0x20-EG4.yaml](esp8266-0x20-EG4.yaml)
 - ESP32
-	- [esp32-0x20-EG4.yaml](esp32-0x20-EG4.yaml)
+  - [esp32-0x20-EG4.yaml](esp32-0x20-EG4.yaml)
 
 ### Protocol 20, SEPLOS variant
 
 - ESP8266
-	- [esp8266-0x20-SEPLOS.yaml](esp8266-0x20-SEPLOS.yaml)
+  - [esp8266-0x20-SEPLOS.yaml](esp8266-0x20-SEPLOS.yaml)
 - ESP32
-	- [esp32-0x20-SEPLOS.yaml](esp32-0x20-SEPLOS.yaml)
+  - [esp32-0x20-SEPLOS.yaml](esp32-0x20-SEPLOS.yaml)
 
 ### Protocol 20, PYLON variant
 
 - ESP8266
-	- [esp8266-0x20-PYLON.yaml](esp8266-0x20-PYLON.yaml)
+  - [esp8266-0x20-PYLON.yaml](esp8266-0x20-PYLON.yaml)
 - ESP32
-	- [esp32-0x20-PYLON.yaml](esp32-0x20-PYLON.yaml)
+  - [esp32-0x20-PYLON.yaml](esp32-0x20-PYLON.yaml)
 
 # How to configure a battery pack that's not in the supported list (yet)
 
@@ -1321,14 +1321,14 @@ The entries:
 All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
 
 ```C++
-	enum StatusInformation_WarningValues
-	{
-		WV_BelowLowerLimitValue = 1,
-		WV_AboveUpperLimitValue = 2,
-		WV_UserDefinedFaultRangeStartValue = 0x80,
-		WV_UserDefinedFaultRangeEndValue = 0xEF,
-		WV_OtherFaultValue = 0xF0,
-	};
+  enum StatusInformation_WarningValues
+  {
+    WV_BelowLowerLimitValue = 1,
+    WV_AboveUpperLimitValue = 2,
+    WV_UserDefinedFaultRangeStartValue = 0x80,
+    WV_UserDefinedFaultRangeEndValue = 0xEF,
+    WV_OtherFaultValue = 0xF0,
+  };
 
   const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val)
   {
@@ -1361,17 +1361,17 @@ The entries:
 Contain bitflags.  They indicate a warning but not a fault or error (yet).  Possible values:
 
 ```C++
-	enum StatusInformation_Warning1Flags
-	{
-		W1F_UndefinedWarning1Bit8 = (1 << 7),
-		W1F_UndefinedWarning1Bit7 = (1 << 6),
-		W1F_DischargeCurrentBit = (1 << 5),
-		W1F_ChargeCurrentBit = (1 << 4),
-		W1F_LowTotalVoltageBit = (1 << 3),
-		W1F_HighTotalVoltageBit = (1 << 2),
-		W1F_LowCellVoltageBit = (1 << 1),
-		W1F_HighCellVoltageBit = (1 << 0),
-	};
+  enum StatusInformation_Warning1Flags
+  {
+    W1F_UndefinedWarning1Bit8 = (1 << 7),
+    W1F_UndefinedWarning1Bit7 = (1 << 6),
+    W1F_DischargeCurrentBit = (1 << 5),
+    W1F_ChargeCurrentBit = (1 << 4),
+    W1F_LowTotalVoltageBit = (1 << 3),
+    W1F_HighTotalVoltageBit = (1 << 2),
+    W1F_LowCellVoltageBit = (1 << 1),
+    W1F_HighCellVoltageBit = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeWarningStatus1Value(const uint8_t val)
   {
@@ -1406,16 +1406,16 @@ Contain bitflags.  They indicate a warning but not a fault or error (yet).  Poss
   }
 
   enum StatusInformation_Warning2Flags
-	{
-		W2F_LowPower = (1 << 7),
-		W2F_HighMosfetTemperature = (1 << 6),
-		W2F_LowEnvironmentalTemperature = (1 << 5),
-		W2F_HighEnvironmentalTemperature = (1 << 4),
-		W2F_LowDischargeTemperature = (1 << 3),
-		W2F_LowChargeTemperature = (1 << 2),
-		W2F_HighDischargeTemperature = (1 << 1),
-		W2F_HighChargeTemperature = (1 << 0),
-	};
+  {
+    W2F_LowPower = (1 << 7),
+    W2F_HighMosfetTemperature = (1 << 6),
+    W2F_LowEnvironmentalTemperature = (1 << 5),
+    W2F_HighEnvironmentalTemperature = (1 << 4),
+    W2F_LowDischargeTemperature = (1 << 3),
+    W2F_LowChargeTemperature = (1 << 2),
+    W2F_HighDischargeTemperature = (1 << 1),
+    W2F_HighChargeTemperature = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t val)
   {
@@ -1461,17 +1461,17 @@ The entry:
 Contains bitflags.  These flags indicate the current status of the BMS.  Possible values:
 
 ```C++
-	enum StatusInformation_SystemFlags
-	{
-		SF_HeaterActiveBit = (1 << 7),
-		SF_AlternateCurrentInBit = (1 << 6),
-		SF_ChargingBit = (1 << 5),
-		SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
-		SF_DischargingBit = (1 << 3),
-		SF_DischargeMosfetOnBit = (1 << 2),
-		SF_ChargeMosfetOnBit = (1 << 1),
-		SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
-	};
+  enum StatusInformation_SystemFlags
+  {
+    SF_HeaterActiveBit = (1 << 7),
+    SF_AlternateCurrentInBit = (1 << 6),
+    SF_ChargingBit = (1 << 5),
+    SF_PositiveNegativeTerminalsReversedBit = (1 << 4),
+    SF_DischargingBit = (1 << 3),
+    SF_DischargeMosfetOnBit = (1 << 2),
+    SF_ChargeMosfetOnBit = (1 << 1),
+    SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
+  };
 
   const std::string PaceBmsProtocolV25::DecodeStatusValue(const uint8_t val)
   {
@@ -1513,17 +1513,17 @@ The entry:
 Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
 
 ```C++
-	enum StatusInformation_ConfigurationFlags
-	{
-		CF_UndefinedConfigurationStatusBit8 = (1 << 7),
-		CF_StaticBalanceBit = (1 << 6),
-		CF_LedAlarmEnabledBit = (1 << 5),
-		CF_ChargeCurrentLimiterEnabledBit = (1 << 4),
-		CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3),
-		CF_DischargeMosfetTurnedOff = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
-		CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
-		CF_BuzzerAlarmEnabledBit = (1 << 0),
-	};
+  enum StatusInformation_ConfigurationFlags
+  {
+    CF_UndefinedConfigurationStatusBit8 = (1 << 7),
+    CF_StaticBalanceBit = (1 << 6),
+    CF_LedAlarmEnabledBit = (1 << 5),
+    CF_ChargeCurrentLimiterEnabledBit = (1 << 4),
+    CF_ChargeCurrentLimiterLowGearSetBit = (1 << 3),
+    CF_DischargeMosfetTurnedOff = (1 << 2), // it is not documented, but in practice I have seen this flag being set to mean "Discharge MOSFET turned OFF" in addition to the SF_DischargeMosfetOnBit flag being cleared
+    CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
+    CF_BuzzerAlarmEnabledBit = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeConfigurationStatusValue(const uint8_t val)
   {
@@ -1542,7 +1542,7 @@ Contains bitflags.  These flags indicate the current configuration of the BMS.  
       str.append("Charge Current Limiter Enabled (" + std::string((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0 ? "Low Gear" : "High Gear") + "); ");
     }
     //if ((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0) {
-    //	str.append("Current limit low-gear Set; ");
+    //  str.append("Current limit low-gear Set; ");
     //}
     if ((val & CF_DischargeMosfetTurnedOff) != 0) {
       str.append("Discharge MOSFET Turned Off; ");
@@ -1565,17 +1565,17 @@ The entry:
 Contain bitflags.  These flags indicate that action is being taken by the BMS to protect itself.  Possible values:
 
 ```C++
-	enum StatusInformation_Protection1Flags
-	{
-		P1F_ChargerHighVoltageInProtect1Bit = (1 << 7),
-		P1F_ShortCircuitProtect1Bit = (1 << 6),
-		P1F_DischargeCurrentProtect1Bit = (1 << 5),
-		P1F_ChargeCurrentProtect1Bit = (1 << 4),
-		P1F_LowTotalVoltageProtect1Bit = (1 << 3),
-		P1F_HighTotalVoltageProtect1Bit = (1 << 2),
-		P1F_LowCellVoltageProtect1Bit = (1 << 1),
-		P1F_HighCellVoltageProtect1Bit = (1 << 0),
-	};
+  enum StatusInformation_Protection1Flags
+  {
+    P1F_ChargerHighVoltageInProtect1Bit = (1 << 7),
+    P1F_ShortCircuitProtect1Bit = (1 << 6),
+    P1F_DischargeCurrentProtect1Bit = (1 << 5),
+    P1F_ChargeCurrentProtect1Bit = (1 << 4),
+    P1F_LowTotalVoltageProtect1Bit = (1 << 3),
+    P1F_HighTotalVoltageProtect1Bit = (1 << 2),
+    P1F_LowCellVoltageProtect1Bit = (1 << 1),
+    P1F_HighCellVoltageProtect1Bit = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeProtectionStatus1Value(const uint8_t val)
   {
@@ -1610,16 +1610,16 @@ Contain bitflags.  These flags indicate that action is being taken by the BMS to
   }
 
   enum StatusInformation_Protection2Flags
-	{
-		P2F_FullyProtect2Bit = (1 << 7),
-		P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
-		P2F_HighEnvironmentalTemperatureProtect2Bit = (1 << 5),
-		P2F_HighMosfetTemperatureProtect2Bit = (1 << 4),
-		P2F_LowDischargeTemperatureProtect2Bit = (1 << 3),
-		P2F_LowChargeTemperatureProtect2Bit = (1 << 2),
-		P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
-		P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
-	};
+  {
+    P2F_FullyProtect2Bit = (1 << 7),
+    P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
+    P2F_HighEnvironmentalTemperatureProtect2Bit = (1 << 5),
+    P2F_HighMosfetTemperatureProtect2Bit = (1 << 4),
+    P2F_LowDischargeTemperatureProtect2Bit = (1 << 3),
+    P2F_LowChargeTemperatureProtect2Bit = (1 << 2),
+    P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
+    P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t val)
   {
@@ -1662,17 +1662,17 @@ The entry:
 Contains bitflags.  These flags indicate the BMS is faulted, a more serious condition than a protection being enabled.  Generally this means the hardware has failed in some way.  Possible values:
 
 ```C++
-	enum StatusInformation_FaultFlags
-	{
-		FF_HeaterBit = (1 << 7),
-		FF_CCBBit = (1 << 6),
-		FF_VCCSamplingBit = (1 << 5),
-		FF_CellBit = (1 << 4),
-		FF_CommBit = (1 << 3),
-		FF_NTCBit = (1 << 2),
-		FF_DischargeMosfetBit = (1 << 1),
-		FF_ChargeMosfetBit = (1 << 0),
-	};
+  enum StatusInformation_FaultFlags
+  {
+    FF_HeaterBit = (1 << 7),
+    FF_CCBBit = (1 << 6),
+    FF_VCCSamplingBit = (1 << 5),
+    FF_CellBit = (1 << 4),
+    FF_CommBit = (1 << 3),
+    FF_NTCBit = (1 << 2),
+    FF_DischargeMosfetBit = (1 << 1),
+    FF_ChargeMosfetBit = (1 << 0),
+  };
 
   const std::string PaceBmsProtocolV25::DecodeFaultStatusValue(const uint8_t val)
   {
@@ -1799,13 +1799,13 @@ The entries:
 All contain a scalar value.  They indicate a warning but not a fault or error (yet) on their respective measurement.  Possible values:
 
 ```C++
-	enum StatusInformation_WarningValues
-	{
-		WV_Normal = 0,
-		WV_BelowLowerLimitValue = 1,
-		WV_AboveUpperLimitValue = 2,
-		WV_OtherFaultValue = 0xF0,
-	};
+  enum StatusInformation_WarningValues
+  {
+    WV_Normal = 0,
+    WV_BelowLowerLimitValue = 1,
+    WV_AboveUpperLimitValue = 2,
+    WV_OtherFaultValue = 0xF0,
+  };
 ```
 
 The entry:
@@ -1814,17 +1814,17 @@ The entry:
 Contains bitflags.  It's unclear from the documentation whether these are "warning" or "protection" flags.  I chose to implement them as "protection" but if you have a PYLON BMS and can tell me otherwise I'm happy to better classify them.  Possible values:
 
 ```C++
-		enum StatusInformation_Status1
-		{
-			S1_PackUnderVoltage = (1 << 7),
-			S1_ChargeTemperatureProtection = (1 << 6),
-			S1_DischargeTemperatureProtection = (1 << 5),
-			S1_DischargeOverCurrent = (1 << 4),
-			S1_UndefinedStatus1Bit4 = (1 << 3),
-			S1_ChargeOverCurrent = (1 << 2),
-			S1_CellUnderVoltage = (1 << 1),
-			S1_PackOverVoltage = (1 << 0),
-		};
+    enum StatusInformation_Status1
+    {
+      S1_PackUnderVoltage = (1 << 7),
+      S1_ChargeTemperatureProtection = (1 << 6),
+      S1_DischargeTemperatureProtection = (1 << 5),
+      S1_DischargeOverCurrent = (1 << 4),
+      S1_UndefinedStatus1Bit4 = (1 << 3),
+      S1_ChargeOverCurrent = (1 << 2),
+      S1_CellUnderVoltage = (1 << 1),
+      S1_PackOverVoltage = (1 << 0),
+    };
 ```
 
 The entry:
@@ -1833,17 +1833,17 @@ The entry:
 Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Status2
-		{
-			S2_UndefinedStatus2Bit8 = (1 << 7),
-			S2_UndefinedStatus2Bit7 = (1 << 6),
-			S2_UndefinedStatus2Bit6 = (1 << 5),
-			S2_UndefinedStatus2Bit5 = (1 << 4),
-			S2_UsingBatteryPower = (1 << 3),
-			S2_DischargeMosfetOn = (1 << 2),
-			S2_ChargeMosfetOn = (1 << 1),
-			S2_PrechargeMosfetOn = (1 << 0),
-		};
+    enum StatusInformation_Status2
+    {
+      S2_UndefinedStatus2Bit8 = (1 << 7),
+      S2_UndefinedStatus2Bit7 = (1 << 6),
+      S2_UndefinedStatus2Bit6 = (1 << 5),
+      S2_UndefinedStatus2Bit5 = (1 << 4),
+      S2_UsingBatteryPower = (1 << 3),
+      S2_DischargeMosfetOn = (1 << 2),
+      S2_ChargeMosfetOn = (1 << 1),
+      S2_PrechargeMosfetOn = (1 << 0),
+    };
 ```
 
 The entry:
@@ -1852,17 +1852,17 @@ The entry:
 Contains bitflags.  These flags indicate the current system state of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Status3
-		{
-			S3_Charging = (1 << 7),
-			S3_Discharging = (1 << 6),
-			S3_HeaterOn = (1 << 5),
-			S3_UndefinedStatus3Bit5 = (1 << 4),
-			S3_FullyCharged = (1 << 3),
-			S3_UndefinedStatus3Bit3 = (1 << 2),
-			S3_UndefinedStatus3Bit2 = (1 << 1),
-			S3_Buzzer = (1 << 0),
-		};
+    enum StatusInformation_Status3
+    {
+      S3_Charging = (1 << 7),
+      S3_Discharging = (1 << 6),
+      S3_HeaterOn = (1 << 5),
+      S3_UndefinedStatus3Bit5 = (1 << 4),
+      S3_FullyCharged = (1 << 3),
+      S3_UndefinedStatus3Bit3 = (1 << 2),
+      S3_UndefinedStatus3Bit2 = (1 << 1),
+      S3_Buzzer = (1 << 0),
+    };
 ```
 
 The entries:
@@ -1872,28 +1872,28 @@ The entries:
 Contains bitflags.  These flags indicate a cell fault.  Possible values:
 
 ```C++
-		enum StatusInformation_Status4
-		{
-			S4_Cell08Fault = (1 << 7),
-			S4_Cell07Fault = (1 << 6),
-			S4_Cell06Fault = (1 << 5),
-			S4_Cell05Fault = (1 << 4),
-			S4_Cell04Fault = (1 << 3),
-			S4_Cell03Fault = (1 << 2),
-			S4_Cell02Fault = (1 << 1),
-			S4_Cell01Fault = (1 << 0),
-		};
-		enum StatusInformation_Status5
-		{
-			S5_Cell16Fault = (1 << 7),
-			S5_Cell15Fault = (1 << 6),
-			S5_Cell14Fault = (1 << 5),
-			S5_Cell13Fault = (1 << 4),
-			S5_Cell12Fault = (1 << 3),
-			S5_Cell11Fault = (1 << 2),
-			S5_Cell10Fault = (1 << 1),
-			S5_Cell09Fault = (1 << 0),
-		};
+    enum StatusInformation_Status4
+    {
+      S4_Cell08Fault = (1 << 7),
+      S4_Cell07Fault = (1 << 6),
+      S4_Cell06Fault = (1 << 5),
+      S4_Cell05Fault = (1 << 4),
+      S4_Cell04Fault = (1 << 3),
+      S4_Cell03Fault = (1 << 2),
+      S4_Cell02Fault = (1 << 1),
+      S4_Cell01Fault = (1 << 0),
+    };
+    enum StatusInformation_Status5
+    {
+      S5_Cell16Fault = (1 << 7),
+      S5_Cell15Fault = (1 << 6),
+      S5_Cell14Fault = (1 << 5),
+      S5_Cell13Fault = (1 << 4),
+      S5_Cell12Fault = (1 << 3),
+      S5_Cell11Fault = (1 << 2),
+      S5_Cell10Fault = (1 << 1),
+      S5_Cell09Fault = (1 << 0),
+    };
 ```
 </details>
 (click header to expand/collapse section)
@@ -2005,13 +2005,13 @@ All contain a scalar value.  They indicate a warning but not a fault or error (y
 **Important:** * The SEPLOS variant does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
 
 ```C++
-	enum StatusInformation_WarningValues
-	{
-		WV_Normal = 0,
-		WV_BelowLowerLimitValue = 1,
-		WV_AboveUpperLimitValue = 2,
-		WV_OtherFaultValue = 0xF0,
-	};
+  enum StatusInformation_WarningValues
+  {
+    WV_Normal = 0,
+    WV_BelowLowerLimitValue = 1,
+    WV_AboveUpperLimitValue = 2,
+    WV_OtherFaultValue = 0xF0,
+  };
 ```
 
 The entry:
@@ -2025,17 +2025,17 @@ The entry:
 Contains bitflags.  These flags indicate the current system status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_SystemStatus
-		{
-			SS_ReservedSystemStatusBit8 = (1 << 7),
-			SS_ReservedSystemStatusBit7 = (1 << 6),
-			SS_PowerOff = (1 << 5),
-			SS_Standby = (1 << 4),
-			SS_ReservedSystemStatusBit4 = (1 << 3),
-			SS_FloatingCharge = (1 << 2),
-			SS_Charging = (1 << 1),
-			SS_Discharging = (1 << 0),
-		};
+    enum StatusInformation_SystemStatus
+    {
+      SS_ReservedSystemStatusBit8 = (1 << 7),
+      SS_ReservedSystemStatusBit7 = (1 << 6),
+      SS_PowerOff = (1 << 5),
+      SS_Standby = (1 << 4),
+      SS_ReservedSystemStatusBit4 = (1 << 3),
+      SS_FloatingCharge = (1 << 2),
+      SS_Charging = (1 << 1),
+      SS_Discharging = (1 << 0),
+    };
 ```
 
 The entry:
@@ -2044,17 +2044,17 @@ The entry:
 Contains bitflags.  These flags indicate the current configuration of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_PowerStatus
-		{
-			PS_ReservedPowerStatusBit8 = (1 << 7),
-			PS_ReservedPowerStatusBit7 = (1 << 6),
-			PS_ReservedPowerStatusBit6 = (1 << 5),
-			PS_ReservedPowerStatusBit5 = (1 << 4),
-			PS_HeatingSwitchStatus = (1 << 3),
-			PS_CurrentLimitSwitchStatus = (1 << 2),
-			PS_ChargeSwitchStatus = (1 << 1),
-			PS_DischargeSwitchStatus = (1 << 0),
-		};
+    enum StatusInformation_PowerStatus
+    {
+      PS_ReservedPowerStatusBit8 = (1 << 7),
+      PS_ReservedPowerStatusBit7 = (1 << 6),
+      PS_ReservedPowerStatusBit6 = (1 << 5),
+      PS_ReservedPowerStatusBit5 = (1 << 4),
+      PS_HeatingSwitchStatus = (1 << 3),
+      PS_CurrentLimitSwitchStatus = (1 << 2),
+      PS_ChargeSwitchStatus = (1 << 1),
+      PS_DischargeSwitchStatus = (1 << 0),
+    };
 ```
 
 The entry:
@@ -2068,18 +2068,18 @@ The entry:
 Contains bitflags.  These flags indicate faults of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning1
-		{
-			// pretty sure these three mean MOSFET when they say "Switch" in the doc...
-			W1_CurrentLimitSwitchFailure = (1 << 7), // fault
-			W1_DischaringSwitchFailure = (1 << 6), // fault
-			W1_ChargingSwitchFailure = (1 << 5), // fault
-			W1_CellVoltageDifferenceSensingFailure = (1 << 4), // fault
-			W1_PowerSwitchFailure = (1 << 3), // fault
-			W1_CurrentSensingFailure = (1 << 2), // fault
-			W1_TemperatureSensingFailure = (1 << 1), // fault
-			W1_VoltageSensingFailure = (1 << 0), // fault
-		};
+    enum StatusInformation_Warning1
+    {
+      // pretty sure these three mean MOSFET when they say "Switch" in the doc...
+      W1_CurrentLimitSwitchFailure = (1 << 7), // fault
+      W1_DischaringSwitchFailure = (1 << 6), // fault
+      W1_ChargingSwitchFailure = (1 << 5), // fault
+      W1_CellVoltageDifferenceSensingFailure = (1 << 4), // fault
+      W1_PowerSwitchFailure = (1 << 3), // fault
+      W1_CurrentSensingFailure = (1 << 2), // fault
+      W1_TemperatureSensingFailure = (1 << 1), // fault
+      W1_VoltageSensingFailure = (1 << 0), // fault
+    };
 ```
 
 The entry:
@@ -2088,17 +2088,17 @@ The entry:
 Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning2
-		{
-			W2_PackLowVoltageProtection = (1 << 7), // protection 
-			W2_PackLowVoltageWarning = (1 << 6), // warning 
-			W2_PackOverVoltageProtection = (1 << 5), // protection 
-			W2_PackOverVoltageWarning = (1 << 4), // warning 
-			W2_CellLowVoltageProtection = (1 << 3), // protection 
-			W2_CellLowVoltageWarning = (1 << 2), // warning 
-			W2_CellOverVoltageProtection = (1 << 1), // protection 
-			W2_CellOverVoltageWarning = (1 << 0), // warning 
-		};
+    enum StatusInformation_Warning2
+    {
+      W2_PackLowVoltageProtection = (1 << 7), // protection 
+      W2_PackLowVoltageWarning = (1 << 6), // warning 
+      W2_PackOverVoltageProtection = (1 << 5), // protection 
+      W2_PackOverVoltageWarning = (1 << 4), // warning 
+      W2_CellLowVoltageProtection = (1 << 3), // protection 
+      W2_CellLowVoltageWarning = (1 << 2), // warning 
+      W2_CellOverVoltageProtection = (1 << 1), // protection 
+      W2_CellOverVoltageWarning = (1 << 0), // warning 
+    };
 ```
 
 The entry:
@@ -2107,17 +2107,17 @@ The entry:
 Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning3
-		{
-			W3_DischargingLowTemperatureProtection = (1 << 7), // protection 
-			W3_DischargingLowTemperatureWarning = (1 << 6), // warning
-			W3_DischargingHighTemperatureProtection = (1 << 5), // protection 
-			W3_DischargingHighTemperatureWarning = (1 << 4), // warning
-			W3_ChargingLowTemperatureProtection = (1 << 3), // protection 
-			W3_ChargingLowTemperatureWarning = (1 << 2), // warning
-			W3_ChargingHighTemperatureProtection = (1 << 1), // protection 
-			W3_ChargingHighTemperatureWarning = (1 << 0), // warning
-		};
+    enum StatusInformation_Warning3
+    {
+      W3_DischargingLowTemperatureProtection = (1 << 7), // protection 
+      W3_DischargingLowTemperatureWarning = (1 << 6), // warning
+      W3_DischargingHighTemperatureProtection = (1 << 5), // protection 
+      W3_DischargingHighTemperatureWarning = (1 << 4), // warning
+      W3_ChargingLowTemperatureProtection = (1 << 3), // protection 
+      W3_ChargingLowTemperatureWarning = (1 << 2), // warning
+      W3_ChargingHighTemperatureProtection = (1 << 1), // protection 
+      W3_ChargingHighTemperatureWarning = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2126,17 +2126,17 @@ The entry:
 Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning4
-		{
-			W4_ReservedWarning4Bit8 = (1 << 7), // warning
-			W4_Heating = (1 << 6), // system
-			W4_ComponentHighTemperatureProtection = (1 << 5), // protection
-			W4_ComponentHighTemperatureWarning = (1 << 4), // warning
-			W4_AmbientLowTemperatureProtection  = (1 << 3), // protection
-			W4_AmbientLowTemperatureWarning = (1 << 2), // warning
-			W4_AmbientHighTemperatureProtection = (1 << 1), // protection
-			W4_AmbientHighTemperatureWarning = (1 << 0), // warning
-		};
+    enum StatusInformation_Warning4
+    {
+      W4_ReservedWarning4Bit8 = (1 << 7), // warning
+      W4_Heating = (1 << 6), // system
+      W4_ComponentHighTemperatureProtection = (1 << 5), // protection
+      W4_ComponentHighTemperatureWarning = (1 << 4), // warning
+      W4_AmbientLowTemperatureProtection  = (1 << 3), // protection
+      W4_AmbientLowTemperatureWarning = (1 << 2), // warning
+      W4_AmbientHighTemperatureProtection = (1 << 1), // protection
+      W4_AmbientHighTemperatureWarning = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2145,17 +2145,17 @@ The entry:
 Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning5
-		{
-			W5_OutputShortCircuitLock = (1 << 7), // fault 
-			W5_TransientOverCurrentLock = (1 << 6), // fault
-			W5_OutputShortCircuitProtection = (1 << 5), // protection 
-			W5_TansientOverCurrentProtection = (1 << 4), // protection 
-			W5_DischargeOverCurrentProtection = (1 << 3), // protection 
-			W5_DischargeOverCurrentWarning = (1 << 2), // warning
-			W5_ChargeOverCurrentProtection = (1 << 1), // protection 
-			W5_ChargeOverCurrentWarning = (1 << 0), // warning
-		};
+    enum StatusInformation_Warning5
+    {
+      W5_OutputShortCircuitLock = (1 << 7), // fault 
+      W5_TransientOverCurrentLock = (1 << 6), // fault
+      W5_OutputShortCircuitProtection = (1 << 5), // protection 
+      W5_TansientOverCurrentProtection = (1 << 4), // protection 
+      W5_DischargeOverCurrentProtection = (1 << 3), // protection 
+      W5_DischargeOverCurrentWarning = (1 << 2), // warning
+      W5_ChargeOverCurrentProtection = (1 << 1), // protection 
+      W5_ChargeOverCurrentWarning = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2164,17 +2164,17 @@ The entry:
 Contains bitflags.  These flags indicate mixed status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning6
-		{
-			W6_InternalWarning6Bit8 = (1 << 7), // warning
-			W6_OutputConnectionFailure = (1 << 6), // fault
-			W6_OutputReverseConnectionProtection = (1 << 5), // protection
-			W6_CellLowVoltageChargingForbidden = (1 << 4), // fault
-			W6_RemaingCapacityProtection = (1 << 3), // protection
-			W6_RemaingCapacityWarning = (1 << 2), // warning
-			W6_IntermittentPowerSupplementWaiting = (1 << 1), // warning
-			W6_ChargingHighVoltageProtection = (1 << 0), // protection
-		};
+    enum StatusInformation_Warning6
+    {
+      W6_InternalWarning6Bit8 = (1 << 7), // warning
+      W6_OutputConnectionFailure = (1 << 6), // fault
+      W6_OutputReverseConnectionProtection = (1 << 5), // protection
+      W6_CellLowVoltageChargingForbidden = (1 << 4), // fault
+      W6_RemaingCapacityProtection = (1 << 3), // protection
+      W6_RemaingCapacityWarning = (1 << 2), // warning
+      W6_IntermittentPowerSupplementWaiting = (1 << 1), // warning
+      W6_ChargingHighVoltageProtection = (1 << 0), // protection
+    };
 ```
 
 The entry:
@@ -2183,17 +2183,17 @@ The entry:
 Contains bitflags.  These flags indicate warning status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning7
-		{
-			W7_Warning7InternalBit8 = (1 << 7),
-			W7_Warning7InternalBit7 = (1 << 6),
-			W7_ManualChargingWait = (1 << 5),
-			W7_AutoChargingWait = (1 << 4),
-			W7_Warning7InternalBit4 = (1 << 3),
-			W7_Warning7InternalBit3 = (1 << 2),
-			W7_Warning7InternalBit2 = (1 << 1),
-			W7_Warning7InternalBit1 = (1 << 0),
-		};
+    enum StatusInformation_Warning7
+    {
+      W7_Warning7InternalBit8 = (1 << 7),
+      W7_Warning7InternalBit7 = (1 << 6),
+      W7_ManualChargingWait = (1 << 5),
+      W7_AutoChargingWait = (1 << 4),
+      W7_Warning7InternalBit4 = (1 << 3),
+      W7_Warning7InternalBit3 = (1 << 2),
+      W7_Warning7InternalBit2 = (1 << 1),
+      W7_Warning7InternalBit1 = (1 << 0),
+    };
 ```
 
 The entry:
@@ -2202,17 +2202,17 @@ The entry:
 Contains bitflags.  These flags indicate fault status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_Warning8
-		{
-			W8_Warning8InternalBit8 = (1 << 7),
-			W8_Warning8InternalBit7 = (1 << 6),
-			W8_Warning8InternalBit6 = (1 << 5),
-			W8_NoNullPointCalibration = (1 << 4),
-			W8_NoCurrentCalibration = (1 << 3),
-			W8_NoVoltageCalibration = (1 << 2),
-			W8_RTCFailure = (1 << 1),
-			W8_EEPStorageFailure = (1 << 0),
-		};
+    enum StatusInformation_Warning8
+    {
+      W8_Warning8InternalBit8 = (1 << 7),
+      W8_Warning8InternalBit7 = (1 << 6),
+      W8_Warning8InternalBit6 = (1 << 5),
+      W8_NoNullPointCalibration = (1 << 4),
+      W8_NoCurrentCalibration = (1 << 3),
+      W8_NoVoltageCalibration = (1 << 2),
+      W8_RTCFailure = (1 << 1),
+      W8_EEPStorageFailure = (1 << 0),
+    };
 ```
 </details>
 (click header to expand/collapse section)
@@ -2314,13 +2314,13 @@ All contain a scalar value.  They indicate a warning but not a fault or error (y
 **Important:** * The EG4 variant does not differentiate between charge and discharge current warnings, these two fields will have an identical value.
 
 ```C++
-	enum StatusInformation_WarningValues
-	{
-		WV_Normal = 0,
-		WV_BelowLowerLimitValue = 1,
-		WV_AboveUpperLimitValue = 2,
-		WV_OtherFaultValue = 0xF0,
-	};
+  enum StatusInformation_WarningValues
+  {
+    WV_Normal = 0,
+    WV_BelowLowerLimitValue = 1,
+    WV_AboveUpperLimitValue = 2,
+    WV_OtherFaultValue = 0xF0,
+  };
 ```
 
 The entry:
@@ -2329,17 +2329,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_BalanceEvent
-		{
-			BE_BalanceEventReservedBit8 = (1 << 7), // warning
-			BE_DischargeMosFaultAlarm = (1 << 6), // fault
-			BE_ChargeMosFaultAlarm = (1 << 5), // fault
-			BE_CellVoltageDifferenceAlarm = (1 << 4), // warning
-			BE_BalanceEventReservedBit4 = (1 << 3), // warning
-			BE_BalanceEventReservedBit3 = (1 << 2), // warning
-			BE_BalanceEventReservedBit2 = (1 << 1), // warning
-			BE_BalanceEventBalancingActive = (1 << 0), // warning
-		};
+    enum StatusInformation_BalanceEvent
+    {
+      BE_BalanceEventReservedBit8 = (1 << 7), // warning
+      BE_DischargeMosFaultAlarm = (1 << 6), // fault
+      BE_ChargeMosFaultAlarm = (1 << 5), // fault
+      BE_CellVoltageDifferenceAlarm = (1 << 4), // warning
+      BE_BalanceEventReservedBit4 = (1 << 3), // warning
+      BE_BalanceEventReservedBit3 = (1 << 2), // warning
+      BE_BalanceEventReservedBit2 = (1 << 1), // warning
+      BE_BalanceEventBalancingActive = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2348,17 +2348,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_VoltageEvent
-		{
-			VE_PackUnderVoltageProtect = (1 << 7), // protection
-			VE_PackUnderVoltageAlarm = (1 << 6), // warning
-			VE_PackOverVoltageProtect = (1 << 5), // protection
-			VE_PackOverVoltageAlarm = (1 << 4), // warning
-			VE_CellUnderVoltageProtect = (1 << 3), // protection
-			VE_CellUnderVoltageAlarm = (1 << 2), // warning
-			VE_CellOverVoltageProtect = (1 << 1), // protection
-			VE_CellOverVoltageAlarm = (1 << 0), // warning
-		};
+    enum StatusInformation_VoltageEvent
+    {
+      VE_PackUnderVoltageProtect = (1 << 7), // protection
+      VE_PackUnderVoltageAlarm = (1 << 6), // warning
+      VE_PackOverVoltageProtect = (1 << 5), // protection
+      VE_PackOverVoltageAlarm = (1 << 4), // warning
+      VE_CellUnderVoltageProtect = (1 << 3), // protection
+      VE_CellUnderVoltageAlarm = (1 << 2), // warning
+      VE_CellOverVoltageProtect = (1 << 1), // protection
+      VE_CellOverVoltageAlarm = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2367,25 +2367,25 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_TemperatureEvent
-		{
-			TE_TemperatureEventReservedBit16 = (1 << 15), // warning
-			TE_TemperatureEventReservedBit15 = (1 << 14), // warning
-			TE_FireAlarm = (1 << 13), // fault
-			TE_MosfetHighTemperatureProtect = (1 << 12), // protection
-			TE_EnvironmentLowTemperatureProtect = (1 << 11), // protection
-			TE_EnvironmentLowTemperatureAlarm = (1 << 10), // warning
-			TE_EnvironmentHighTemperatureProtect = (1 << 9), // protection
-			TE_EnvironmentHighTemperatureAlarm = (1 << 8), // warning
-			TE_DischargeLowTemperatureProtect = (1 << 7), // protection
-			TE_DischargeLowTemperatureAlarm = (1 << 6), // warning
-			TE_DischargeHighTemperatureProtect = (1 << 5), // protection
-			TE_DischargeHighTemperatureAlarm = (1 << 4), // warning
-			TE_ChargeLowTemperatureProtect = (1 << 3), // protection
-			TE_ChargeLowTemperatureAlarm = (1 << 2), // warning
-			TE_ChargeHighTemperatureProtect = (1 << 1), // protection
-			TE_ChargeHighTemperatureAlarm = (1 << 0), // warning
-		};
+    enum StatusInformation_TemperatureEvent
+    {
+      TE_TemperatureEventReservedBit16 = (1 << 15), // warning
+      TE_TemperatureEventReservedBit15 = (1 << 14), // warning
+      TE_FireAlarm = (1 << 13), // fault
+      TE_MosfetHighTemperatureProtect = (1 << 12), // protection
+      TE_EnvironmentLowTemperatureProtect = (1 << 11), // protection
+      TE_EnvironmentLowTemperatureAlarm = (1 << 10), // warning
+      TE_EnvironmentHighTemperatureProtect = (1 << 9), // protection
+      TE_EnvironmentHighTemperatureAlarm = (1 << 8), // warning
+      TE_DischargeLowTemperatureProtect = (1 << 7), // protection
+      TE_DischargeLowTemperatureAlarm = (1 << 6), // warning
+      TE_DischargeHighTemperatureProtect = (1 << 5), // protection
+      TE_DischargeHighTemperatureAlarm = (1 << 4), // warning
+      TE_ChargeLowTemperatureProtect = (1 << 3), // protection
+      TE_ChargeLowTemperatureAlarm = (1 << 2), // warning
+      TE_ChargeHighTemperatureProtect = (1 << 1), // protection
+      TE_ChargeHighTemperatureAlarm = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2394,17 +2394,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_CurrentEvent
-		{
-			CE_OutputShortCircuitLockout = (1 << 7), // fault
-			CE_DischargeLevel2OverCurrentLockout = (1 << 6), // fault
-			CE_OutputShortCircuitProtect = (1 << 5), // protection
-			CE_DischargeLevel2OverCurrentProtect = (1 << 4), // protection
-			CE_DischargeOverCurrentProtect = (1 << 3), // protection
-			CE_DischargeOverCurrentAlarm = (1 << 2), // warning
-			CE_ChargeOverCurrentProtect = (1 << 1), // protection
-			CE_ChargeOverCurrentAlarm = (1 << 0), // warning
-		};
+    enum StatusInformation_CurrentEvent
+    {
+      CE_OutputShortCircuitLockout = (1 << 7), // fault
+      CE_DischargeLevel2OverCurrentLockout = (1 << 6), // fault
+      CE_OutputShortCircuitProtect = (1 << 5), // protection
+      CE_DischargeLevel2OverCurrentProtect = (1 << 4), // protection
+      CE_DischargeOverCurrentProtect = (1 << 3), // protection
+      CE_DischargeOverCurrentAlarm = (1 << 2), // warning
+      CE_ChargeOverCurrentProtect = (1 << 1), // protection
+      CE_ChargeOverCurrentAlarm = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2413,17 +2413,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_RemainingCapacity
-		{
-			RC_RemainingCapacityReservedBit8 = (1 << 7), // warning
-			RC_RemainingCapacityReservedBit7 = (1 << 6), // warning
-			RC_RemainingCapacityReservedBit6 = (1 << 5), // warning
-			RC_RemainingCapacityReservedBit5 = (1 << 4), // warning
-			RC_RemainingCapacityReservedBit4 = (1 << 3), // warning
-			RC_RemainingCapacityReservedBit3 = (1 << 2), // warning
-			RC_RemainingCapacityReservedBit2 = (1 << 1), // warning
-			RC_StateOfChargeLow = (1 << 0), // warning
-		};
+    enum StatusInformation_RemainingCapacity
+    {
+      RC_RemainingCapacityReservedBit8 = (1 << 7), // warning
+      RC_RemainingCapacityReservedBit7 = (1 << 6), // warning
+      RC_RemainingCapacityReservedBit6 = (1 << 5), // warning
+      RC_RemainingCapacityReservedBit5 = (1 << 4), // warning
+      RC_RemainingCapacityReservedBit4 = (1 << 3), // warning
+      RC_RemainingCapacityReservedBit3 = (1 << 2), // warning
+      RC_RemainingCapacityReservedBit2 = (1 << 1), // warning
+      RC_StateOfChargeLow = (1 << 0), // warning
+    };
 ```
 
 The entry:
@@ -2432,17 +2432,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_FetStatus
-		{
-			FS_FetStatusReservedBit8 = (1 << 7), // configuration
-			FS_FetStatusReservedBit7 = (1 << 6), // configuration
-			FS_FetStatusReservedBit6 = (1 << 5), // configuration
-			FS_FetStatusReservedBit5 = (1 << 4), // configuration
-			FS_HeaterOn = (1 << 3), // configuration
-			FS_ChargeCurrentLimiterOn = (1 << 2), // configuration
-			FS_ChargeMosfetOn = (1 << 1), // configuration
-			FS_DischargeMosfetOn = (1 << 0), // configuration
-		};
+    enum StatusInformation_FetStatus
+    {
+      FS_FetStatusReservedBit8 = (1 << 7), // configuration
+      FS_FetStatusReservedBit7 = (1 << 6), // configuration
+      FS_FetStatusReservedBit6 = (1 << 5), // configuration
+      FS_FetStatusReservedBit5 = (1 << 4), // configuration
+      FS_HeaterOn = (1 << 3), // configuration
+      FS_ChargeCurrentLimiterOn = (1 << 2), // configuration
+      FS_ChargeMosfetOn = (1 << 1), // configuration
+      FS_DischargeMosfetOn = (1 << 0), // configuration
+    };
 ```
 
 The entry:
@@ -2451,17 +2451,17 @@ The entry:
 Contains bitflags.  These flags contain mixed status information on current status of the BMS.  Possible values:
 
 ```C++
-		enum StatusInformation_SystemStatus
-		{
-			SS_SystemStatusReservedBit8 = (1 << 7), // system
-			SS_SystemStatusReservedBit7 = (1 << 6), // system
-			SS_SystemStatusReservedBit6 = (1 << 5), // system
-			SS_SystemStatusReservedBit5 = (1 << 4), // system
-			SS_Standby = (1 << 3), // system
-			SS_SystemStatusReservedBit3 = (1 << 2), // system
-			SS_Charging = (1 << 1), // system
-			SS_Discharging = (1 << 0), // system
-		};
+    enum StatusInformation_SystemStatus
+    {
+      SS_SystemStatusReservedBit8 = (1 << 7), // system
+      SS_SystemStatusReservedBit7 = (1 << 6), // system
+      SS_SystemStatusReservedBit6 = (1 << 5), // system
+      SS_SystemStatusReservedBit5 = (1 << 4), // system
+      SS_Standby = (1 << 3), // system
+      SS_SystemStatusReservedBit3 = (1 << 2), // system
+      SS_Charging = (1 << 1), // system
+      SS_Discharging = (1 << 0), // system
+    };
 ```
 </details>
 (click header to expand/collapse section)
