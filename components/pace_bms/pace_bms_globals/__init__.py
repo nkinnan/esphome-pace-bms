@@ -23,8 +23,6 @@ def inherit_device_id(schema):
         raise cv.Invalid(
             "The pace_bms node must be declared before any button/datetime/number/sensor/switch/select/text_sensor nodes in the device config."
         )
-    else:
-        print(f"len(pace_bms_schemas) == {len(pace_bms_schemas)}") # todo remove debug output
 
     platform_device_id = schema.get(CONF_DEVICE_ID)
     if(platform_device_id is None):
