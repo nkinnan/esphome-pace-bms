@@ -23,6 +23,8 @@ def inherit_device_id(schema):
         raise cv.Invalid(
             "The pace_bms node must be declared before any button/datetime/number/sensor/switch/select/text_sensor nodes in the device config."
         )
+    else:
+        print(f"len(pace_bms_schemas) == {len(pace_bms_schemas)}") # todo remove debug output
 
     platform_device_id = schema.get(CONF_DEVICE_ID)
     if(platform_device_id is None):
@@ -62,23 +64,24 @@ def inherit_device_id(schema):
     return schema
 
 
-# button
+# buttons that must be in globals since final_validate needs to check if they are allowed
 CONF_SHUTDOWN = "shutdown"
 
-# datetime
+# datetimes that must be in globals since final_validate needs to check if they are allowed
 CONF_SYSTEM_DATE_AND_TIME = "system_date_and_time"
 
-# select
+# selects that must be in globals since final_validate needs to check if they are allowed
 CONF_PROTOCOL_CAN           = "protocol_can"
 CONF_PROTOCOL_RS485           = "protocol_rs485"
 CONF_PROTOCOL_TYPE           = "protocol_type"
 
-# sensor
+# sensors that must be in globals since final_validate needs to check if they are allowed
 CONF_BMS_COUNT = "bms_count"
 CONF_PAYLOAD_COUNT = "payload_count"
 
-# switch
+# switchs that must be in globals since final_validate needs to check if they are allowed
 
-# text_sensor
+
+# text_sensors that must be in globals since final_validate needs to check if they are allowed
 CONF_HARDWARE_VERSION     = "hardware_version"
 CONF_SERIAL_NUMBER        = "serial_number"

@@ -177,10 +177,50 @@ CONFIG_SCHEMA = cv.All(
     },lower=False, default_type=DEFAULT_BMS_TYPE)
 )
 
+def final_validate_master_bms_schema(master_config):
+
+    full_config = fv.full_config.get()
+    master_id = master_config.get(CONF_ID)
+
+    # the two counts are only available for v25 master
+    sensor_platforms = full_config.get(CONF_SENSOR)
+    if(sensor_platforms is not None):
+        for sensor_platform in sensor_platforms:
+            platform = sensor_platform.get(CONF_PLATFORM)
+            parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
+            protocol_commandset = master_config.get(CONF_PROTOCOL_COMMANDSET)
+            if(platform == CONF_PACE_BMS and parent_bms_id == master_id and protocol_commandset != 0x25):
+                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
+                if CONF_BMS_COUNT in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_BMS_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
+                if CONF_PAYLOAD_COUNT in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
+
+    # todo figure out why that other check for pace_bms coming after sensors didn't fire
+    # todo fixme link to the right section(s) for what's avialable and not in the multipack section
+
 def final_validate_slave_bms_schema(slave_config):
 
     full_config = fv.full_config.get()
     slave_id = slave_config.get(CONF_ID)
+    master_id = slave_config.get(CONF_MASTER_BMS_ID)
+    master_pace_bms_schema = None
+
+    # if it's none the config will fail validation anyway
+    if(master_id is not None):
+        # find the parent pace_bms schema 
+        pace_bms_schemas = full_config.get(CONF_PACE_BMS)
+        for pace_bms_schema_test in pace_bms_schemas: # todo: can this fail in case of a single entry? can validation even get this far in that case?
+            id = pace_bms_schema_test.get(CONF_ID)
+            # if not found the config will fail validation anyway
+            if(id == master_id):
+                # save for later
+                master_pace_bms_schema = pace_bms_schema_test
+                protocol_commandset = master_pace_bms_schema.get(CONF_PROTOCOL_COMMANDSET)
+                if(protocol_commandset is not 0x25):
+                    raise cv.Invalid(f"BMS with type=SLAVE is only allowed for protocol commandset 0x25.")
+                else:
+                    print("================ found master with correct protocol version") # todo remove debug output
 
     button_platforms = full_config.get(CONF_BUTTON)
     if(button_platforms is not None):
@@ -232,7 +272,6 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_PROTOCOL_TYPE in select_platform:
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_TYPE}' select is not available for a BMS with type=SLAVE.")
 
-    # todo: exclude all the raw underlying status sensors not allowed depending on protocol commandset and variant
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
@@ -271,6 +310,7 @@ FINAL_VALIDATE_SCHEMA = cv.typed_schema({
         # and not enforcing them here leaves the door open to weird BMSes with unusual rates even being possible to specify in the yaml at all
         #uart.final_validate_device_schema(CONF_PACE_BMS, baud_rate=9600, require_rx=True, require_tx=True, data_bits=8, parity="NONE", stop_bits=1),
         uart.final_validate_device_schema(CONF_PACE_BMS, require_rx=True, require_tx=True),
+        final_validate_master_bms_schema,
         extra=cv.ALLOW_EXTRA,
     ),
 

@@ -99,11 +99,10 @@ These *read-only* settings are supported for all protocol versions and variants,
 	- **Cell Count**
 	- **Cell Voltage** (V) - up to x16 depending on your battery pack
 	- **Temperature Count**
-	- **Temperature** (°C) - up to x6 depending on your battery pack (but there is one brand that has 8), typically this will be:
+	- **Temperature** (°C) - up to x6 depending on your battery pack (there is one brand that has 8), order is not guaranteed and varies by manufacturer but a typical setup might be:
 		- *Cell Temperature* 1-4 
 		- *MOSFET Temperature* 
 		- *Environment Temperature*
-  but sometimes the order might be different
 	- **Total Voltage** (V)
 	- **Current** (A) - positive or negative for charge/discharge
 	- **Power** (W) - positive or negative for charge/discharge
@@ -120,12 +119,12 @@ These *read-only* settings are supported for all protocol versions and variants,
   
 - All "Status Information" decoded to human-readable text format
 	- **Warning Text** - A list of any warnings reported by the BMS
-	- **Protection Text** - If the BMS has protected itself or the batteries, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
+	- **Protection Text** - If the BMS has protected itself or the cells, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
 	- **Fault Text** - A list of any faults reported by the BMS
 	- **System Text** - Current system status such as "Charging"
 	- **Configuration Text** - System configuration such as "Warning Buzzer Enabled"
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
-	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.
+	- **(individual status flag values)** - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.  See [Decoding the Status Values (but you probably don't want to)](#decoding-the-status-values-but-you-probably-dont-want-to) for more information on that.
 
 These *read-only* settings are only available for `type=MASTER`
 
