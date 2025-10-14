@@ -326,7 +326,7 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 # What ESPs and RPs (and others) are Supported?
 
-Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.  Other SOCs supported by ESPHome (they keep expanding) may work but are untested.
+Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.  Other SOCs supported by ESPHome (they keep expanding support) may work also.  Contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) if you try one, just to let me know.
 
 Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is *not recommended* and will likely result in dropped or corrupted messages.  
 
