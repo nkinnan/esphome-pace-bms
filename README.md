@@ -22,7 +22,7 @@ I strongly encourage you to read through this entire document if you plan to use
 - [How do I wire my ESP to the RS232 port?](#How-do-I-wire-my-ESP-to-the-RS232-port)
 - [ESPHome configuration YAML](#ESPHome-configuration-YAML)
   - [A note on logging](#A-note-on-logging)
-  - [8266-specific preamble](#8266-specific-preamble)
+  - [8266-specific settings](#8266-specific-settings)
   - [external_components](#external_components)
   - [UART and pace_bms](#UART-and-pace_bms)
   - [Exposing the sensors (this is the good part!)](#Exposing-the-sensors-this-is-the-good-part)
@@ -333,7 +333,7 @@ You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 por
 
 RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins (usually).  RS232 will require only the UART RX and TX.
 
-If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example of how to do that is included below in the [YAML section](#8266-specific-preamble).
+If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example of how to do that is included below in the [YAML section](#8266-specific-settings).
 
 # How do I wire my ESP to the RS485 port?
 
@@ -395,7 +395,7 @@ I won't go over 1 since that will be specific to your setup, except to say that 
 
 sub-sections:
 - [A note on logging](#A-note-on-logging)
-- [8266-specific preamble](#8266-specific-preamble)
+- [8266-specific settings](#8266-specific-settings)
 - [external_components](#external_components)
 - [UART and pace_bms](#UART-and-pace_bms)
 - [Exposing the sensors (this is the good part!)](#Exposing-the-sensors-this-is-the-good-part)
@@ -424,7 +424,7 @@ logger:
 ```
 On boards with two USB ports, this will depend on which port you're plugged into. This will also depend on whether you are using the Arduino or (recommended) ESP-IDF framework/platform. Usually the defaults work, but if you see no logs then you should double check the [esphome logger documentation](https://esphome.io/components/logger/#default-hardware-interfaces) for more details.
 
-## 8266-specific preamble
+## 8266-specific settings
 
 Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
 ```yaml
@@ -986,7 +986,7 @@ Only certain sensors/components are supported for slave BMSes.  You can't set th
 
 ## Example Config Files
 
-If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific preamble](#8266-specific-preamble))
+If you already have a config for your board, you should use that, and then copy/paste/modify the relevant parts of [ESPHome configuration YAML](#ESPHome-configuration-YAML).  You'll need to read that anyway to understand what these files contain.  But here are some basic configs if starting from scratch.  The main difference between them is just the board declaration (and the 8266-specific settings as noted in [8266-specific settings](#8266-specific-settings))
 
 Update: Maintaining all the different boards was a pain, so I have trimmed this down to just ESP8266 and ESP32.  If you have a variant board, or an RP2040 or whatever, you'll need to update the board section of the config.  You may also need to modify the 
 
