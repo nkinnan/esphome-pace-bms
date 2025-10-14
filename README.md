@@ -1455,6 +1455,16 @@ The entry:
 
 Contains bitflags.  It is 16 bits wide.  One for each cell.  If the bit is set, it indicates that cell is currently balancing.  Cell 1 is the least significant bit.
 
+```C++
+    for (int i = 0; i < 16; i++)
+    {
+      if ((balanceState & (1 << i)) != 0)
+      {
+        statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
+      }
+    }
+```
+
 The entry:
 - `system_status_value`
 
