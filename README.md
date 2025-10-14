@@ -140,7 +140,7 @@ These *writable* settings are only available for `type=MASTER`
 
 # Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**
 
-It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for reading/setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
+It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for reading/setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I don't think it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
 
 These writable toggles and selects are supported by both `type=MASTER` and `type=SLAVE` BMSes, but for `type=SLAVE` they *become read-only*
 
@@ -327,11 +327,11 @@ However, I'd like to keep a full list here if only for search engine discoverabi
 
 Both ESP8266 and ESP32 are supported, though an ESP32 class device is recommended.  The RP2040 (Raspberry Pi Pico W) should also work but I haven't tested it.
 
-Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is not recommended.  
+Any board which gives you access to a hardware UART (both RX and TX) is fine.  Software UART on GPIO pins is *not recommended* and will likely result in dropped or corrupted messages.  
 
 You cannot connect the UART RX/TX pins directly to either the RS232 or RS485 port, a converter chip for RS485 or RS232 signal levels is required.  Some boards may have such a converter chip built-in, or you can use a breakout board.  
 
-RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins.  RS232 will require only the UART RX and TX.
+RS485 will require at least one additional GPIO pin for flow control in addition to the UART RX and TX pins (usually).  RS232 will require only the UART RX and TX.
 
 If using an 8266, you will need to redirect serial logs to the second UART (which is TX only, but that's fine for logging).  An example of how to do that is included below in the [YAML section](#8266-specific-preamble).
 
@@ -356,7 +356,7 @@ Connect the breakout board to the **BMS**:
 
 ![RJ-45 Socket and Connector with Pin Numbers and Color Codes](images/rj45.png)
 
-Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
+Lastly, don't forget to connect power (3.3v, do *not* use 5v) and ground to the breakout board.
 
 # How do I wire my ESP to the RS232 port?
 
@@ -381,7 +381,7 @@ If cutting up a telephone extension cord, make sure it's "**dual line**" / has f
 
 ![RJ-11 Socket and Connector with Pin Numbers and Color Codes](images/rj11.png)
 
-Lastly, don't forget to connect power (3.3v) and ground to the breakout board.
+Lastly, don't forget to connect power (3.3v, do *not* use 5v) and ground to the breakout board.
 
 # ESPHome configuration YAML
 
@@ -416,7 +416,7 @@ logger:
   #level: VERBOSE
   level: VERY_VERBOSE
 ```
-Additionally, if you want to get serial logs over USB on *some boards* (different boards may or may not contain a USB-to-serial bridge chip) with *some ESP32 variants* (some variants have a software usb stack, some are dual-stack including a built-in hardware jtag option which functions similarly, but not the same, as a hardware USB-to-serial bridge chip), etc, then you may need to add something like this to your logger config. 
+Additionally, if you want to get serial logs over USB, on *some boards* (different boards may or may not contain a USB-to-serial bridge chip) with *some ESP32 variants* (some variants have a software usb stack, some are dual-stack including a built-in hardware jtag option which functions similarly, but not the same, as a hardware USB-to-serial bridge chip), etc, then you may need to add something like this to your logger config. 
 
 ```yaml
 logger:
@@ -426,16 +426,7 @@ On boards with two USB ports, this will depend on which port you're plugged into
 
 ## 8266-specific preamble
 
-1) If using an 8266 in conjunction with web_server, you will want to add this to your esphome config.  It **massively** speeds up how quickly the 8266 can speak with the web_server dashboard by correcting a bug in the web server code.  Once [this PR](https://github.com/esphome/ESPAsyncWebServer/pull/41) goes through these lines can be removed.
-```yaml
-esphome:
-  libraries:
-    # massive improvement to event throughput to the on-device web_server dashboard
-    # can be removed once this PR goes through: https://github.com/esphome/ESPAsyncWebServer/pull/41
-    # but the web_server dashboard is basically useless on an 8266 without it
-    - ESPAsyncWebServer-esphome=https://github.com/nkinnan/ESPAsyncWebServer#async_event_source_yield
-```
-2) Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
+Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 with tx only) we need to redirect log output to UART 1 so we can fully utilize UART 0 for communication with the BMS.  You can do that like so:
 ```yaml
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
