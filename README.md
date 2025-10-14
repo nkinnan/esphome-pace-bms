@@ -460,7 +460,7 @@ uart:
 ```
 * **baud_rate:** The most common value for baud_rate is 9600, but some BMSes are reported to use 19200 as well.  You should know what this value is, from previously communicating with the BMS using the manufacturer's recommended software.
 * **tx_pin / rx_pin:** Self-explanatory, see previous sections on wiring your ESP to the RS232 or RS485 port. 
-* **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `pace_bms` component.  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
+* **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `pace_bms` component with `type=MASTER` (or with `type` omitted since MASTER is the default value).  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 ```yaml
 pace_bms:
   id: pace_bms_master_at_address_1
