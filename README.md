@@ -160,7 +160,7 @@ These writable settings are supported by `type=MASTER` BMSes only
 	- **Protocol (CAN)** - Allows selection of various protocols spoken on the CAN bus, typically to match your inverter
 	- **Protocol (RS485)** - Allows selection of various protocols spoken on the RS485 bus, typically to match your inverter
 	- **Protocol Type** - Auto or Manual
-- Configuration
+- Configuration (editable numbers)
   - Cell Over Voltage
 	- **Cell Over Voltage Alarm** (V)
 	- **Cell Over Voltage Protection** (V)
@@ -835,7 +835,7 @@ number:
 
 This section will describe the changes you need to make, to move from a single battery pack to a multiple battery pack setup.  If you don't have a single pack (master BMS, at address 1) working already, you should go back and do that first.  Then you can return here to see how to add additional slave packs into your config.
 
-Multiple battery packs is currently only supported for protocol 0x25.  It is unlikely I will add multi-pack support for 0x20 due to the fact that it's older, most of the issues / requests that I get are about 0x25, and there are a number of 0x20 variants (with wildly different protocol formats) so the test burden would be high.  If you have a setup with multiple battery packs speaking a 0x20 protocol variant, you can still get data from all of them by using one ESP per BMS.
+Multiple battery packs is currently only supported for protocol 0x25.  It is unlikely I will add multi-pack support for 0x20 due to the fact that it's older, most of the issues / requests that I get are about 0x25, and there are a number of 0x20 variants (with wildly different protocol formats) so the test burden would be high.  If you have a setup with multiple battery packs speaking a 0x20 protocol variant, feel free to contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) but I will probably decline.  You can still get data from all of them by simply using one ESP per BMS.
 
 The first thing to do is mark your BMS as MASTER.  This is the default, but it's good practice anyway to make it explicit.  Makes the yaml easier to read.
 ```yaml
