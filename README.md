@@ -89,11 +89,11 @@ Using modbus for your pack means you will not be able to set any configuration v
 
 # Supported BMS Sensors (read only) All Protocol Versions
 
-These read-only settings are supported by both `type=MASTER` (default) and `type=SLAVE` BMSes unless otherwise ***noted.
+These read-only settings are supported for both master and slave type BMSes unless otherwise *** noted.
 
-- "Meta" Information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
+- Multi-pack information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
 	- **BMS Count** - How many packs in total the master BMS reports being connected
-	- **Payload Count** - How many information payloads the master BMS returns for a broadcast request for analog or status information
+	- **Payload Count** - How many data payloads are returned by the master BMS for a broadcast request for analog or status information
 
 - All "Analog Information"
 	- **Cell Count**
@@ -126,14 +126,14 @@ These read-only settings are supported by both `type=MASTER` (default) and `type
 	- **Balancing Text** - If any cells are currently balancing, they will be listed here
 	- (individual status flag values) - These are what the text fields are decoded from, and are documented separately.  You probably won't need them, but they are available.  There are a lot of them, and they vary by protocol version and variant.
 
-These read-only settings are supported by `type=MASTER` BMSes only
+These read-only settings are only available for `type=MASTER`
 
 - **Hardware Version** - The BMS hardware version (string)
 - **Serial Number** - The BMS serial number (string)
 
 # Supported BMS Configuration (read / write)
 
-These writable settings are supported by `type=MASTER` BMSes only
+These writable settings are only available for `type=MASTER`
 
 - **System Date and Time** - Allows access to the BMS internal real-time clock
 - **Shutdown** - A button which sends the shutdown command to the BMS
@@ -141,12 +141,6 @@ These writable settings are supported by `type=MASTER` BMSes only
 # Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**
 
 It is difficult to find good documentation on either of these protocols.  All the references I have are incomplete.  For version 25 I was able to snoop on the exchanges between PbmsTools and my battery pack in order to decode all of the commands necessary for reading/setting these configuration values.  However, the only battery pack I own which speaks version 20, is sending some very strange non-paceic commands for configuration settings.  Unfortunately I was unable to decode those, and even if I did, I'm not sure if it would apply to all brands of battery pack speaking version 20.  For that reason, I didn't pursue it further, and these settings are only applicable to battery packs speaking paceic version 25.
-
-These *read-only* settings are supported by `type=MASTER` BMSes only
-
-- Multi-pack information
-  - **bms_count** - How many BMSes in total are reported by the Master BMS
-  - **payload_count** - How many data payloads are returned by the Master BMS (another way to get **bms_count**)
 
 These writable toggles and selects are supported by both `type=MASTER` and `type=SLAVE` BMSes, but for `type=SLAVE` they *become read-only*
 
