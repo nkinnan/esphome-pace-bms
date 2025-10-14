@@ -160,6 +160,7 @@ These writable settings are supported by `type=MASTER` BMSes only
   - **Protocol (CAN)** - Allows selection of various protocols spoken on the CAN bus, typically to match your inverter
   - **Protocol (RS485)** - Allows selection of various protocols spoken on the RS485 bus, typically to match your inverter
   - **Protocol Type** - Auto or Manual
+  
 - Configuration (editable numbers)
   - Cell Over Voltage
   - **Cell Over Voltage Alarm** (V)
@@ -1456,11 +1457,12 @@ The entry:
 Contains bitflags.  It is 16 bits wide.  One for each cell.  If the bit is set, it indicates that cell is currently balancing.  Cell 1 is the least significant bit.
 
 ```C++
+    std::string balancingText;
     for (int i = 0; i < 16; i++)
     {
       if ((balanceState & (1 << i)) != 0)
       {
-        statusInformation.balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
+        balancingText.append(std::string("Cell ") + std::to_string(i + 1) + " is balancing; ");
       }
     }
 ```
