@@ -866,7 +866,7 @@ pace_bms:
   slave_query_mode: BROADCAST
   response_timeout: 8000ms # 2000 * 4, for four battery packs in this system
 ```
-If you've set `slave_query_mode: BROADCAST` then I would set the `response_timeout` to `2000ms`.
+If you've set `slave_query_mode: RELAY` then I would set the `response_timeout` to `2000ms`.
 
 Next, again for `slave_query_mode: BROADCAST` only, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024:
 
@@ -888,24 +888,24 @@ Next, lets define some slave BMSes.  The configuration section for slaves will b
 
 ```yaml
 pace_bms:
-  - id: master_master_pace_bms_at_address_1
+  - id: master_pace_bms_at_address_1 
     type: MASTER
     address: 1
     # the rest of the master BMS settings are omitted for brevity
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
     address: 2
 
   - id: slave_pace_bms_at_address_3
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
     address: 3
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
+    master_bms_id: master_pace_bms_at_address_1 # slaves must point back to the master
     address: 4
 ```
 
@@ -926,7 +926,7 @@ esphome:
       name: "Slave BMS Address 4"
 
 pace_bms:
-  - id: master_master_pace_bms_at_address_1
+  - id: master_pace_bms_at_address_1 
     type: MASTER
     address: 1
     # the rest of the master BMS settings are omitted for brevity
@@ -934,24 +934,24 @@ pace_bms:
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1
+    master_bms_id: master_pace_bms_at_address_1 
     address: 2
     device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
  
   - id: slave_pace_bms_at_address_3
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1
+    master_bms_id: master_pace_bms_at_address_1 
     address: 3
     device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
-    master_bms_id: master_master_pace_bms_at_address_1
+    master_bms_id: master_pace_bms_at_address_1 
     address: 4
     device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 ```
 
-Note that normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented in this component.  This special processing allows you to specify the `device_id:` only at the root `pace_bms` node.  The device_id will "flow down" to each sensor/control platform entry, and then to all the individual sensors and controls.  The only catch is that you must specify the `pace_bms` section in your device yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this magic to happen.
+Note that normally you would need to decorate each and every individual sensor, switch, button, and so forth, with `device_id:` in order to achieve this, but special processing of the device yaml has been implemented in this component.  This special processing allows you to specify the `device_id:` only at the root `pace_bms` node.  The device_id will "flow down" to each sensor/control platform entry, and then to all the individual sensors and controls.  The only catch is that you must specify the `pace_bms` section in your device yaml before any of those other components like sensor, switch, text_sensor, etc. in order for this "magic" to happen.
 
 Finally, just copy/paste all the relevant sensors etc that you'd like to have exposed for each of the slave BMSes.  Point the new platform section to the slave BMS id instead of the master BMS id.
 
@@ -959,7 +959,7 @@ Finally, just copy/paste all the relevant sensors etc that you'd like to have ex
 sensor:
   # sensors for the master BMS at address 1
   - platform: pace_bms
-    pace_bms_id: master_master_pace_bms_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1 
 
     total_voltage:
       name: "Total Voltage" # this will look like "Master BMS Address 1 Total Voltage" because we used sub-device grouping
