@@ -87,7 +87,7 @@ Some BMS firmwares also support reading data via MODBUS protocol over the RS485 
 
 Using modbus for your pack means you will not be able to set any configuration values though, which is a major benefit / advantage of this esphome component.  Modbus will also not be able to read multiple chained together packs.
 
-# Supported BMS Sensors (read only) All Protocol Versions
+# Supported BMS Sensors (read only)
 
 These *read-only* settings are supported for all protocol versions and variants, for both master and slave type BMSes unless otherwise noted.
 
@@ -504,7 +504,7 @@ Most of these settings are only applicable if you have a single battery pack (or
 * **type:** Defaults to `MASTER`, can be either `MASTER` or `SLAVE`.  Should be omitted if you only have a single battery pack (or if you have one ESP per pack).  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.  
 * **master_bms_id:** For a `type=SLAVE` BMS only, this is the `id` of the `type=MASTER` BMS that this is slaved to.
 * **slave_discovery_mode:** Defaults to `NONE`, can be one of: `NONE`, `RELAY`, `BROADCAST`, or `RELAY_AND_BROADCAST`.  Should be omitted ~~if you only have a single battery pack (or if you have one ESP per pack)~~ unless you are debugging issues with a multi-pack setup.  It does not do anything useful in a working config, but it might be something that I ask you to get logs from in order to help troubleshoot.  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.  
-* **slave_query_mode:** Defaults to `BROADCAST`, can be either: `BROADCAST`, or `RELAY`.  Should be omitted if you only have a single battery pack (or if you have one ESP per pack).  This determines how slave battery packs are queried in a multi-pack setup.  See FIXME LINK multi-pack configuration for more information.
+* **slave_query_mode:** Defaults to `BROADCAST`, can be either: `BROADCAST`, or `RELAY`.  Should be omitted if you only have a single battery pack (or if you have one ESP per pack).  This determines how slave battery packs are queried in a multi-pack setup.  See [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 * **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `uart` component.  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 
 ## Exposing the sensors (this is the good part!)
@@ -660,6 +660,7 @@ button:
 switch:
  - platform: pace_bms
    pace_bms_id: pace_bms_master_at_address_1
+
 
    buzzer_alarm:
      name: "Buzzer Alarm"
