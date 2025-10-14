@@ -835,9 +835,9 @@ number:
 
 This section will describe the changes you need to make, to move from a single battery pack to a multiple battery pack setup.  If you don't have a single pack (master BMS, at address 1) working already, you should go back and do that first.  Then you can return here to see how to add additional slave packs into your config.
 
-Multiple battery packs is currently only supported for protocol 0x25.  It is unlikely I will add multi-pack support for 0x20 due to the fact that it's older, most of the issues / requests that I get are about 0x25, and there are a number of 0x20 variants (with wildly different protocol formats) so the test burden would be high.  If you have a setup with multiple battery packs speaking a 0x20 protocol variant, feel free to contact me ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) but I will probably decline.  You can still get data from all of them by simply using one ESP per BMS.
+Multiple battery packs is currently only supported for protocol 0x25.  It is unlikely I will add multi-pack support for 0x20 due to the fact that it's older, most of the issues / requests that I get are about 0x25, and there are a number of 0x20 variants (with wildly different protocol formats) so the test burden would be high.  If you have a setup with multiple battery packs speaking a 0x20 protocol variant, feel free to contact me about it ([file an issue](https://github.com/nkinnan/esphome-pace-bms/issues)) but I will probably decline even if you're able to test that out for me.  You can still get data from all of them by simply using one ESP per BMS.
 
-The first thing to do is mark your BMS as MASTER.  This is the default, but it's good practice anyway to make it explicit.  Makes the yaml easier to read.
+The first thing to do is mark your BMS as MASTER.  This is the default, but it's good practice anyway to make it explicit in a multi-pack setup.  Makes the yaml easier to read.
 ```yaml
 pace_bms:
   # the rest of the master BMS settings are omitted for brevity
@@ -845,7 +845,7 @@ pace_bms:
 ```
 
 Next, you need to decide whether to query the slave BMSes in "broadcast" or "relay" mode.  Broadcast means that this component will send a request for information to a special 0xFF address which means "return data for all packs in a single response".  Relay means that this component will ask the master BMS to forward requests for information to each slave one at a time.  Differences:
-1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still aren't very large for a reasonably sized setup (it might become a concern if you start getting up towards the 16 battery packs end of things), so it shouldn't be an issue unless your ESP is under memory pressure for some reason.
+1) Broadcast requires a larger receive buffer for both this component and it's uart.  Generally 256 * (number of BMSes).  Relay mode can leave the buffer sizes at 256 since responses aren't returned in concatenated form.  The buffers still won't get large enough, even with a 16 pack setup, to become a big issue unless your ESP is under memory pressure for some reason (running LVGL maybe?)
 2) I have seen cases where the firmware has bugs in it when responding in relay mode.  Payload sizes are off by a couple of bytes, that kind of thing.  This can cause warnings or errors in processing.  But it's still a valid method, and available to select if you have some reason to do so.
 
 Both modes are fully supported, but my recommendation is to use broadcast mode:
