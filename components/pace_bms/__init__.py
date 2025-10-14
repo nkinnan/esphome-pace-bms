@@ -217,7 +217,7 @@ def final_validate_slave_bms_schema(slave_config):
                 # save for later
                 master_pace_bms_schema = pace_bms_schema_test
                 protocol_commandset = master_pace_bms_schema.get(CONF_PROTOCOL_COMMANDSET)
-                if(protocol_commandset is not 0x25):
+                if(protocol_commandset != 0x25):
                     raise cv.Invalid(f"BMS with type=SLAVE is only allowed for protocol commandset 0x25.")
                 else:
                     print("================ found master with correct protocol version") # todo remove debug output
