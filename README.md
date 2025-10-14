@@ -1329,6 +1329,28 @@ All contain a scalar value.  They indicate a warning but not a fault or error (y
 		WV_UserDefinedFaultRangeEndValue = 0xEF,
 		WV_OtherFaultValue = 0xF0,
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeWarningValue(const uint8_t val)
+  {
+    if (val == 0) {
+      // calling code error
+      return "(no warning)";
+    }
+    if (val == WV_BelowLowerLimitValue) {
+      return std::string("Below Lower Limit");
+    }
+    if (val == WV_AboveUpperLimitValue) {
+      return std::string("Above Upper Limit");
+    }
+    if (val >= WV_UserDefinedFaultRangeStartValue && val <= WV_UserDefinedFaultRangeEndValue) {
+      return std::string("User Defined Fault");
+    }
+    if (val == WV_OtherFaultValue) {
+      return std::string("Other Fault");
+    }
+
+    return std::string("Unknown Fault Value");
+  }
 ```
 
 
@@ -1350,7 +1372,40 @@ Contain bitflags.  They indicate a warning but not a fault or error (yet).  Poss
 		W1F_LowCellVoltageBit = (1 << 1),
 		W1F_HighCellVoltageBit = (1 << 0),
 	};
-	enum StatusInformation_Warning2Flags
+
+  const std::string PaceBmsProtocolV25::DecodeWarningStatus1Value(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & W1F_UndefinedWarning1Bit8) != 0) {
+      str.append("Undefined WarnState1 Bit7 Warning; ");
+    }
+    if ((val & W1F_UndefinedWarning1Bit7) != 0) {
+      str.append("Undefined WarnState1 Bit6 Warning; ");
+    }
+    if ((val & W1F_DischargeCurrentBit) != 0) {
+      str.append("Discharge Current Warning; ");
+    }
+    if ((val & W1F_ChargeCurrentBit) != 0) {
+      str.append("Charge Current Warning; ");
+    }
+    if ((val & W1F_LowTotalVoltageBit) != 0) {
+      str.append("Low Total Voltage Warning; ");
+    }
+    if ((val & W1F_HighTotalVoltageBit) != 0) {
+      str.append("High Total Voltage Warning; ");
+    }
+    if ((val & W1F_LowCellVoltageBit) != 0) {
+      str.append("Low Cell Voltage Warning; ");
+    }
+    if ((val & W1F_HighCellVoltageBit) != 0) {
+      str.append("High Cell Voltage Warning; ");
+    }
+
+    return str;
+  }
+
+  enum StatusInformation_Warning2Flags
 	{
 		W2F_LowPower = (1 << 7),
 		W2F_HighMosfetTemperature = (1 << 6),
@@ -1361,6 +1416,38 @@ Contain bitflags.  They indicate a warning but not a fault or error (yet).  Poss
 		W2F_HighDischargeTemperature = (1 << 1),
 		W2F_HighChargeTemperature = (1 << 0),
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeWarningStatus2Value(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & W2F_LowPower) != 0) {
+      str.append("Low Power Warning; ");
+    }
+    if ((val & W2F_HighMosfetTemperature) != 0) {
+      str.append("High MOSFET Temperature Warning; ");
+    }
+    if ((val & W2F_LowEnvironmentalTemperature) != 0) {
+      str.append("Low Environmental Temperature Warning; ");
+    }
+    if ((val & W2F_HighEnvironmentalTemperature) != 0) {
+      str.append("High Environmental Temperature Warning; ");
+    }
+    if ((val & W2F_LowDischargeTemperature) != 0) {
+      str.append("Low Discharge Temperature Warning; ");
+    }
+    if ((val & W2F_LowChargeTemperature) != 0) {
+      str.append("Low Charge Temperature Warning; ");
+    }
+    if ((val & W2F_HighDischargeTemperature) != 0) {
+      str.append("High Discharge Temperature Warning; ");
+    }
+    if ((val & W2F_HighChargeTemperature) != 0) {
+      str.append("High Charge Temperature Warning; ");
+    }
+
+    return str;
+  }
 ```
 
 The entry:
@@ -1385,6 +1472,38 @@ Contains bitflags.  These flags indicate the current status of the BMS.  Possibl
 		SF_ChargeMosfetOnBit = (1 << 1),
 		SF_ChargeCurrentLimiterTurnedOffBit = (1 << 0), // this is the inverse of CF_ChargeCurrentLimiterEnabledBit
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeStatusValue(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & SF_HeaterActiveBit) != 0) {
+      str.append("Heater Active; "); 
+    }
+    if ((val & SF_AlternateCurrentInBit) != 0) {
+      str.append("Alternate Current In; ");
+    }
+    if ((val & SF_ChargingBit) != 0) {
+      str.append("Charging; ");
+    }
+    if ((val & SF_PositiveNegativeTerminalsReversedBit) != 0) {
+      str.append("Positive/Negative Terminals Reversed; "); 
+    }
+    if ((val & SF_DischargingBit) != 0) {
+      str.append("Discharging; ");
+    }
+    if ((val & SF_DischargeMosfetOnBit) != 0) {
+      str.append("Discharge MOSFET On; ");
+    }
+    if ((val & SF_ChargeMosfetOnBit) != 0) {
+      str.append("Charge MOSFET On; ");
+    }
+    if ((val & SF_ChargeCurrentLimiterTurnedOffBit) != 0) {
+      str.append("Charge Current Limiter Disabled; ");
+    }
+
+    return str;
+  }
 ```
 
 
@@ -1405,6 +1524,38 @@ Contains bitflags.  These flags indicate the current configuration of the BMS.  
 		CF_ChargeMosfetTurnedOff = (1 << 1), // it is not documented, but in practice I have seen this flag being set to mean "Charge MOSFET turned OFF" in addition to the SF_ChargeMosfetOnBit flag being cleared
 		CF_BuzzerAlarmEnabledBit = (1 << 0),
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeConfigurationStatusValue(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & CF_UndefinedConfigurationStatusBit8) != 0) {
+      str.append("Undefined ConfigurationStatus Bit8 Set; ");
+    }
+    if ((val & CF_StaticBalanceBit) != 0) {
+      str.append("Static Balance ('Enabled'?); "); // "Enabled" ??????????????
+    }
+    if ((val & CF_LedAlarmEnabledBit) != 0) {
+      str.append("Warning LED Enabled; ");
+    }
+    if ((val & CF_ChargeCurrentLimiterEnabledBit) != 0) {
+      str.append("Charge Current Limiter Enabled (" + std::string((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0 ? "Low Gear" : "High Gear") + "); ");
+    }
+    //if ((val & CF_ChargeCurrentLimiterLowGearSetBit) != 0) {
+    //	str.append("Current limit low-gear Set; ");
+    //}
+    if ((val & CF_DischargeMosfetTurnedOff) != 0) {
+      str.append("Discharge MOSFET Turned Off; ");
+    }
+    if ((val & CF_ChargeMosfetTurnedOff) != 0) {
+      str.append("Charge MOSFET Turned Off; ");
+    }
+    if ((val & CF_BuzzerAlarmEnabledBit) != 0) {
+      str.append("Warning Buzzer Enabled; ");
+    }
+
+    return str;
+  }
 ```
 
 
@@ -1425,7 +1576,40 @@ Contain bitflags.  These flags indicate that action is being taken by the BMS to
 		P1F_LowCellVoltageProtect1Bit = (1 << 1),
 		P1F_HighCellVoltageProtect1Bit = (1 << 0),
 	};
-	enum StatusInformation_Protection2Flags
+
+  const std::string PaceBmsProtocolV25::DecodeProtectionStatus1Value(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & P1F_ChargerHighVoltageInProtect1Bit) != 0) {
+      str.append("Charger High Voltage In Protect; ");
+    }
+    if ((val & P1F_ShortCircuitProtect1Bit) != 0) {
+      str.append("Short Circuit Protect; ");
+    }
+    if ((val & P1F_DischargeCurrentProtect1Bit) != 0) {
+      str.append("Discharge Current Protect; ");
+    }
+    if ((val & P1F_ChargeCurrentProtect1Bit) != 0) {
+      str.append("Charge Current Protect; ");
+    }
+    if ((val & P1F_LowTotalVoltageProtect1Bit) != 0) {
+      str.append("Low Total Voltage Protect; ");
+    }
+    if ((val & P1F_HighTotalVoltageProtect1Bit) != 0) {
+      str.append("High Total Voltage Protect; ");
+    }
+    if ((val & P1F_LowCellVoltageProtect1Bit) != 0) {
+      str.append("Low Cell Voltage Protect; ");
+    }
+    if ((val & P1F_HighCellVoltageProtect1Bit) != 0) {
+      str.append("High Cell Voltage Protect; ");
+    }
+
+    return str;
+  }
+
+  enum StatusInformation_Protection2Flags
 	{
 		P2F_FullyProtect2Bit = (1 << 7),
 		P2F_LowEnvironmentalTemperatureProtect2Bit = (1 << 6),
@@ -1436,6 +1620,39 @@ Contain bitflags.  These flags indicate that action is being taken by the BMS to
 		P2F_HighDischargeTemperatureProtect2Bit = (1 << 1),
 		P2F_HighChargeTemperatureProtect2Bit = (1 << 0),
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & P2F_FullyProtect2Bit) != 0) {
+      // ********************* based on (poor) documentation and inference, /possibly/ this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
+      str.append("'Fully' protect bit???; "); // Might mean fully charged?
+    }
+    if ((val & P2F_LowEnvironmentalTemperatureProtect2Bit) != 0) {
+      str.append("Low Environmental Temperature Protect; ");
+    }
+    if ((val & P2F_HighEnvironmentalTemperatureProtect2Bit) != 0) {
+      str.append("High Environmental Temperature Protect; ");
+    }
+    if ((val & P2F_HighMosfetTemperatureProtect2Bit) != 0) {
+      str.append("High MOSFET Temperature Protect; ");
+    }
+    if ((val & P2F_LowDischargeTemperatureProtect2Bit) != 0) {
+      str.append("Low Discharge Temperature Protect; ");
+    }
+    if ((val & P2F_LowChargeTemperatureProtect2Bit) != 0) {
+      str.append("Low Charge Temperature Protect; ");
+    }
+    if ((val & P2F_HighDischargeTemperatureProtect2Bit) != 0) {
+      str.append("High Discharge Temperature Protect; ");
+    }
+    if ((val & P2F_HighChargeTemperatureProtect2Bit) != 0) {
+      str.append("High Charge Temperature Protect; ");
+    }
+
+    return str;
+  }
 ```
 
 
@@ -1456,6 +1673,38 @@ Contains bitflags.  These flags indicate the BMS is faulted, a more serious cond
 		FF_DischargeMosfetBit = (1 << 1),
 		FF_ChargeMosfetBit = (1 << 0),
 	};
+
+  const std::string PaceBmsProtocolV25::DecodeFaultStatusValue(const uint8_t val)
+  {
+    std::string str;
+
+    if ((val & FF_HeaterBit) != 0) {
+      str.append("Heater Fault; ");
+    }
+    if ((val & FF_CCBBit) != 0) {
+      str.append("CCB Fault; ");
+    }
+    if ((val & FF_VCCSamplingBit) != 0) {
+      str.append("VCC Sampling Fault; ");
+    }
+    if ((val & FF_CellBit) != 0) {
+      str.append("Cell fault; ");
+    }
+    if ((val & FF_CommBit) != 0) {
+      str.append("Comm Fault; "); //only on later PACE 
+    }
+    if ((val & FF_NTCBit) != 0) {
+      str.append("NTC fault; ");
+    }
+    if ((val & FF_DischargeMosfetBit) != 0) {
+      str.append("Discharge MOSFET fault; ");
+    }
+    if ((val & FF_ChargeMosfetBit) != 0) {
+      str.append("Charge MOSFET fault; ");
+    }
+
+    return str;
+  }
 ```
 </details>
 (click header to expand/collapse section)
