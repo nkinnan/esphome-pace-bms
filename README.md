@@ -89,7 +89,11 @@ Using modbus for your pack means you will not be able to set any configuration v
 
 # Supported BMS Sensors (read only) All Protocol Versions
 
-These read-only settings are supported by both `type=MASTER` and type=`SLAVE` BMSes
+These read-only settings are supported by both `type=MASTER` (default) and `type=SLAVE` BMSes unless otherwise ***noted.
+
+- "Meta" Information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
+	- **BMS Count** - How many packs in total the master BMS reports being connected
+	- **Payload Count** - How many information payloads the master BMS returns for a broadcast request for analog or status information
 
 - All "Analog Information"
 	- **Cell Count**
