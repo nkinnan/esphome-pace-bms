@@ -463,7 +463,7 @@ uart:
 * **rx_buffer_size:** This value should match the `rx_buffer_size` set under the `pace_bms` component with `type=MASTER` (or with `type` omitted since MASTER is the default value).  A size of 256 is recommended for a single battery pack (or if you have one ESP per pack).  For a multiple battery pack setup, see [multi-pack configuration](#Support-for-multiple-battery-packs) for more information.
 ```yaml
 pace_bms:
-  id: pace_bms_master_at_address_1
+  id: master_pace_bms_at_address_1
   address: 1
   responding_address: 1
   device_id: 
@@ -481,7 +481,7 @@ pace_bms:
 
   # multi-pack configuration only (ignore/omit if you have only a single battery pack, or one ESP per pack)
   type: MASTER
-  master_bms_id: pace_bms_master_at_address_1
+  master_bms_id: master_pace_bms_at_address_1
   slave_discovery_mode: NONE
   slave_query_mode: BROADCAST
   rx_buffer_size: 256
@@ -515,12 +515,12 @@ Next, lets go over making things available to the web_server dashboard, homeassi
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
-    # (`type=MASTER` BMSes only)
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     bms_count:
       name: "BMS Count"
-    # (`type=MASTER` BMSes only)
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     payload_count:
       name: "Payload Count"
 
@@ -563,8 +563,8 @@ sensor:
     temperature_count:
       name: "Temperature Count"
 
-    # Generally the first four temperatures are cell measurements and the last two are 
-    # MOSFET / Environment or Environment / MOSFET with the order of those two depending on manufacturer
+    # Generally the first four (or last four) temperatures are cell measurements and the other two are 
+    # MOSFET / Environment or Environment / MOSFET, but this is manufacturer specific
     temperature_01:
       name: "Cell Temperature 1"
     temperature_02:
@@ -610,7 +610,7 @@ sensor:
 
 text_sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     # (`type=MASTER` BMSes only)
     hardware_version:
@@ -641,16 +641,18 @@ All of these writable settings are supported by `type=MASTER` BMSes only
 
 ```yaml
 datetime:
- - platform: pace_bms
-   pace_bms_id: pace_bms_master_at_address_1
+  - platform: pace_bms
+    pace_bms_id: master_pace_bms_at_address_1
 
-   system_date_and_time:
-     name: "System Date and Time"
+    # (`type=MASTER` BMSes only)
+    system_date_and_time:
+      name: "System Date and Time"
 
 button:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
+    # (`type=MASTER` BMSes only)
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
 ```
@@ -658,42 +660,52 @@ button:
 
 ```yaml
 switch:
- - platform: pace_bms
-   pace_bms_id: pace_bms_master_at_address_1
+  - platform: pace_bms
+    pace_bms_id: master_pace_bms_at_address_1
 
-
-   buzzer_alarm:
-     name: "Buzzer Alarm"
-   led_alarm:
-     name: "Led Alarm"
-   charge_current_limiter:
-     name: "Charge Current Limiter"
-   charge_mosfet:
-     name: "Charge Mosfet"
-   discharge_mosfet:
-     name: "Discharge Mosfet"
+    # (for `type=SLAVE` BMSes this will become read-only)
+    buzzer_alarm:
+      name: "Buzzer Alarm"
+    # (for `type=SLAVE` BMSes this will become read-only)
+    led_alarm:
+      name: "Led Alarm"
+    # (for `type=SLAVE` BMSes this will become read-only)
+    charge_current_limiter:
+      name: "Charge Current Limiter"
+    # (for `type=SLAVE` BMSes this will become read-only)
+    charge_mosfet:
+      name: "Charge Mosfet"
+    # (for `type=SLAVE` BMSes this will become read-only)
+    discharge_mosfet:
+      name: "Discharge Mosfet"
 
 
 select:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
+    # (for `type=SLAVE` BMSes this will become read-only)
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
     # setting the protocol is possible on some version 25 BMSes but not all
+    # (`type=MASTER` BMSes only)
     protocol_can:
       name: "Protocol (CAN)"
+    # (`type=MASTER` BMSes only)
     protocol_rs485:
       name: "Protocol (RS485)"
+    # (`type=MASTER` BMSes only)
     protocol_type:
       name: "Protocol (Type)"
 
 
 number:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
- 
+    pace_bms_id: master_pace_bms_at_address_1
+
+    # (the ENTIRE `number` section is available for `type=MASTER` BMSes only)
+
     cell_over_voltage_alarm:
       name: "Cell Over Voltage Alarm" 
     cell_over_voltage_protection:
@@ -875,24 +887,24 @@ Next, lets define some slave BMSes.  The configuration section for slaves will b
 
 ```yaml
 pace_bms:
-  - id: master_pace_bms_master_at_address_1
+  - id: master_master_pace_bms_at_address_1
     type: MASTER
     address: 1
     # the rest of the master BMS settings are omitted for brevity
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1 # slaves must point back to the master
+    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
     address: 2
 
   - id: slave_pace_bms_at_address_3
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1 # slaves must point back to the master
+    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
     address: 3
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1 # slaves must point back to the master
+    master_bms_id: master_master_pace_bms_at_address_1 # slaves must point back to the master
     address: 4
 ```
 
@@ -913,7 +925,7 @@ esphome:
       name: "Slave BMS Address 4"
 
 pace_bms:
-  - id: master_pace_bms_master_at_address_1
+  - id: master_master_pace_bms_at_address_1
     type: MASTER
     address: 1
     # the rest of the master BMS settings are omitted for brevity
@@ -921,19 +933,19 @@ pace_bms:
 
   - id: slave_pace_bms_at_address_2
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1
+    master_bms_id: master_master_pace_bms_at_address_1
     address: 2
     device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
  
   - id: slave_pace_bms_at_address_3
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1
+    master_bms_id: master_master_pace_bms_at_address_1
     address: 3
     device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_4
     type: SLAVE
-    master_bms_id: master_pace_bms_master_at_address_1
+    master_bms_id: master_master_pace_bms_at_address_1
     address: 4
     device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 ```
@@ -946,7 +958,7 @@ Finally, just copy/paste all the relevant sensors etc that you'd like to have ex
 sensor:
   # sensors for the master BMS at address 1
   - platform: pace_bms
-    pace_bms_id: master_pace_bms_master_at_address_1
+    pace_bms_id: master_master_pace_bms_at_address_1
 
     total_voltage:
       name: "Total Voltage" # this will look like "Master BMS Address 1 Total Voltage" because we used sub-device grouping
@@ -1046,7 +1058,7 @@ pace_bms:
 
 text_sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     hardware_version:
       name: "Hardware Version"
@@ -1134,7 +1146,7 @@ If you had to guess which commandset like this, you can figure out if it is "tru
 ```yaml
 text_sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     hardware_version:
       name: "Hardware Version"
@@ -1151,14 +1163,14 @@ If you determined the commandset to be 0x20 then you also need to figure out whi
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
     
     cell_count:
       name: "Cell Count"
 
 text_sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     system_status:
       name: "System Status"
@@ -1222,7 +1234,7 @@ First, the full set of YAML config entries:
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
@@ -1458,7 +1470,7 @@ First, the full set of YAML config entries:
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
@@ -1646,7 +1658,7 @@ First, the full set of YAML config entries:
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display
@@ -1965,7 +1977,7 @@ First, the full set of YAML config entries:
 ```yaml
 sensor:
   - platform: pace_bms
-    pace_bms_id: pace_bms_master_at_address_1
+    pace_bms_id: master_pace_bms_at_address_1
 
     # specific raw status values that you probably don't need, but the values / bit flags are documented anyway
     # you can probably just use the 6 text sensor equivalents which encompass all of these values and are suitable for display

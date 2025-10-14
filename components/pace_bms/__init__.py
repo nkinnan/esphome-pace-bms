@@ -196,8 +196,6 @@ def final_validate_master_bms_schema(master_config):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
 
-    # todo figure out why that other check for pace_bms coming after sensors didn't fire
-    # todo fixme link to the right section(s) for what's avialable and not in the multipack section
 
 def final_validate_slave_bms_schema(slave_config):
 
@@ -210,7 +208,7 @@ def final_validate_slave_bms_schema(slave_config):
     if(master_id is not None):
         # find the parent pace_bms schema 
         pace_bms_schemas = full_config.get(CONF_PACE_BMS)
-        for pace_bms_schema_test in pace_bms_schemas: # todo: can this fail in case of a single entry? can validation even get this far in that case?
+        for pace_bms_schema_test in pace_bms_schemas: 
             id = pace_bms_schema_test.get(CONF_ID)
             # if not found the config will fail validation anyway
             if(id == master_id):

@@ -1,7 +1,7 @@
 
 substitutions:
-  name: "esp32-0x25-full"
-  friendly_name: "esp32-0x25-full"
+  name: "esp32-0x25-full-multi-pack"
+  friendly_name: "esp32-0x25-full-multi-pack"
 
 esphome:
   name: ${name}
@@ -143,8 +143,10 @@ sensor:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     bms_count:
       name: "BMS Count"
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     payload_count:
       name: "Payload Count"
 
@@ -187,8 +189,8 @@ sensor:
     temperature_count:
       name: "Temperature Count"
 
-    # Generally the first four temperatures are cell measurements and the last two are 
-    # MOSFET / Environment or Environment / MOSFET with the order of those two depending on manufacturer
+    # Generally the first four (or last four) temperatures are cell measurements and the other two are 
+    # MOSFET / Environment or Environment / MOSFET, but this is manufacturer specific
     temperature_01:
       name: "Cell Temperature 1"
     temperature_02:
@@ -584,8 +586,10 @@ text_sensor:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (`type=MASTER` BMSes only)
     hardware_version:
       name: "Hardware Version"
+    # (`type=MASTER` BMSes only)
     serial_number: # not available on EG4 protocol 0x20 variant
       name: "Serial Number"
 
@@ -666,6 +670,7 @@ datetime:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (`type=MASTER` BMSes only)
     system_date_and_time:
       name: "System Date and Time"
 
@@ -690,6 +695,7 @@ button:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (`type=MASTER` BMSes only)
     shutdown:
       name: "Shutdown" # will actually "reboot" if the battery is charging/discharging - it only stays shut down if idle
   
@@ -714,14 +720,19 @@ switch:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (for `type=SLAVE` BMSes this will become read-only)
     buzzer_alarm:
       name: "Buzzer Alarm"
+    # (for `type=SLAVE` BMSes this will become read-only)
     led_alarm:
       name: "Led Alarm"
+    # (for `type=SLAVE` BMSes this will become read-only)
     charge_current_limiter:
       name: "Charge Current Limiter"
+    # (for `type=SLAVE` BMSes this will become read-only)
     charge_mosfet:
       name: "Charge Mosfet"
+    # (for `type=SLAVE` BMSes this will become read-only)
     discharge_mosfet:
       name: "Discharge Mosfet"
 
@@ -776,14 +787,18 @@ select:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
 
+    # (for `type=SLAVE` BMSes this will become read-only)
     charge_current_limiter_gear:
       name: "Charge Current Limiter Gear"
 
     # setting the protocol is possible on some version 25 BMSes but not all
+    # (`type=MASTER` BMSes only)
     protocol_can:
       name: "Protocol (CAN)"
+    # (`type=MASTER` BMSes only)
     protocol_rs485:
       name: "Protocol (RS485)"
+    # (`type=MASTER` BMSes only)
     protocol_type:
       name: "Protocol (Type)"
 
@@ -819,7 +834,9 @@ select:
 number:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
- 
+
+    # (the ENTIRE `number` section is available for `type=MASTER` BMSes only)
+
     cell_over_voltage_alarm:
       name: "Cell Over Voltage Alarm" 
     cell_over_voltage_protection:
