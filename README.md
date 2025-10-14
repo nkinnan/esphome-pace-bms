@@ -9,7 +9,7 @@ The protocol is characterized by both requests and responses beginning with a '*
 
 If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++20 support due to use of some newer language features, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
 
-I strongly encourage you to read through this entire document, but here's a table of contents:
+I strongly encourage you to read through this entire document if you plan to use this component, but here's a table of contents for quick reference:
 - [What Is Paceic Protocol Version 20](#What-Is-Paceic-Protocol-Version-20)
 - [What Is Paceic Protocol Version 25](#What-Is-Paceic-Protocol-Version-25)
 - [What Is Pace MODBUS Protocol](#What-Is-Pace-MODBUS-Protocol)
@@ -93,7 +93,7 @@ These *read-only* settings are supported for all protocol versions and variants,
 
 - Multi-pack information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
 	- **BMS Count** - How many packs in total the master BMS reports being connected
-	- **Payload Count** - How many data payloads are returned by the master BMS for a broadcast request for analog or status information
+	- **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem)
 
 - All "Analog Information"
 	- **Cell Count**
@@ -103,6 +103,7 @@ These *read-only* settings are supported for all protocol versions and variants,
 		- *Cell Temperature* 1-4 
 		- *MOSFET Temperature* 
 		- *Environment Temperature*
+  but sometimes the order might be different
 	- **Total Voltage** (V)
 	- **Current** (A) - positive or negative for charge/discharge
 	- **Power** (W) - positive or negative for charge/discharge
