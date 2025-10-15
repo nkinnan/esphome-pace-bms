@@ -722,7 +722,8 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::AnalogInformation& payload) -> void {
-		bool haveLogged = false;
+		// must be static since this is a callback - this method is only going to be called once anyway, since it's only queued on setup if requested
+		static bool haveLogged = false;
 		if(!haveLogged) {
 			// dispatch to any child components that registered for payload count
 			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
@@ -749,7 +750,8 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 	ESP_LOGD(TAG, "Processing '%s' response", this->last_request_description.c_str());
 
 	auto onPayload = [this](uint8_t payloadCount, uint8_t index, PaceBmsProtocolV25::StatusInformation& payload) -> void {
-		bool haveLogged = false;
+		// must be static since this is a callback - this method is only going to be called once anyway, since it's only queued on setup if requested
+		static bool haveLogged = false;
 		if(!haveLogged) {
 			// dispatch to any child components that registered for payload count
 			for (int i = 0; i < this->payload_count_callbacks_v25_.size(); i++) {
