@@ -209,6 +209,9 @@ def final_validate_master_bms_schema(master_config):
             platform = sensor_platform.get(CONF_PLATFORM)
             parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
             protocol_commandset = master_config.get(CONF_PROTOCOL_COMMANDSET)
+
+            print(f"Platform is '{platform}', parent_bms_id is '{parent_bms_id}', master_id is '{master_id}', protocol_commandset is '{protocol_commandset}'.")
+
             if(platform == CONF_PACE_BMS and parent_bms_id == master_id and protocol_commandset != 0x25):
                 # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 if CONF_BMS_COUNT in sensor_platform:
