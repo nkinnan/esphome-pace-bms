@@ -87,7 +87,7 @@ void PaceBmsMaster::setup() {
 	this->raw_data_ = new uint8_t[this->rx_buffer_size_];
 	if(this->raw_data_ == nullptr) {
 		this->status_set_error();
-		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %u bytes", this->rx_buffer_size_);
+		ESP_LOGE(TAG, "Failed to allocate RX buffer of size %i bytes", (int)(this->rx_buffer_size_));
 		return;
 	}
 
@@ -868,7 +868,7 @@ void PaceBmsMaster::handle_broadcast_read_analog_information_response_v25(std::s
 	}
 
 	if(dispatchedCount != this->slaves_.size() + 1) {
-		ESP_LOGE(TAG, "%i Analog Information payloads were returned and decoded successfully, but %i BMSes are configured)", dispatchedCount, this->slaves_.size() + 1);
+		ESP_LOGE(TAG, "%i Analog Information payloads were returned and decoded successfully, but %i BMSes are configured)", dispatchedCount, (int)(this->slaves_.size() + 1));
 		return;
 	}
 }
