@@ -913,7 +913,7 @@ void PaceBmsMaster::handle_broadcast_read_status_information_response_v25(std::s
 	}
 
 	if(dispatchedCount != this->slaves_.size() + 1) {
-		ESP_LOGE(TAG, "%i Status Information payloads were returned and decoded successfully, but %i BMSes are configured)", dispatchedCount, this->slaves_.size() + 1);
+		ESP_LOGE(TAG, "%i Status Information payloads were returned and decoded successfully, but %i BMSes are configured)", dispatchedCount, (int)(this->slaves_.size() + 1));
 		return;
 	}
 }
