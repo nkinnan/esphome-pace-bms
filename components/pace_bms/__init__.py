@@ -188,38 +188,26 @@ def final_validate_master_bms_schema(master_config):
     for pace_bms_config in pace_bms_configs:
         id_name = str(pace_bms_config.get(CONF_ID))
         address = pace_bms_config.get(CONF_ADDRESS)
-
-        print(f"Checking pace_bms id '{id_name}' with address {address}.")
-
-        if(address is None):
-            raise cv.Invalid(f"pace_bms instance '{id_name}' does not have an address specified.")
         if(address_to_id_name.get(address) is not None):
             raise cv.Invalid(f"Two pace_bms instances cannot have the same address ({address}). The two ids are '{id_name}' and '{address_to_id_name[address]}'.")
         address_to_id_name[address] = id_name
-
-    print(f"Master pace_bms id '{master_id}' passed address uniqueness check.")
 
     # the two counts are only available for v25 master
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
-
-            print(f"================ Checking sensor platform: {sensor_platform}")
-
             platform = sensor_platform.get(CONF_PLATFORM)
             parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
             protocol_commandset = master_config.get(CONF_PROTOCOL_COMMANDSET)
-
-            print(f"Platform is '{platform}', parent_bms_id is '{parent_bms_id}', master_id is '{master_id}', protocol_commandset is '{protocol_commandset}'.")
-
+            slave_query_mode = master_config.get(CONF_SLAVE_QUERY_MODE)
             if(platform == CONF_PACE_BMS and parent_bms_id == master_id and protocol_commandset != 0x25):
-                # we now know that this is the platform for the slave we are validating, now check for invalid components when BMS type is slave
                 if CONF_BMS_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_BMS_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
-
-    print(f"Master pace_bms id '{master_id}' passed sensor component checks.")
+            if(platform == CONF_PACE_BMS and parent_bms_id == master_id and slave_query_mode != "BROADCAST"):
+                if CONF_PAYLOAD_COUNT in sensor_platform:
+                    raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless slave_query_mode is BROADCAST.")
 
     return master_config
 
