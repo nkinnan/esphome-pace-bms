@@ -188,7 +188,9 @@ def final_validate_master_bms_schema(master_config):
     for pace_bms_config in pace_bms_configs:
         id_name = str(pace_bms_config.get(CONF_ID))
         address = pace_bms_config.get(CONF_ADDRESS)
+
         print(f"Checking pace_bms id '{id_name}' with address {address}.")
+        
         if(address is None):
             raise cv.Invalid(f"pace_bms instance '{id_name}' does not have an address specified.")
         if(address_to_id_name.get(address) is not None):
@@ -199,6 +201,9 @@ def final_validate_master_bms_schema(master_config):
 
     # the two counts are only available for v25 master
     sensor_platforms = full_config.get(CONF_SENSOR)
+
+    print(f"sensor_platforms retrieved")
+
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
             platform = sensor_platform.get(CONF_PLATFORM)
