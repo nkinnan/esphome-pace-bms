@@ -119,7 +119,7 @@ void PaceBmsMaster::setup() {
 	}
 
 	// currently no "setup" is done for 0x20 so there is no else block
-	if(this->protocol_version_ == 0x25) {
+	if(this->protocol_commandset_ == 0x25) {
 		// always send the "Read BMS Count" command first thing, the value could be useful later even if the user doesn't request the sensor
 		if(this->get_bms_type() == pace_bms_base::BMS_TYPE_MASTER) {
 			command_item* item = new command_item;
@@ -173,7 +173,7 @@ void PaceBmsMaster::setup() {
 		}
 	}
 	ESP_LOGV(TAG, "Read commands queued in setup: %i", (int)(read_queue_.size()));
-	ESP_LOGV(TAG, "this->protocol_version_: %i", this->protocol_version_);
+	ESP_LOGV(TAG, "this->protocol_commandset_: %i", this->protocol_commandset_);
 }
 
 /*
