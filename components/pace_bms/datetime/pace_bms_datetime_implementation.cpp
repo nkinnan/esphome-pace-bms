@@ -22,7 +22,7 @@ void PaceBmsDatetimeImplementation::set_datetime(PaceBmsProtocolV25::DateTime& d
 }
 
 void PaceBmsDatetimeImplementation::control(const datetime::DateTimeCall& call) {
-	ESP_LOGD(TAG, "control: new value %04hu:%02hu:%02hu %02hu:%02hu:%02hu", call.get_year(), call.get_month(), call.get_day(), call.get_hour(), call.get_minute(), call.get_second());
+	ESP_LOGD(TAG, "control: new value %04hu:%02hu:%02hu %02hu:%02hu:%02hu", call.get_year().value(), call.get_month().value(), call.get_day().value(), call.get_hour().value(), call.get_minute().value(), call.get_second().value());
 
 	// callbacks
 	this->control_callbacks_.call(call);
