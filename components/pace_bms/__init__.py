@@ -204,6 +204,11 @@ def final_validate_slave_bms_schema(slave_config):
     master_id = slave_config.get(CONF_MASTER_BMS_ID)
     master_pace_bms_schema = None
 
+    # slaves must have an address set
+    address = slave_config.get(CONF_ADDRESS)
+    if(address is None):
+        raise cv.Invalid(f"BMS with type=SLAVE must have an '{CONF_ADDRESS}' set.")
+
     # if it's none the config will fail validation anyway
     if(master_id is not None):
         # find the parent pace_bms schema 
