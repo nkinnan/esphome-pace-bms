@@ -1413,7 +1413,7 @@ void PaceBmsMaster::write_switch_state_v25(PaceBmsProtocolV25::SwitchCommand sta
 	item->create_request_frame_ = [this, state](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteSwitchCommandRequest(this->address_, state, request); };
 	item->process_response_frame_ = [this, state](std::span<uint8_t>& response) -> void { this->handle_write_switch_command_response_v25(state, response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, PaceBmsProtocolV25::MosfetState state) {
@@ -1433,7 +1433,7 @@ void PaceBmsMaster::write_mosfet_state_v25(PaceBmsProtocolV25::MosfetType type, 
 	item->create_request_frame_ = [this, type, state](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteMosfetSwitchCommandRequest(this->address_, type, state, request); };
 	item->process_response_frame_ = [this, type, state](std::span<uint8_t>& response) -> void { this->handle_write_mosfet_switch_command_response_v25(type, state, response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_shutdown_v25() {
@@ -1444,7 +1444,7 @@ void PaceBmsMaster::write_shutdown_v25() {
 	item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteShutdownCommandRequest(this->address_, request); };
 	item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_write_shutdown_command_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols) {
@@ -1455,7 +1455,7 @@ void PaceBmsMaster::write_protocols_v25(PaceBmsProtocolV25::Protocols& protocols
 	item->create_request_frame_ = [this, protocols](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteProtocolsRequest(this->address_, protocols, request); };
 	item->process_response_frame_ = [this, protocols](std::span<uint8_t>& response) -> void { this->handle_write_protocols_response_v25(protocols, response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25::CellOverVoltageConfiguration& config) {
@@ -1466,7 +1466,7 @@ void PaceBmsMaster::write_cell_over_voltage_configuration_v25(PaceBmsProtocolV25
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25::PackOverVoltageConfiguration& config) {
@@ -1477,7 +1477,7 @@ void PaceBmsMaster::write_pack_over_voltage_configuration_v25(PaceBmsProtocolV25
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_cell_under_voltage_configuration_v25(PaceBmsProtocolV25::CellUnderVoltageConfiguration& config) {
@@ -1488,7 +1488,7 @@ void PaceBmsMaster::write_cell_under_voltage_configuration_v25(PaceBmsProtocolV2
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_pack_under_voltage_configuration_v25(PaceBmsProtocolV25::PackUnderVoltageConfiguration& config) {
@@ -1499,7 +1499,7 @@ void PaceBmsMaster::write_pack_under_voltage_configuration_v25(PaceBmsProtocolV2
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_charge_over_current_configuration_v25(PaceBmsProtocolV25::ChargeOverCurrentConfiguration& config) {
@@ -1510,7 +1510,7 @@ void PaceBmsMaster::write_charge_over_current_configuration_v25(PaceBmsProtocolV
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_discharge_over_current1_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent1Configuration& config) {
@@ -1521,7 +1521,7 @@ void PaceBmsMaster::write_discharge_over_current1_configuration_v25(PaceBmsProto
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_discharge_over_current2_configuration_v25(PaceBmsProtocolV25::DischargeOverCurrent2Configuration& config) {
@@ -1532,7 +1532,7 @@ void PaceBmsMaster::write_discharge_over_current2_configuration_v25(PaceBmsProto
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_short_circuit_protection_configuration_v25(PaceBmsProtocolV25::ShortCircuitProtectionConfiguration& config) {
@@ -1543,7 +1543,7 @@ void PaceBmsMaster::write_short_circuit_protection_configuration_v25(PaceBmsProt
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_cell_balancing_configuration_v25(PaceBmsProtocolV25::CellBalancingConfiguration& config) {
@@ -1554,7 +1554,7 @@ void PaceBmsMaster::write_cell_balancing_configuration_v25(PaceBmsProtocolV25::C
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfiguration& config) {
@@ -1565,7 +1565,7 @@ void PaceBmsMaster::write_sleep_configuration_v25(PaceBmsProtocolV25::SleepConfi
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_full_charge_low_charge_configuration_v25(PaceBmsProtocolV25::FullChargeLowChargeConfiguration& config) {
@@ -1576,7 +1576,7 @@ void PaceBmsMaster::write_full_charge_low_charge_configuration_v25(PaceBmsProtoc
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_charge_and_discharge_over_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeOverTemperatureConfiguration& config) {
@@ -1587,7 +1587,7 @@ void PaceBmsMaster::write_charge_and_discharge_over_temperature_configuration_v2
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_charge_and_discharge_under_temperature_configuration_v25(PaceBmsProtocolV25::ChargeAndDischargeUnderTemperatureConfiguration& config) {
@@ -1598,7 +1598,7 @@ void PaceBmsMaster::write_charge_and_discharge_under_temperature_configuration_v
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_mosfet_over_temperature_configuration_v25(PaceBmsProtocolV25::MosfetOverTemperatureConfiguration& config) {
@@ -1609,7 +1609,7 @@ void PaceBmsMaster::write_mosfet_over_temperature_configuration_v25(PaceBmsProto
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_environment_over_under_temperature_configuration_v25(PaceBmsProtocolV25::EnvironmentOverUnderTemperatureConfiguration& config) {
@@ -1620,7 +1620,7 @@ void PaceBmsMaster::write_environment_over_under_temperature_configuration_v25(P
 	item->create_request_frame_ = [this, config](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteConfigurationRequest(this->address_, config, request); };
 	item->process_response_frame_ = [this, config](std::span<uint8_t>& response) -> void { this->handle_write_configuration_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) {
@@ -1631,7 +1631,7 @@ void PaceBmsMaster::write_system_datetime_v25(PaceBmsProtocolV25::DateTime& dt) 
 	item->create_request_frame_ = [this, dt](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v25_->CreateWriteSystemDateTimeRequest(this->address_, dt, request); };
 	item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_write_system_datetime_response_v25(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 
@@ -1643,7 +1643,7 @@ void PaceBmsMaster::write_shutdown_v20() {
 	item->create_request_frame_ = [this](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateWriteShutdownCommandRequest(this->address_, request); };
 	item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_write_shutdown_command_response_v20(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 void PaceBmsMaster::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) {
@@ -1654,7 +1654,7 @@ void PaceBmsMaster::write_system_datetime_v20(PaceBmsProtocolV20::DateTime& dt) 
 	item->create_request_frame_ = [this, dt](std::vector<uint8_t>& request) -> bool { return this->pace_bms_v20_->CreateWriteSystemDateTimeRequest(this->address_, dt, request); };
 	item->process_response_frame_ = [this](std::span<uint8_t>& response) -> void { this->handle_write_system_datetime_response_v20(response); };
 	write_queue_push_back_with_deduplication(item);
-	ESP_LOGV(TAG, "Write commands queued: %i", write_queue_.size());
+	ESP_LOGV(TAG, "Write commands queued: %i", (int)(write_queue_.size()));
 }
 
 }  // namespace pace_bms_master
