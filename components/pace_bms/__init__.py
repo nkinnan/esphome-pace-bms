@@ -178,21 +178,18 @@ CONFIG_SCHEMA = cv.All(
 )
 
 def final_validate_master_bms_schema(master_config):
-    print(f"==================================================================")
 
     full_config = fv.full_config.get()
     master_id = master_config.get(CONF_ID)
 
     address_to_id_name = {}
     pace_bms_configs = full_config.get(CONF_PACE_BMS)
-    print(f"pace_bms_configs: {pace_bms_configs}")
     for pace_bms_config in pace_bms_configs:
         id_name = str(pace_bms_config.get(CONF_ID))
         address = pace_bms_config.get(CONF_ADDRESS)
         if(address_to_id_name.get(address) is not None):
             raise cv.Invalid(f"Two pace_bms components cannot have the same address ({address}). The two ids are '{id_name}' and '{address_to_id_name[address]}'.")
         address_to_id_name[address] = id_name
-        print(f"Address {address} is used by pace_bms id '{id_name}'.")
 
     # the two counts are only available for v25 master
     sensor_platforms = full_config.get(CONF_SENSOR)
