@@ -182,6 +182,15 @@ def final_validate_master_bms_schema(master_config):
     full_config = fv.full_config.get()
     master_id = master_config.get(CONF_ID)
 
+    address_to_id_name = {}
+    pace_bms_configs = full_config.get(CONF_PACE_BMS)
+    for pace_bms_config in pace_bms_configs:
+        id_name = str(pace_bms_config.get(CONF_ID))
+        address = pace_bms_config.get(CONF_ADDRESS)
+        if(address_to_id_name.get(address) is not None):
+            raise cv.Invalid(f"Two pace_bms components cannot have the same address ({address}). The two ids are '{id_name}' and '{address_to_id_name[address]}'.")
+        address_to_id_name[address] = id_name
+
     # the two counts are only available for v25 master
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
@@ -203,11 +212,6 @@ def final_validate_slave_bms_schema(slave_config):
     slave_id = slave_config.get(CONF_ID)
     master_id = slave_config.get(CONF_MASTER_BMS_ID)
     master_pace_bms_schema = None
-
-    # slaves must have an address set
-    address = slave_config.get(CONF_ADDRESS)
-    if(address is None):
-        raise cv.Invalid(f"BMS with type=SLAVE must have an '{CONF_ADDRESS}' set.")
 
     # if it's none the config will fail validation anyway
     if(master_id is not None):
