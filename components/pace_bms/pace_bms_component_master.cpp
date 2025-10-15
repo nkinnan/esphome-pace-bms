@@ -773,7 +773,7 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_analog_information_respons
 
 	bool result = this->pace_bms_v25_->ProcessReadAnalogInformationResponse(this->address_, slaveAddress, this->responding_address_, response, nullptr, true);
 	if (result == false) {
-		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		ESP_LOGV(TAG, "No slave discovered at address %i using relay Analog Information request", slaveAddress);
 		return;
 	}
 
@@ -785,7 +785,7 @@ void PaceBmsMaster::handle_slave_discovery_relay_read_status_information_respons
 
 	bool result = this->pace_bms_v25_->ProcessReadStatusInformationResponse(this->address_, slaveAddress, this->responding_address_, response, nullptr, true);
 	if (result == false) {
-		ESP_LOGE(TAG, "Unable to decode '%s' response", this->last_request_description.c_str());
+		ESP_LOGV(TAG, "No slave discovered at address %i using relay Status Information request", slaveAddress);
 		return;
 	}
 
