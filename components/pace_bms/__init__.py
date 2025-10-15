@@ -184,6 +184,7 @@ def final_validate_master_bms_schema(master_config):
 
     address_to_id_name = {}
     pace_bms_configs = full_config.get(CONF_PACE_BMS)
+    print(f"pace_bms_configs: {pace_bms_configs}")
     for pace_bms_config in pace_bms_configs:
         id_name = str(pace_bms_config.get(CONF_ID))
         address = pace_bms_config.get(CONF_ADDRESS)
