@@ -219,6 +219,9 @@ def final_validate_master_bms_schema(master_config):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
 
+    print(f"Master pace_bms id '{master_id}' passed sensor component checks.")
+
+    return master_config
 
 def final_validate_slave_bms_schema(slave_config):
 
