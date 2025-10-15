@@ -173,7 +173,6 @@ void PaceBmsMaster::setup() {
 		}
 	}
 	ESP_LOGV(TAG, "Read commands queued in setup: %i", (int)(read_queue_.size()));
-	ESP_LOGV(TAG, "this->protocol_commandset_: %i", this->protocol_commandset_);
 }
 
 /*
