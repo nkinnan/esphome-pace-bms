@@ -188,11 +188,14 @@ def final_validate_master_bms_schema(master_config):
     for pace_bms_config in pace_bms_configs:
         id_name = str(pace_bms_config.get(CONF_ID))
         address = pace_bms_config.get(CONF_ADDRESS)
+        print(f"Checking pace_bms id '{id_name}' with address {address}.")
         if(address is None):
             raise cv.Invalid(f"pace_bms instance '{id_name}' does not have an address specified.")
         if(address_to_id_name.get(address) is not None):
             raise cv.Invalid(f"Two pace_bms instances cannot have the same address ({address}). The two ids are '{id_name}' and '{address_to_id_name[address]}'.")
         address_to_id_name[address] = id_name
+
+    print(f"Master pace_bms id '{master_id}' passed address uniqueness check.")
 
     # the two counts are only available for v25 master
     sensor_platforms = full_config.get(CONF_SENSOR)
