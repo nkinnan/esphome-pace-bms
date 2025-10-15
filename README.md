@@ -93,7 +93,7 @@ These *read-only* settings are supported for all protocol versions and variants,
 
 - Multi-pack information *** Only available for `protocol_commandset: 0x25` and `type=MASTER`
   - **BMS Count** - How many packs in total the master BMS reports being connected
-  - **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem)
+  - **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem) *** Additionally requires: `slave_query_mode: BROADCAST`
 
 - All "Analog Information"
   - **Cell Count**
@@ -521,7 +521,7 @@ sensor:
     # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     bms_count:
       name: "BMS Count"
-    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only, requires `slave_query_mode: BROADCAST`)
     payload_count:
       name: "Payload Count"
 

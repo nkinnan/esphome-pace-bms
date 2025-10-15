@@ -122,18 +122,21 @@ pace_bms:
     device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_2
+    address: 2
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
     device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_3
+    address: 3
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
     device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
   - id: slave_pace_bms_at_address_4
+    address: 4
     type: SLAVE
     master_bms_id: master_pace_bms_at_address_1
 
@@ -146,7 +149,7 @@ sensor:
     # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     bms_count:
       name: "BMS Count"
-    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
+    # (`type=MASTER` and `protocol_commandset=0x25` BMSes only, requires `slave_query_mode: BROADCAST`)
     payload_count:
       name: "Payload Count"
 
