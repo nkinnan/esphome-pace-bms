@@ -178,6 +178,7 @@ CONFIG_SCHEMA = cv.All(
 )
 
 def final_validate_master_bms_schema(master_config):
+    print(f"==================================================================")
 
     full_config = fv.full_config.get()
     master_id = master_config.get(CONF_ID)
