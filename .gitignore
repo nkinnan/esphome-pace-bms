@@ -9,3 +9,4 @@ secrets.yaml
 __pycache__
 test*.yaml
 /.vscode
+.vscode/settings.json
