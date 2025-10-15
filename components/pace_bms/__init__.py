@@ -204,7 +204,7 @@ def final_validate_master_bms_schema(master_config):
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
 
-            print(f"Checking sensor platform: {sensor_platform}")
+            print(f"================ Checking sensor platform: {sensor_platform}")
 
             platform = sensor_platform.get(CONF_PLATFORM)
             parent_bms_id = sensor_platform.get(CONF_PACE_BMS_ID)
