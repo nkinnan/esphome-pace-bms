@@ -732,6 +732,8 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_analog_information_res
 				ESP_LOGI(TAG, "Discovered %i slaves using broadcast Analog Information request, predicted (but unverified) slave address range: %i to %i", payloadCount - 1, this->get_address() + 1, this->get_address() + payloadCount - 1);
 			else
 				ESP_LOGI(TAG, "No slaves discovered using broadcast Analog Information request");
+			
+			haveLogged = true;
 		}
 	};
 
@@ -757,6 +759,8 @@ void PaceBmsMaster::handle_slave_discovery_broadcast_read_status_information_res
 				ESP_LOGI(TAG, "Discovered %i slaves using broadcast Status Information request, predicted (but unverified) slave address range: %i to %i", payloadCount - 1, this->get_address() + 1, this->get_address() + payloadCount - 1);
 			else
 				ESP_LOGI(TAG, "No slaves discovered using broadcast Status Information request");
+			
+			haveLogged = true;
 		}
 	};
 
