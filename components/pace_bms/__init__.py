@@ -205,9 +205,9 @@ def final_validate_master_bms_schema(master_config):
                     raise cv.Invalid(f"The '{CONF_BMS_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
-            if(platform == CONF_PACE_BMS and parent_bms_id == master_id and slave_query_mode != "BROADCAST"):
+            if(platform == CONF_PACE_BMS and parent_bms_id == master_id and slave_query_mode != SLAVE_QUERY_MODE.BROADCAST):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
-                    raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless slave_query_mode is BROADCAST.")
+                    raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available unless slave_query_mode is BROADCAST.")
 
     return master_config
 
