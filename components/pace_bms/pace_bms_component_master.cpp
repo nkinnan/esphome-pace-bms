@@ -170,7 +170,7 @@ void PaceBmsMaster::setup() {
 					read_queue_.push(item);
 				}
 			}
-			ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
+			ESP_LOGV(TAG, "Read commands queued: %i", (int)(read_queue_.size()));
 		}
 	}
 }
@@ -476,7 +476,7 @@ void PaceBmsMaster::update() {
 			}
 		}
 
-		ESP_LOGV(TAG, "Read commands queued: %i", read_queue_.size());
+		ESP_LOGV(TAG, "Read commands queued: %i", (int)(read_queue_.size()));
 	}
 }
 
