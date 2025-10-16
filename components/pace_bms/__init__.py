@@ -239,6 +239,7 @@ def final_validate_slave_bms_schema(slave_config):
         if(slave_address <= master_address):
             raise cv.Invalid(f"BMS with type=SLAVE must have an address greater than its parent MASTER BMS address.")
 
+    # check for invalid button components when BMS type is slave
     button_platforms = full_config.get(CONF_BUTTON)
     if(button_platforms is not None):
         for button_platform in button_platforms:
@@ -249,6 +250,7 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_SHUTDOWN in button_platform:
                     raise cv.Invalid(f"The '{CONF_SHUTDOWN}' button is not available for a BMS with type=SLAVE.")
 
+    # check for invalid datetime components when BMS type is slave
     datetime_platforms = full_config.get(CONF_DATETIME)
     if(datetime_platforms is not None):
         for datetime_platform in datetime_platforms:
@@ -259,6 +261,7 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_SYSTEM_DATE_AND_TIME in datetime_platform:
                     raise cv.Invalid(f"The '{CONF_SYSTEM_DATE_AND_TIME}' datetime is not available for a BMS with type=SLAVE.")
 
+    # check for invalid number components when BMS type is slave
     number_platforms = full_config.get(CONF_NUMBER)
     if(number_platforms is not None):
         for number_platform in number_platforms:
@@ -275,6 +278,7 @@ def final_validate_slave_bms_schema(slave_config):
                         else:
                             raise cv.Invalid(f"The '<unnamed>' number is not available for a BMS with type=SLAVE. No numbers components are valid for SLAVE BMSes.")
 
+    # check for invalid select components when BMS type is slave
     select_platforms = full_config.get(CONF_SELECT)
     if(select_platforms is not None):
         for select_platform in select_platforms:
@@ -289,6 +293,7 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_PROTOCOL_TYPE in select_platform:
                     raise cv.Invalid(f"The '{CONF_PROTOCOL_TYPE}' select is not available for a BMS with type=SLAVE.")
 
+    # check for invalid sensor components when BMS type is slave
     sensor_platforms = full_config.get(CONF_SENSOR)
     if(sensor_platforms is not None):
         for sensor_platform in sensor_platforms:
@@ -301,10 +306,12 @@ def final_validate_slave_bms_schema(slave_config):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=SLAVE.")
 
+    # check for invalid switch components when BMS type is slave
     # the switches just go read-only for slaves, nothing to exclude
     #switch_platforms = full_config.get(CONF_SWITCH)
     #if(switch_platforms is not None):
 
+    # check for invalid text_sensor components when BMS type is slave
     text_sensor_platforms = full_config.get(CONF_TEXT_SENSOR)
     if(text_sensor_platforms is not None):
         for text_sensor_platform in text_sensor_platforms:
