@@ -236,8 +236,6 @@ def final_validate_slave_bms_schema(slave_config):
     if(master_pace_bms_schema is not None): # if none then the config will fail validation anyway
         master_address = master_pace_bms_schema.get(CONF_ADDRESS)
         slave_address = slave_config.get(CONF_ADDRESS)
-        master_address = None
-        slave_address = None
         if(slave_address <= master_address):
             raise cv.Invalid(f"BMS with type=SLAVE must have an address greater than its parent MASTER BMS address.")
 
