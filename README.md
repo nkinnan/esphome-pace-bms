@@ -7,7 +7,7 @@ This is an **ESPHome** component that supports "**paceic**" protocol **version 2
 
 The protocol is characterized by both requests and responses beginning with a '**~**' (tilde) character followed by two ASCII numbers (usually) either "**20**", "**21**", "**25**", or "**26**" and ending with a '**\r**' (carriage return) character.  
 
-If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++20 support due to use of some newer language features, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)
+If you are a developer, the protocol implementation is fully portable with a clean interface in C++ and with no dependencies on ESPHome or any other libraries (it does require C++20 support due to use of some newer language features, though that could easily be removed).  Feel free to use it for whatever you wish, but a heads-up would be appreciated just so I know what's happening with it :)  I'm on discord as nkinnan_63071 or you can [file an issue](https://github.com/nkinnan/esphome-pace-bms/issues) to get in touch.
 
 I strongly encourage you to read through this entire document if you plan to use this component, but here's a table of contents for quick reference:
 - [What Is Paceic Protocol Version 20](#What-Is-Paceic-Protocol-Version-20)
@@ -858,7 +858,7 @@ pace_bms:
   slave_query_mode: BROADCAST
 ```
 
-For `slave_query_mode: BROADCAST`, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms`:
+For `slave_query_mode: BROADCAST`, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms` (this is probably a bit excessive, but "better safe than sorry" - you can reduce it with testing):
 
 ```yaml
 pace_bms:

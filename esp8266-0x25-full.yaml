@@ -102,7 +102,7 @@ pace_bms:
   flow_control_pin: GPIO0 
   update_interval: 5s
   request_throttle: 50ms 
-  response_timeout: 1000ms 
+  response_timeout: 2000ms 
 
   protocol_commandset: 0x25   # example only
   # protocol_variant: "EG4"   # example only
