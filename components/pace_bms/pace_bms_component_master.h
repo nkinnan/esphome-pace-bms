@@ -62,6 +62,12 @@ public:
 		std::sort(slaves_.begin(), slaves_.end(), [](pace_bms_slave::PaceBmsSlave* a, pace_bms_slave::PaceBmsSlave* b) {
 			return a->get_address() < b->get_address();
 		});
+
+		printf("slaves: ");
+		for (auto s : this->slaves_) {
+			printf(" %d", s->get_address());
+		}
+		printf("\n");
 	}
 
 	// make accessible to sensors
