@@ -858,7 +858,7 @@ pace_bms:
   slave_query_mode: BROADCAST
 ```
 
-For `slave_query_mode: BROADCAST`, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms` (this is probably a bit excessive, but "better safe than sorry" - you can reduce it with testing):
+For `slave_query_mode: BROADCAST`, you will also need to update the `response_timeout` setting to allow the master BMS enough time to gather the requested information from all the slaves.  A safe starting point would be 2 seconds times the number of BMSes.  So if you have 4 battery packs, that would be 8 seconds, or `8000ms` (this is probably a bit excessive, but "better safe than sorry" - you can reduce it with testing, although there is not much benefit to doing so):
 
 ```yaml
 pace_bms:
@@ -869,7 +869,7 @@ pace_bms:
 ```
 If you've set `slave_query_mode: RELAY` then I would set the `response_timeout` to `2000ms`.
 
-Next, again for `slave_query_mode: BROADCAST` only, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024:
+Next, again for `slave_query_mode: BROADCAST` only, we need to calculate how big to make the receive buffers.  This should be 256 times the number of BMSes.  So if you have 4 battery packs, the value would be 1024.  Be sure to set this on both your uart and pace_bms configs:
 
 ```yaml
 uart:
@@ -885,7 +885,7 @@ pace_bms:
   rx_buffer_size: 1024 # 256 * 4, for four battery packs in this system
 ```
 
-Next, lets define some slave BMSes.  The configuration section for slaves will be much shorter than for the master BMS, but you will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
+Next, lets define some slave BMSes.  The configuration section for slaves will be much shorter than for the master BMS.  You will need to convert the yaml entry into a list by using the "-" list item indicator and increasing the indentation.  Be sure to specify both the address and a pointer back to the master BMS:
 
 ```yaml
 pace_bms:
@@ -1216,7 +1216,7 @@ No seriously, just use the text values I painstakingly decoded for you :)  This 
 
 Really? OK, well here's the thing.  They're completely different for every single protocol version and variant.  Which is why I consolidated them into something you can display and understand.  But you might have a specific use case that necessitates decoding those bit flags yourself, so I did painstakingly expose and document them all.  Lets go over them one by one.
 
-This is going to be tedious, so I'll "cheat" a bit by sharing some raw enums from the code.
+This is going to be tedious, so I'll "cheat" a bit by sharing some raw enums and decoding functions from the sourcecode.
 
 sub-sections:
   - [Paceic Version 25 RAW Status Values](#Paceic-Version-25-RAW-Status-Values)
