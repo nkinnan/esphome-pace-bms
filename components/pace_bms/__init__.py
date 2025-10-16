@@ -205,6 +205,7 @@ def final_validate_master_bms_schema(master_config):
                     raise cv.Invalid(f"The '{CONF_BMS_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available for a BMS with type=MASTER unless protocol_commandset=0x25.")
+            # and furthermore the payload count is only available in broadcast mode
             if(platform == CONF_PACE_BMS and parent_bms_id == master_id and slave_query_mode != "BROADCAST"):
                 if CONF_PAYLOAD_COUNT in sensor_platform:
                     raise cv.Invalid(f"The '{CONF_PAYLOAD_COUNT}' sensor is not available unless slave_query_mode is BROADCAST.")
@@ -218,8 +219,7 @@ def final_validate_slave_bms_schema(slave_config):
     master_id = slave_config.get(CONF_MASTER_BMS_ID)
     master_pace_bms_schema = None
 
-    # if it's none the config will fail validation anyway
-    if(master_id is not None):
+    if(master_id is not None): # if it's none the config will fail validation anyway
         # find the parent pace_bms schema 
         pace_bms_schemas = full_config.get(CONF_PACE_BMS)
         for pace_bms_schema_test in pace_bms_schemas: 
@@ -231,6 +231,15 @@ def final_validate_slave_bms_schema(slave_config):
                 protocol_commandset = master_pace_bms_schema.get(CONF_PROTOCOL_COMMANDSET)
                 if(protocol_commandset != 0x25):
                     raise cv.Invalid(f"BMS with type=SLAVE is only allowed for protocol commandset 0x25.")
+
+    # ensure slave has an address > the master's address
+    if(master_pace_bms_schema is not None): # if none then the config will fail validation anyway
+        master_address = master_pace_bms_schema.get(CONF_ADDRESS)
+        slave_address = slave_config.get(CONF_ADDRESS)
+        master_address = None
+        slave_address = None
+        if(slave_address <= master_address):
+            raise cv.Invalid(f"BMS with type=SLAVE must have an address greater than its parent MASTER BMS address.")
 
     button_platforms = full_config.get(CONF_BUTTON)
     if(button_platforms is not None):
