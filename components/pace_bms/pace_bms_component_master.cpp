@@ -578,7 +578,7 @@ void PaceBmsMaster::loop() {
 		// did we run out of buffer before EOI?
 		if (this->raw_data_index_ + 1 >= this->rx_buffer_size_) {
 			std::string str(this->raw_data_, this->raw_data_ + this->raw_data_index_ + 1);
-			// todo: chunked log
+			// todo: chunked log of truncated response frame
 			//ESP_LOGV(TAG, "Response frame exceeds maximum supported length, increase rx_buffer_size (recommended: 256 * number of battery packs), last request was '%s', incomplete response frame: %s", this->last_request_description.c_str(), str.c_str());
 			ESP_LOGV(TAG, "Response frame exceeds maximum supported length, increase rx_buffer_size (recommended: 256 * number of battery packs), last request was '%s'", this->last_request_description.c_str());
 			request_outstanding_ = false;

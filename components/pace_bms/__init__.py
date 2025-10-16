@@ -46,7 +46,7 @@ from .pace_bms_globals import (
     CONF_SERIAL_NUMBER,
 )
 
-# bizarrely these are not in esphome const.py
+# todo: bizarrely these are not in esphome const.py
 CONF_SELECT = "select"
 CONF_TEXT_SENSOR = "text_sensor"
 

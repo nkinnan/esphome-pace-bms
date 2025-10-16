@@ -290,7 +290,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_SEPLOS(const uint8
 	analogInformation.cycleCount = ReadHexEncodedUShort(response, byteOffset);
 	analogInformation.SoH = ReadHexEncodedUShort(response, byteOffset);
 
-	//todo: expose? what even is it?
+	// should I expose this? what even is it?
 	uint16_t portVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset) * 10;
 
 	// reserved 1-4 (16 bit each, two hex per byte encoding)
@@ -381,7 +381,7 @@ bool PaceBmsProtocolV20::ProcessReadAnalogInformationResponse_EG4(const uint8_t 
 	analogInformation.minCellVoltageMillivolts = ReadHexEncodedUShort(response, byteOffset);
 	analogInformation.maxCellDifferentialMillivolts = ReadHexEncodedUShort(response, byteOffset);
 
-	// todo: expose this extra information?
+	// todo: expose this extra information? the cumulative information is particularly interesting
 	uint16_t maxCellTempTenthsCelcius = ReadHexEncodedUShort(response, byteOffset) - 2730;
 	uint16_t minCellTempTenthsCelcius = ReadHexEncodedUShort(response, byteOffset) - 2730;
 
