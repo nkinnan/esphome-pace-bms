@@ -1,7 +1,7 @@
 
 # esphome-pace-bms
 
-This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount and wall-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in Asia for the consumer market.  Version 20 of this protocol is also sometimes called "PYLON" or "PylonTech".  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
+This is an **ESPHome** component that supports "**paceic**" protocol **version 20 and 25** which is used by seemingly the majority of low-cost rack-mount and wall-mount Lithium Iron (LiFePO4) battery packs (but occasionally a different chemistry as well) manufactured in Asia for the consumer market.  Version 20 of this protocol is also sometimes called "PYLON" or "PylonTech" although this seems to be a misnomer.  The BMS can be communicated with over **RS485** or **RS232** and is manufactured by PACE (or is a clone).  It's used by many, many different manufacturers under different labels and branding.
 
 ![EG4 LIFEPOWER4](images/EG4-0x20-192.png) ![EG4 LIFEPOWER4](images/Jakiper-0x25-192.png) ![Easun Powerwall](images/easun-powerwall-144.png) ![Tewaycell All-in-one](images/Tewaycell_All-in-one_159.png)
 
