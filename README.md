@@ -95,7 +95,7 @@ These *read-only* settings are supported for all protocol versions and variants,
   - **BMS Count** - How many packs in total the master BMS reports being connected
   - **Payload Count** - How many data payloads are returned by the master BMS on a broadcast request for analog or status information (this should match 'BMS Count' unless there is a problem) *** Additionally requires: `slave_query_mode: BROADCAST`
 
-- All "Analog Information"
+- All "Analog Information" (no restrictions)
   - **Cell Count**
   - **Cell Voltage** (V) - up to x16 depending on your battery pack
   - **Temperature Count**
