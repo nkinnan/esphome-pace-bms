@@ -117,7 +117,7 @@ These *read-only* settings are supported for all protocol versions and variants,
   - **Average Cell Voltage** (V)
   - **Max Cell Differential** (V) - difference between minimum and maximum cell voltage
   
-- All "Status Information" decoded to human-readable text format
+- All "Status Information" decoded to human-readable text format (no restrictions)
   - **Warning Text** - A list of any warnings reported by the BMS
   - **Protection Text** - If the BMS has protected itself or the cells, for example disabling charging if the temperature is too low, or a cell voltage is too high, it will be listed here
   - **Fault Text** - A list of any faults reported by the BMS
