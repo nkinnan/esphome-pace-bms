@@ -136,7 +136,7 @@ These *read-only* settings are only available for `type=MASTER`
 These *writable* settings are only available for `type=MASTER`
 
 - **System Date and Time** - Allows access to the BMS internal real-time clock
-- **Shutdown** - A button which sends the shutdown command to the BMS
+- **Shutdown** - A button which sends the shutdown command to the BMS (this will effectively cause a "reboot" unless the BMS is idle - any charge or discharge current will cause the BMS to "wake up" making this "look like" a reboot instead of a shutdown)
 
 # Supported BMS Configuration (read / write) - **Protocol Version 25 ONLY**
 
