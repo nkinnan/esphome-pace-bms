@@ -85,7 +85,7 @@ Example protocol version 25 BMS front-panel:
 
 Some BMS firmwares also support reading data via MODBUS protocol over the RS485 port.  I haven't looked into this yet.  It seems like it may co-exist with Paceic version 25.  Documentation can be found [here](https://github.com/nkinnan/esphome-pace-bms/tree/main/protocol_documentation/modbus).  I may add support for this later, but since documentation is available, ESPHome already has native support for MODBUS, and syssi has already created an [ESPHome configuration for it](https://github.com/syssi/esphome-pace-bms), it's low priority.  
 
-Using modbus for your pack means you will not be able to set any configuration values though, which is a major benefit / advantage of this esphome component.  Modbus will also not be able to read multiple chained together packs.
+Using modbus for your pack means you will not be able to set any configuration values though, which is a major benefit / advantage of this esphome component.  Modbus will also not be able to read multiple chained together packs, which is something this component can do.
 
 # Supported BMS Sensors (read only)
 
