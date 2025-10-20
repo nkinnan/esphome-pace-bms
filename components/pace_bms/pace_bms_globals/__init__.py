@@ -19,11 +19,6 @@ def save_pace_bms_schema(schema):
 # called upon intercept of processing of all platforms (button, datetime, number, select, sensor, switch, text_sensor)
 def inherit_device_id(schema):
 
-    if(len(pace_bms_schemas) == 0):
-        raise cv.Invalid(
-            "The pace_bms node must be declared before any button/datetime/number/sensor/switch/select/text_sensor nodes in the device config."
-        )
-
     platform_device_id = schema.get(CONF_DEVICE_ID)
     if(platform_device_id is None):
         # get the id of the parent pace_bms that this platform is pointing to
@@ -33,12 +28,14 @@ def inherit_device_id(schema):
             return schema
         
         # find the parent pace_bms schema (previously saved to a global) by its id and then grab its device_id value
+        # (if available)
         pace_bms_device_id = None
-        for pace_bms_schema in pace_bms_schemas:
-            id = pace_bms_schema.get(CONF_ID)
-            if(id == pace_bms_id):
-                # found it, save the device_id (if specified)
-                pace_bms_device_id = pace_bms_schema.get(CONF_DEVICE_ID)
+        if(pace_bms_schemas is not None):
+            for pace_bms_schema in pace_bms_schemas:
+                id = pace_bms_schema.get(CONF_ID)
+                if(id == pace_bms_id):
+                    # found it, save the device_id (if specified)
+                    pace_bms_device_id = pace_bms_schema.get(CONF_DEVICE_ID)
 
         # if the parent pace_bms has a device_id but this platform does not, inherit the parent device_id
         if(platform_device_id is None and pace_bms_device_id is not None):
