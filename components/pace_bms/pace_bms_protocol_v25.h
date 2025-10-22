@@ -392,7 +392,9 @@ protected:
 	const std::string DecodeProtectionStatus1Value(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
-	const std::string DecodeProtectionStatus2Value(const uint8_t val, std::string from);
+	const std::string DecodeProtectionStatus2ValueWithoutFullyChargedStatus(const uint8_t val);
+	// helper for: ProcessStatusInformationResponse
+	const std::string DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly(const uint8_t val);
 
 	// helper for: ProcessStatusInformationResponse
 	const std::string DecodeStatusValue(const uint8_t val);

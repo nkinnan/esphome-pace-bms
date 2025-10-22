@@ -393,15 +393,13 @@ const std::string PaceBmsProtocolV25::DecodeProtectionStatus1Value(const uint8_t
 	return str;
 }
 // helper for: ProcessStatusInformationResponse
-const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t val, std::string from)
+const std::string PaceBmsProtocolV25::DecodeProtectionStatus2ValueWithoutFullyChargedStatus(const uint8_t val)
 {
 	std::string str;
 
 	if ((val & P2F_FullyProtect2Bit) != 0)
 	{
-		// ********************* based on (poor) documentation and inference, /possibly/ this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
-		str.append("'Fully' protect bit???; ");
-		LogWarning(from + ": 'Fully' protect bit? Might mean fully charged?");
+		// special case, see DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly
 	}
 	if ((val & P2F_LowEnvironmentalTemperatureProtect2Bit) != 0)
 	{
@@ -430,6 +428,19 @@ const std::string PaceBmsProtocolV25::DecodeProtectionStatus2Value(const uint8_t
 	if ((val & P2F_HighChargeTemperatureProtect2Bit) != 0)
 	{
 		str.append("High Charge Temperature Protect; ");
+	}
+
+	return str;
+}
+// helper for: ProcessStatusInformationResponse
+const std::string PaceBmsProtocolV25::DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly(const uint8_t val)
+{
+	std::string str;
+
+	if ((val & P2F_FullyProtect2Bit) != 0)
+	{
+		// based on (poor and incomplete) documentation and inference, this is not a protection flag, but means: the pack has been fully charged, the SoC and total capacity have been updated in the firmware
+		str.append("Fully Charged; ");
 	}
 
 	return str;
@@ -767,7 +778,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 				continue;
 
 			// below/above limit
-			statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw, "fixme") + std::string("; "));
+			statusInformation.warningText.append(std::string("Cell ") + std::to_string(i + 1) + std::string(": ") + DecodeWarningValue(cw, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse") + std::string("; "));
 		}
 
 		uint8_t tempCount = ReadHexEncodedByte(response, byteOffset, quietMode);
@@ -790,7 +801,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 				continue;
 
 			// below/above limit
-			statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw, "fixme") + std::string("; "));
+			statusInformation.warningText.append(std::string("Temperature ") + std::to_string(i + 1) + ": " + DecodeWarningValue(tw, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse") + std::string("; "));
 		}
 
 		uint8_t chargeCurrentWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
@@ -798,7 +809,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		if (chargeCurrentWarn != 0)
 		{
 			// below/above limit
-			statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn, "fixme") + std::string("; "));
+			statusInformation.warningText.append(std::string("Charge current: ") + DecodeWarningValue(chargeCurrentWarn, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse") + std::string("; "));
 		}
 
 		uint8_t totalVoltageWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
@@ -806,7 +817,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		if (totalVoltageWarn != 0)
 		{
 			// below/above limit
-			statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn, "fixme") + std::string("; "));
+			statusInformation.warningText.append(std::string("Total voltage: ") + DecodeWarningValue(totalVoltageWarn, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse") + std::string("; "));
 		}
 
 		uint8_t dischargeCurrentWarn = ReadHexEncodedByte(response, byteOffset, quietMode);
@@ -814,7 +825,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		if (dischargeCurrentWarn != 0)
 		{
 			// below/above limit
-			statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn, "fixme") + std::string("; "));
+			statusInformation.warningText.append(std::string("Discharge current: ") + DecodeWarningValue(dischargeCurrentWarn, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse") + std::string("; "));
 		}
 
 		// ========================== Protection Status ==========================
@@ -829,7 +840,9 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		statusInformation.protection_value2 = protectState2;
 		if (protectState2 != 0)
 		{
-			statusInformation.protectionText.append(DecodeProtectionStatus2Value(protectState2, "fixme"));
+			// they put a status bit in here that is not really a protection bit
+			statusInformation.protectionText.append(DecodeProtectionStatus2ValueWithoutFullyChargedStatus(protectState2, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
+			statusInformation.systemText.append(DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly(protectState2, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
 		}
 
 		// ========================== System Status ==========================
@@ -845,7 +858,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		statusInformation.configuration_value = controlState;
 		if (controlState != 0)
 		{
-			statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState, "fixme"));
+			statusInformation.configurationText.append(DecodeConfigurationStatusValue(controlState, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
 		}
 
 		// ========================== Fault Status ==========================
@@ -874,7 +887,7 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		statusInformation.warning_value1 = warnState1;
 		if (warnState1 != 0)
 		{
-			statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1, "fixme"));
+			statusInformation.warningText.append(DecodeWarningStatus1Value(warnState1, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
 		}
 
 		uint8_t warnState2 = ReadHexEncodedByte(response, byteOffset, quietMode);
