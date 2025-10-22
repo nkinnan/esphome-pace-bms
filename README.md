@@ -511,7 +511,13 @@ Many of these settings are only applicable to a `type=MASTER` (or with type omit
 
 ## Exposing the sensors (this is the good part!)
 
-Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS, I will provide a complete example which you can pare down to only what you want to see.
+Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS.  I will provide a complete example which you can pare down to only what you want to see.
+
+> [!WARNING]
+> If you're using [sub-devices](https://esphome.io/components/esphome/#sub-devices), and also things like `!include` that cause your yaml to be broken up into multiple files, then the custom yaml processing allowing you to add `device_id` under `pace_bms` and have that "flow down" to all sensors may not work.  However, you can still avoid the need to decorate each individual sensor with `device_id` by adding it at the platform level instead:
+> ```yaml
+> test
+> ```
 
 ### All read-only values
 ```yaml
