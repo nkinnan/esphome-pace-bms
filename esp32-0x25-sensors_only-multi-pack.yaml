@@ -142,6 +142,7 @@ pace_bms:
 sensor:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (`type=MASTER` and `protocol_commandset=0x25` BMSes only)
     bms_count:
@@ -237,6 +238,7 @@ sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # bms count and payload count are not available for a slave BMS
 
@@ -328,6 +330,7 @@ sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # bms count and payload count are not available for a slave BMS
 
@@ -419,6 +422,7 @@ sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # bms count and payload count are not available for a slave BMS
 
@@ -512,6 +516,7 @@ sensor:
 text_sensor:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (`type=MASTER` BMSes only)
     hardware_version:
@@ -537,6 +542,7 @@ text_sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # hardware version and serial number are not available for a slave BMS
 
@@ -556,6 +562,7 @@ text_sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # hardware version and serial number are not available for a slave BMS
 
@@ -575,6 +582,7 @@ text_sensor:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # hardware version and serial number are not available for a slave BMS
 
@@ -596,6 +604,7 @@ text_sensor:
 datetime:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (`type=MASTER` BMSes only)
     system_date_and_time:
@@ -604,16 +613,19 @@ datetime:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # system date/time is not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # system date/time is not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # system date/time is not available for a slave BMS
 
@@ -621,6 +633,7 @@ datetime:
 button:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (`type=MASTER` BMSes only)
     shutdown:
@@ -629,16 +642,19 @@ button:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # the shutdown button is not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # the shutdown button is not available for a slave BMS
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # the shutdown button is not available for a slave BMS
 
@@ -646,6 +662,7 @@ button:
 switch:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (for `type=SLAVE` BMSes this will become read-only)
     buzzer_alarm:
@@ -666,6 +683,7 @@ switch:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # these switches become read-only for a slave BMS
     buzzer_alarm:
@@ -681,6 +699,7 @@ switch:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # these switches become read-only for a slave BMS
     buzzer_alarm:
@@ -696,6 +715,7 @@ switch:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # these switches become read-only for a slave BMS
     buzzer_alarm:
@@ -713,6 +733,7 @@ switch:
 select:
   - platform: pace_bms
     pace_bms_id: master_pace_bms_at_address_1
+    device_id: device_group_master_bms_address_1 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # (for `type=SLAVE` BMSes this will become read-only)
     charge_current_limiter_gear:
@@ -732,6 +753,7 @@ select:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_2
+    device_id: device_group_slave_bms_address_2 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # this select becomes read-only on a slave BMS
     charge_current_limiter_gear:
@@ -741,6 +763,7 @@ select:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_3
+    device_id: device_group_slave_bms_address_3 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # this select becomes read-only on a slave BMS
     charge_current_limiter_gear:
@@ -750,6 +773,7 @@ select:
 
   - platform: pace_bms
     pace_bms_id: slave_pace_bms_at_address_4
+    device_id: device_group_slave_bms_address_4 # group all sensors for this BMS under a sub-device name to avoid sensor naming collisions
 
     # this select becomes read-only on a slave BMS
     charge_current_limiter_gear:
