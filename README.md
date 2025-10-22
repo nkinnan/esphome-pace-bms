@@ -23,6 +23,7 @@ I strongly encourage you to read through this entire document if you plan to use
 - [ESPHome configuration YAML](#ESPHome-configuration-YAML)
   - [A note on logging](#A-note-on-logging)
   - [8266-specific settings](#8266-specific-settings)
+  - [sub_devices](#sub_devices)
   - [external_components](#external_components)
   - [UART and pace_bms](#UART-and-pace_bms)
   - [Exposing the sensors (this is the good part!)](#Exposing-the-sensors-this-is-the-good-part)
@@ -397,6 +398,7 @@ I won't go over 1 since that will be specific to your setup, except to say that 
 sub-sections:
 - [A note on logging](#A-note-on-logging)
 - [8266-specific settings](#8266-specific-settings)
+- [sub_devices](#sub_devices)
 - [external_components](#external_components)
 - [UART and pace_bms](#UART-and-pace_bms)
 - [Exposing the sensors (this is the good part!)](#Exposing-the-sensors-this-is-the-good-part)
@@ -432,6 +434,23 @@ Since an 8266 only has 1.5 UARTs (a full UART 0 with rx+tx and half of a UART 1 
 logger:
   hardware_uart: UART1 # using UART0 for BMS communications
 ```
+
+## sub_devices
+
+If you have multiple battery packs, the easiest way to manage the "duplicate" sensor names is with esphome's [sub-devices](https://esphome.io/components/esphome/#sub-devices) functionality.
+
+```yaml
+esphome:
+  <...configuration...>
+
+  devices:
+    - id: device_group_master_bms_address_1
+      name: "Master BMS Address 01"
+    - id: device_group_slave_bms_address_2
+      name: "Slave BMS Address 02"
+```
+
+How to reference these sub-devices will be noted later in the relevant sections.  Basically all this does is allow you to prefix the sub-device name onto each sensors/etc so the names do not conflict between battery packs in a multi-pack setup.
 
 ## external_components
 
@@ -514,10 +533,23 @@ Many of these settings are only applicable to a `type=MASTER` (or with type omit
 Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS.  I will provide a complete example which you can pare down to only what you want to see.
 
 > [!WARNING]
-> If you're using [sub-devices](https://esphome.io/components/esphome/#sub-devices), and also things like `!include` that cause your yaml to be broken up into multiple files, then the custom yaml processing allowing you to add `device_id` under `pace_bms` and have that "flow down" to all sensors may not work.  However, you can still avoid the need to decorate each individual sensor with `device_id` by adding it at the platform level instead:
+> If you're using [sub-devices](https://esphome.io/components/esphome/#sub-devices), and also things like `!include` that cause your yaml to be broken up into multiple files, then the custom yaml processing allowing you to add `device_id` under `pace_bms` and have that automatically "flow down" to all sensors may not work.  However, you can still avoid the need to decorate each individual sensor with `device_id` by adding it at the platform level instead:
 > ```yaml
-> test
+> sensor:
+>  - platform: pace_bms
+>    pace_bms_id: master_pace_bms_at_address_1
+>    device_id: device_group_master_bms_address_1
+>
+>    <...sensors...>
+>
+> switch:
+>   - platform: pace_bms
+>     pace_bms_id: master_pace_bms_at_address_1
+>     device_id: device_group_slave_bms_address_2
+>
+>    <...switches...>
 > ```
+> (and so on)
 
 ### All read-only values
 ```yaml
