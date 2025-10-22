@@ -841,8 +841,8 @@ bool PaceBmsProtocolV25::ProcessReadStatusInformationResponse(const uint8_t busI
 		if (protectState2 != 0)
 		{
 			// they put a status bit in here that is not really a protection bit
-			statusInformation.protectionText.append(DecodeProtectionStatus2ValueWithoutFullyChargedStatus(protectState2, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
-			statusInformation.systemText.append(DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly(protectState2, "PaceBmsProtocolV25::ProcessReadStatusInformationResponse"));
+			statusInformation.protectionText.append(DecodeProtectionStatus2ValueWithoutFullyChargedStatus(protectState2));
+			statusInformation.systemText.append(DecodeProtectionStatus2ValueActuallyStatusFullyChargedOnly(protectState2));
 		}
 
 		// ========================== System Status ==========================
