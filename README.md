@@ -540,14 +540,13 @@ Next, lets go over making things available to the web_server dashboard, homeassi
 >    pace_bms_id: master_pace_bms_at_address_1
 >    *device_id: device_group_master_bms_address_1*
 >
->    <...sensors...>
+>    <...sensors for BMS 1...>
 >
-> sensor:
 >   - platform: pace_bms
 >     pace_bms_id: slave_pace_bms_at_address_2
 >     device_id: device_group_slave_bms_address_2
 >
->    <...sensors...>
+>    <...sensors for BMS 2...>
 > ```
 > (and so on)
 
