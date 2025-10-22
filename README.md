@@ -533,21 +533,21 @@ Many of these settings are only applicable to a `type=MASTER` (or with type omit
 Next, lets go over making things available to the web_server dashboard, homeassistant, or mqtt.  This is going to differ slightly depending on what data you want to read back from the BMS.  I will provide a complete example which you can pare down to only what you want to see.
 
 > [!WARNING]
-> If you're using [sub-devices](https://esphome.io/components/esphome/#sub-devices), and also things like `!include` that cause your yaml to be broken up into multiple files, then the custom yaml processing allowing you to add `device_id` under `pace_bms` alone, and have that automatically "flow down" to all sensors may not work.  However, you can still avoid the need to decorate each individual sensor with `device_id` by adding it at the platform level instead:
+> If you're using [sub-devices](https://esphome.io/components/esphome/#sub-devices) in a multi-pack setup, and also things like `!include` that cause your yaml to be broken up into multiple files, then the custom yaml processing allowing you to add `device_id` under `pace_bms` alone, and have that automatically "flow down" to all sensors may not work.  However, you can still avoid the need to decorate each individual sensor with `device_id` by simply adding it at the platform level instead:
 > ```yaml
 > sensor:
 >  - platform: pace_bms
 >    pace_bms_id: master_pace_bms_at_address_1
->    device_id: device_group_master_bms_address_1
+>    *device_id: device_group_master_bms_address_1*
 >
 >    <...sensors...>
 >
-> switch:
+> sensor:
 >   - platform: pace_bms
->     pace_bms_id: master_pace_bms_at_address_1
->     device_id: device_group_master_bms_address_1
+>     pace_bms_id: slave_pace_bms_at_address_2
+>     device_id: device_group_slave_bms_address_2
 >
->    <...switches...>
+>    <...sensors...>
 > ```
 > (and so on)
 
