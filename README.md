@@ -450,7 +450,7 @@ esphome:
       name: "Slave BMS Address 02"
 ```
 
-How to reference these sub-devices will be noted later in the relevant sections.  Basically all this does is allow you to prefix the sub-device name onto each sensors/etc so the names do not conflict between battery packs in a multi-pack setup.
+How to reference these sub-devices will be noted later in the relevant sections.  Basically all this does is allow you to prefix the sub-device name onto each sensors/etc so the names do not conflict between battery packs in a multi-pack setup.  You can and should omit this for a single battery pack (or if you have one ESP per pack).
 
 ## external_components
 
