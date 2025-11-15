@@ -144,7 +144,7 @@ protected:
 	void LogVeryVerbose(std::string message);
 
 	// Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
-	static uint16_t CreateChecksummedLength(const uint16_t cklen);
+	uint16_t CreateChecksummedLength(const uint16_t cklen);
 
 	// Checks if the checksum nibble in a "checksummed length" is valid
 	static bool ValidateChecksummedLength(const uint16_t cklen);

@@ -79,6 +79,9 @@ void PaceBmsProtocolBase::LogVeryVerbose(std::string message)
 // Takes a length value and adds a checksum to the upper nibble, this is "CKLEN" used in command or response headers
 uint16_t PaceBmsProtocolBase::CreateChecksummedLength(const uint16_t cklen)
 {
+	if ((cklen & 0xF000) != 0)
+		LogError("Length value exceeds 12 bits");
+
 	// max value of length is 12 bit, top 4 bits will be checksum of actual length value
 	uint16_t len = (cklen & 0x0FFF);
 
