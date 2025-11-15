@@ -3,6 +3,12 @@
 
 void PaceBmsProtocolBase::LogError(std::string message)
 {
+	if(this->quietMode == true) 
+	{
+		LogVeryVerbose("QuietMode (was LogError): " + message);
+		return;
+	}
+
 	if (LogErrorPtr != 0)
 	{
 		LogErrorPtr(message);
@@ -10,6 +16,12 @@ void PaceBmsProtocolBase::LogError(std::string message)
 }
 void PaceBmsProtocolBase::LogWarning(std::string message)
 {
+	if(this->quietMode == true) 
+	{
+		LogVeryVerbose("QuietMode (was LogWarning): " + message);
+		return;
+	}
+
 	if (LogWarningPtr != 0)
 	{
 		LogWarningPtr(message);
@@ -17,6 +29,12 @@ void PaceBmsProtocolBase::LogWarning(std::string message)
 }
 void PaceBmsProtocolBase::LogInfo(std::string message)
 {
+	if(this->quietMode == true) 
+	{
+		LogVeryVerbose("QuietMode (was LogInfo): " + message);
+		return;
+	}
+
 	if (LogInfoPtr != 0)
 	{
 		LogInfoPtr(message);
@@ -24,6 +42,12 @@ void PaceBmsProtocolBase::LogInfo(std::string message)
 }
 void PaceBmsProtocolBase::LogDebug(std::string message)
 {
+	if(this->quietMode == true) 
+	{
+		LogVeryVerbose("QuietMode (was LogDebug): " + message);
+		return;
+	}
+
 	if (LogDebugPtr != 0)
 	{
 		LogDebugPtr(message);
@@ -31,6 +55,12 @@ void PaceBmsProtocolBase::LogDebug(std::string message)
 }
 void PaceBmsProtocolBase::LogVerbose(std::string message)
 {
+	if(this->quietMode == true) 
+	{
+		LogVeryVerbose("QuietMode (was LogVerbose): " + message);
+		return;
+	}
+
 	if (LogVerbosePtr != 0)
 	{
 		LogVerbosePtr(message);
@@ -107,14 +137,10 @@ uint16_t PaceBmsProtocolBase::CalculateRequestOrResponseChecksum(const std::span
 }
 
 // helper for WriteHexEncoded----
-uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte, bool quietMode)
+uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if ((nibbleByte & 0xF0) != 0)
-		logError("Nibble Byte has high nibble bits set");
+		LogError("Nibble Byte has high nibble bits set");
 
 	uint8_t nibble = nibbleByte & 0x0F;
 
@@ -125,12 +151,8 @@ uint8_t PaceBmsProtocolBase::NibbleToHex(const uint8_t nibbleByte, bool quietMod
 }
 
 // helper for ReadHexEncoded----
-uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex, bool quietMode)
+uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if ((hex >= '0' && hex <= '9'))
 		return hex - '0';  // Return a value from 0 to 9
 	else if ((hex >= 'A' && hex <= 'F'))
@@ -139,21 +161,17 @@ uint8_t PaceBmsProtocolBase::HexToNibble(const uint8_t hex, bool quietMode)
 		return hex - 'a' + 10;  // Return a value from 10 to 15
 	else
 	{
-		logError("Hexidecimal value outside of convertable range");
+		LogError("Hexidecimal value outside of convertable range");
 		return -1;
 	}
 }
 
 // decode a 'real' byte from the stream by reading two ASCII hex encoded bytes
-uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode)
+uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if (data.size() - dataOffset < 2)
 	{
-		logError("Attempt to read past end of array");
+		LogError("Attempt to read past end of array");
 		return 0;
 	}
 	uint8_t byte = 0;
@@ -163,15 +181,11 @@ uint8_t PaceBmsProtocolBase::ReadHexEncodedByte(const std::span<uint8_t>& data, 
 }
 
 // decode a 'real' uint16_t from the stream by reading four ASCII hex encoded bytes
-uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode)
+uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if (data.size() - dataOffset < 4)
 	{
-		logError("Attempt to read past end of array");
+		LogError("Attempt to read past end of array");
 		return 0;
 	}
 	uint16_t ushort = 0;
@@ -183,15 +197,11 @@ uint16_t PaceBmsProtocolBase::ReadHexEncodedUShort(const std::span<uint8_t>& dat
 }
 
 // decode a 'real' int16_t from the stream by reading four ASCII hex encoded bytes
-int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode)
+int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if (data.size() - dataOffset < 4)
 	{
-		logError("Attempt to read past end of array");
+		LogError("Attempt to read past end of array");
 		return 0;
 	}
 	int16_t sshort = 0;
@@ -203,15 +213,11 @@ int16_t PaceBmsProtocolBase::ReadHexEncodedSShort(const std::span<uint8_t>& data
 }
 
 // decode a 'real' uint32_t from the stream by reading four ASCII hex encoded bytes
-uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset, bool quietMode)
+uint32_t PaceBmsProtocolBase::ReadHexEncodedULong(const std::span<uint8_t>& data, uint16_t& dataOffset)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	if(quietMode == true) 
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-
 	if (data.size() - dataOffset < 8)
 	{
-		logError("Attempt to read past end of array");
+		LogError("Attempt to read past end of array");
 		return 0;
 	}
 	uint32_t ulong = 0;
@@ -371,38 +377,22 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 
 // validate all fields in the response except the payload data: SOI marker, header values, checksum, EOI marker
 // returns the detected payload length (payload always starts at offset 13), or -1 for error
-int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response, bool quietMode)
+int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response)
 {
-	LogFuncPtr logError = [this](std::string log) -> void { LogError(log); };
-	LogFuncPtr logWarning = [this](std::string log) -> void { LogWarning(log); };
-	LogFuncPtr logInfo = [this](std::string log) -> void { LogInfo(log); };
-	LogFuncPtr logDebug = [this](std::string log) -> void { LogDebug(log); };
-	LogFuncPtr logVerbose = [this](std::string log) -> void { LogVerbose(log); };
-	LogFuncPtr logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose(log); };
-
-	if(quietMode == true) {
-		logError = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-		logWarning = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-		logInfo = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-		logDebug = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-		logVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-		logVeryVerbose = [this](std::string log) -> void { LogVeryVerbose("QuietMode: " + log); };
-	}
-
 	uint16_t byteOffset = 0;
 
 	// the number of bytes for a response with zero payload, we'll check again once we decode the checksummed length embedded 
 	// in the response to make sure we don't run past the end of the buffer
 	if (response.size() < FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
-		logError("Response is truncated at " + std::to_string(response.size()) + " bytes, even a response without payload should be 18 bytes long");
+		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, even a response without payload should be 18 bytes long");
 		return -1;
 	}
 
 	// SOI
 	if (response[byteOffset++] != '~')
 	{
-		logError("Response does not begin with SOI marker '~'");
+		LogError("Response does not begin with SOI marker '~'");
 		return -1;
 	}
 
@@ -413,7 +403,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 		target_ver = this->protocol_version.value();
 	if (ver != target_ver)
 	{
-		logError("Response has wrong protocol version number, got " + std::to_string(ver) + ", expected " + std::to_string(target_ver));
+		LogError("Response has wrong protocol version number, got " + std::to_string(ver) + ", expected " + std::to_string(target_ver));
 		return -1;
 	}
 
@@ -424,7 +414,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint8_t addr = ReadHexEncodedByte(response, byteOffset);
 	if (addr != expected_addr)
 	{
-		logError("Response from wrong bus Id in header, got " + std::to_string(addr) + ", expected " + std::to_string(expected_addr));
+		LogError("Response from wrong bus Id in header, got " + std::to_string(addr) + ", expected " + std::to_string(expected_addr));
 		return -1;
 	}
 
@@ -432,7 +422,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint8_t cid = ReadHexEncodedByte(response, byteOffset);
 	if (cid != cid1)
 	{
-		logError("Response has wrong CID1 (battery chemistry), got " + std::to_string(cid) + ", expected " + std::to_string(cid1));
+		LogError("Response has wrong CID1 (battery chemistry), got " + std::to_string(cid) + ", expected " + std::to_string(cid1));
 		return -1;
 	}
 
@@ -440,7 +430,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint8_t returnCode = ReadHexEncodedByte(response, byteOffset);
 	if (returnCode != 0)
 	{
-		logError(std::string("Error code returned by device: ") + FormatReturnCode(returnCode));
+		LogError(std::string("Error code returned by device: ") + FormatReturnCode(returnCode));
 		return -1;
 	}
 
@@ -448,7 +438,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint16_t cklen = ReadHexEncodedUShort(response, byteOffset);
 	if (!ValidateChecksummedLength(cklen))
 	{
-		logError("Response contains an incorrect payload length checksum");
+		LogError("Response contains an incorrect payload length checksum");
 		return -1;
 	}
 
@@ -457,12 +447,12 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	// check payload length
 	if ((uint16_t)response.size() < payloadLen + 18)
 	{
-		logError("Response is truncated at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
+		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
 		return -1;
 	}
 	if ((uint16_t)response.size() > payloadLen + 18)
 	{
-		logError("Response is oversize at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
+		LogError("Response is oversize at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
 		return -1;
 	}
 
@@ -472,19 +462,19 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint16_t calcCksum = CalculateRequestOrResponseChecksum(response);
 	if (givenCksum != calcCksum)
 	{
-		logError("Response contains an incorrect frame checksum");
+		LogError("Response contains an incorrect frame checksum");
 		return -1;
 	}
 
 	if (response[byteOffset++] != '\r')
 	{
-		logError("Response does not end with EOI marker (carriage return)");
+		LogError("Response does not end with EOI marker (carriage return)");
 		return -1;
 	}
 
 	if (byteOffset != payloadLen + 18)
 	{
-		logError("Length mismatch validating response, this is a code bug in PACE_BMS");
+		LogError("Length mismatch validating response, this is a code bug in PACE_BMS");
 		return -1;
 	}
 

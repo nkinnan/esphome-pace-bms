@@ -32,9 +32,6 @@ public:
 		CID1_LithiumTitanate_Ternary_EG4 = 0x4F, // undocumented value used by EG4 for lithium titanate with ternary (nickel, cobalt, and manganese or aluminum) cathode
 	};
 
-	// dependency injection
-	typedef void (*LogFuncPtr)(std::string message);
-
 	// takes pointers to the "real" logging functions
 	PaceBmsProtocolV20(
 		std::optional<std::string> protocol_variant, std::optional<uint8_t> protocol_version_override, std::optional<uint8_t> batteryChemistry,
