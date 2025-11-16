@@ -23,7 +23,7 @@ static const uint8_t exampleReadBmsCountResponseV25[] = "~25014600E00202FD35\r";
 
 bool PaceBmsProtocolV25::CreateReadBmsCountRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadBmsCount, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadBmsCount, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadBmsCountResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& bmsCount)
@@ -961,7 +961,7 @@ const unsigned char PaceBmsProtocolV25::exampleReadHardwareVersionResponseV25[] 
 
 bool PaceBmsProtocolV25::CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadHardwareVersion, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadHardwareVersion, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadHardwareVersionResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion)
@@ -1006,7 +1006,7 @@ const unsigned char PaceBmsProtocolV25::exampleReadSerialNumberResponseV25[] = "
 
 bool PaceBmsProtocolV25::CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadSerialNumber, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadSerialNumber, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadSerialNumberResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber)
@@ -1306,7 +1306,7 @@ const unsigned char PaceBmsProtocolV25::exampleWriteSystemTimeResponseV25[] = "~
 
 bool PaceBmsProtocolV25::CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadDateTime, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadDateTime, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime)
@@ -1380,7 +1380,7 @@ bool PaceBmsProtocolV25::ProcessWriteSystemDateTimeResponse(const uint8_t busId,
 
 bool PaceBmsProtocolV25::CreateReadConfigurationRequest(const uint8_t busId, const ReadConfigurationType configType, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, (CID2)configType, std::vector<uint8_t>(), request);
+	CreateRequest(busId, (CID2)configType, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessWriteConfigurationResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response)
@@ -2651,7 +2651,7 @@ const unsigned char PaceBmsProtocolV25::exampleWriteChargeCurrentLimiterStartCur
 
 bool PaceBmsProtocolV25::CreateReadChargeCurrentLimiterStartCurrentRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadChargeCurrentLimiterStartCurrent, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadChargeCurrentLimiterStartCurrent, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadChargeCurrentLimiterStartCurrentResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint8_t& current)
@@ -2727,7 +2727,7 @@ const unsigned char PaceBmsProtocolV25::exampleReadRemainingCapacityResponseV25[
 
 bool PaceBmsProtocolV25::CreateReadRemainingCapacityRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadRemainingCapacity, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadRemainingCapacity, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadRemainingCapacityResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, uint32_t& remainingCapacityMilliampHours, uint32_t& actualCapacityMilliampHours, uint32_t& designCapacityMilliampHours)
@@ -2765,7 +2765,7 @@ const unsigned char PaceBmsProtocolV25::exampleWriteProtocolsResponseV25[] = "~2
 
 bool PaceBmsProtocolV25::CreateReadProtocolsRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadCommunicationsProtocols, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadCommunicationsProtocols, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV25::ProcessReadProtocolsResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, Protocols& protocols)

@@ -35,7 +35,7 @@ bool PaceBmsProtocolV20::CreateReadAnalogInformationRequest(const uint8_t busId,
 	}
 	else
 		// EG4 variant does not send address in payload
-		CreateRequest(busId, CID2_ReadAnalogInformation, std::vector<uint8_t>(), request);
+		CreateRequest(busId, CID2_ReadAnalogInformation, std::span<uint8_t>(), request);
 
 	return true;
 }
@@ -426,7 +426,7 @@ bool PaceBmsProtocolV20::CreateReadStatusInformationRequest(const uint8_t busId,
 		CreateRequest(busId, CID2_ReadStatusInformation, payload, request);
 	}
 	else
-		CreateRequest(busId, CID2_ReadStatusInformation, std::vector<uint8_t>(), request);
+		CreateRequest(busId, CID2_ReadStatusInformation, std::span<uint8_t>(), request);
 
 	return true;
 }
@@ -1861,7 +1861,7 @@ const unsigned char PaceBmsProtocolV20::exampleReadHardwareVersionResponseV20[] 
 
 bool PaceBmsProtocolV20::CreateReadHardwareVersionRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadHardwareVersion, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadHardwareVersion, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV20::ProcessReadHardwareVersionResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& hardwareVersion)
@@ -1921,7 +1921,7 @@ const unsigned char PaceBmsProtocolV20::exampleReadSerialNumberResponseV20[] = "
 
 bool PaceBmsProtocolV20::CreateReadSerialNumberRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadSerialNumber, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadSerialNumber, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV20::ProcessReadSerialNumberResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, std::string& serialNumber)
@@ -2025,7 +2025,7 @@ const unsigned char PaceBmsProtocolV20::exampleWriteSystemTimeResponseV20[] = "~
 
 bool PaceBmsProtocolV20::CreateReadSystemDateTimeRequest(const uint8_t busId, std::vector<uint8_t>& request)
 {
-	CreateRequest(busId, CID2_ReadDateTime, std::vector<uint8_t>(), request);
+	CreateRequest(busId, CID2_ReadDateTime, std::span<uint8_t>(), request);
 	return true;
 }
 bool PaceBmsProtocolV20::ProcessReadSystemDateTimeResponse(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t>& response, DateTime& dateTime)
