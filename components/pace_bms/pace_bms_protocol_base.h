@@ -30,13 +30,13 @@ offset LENID+17, 1 byte,   binary    0x0D:   EOI          - end of information '
 
 const uint8_t FRAME_HEADER_SIZE = 13;
 const uint8_t PAYLOAD_START_OFFSET = 13;
-const uint8_t FRAME_SIZE_WITHOUT_PAYLOAD = 18; // SOI + VER + ADR + CID1 + CID2 + CKLEN(2) + CHKSUM(2) + EOI
+const uint8_t FRAME_SIZE_WITHOUT_PAYLOAD = 18; // SOI + VER + ADR + CID1 + CID2 + CKLEN + CHKSUM + EOI
 
 // dependency injection
 //typedef void (*LogFuncPtr)(std::string message);
 typedef std::function<void(std::string)> LogFuncPtr;
 
-// generic RAII-style scope guard which calls the provided functions on construction and destruction 
+// generic RAII-style scope guard which calls the provided functions on construction and destruction if active is true
 class ScopeGuard 
 {
 private:
@@ -73,7 +73,7 @@ public:
     ScopeGuard& operator =(const ScopeGuard&) = delete;
     ScopeGuard& operator =(ScopeGuard&&)      = delete;
 
-	// prevent heap allocation, this should be used only as a stack variable (or maybe a member variable)
+	// prevent heap allocation, this should be used only as a stack variable (or maybe a member variable?)
 	static void* operator new     (size_t) = delete;
 	static void* operator new[]   (size_t) = delete;
 	static void  operator delete  (void*)  = delete;
@@ -112,6 +112,9 @@ public:
 		uint8_t Second;
 	};
 
+	// if enabled, all dependency-injected logging functions will be redirected to LogVeryVerbose
+	// used to "test" if a response is valid without spamming the logs
+	// ScopeGuard is used to set / unset this flag for the duration of a call to a decode method
 	void SetQuietMode(bool quietMode)
 	{
 		this->quietMode = quietMode;
@@ -186,7 +189,7 @@ protected:
 
 	std::string FormatReturnCode(const uint8_t returnCode);
 
-	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request);
+	void CreateRequest(const uint8_t busId, const uint8_t cid2, const std::span<uint8_t> payload, std::vector<uint8_t>& request);
 
 	int16_t ValidateResponseAndGetPayloadLength(const uint8_t busId, std::optional<uint8_t> respondingBusId, const std::span<uint8_t> response);
 };

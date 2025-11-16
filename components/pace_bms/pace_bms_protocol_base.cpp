@@ -333,11 +333,11 @@ std::string PaceBmsProtocolBase::FormatReturnCode(const uint8_t returnCode)
 }
 
 // create a standard request to the given busId for the given CID2, filling in the payload (if given)
-void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2, const std::vector<uint8_t> payload, std::vector<uint8_t>& request)
+void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2, const std::span<uint8_t> payload, std::vector<uint8_t>& request)
 {
 	uint16_t byteOffset = 0;
 
-	request.resize(payload.size() + 18);
+	request.resize(payload.size() + FRAME_SIZE_WITHOUT_PAYLOAD);
 
 	// SOI marker
 	request[byteOffset++] = '~';
@@ -372,7 +372,7 @@ void PaceBmsProtocolBase::CreateRequest(const uint8_t busId, const uint8_t cid2,
 	// EOI marker
 	request[byteOffset++] = '\r';
 
-	if (byteOffset != payload.size() + 18)
+	if (byteOffset != payload.size() + FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
 		LogError("Length mismatch creating request, this is a code bug in PACE_BMS");
 	}
@@ -388,7 +388,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	// in the response to make sure we don't run past the end of the buffer
 	if (response.size() < FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
-		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, even a response without payload should be 18 bytes long");
+		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, even a response without payload should be " + std::to_string(FRAME_SIZE_WITHOUT_PAYLOAD) + " bytes long");
 		return -1;
 	}
 
@@ -448,14 +448,14 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 	uint16_t payloadLen = LengthFromChecksummedLength(cklen);
 
 	// check payload length
-	if ((uint16_t)response.size() < payloadLen + 18)
+	if ((uint16_t)response.size() < payloadLen + FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
-		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
+		LogError("Response is truncated at " + std::to_string(response.size()) + " bytes, should be overhead + decoded payload length = " + std::to_string(payloadLen + FRAME_SIZE_WITHOUT_PAYLOAD) + " bytes");
 		return -1;
 	}
-	if ((uint16_t)response.size() > payloadLen + 18)
+	if ((uint16_t)response.size() > payloadLen + FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
-		LogError("Response is oversize at " + std::to_string(response.size()) + " bytes, should be 18 bytes + decoded payload length = " + std::to_string(payloadLen + 18) + " bytes");
+		LogError("Response is oversize at " + std::to_string(response.size()) + " bytes, should be overhead + decoded payload length = " + std::to_string(payloadLen + FRAME_SIZE_WITHOUT_PAYLOAD) + " bytes");
 		return -1;
 	}
 
@@ -475,7 +475,7 @@ int16_t PaceBmsProtocolBase::ValidateResponseAndGetPayloadLength(const uint8_t b
 		return -1;
 	}
 
-	if (byteOffset != payloadLen + 18)
+	if (byteOffset != payloadLen + FRAME_SIZE_WITHOUT_PAYLOAD)
 	{
 		LogError("Length mismatch validating response, this is a code bug in PACE_BMS");
 		return -1;
